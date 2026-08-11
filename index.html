@@ -2141,7 +2141,7 @@ section{padding:96px 0;}
             }
         });
 
-        // Enviar Cotización del Carrito por WhatsApp
+                // Enviar Cotización del Carrito por WhatsApp
         whatsappCheckoutBtn.addEventListener('click', function() {
             if (cart.length === 0) {
                 var message = encodeURIComponent('Hola Reset Supply MX! Quisiera consultar precios y disponibilidad de productos en catálogo.');
@@ -2155,175 +2155,29 @@ section{padding:96px 0;}
                 var sub = item.price * item.quantity;
                 total += sub;
                 text += (index + 1) + '. *' + item.quantity + 'x ' + item.name + '*\n';
-                text += '   Precio u.: 
-
-        // Filtrado por Categorías
-        var categoryLinks = document.querySelectorAll('.category-link');
-        var productCards = document.querySelectorAll('.product-card');
-        categoryLinks.forEach(function (link) {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                categoryLinks.forEach(function (l) { l.classList.remove('active'); });
-                this.classList.add('active');
-                var selectedCategory = this.getAttribute('data-category');
-                productCards.forEach(function (card) {
-                    if (selectedCategory === 'all' || card.getAttribute('data-category') === selectedCategory) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        });
-
-        var navbar = document.getElementById('navbar');
-        var sections = document.querySelectorAll('section[id]');
-        function highlightNavOnScroll() {
-            if (!navbar) return;
-            var scrollY = window.pageYOffset;
-            var navHeight = navbar.offsetHeight;
-            sections.forEach(function (section) {
-                var sectionTop = section.offsetTop - navHeight - 100;
-                var sectionHeight = section.offsetHeight;
-                var sectionId = section.getAttribute('id');
-                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-                    document.querySelectorAll('.nav-link').forEach(function (link) {
-                        link.classList.remove('active');
-                        if (link.getAttribute('href') === '#' + sectionId) { link.classList.add('active'); }
-                    });
-                }
-            });
-        }
-        window.addEventListener('scroll', highlightNavOnScroll, { passive: true });
-
-    })();
-    </script>
-
-    <!-- SDKs externos de Stripe y Firebase -->
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-</body>
-</html>
-
- + item.price.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN';
+                text += '   Precio u.: ' + item.price.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN';
                 if (item.quantity > 1) {
-                    text += ' | Subtotal: 
-
-        // Filtrado por Categorías
-        var categoryLinks = document.querySelectorAll('.category-link');
-        var productCards = document.querySelectorAll('.product-card');
-        categoryLinks.forEach(function (link) {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                categoryLinks.forEach(function (l) { l.classList.remove('active'); });
-                this.classList.add('active');
-                var selectedCategory = this.getAttribute('data-category');
-                productCards.forEach(function (card) {
-                    if (selectedCategory === 'all' || card.getAttribute('data-category') === selectedCategory) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        });
-
-        var navbar = document.getElementById('navbar');
-        var sections = document.querySelectorAll('section[id]');
-        function highlightNavOnScroll() {
-            if (!navbar) return;
-            var scrollY = window.pageYOffset;
-            var navHeight = navbar.offsetHeight;
-            sections.forEach(function (section) {
-                var sectionTop = section.offsetTop - navHeight - 100;
-                var sectionHeight = section.offsetHeight;
-                var sectionId = section.getAttribute('id');
-                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-                    document.querySelectorAll('.nav-link').forEach(function (link) {
-                        link.classList.remove('active');
-                        if (link.getAttribute('href') === '#' + sectionId) { link.classList.add('active'); }
-                    });
-                }
-            });
-        }
-        window.addEventListener('scroll', highlightNavOnScroll, { passive: true });
-
-    })();
-    </script>
-
-    <!-- SDKs externos de Stripe y Firebase -->
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-</body>
-</html>
-
- + sub.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN';
+                    text += ' | Subtotal: ' + sub.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN';
                 }
                 text += '\n\n';
             });
             text += '----------------------------------\n';
-            text += '📋 *TOTAL ESTIMADO DE COTIZACIÓN:* 
-
-        // Filtrado por Categorías
-        var categoryLinks = document.querySelectorAll('.category-link');
-        var productCards = document.querySelectorAll('.product-card');
-        categoryLinks.forEach(function (link) {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                categoryLinks.forEach(function (l) { l.classList.remove('active'); });
-                this.classList.add('active');
-                var selectedCategory = this.getAttribute('data-category');
-                productCards.forEach(function (card) {
-                    if (selectedCategory === 'all' || card.getAttribute('data-category') === selectedCategory) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        });
-
-        var navbar = document.getElementById('navbar');
-        var sections = document.querySelectorAll('section[id]');
-        function highlightNavOnScroll() {
-            if (!navbar) return;
-            var scrollY = window.pageYOffset;
-            var navHeight = navbar.offsetHeight;
-            sections.forEach(function (section) {
-                var sectionTop = section.offsetTop - navHeight - 100;
-                var sectionHeight = section.offsetHeight;
-                var sectionId = section.getAttribute('id');
-                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
-                    document.querySelectorAll('.nav-link').forEach(function (link) {
-                        link.classList.remove('active');
-                        if (link.getAttribute('href') === '#' + sectionId) { link.classList.add('active'); }
-                    });
-                }
-            });
-        }
-        window.addEventListener('scroll', highlightNavOnScroll, { passive: true });
-
-    })();
-    </script>
-
-    <!-- SDKs externos de Stripe y Firebase -->
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-</body>
-</html>
-
- + total.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN\n\n';
+            text += '📋 *TOTAL ESTIMADO DE COTIZACIÓN:* ' + total.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN\n\n';
             text += 'Por favor confirmen existencias y opciones de envío a mi domicilio. ¡Gracias!';
 
             window.open('https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(text), '_blank');
         });
 
+        // Listener para Cotizar por WhatsApp de Producto Individual
+        document.addEventListener('click', function(e) {
+            var btnQuote = e.target.closest('.btn-quote-wa');
+            if (btnQuote) {
+                var productName = btnQuote.getAttribute('data-product');
+                var text = 'Hola Reset Supply MX! 👋 Quisiera cotizar el producto: *' + productName + '*. ¿Me podrían dar información sobre existencias y precio de envío? ¡Gracias!';
+                window.open('https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(text), '_blank');
+            }
+        });
+
         // Filtrado por Categorías
         var categoryLinks = document.querySelectorAll('.category-link');
         var productCards = document.querySelectorAll('.product-card');
@@ -2373,4 +2227,3 @@ section{padding:96px 0;}
 
 </body>
 </html>
-
