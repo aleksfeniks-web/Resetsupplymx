@@ -325,6 +325,118 @@ h1,h2,h3,h4{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.01
   opacity: 0.7;
 }
 
+
+/* ---------- Mobile Responsive Fixes for Product Action Buttons ---------- */
+.product-card-actions, .featured-actions {
+  display: flex !important;
+  gap: 6px !important;
+  margin-top: 10px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.btn-card-action {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  padding: 8px 6px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  font-family: 'Rajdhani', sans-serif !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--line) !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  box-sizing: border-box !important;
+  transition: all .2s ease !important;
+}
+
+.btn-card-action svg {
+  flex-shrink: 0 !important;
+}
+
+.btn-card-action span {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+@media (max-width: 768px) {
+  .product-card-actions, .featured-actions {
+    gap: 4px !important;
+    margin-top: 8px !important;
+    width: 100% !important;
+  }
+
+  .btn-card-action {
+    padding: 7px 4px !important;
+    font-size: 11px !important;
+    gap: 3px !important;
+    border-radius: 6px !important;
+  }
+
+  .btn-card-action svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .btn-card-action span {
+    font-size: 10.5px !important;
+  }
+
+  .featured-grid, .catalog-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .product-card {
+    padding: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .featured-grid, .catalog-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .carousel-item {
+    flex: 0 0 170px !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  .carousel-item-img-wrapper {
+    height: 130px !important;
+  }
+
+  .carousel-item-img-wrapper img {
+    max-height: 110px !important;
+  }
+
+  .btn-card-action {
+    padding: 6px 3px !important;
+    font-size: 10px !important;
+    gap: 2px !important;
+  }
+
+  .btn-card-action svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .btn-card-action span {
+    font-size: 10px !important;
+  }
+}
+
 /* ---------- Action Buttons for Products ---------- */
 .product-card-actions {
   display: flex;
@@ -1837,48 +1949,90 @@ section{padding:96px 0;}
         // ==========================================================================
         // SISTEMA DE CARRITO INTERACTIVO, STRIPE CHECKOUT Y FIREBASE
         // ==========================================================================
+        
         var cart = [];
         var cartBadge = document.getElementById('cartBadge');
         var whatsappNumber = '526634606566';
+        var selectedShipping = 'estandar';
 
         // Crear elementos UI del Modal de Carrito y Toast Dinámicamente
         var modalHTML = `
         <div id="cartModal" class="cart-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; backdrop-filter:blur(6px); justify-content:center; align-items:center; opacity:0; transition:opacity 0.3s ease;">
-            <div class="cart-modal-content" style="background:#12171e; border:1px solid #232b34; border-radius:14px; width:90%; max-width:540px; max-height:85vh; display:flex; flex-direction:column; padding:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7); position:relative; color:#f2f5f8; transform:scale(0.95); transition:transform 0.3s ease;">
-                <button id="closeCartBtn" style="position:absolute; top:18px; right:18px; background:none; border:none; color:#93a0ac; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
-                <h3 style="font-family:'Rajdhani',sans-serif; font-size:24px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:10px;">
+            <div class="cart-modal-content" style="background:#12171e; border:1px solid #232b34; border-radius:14px; width:92%; max-width:540px; max-height:90vh; display:flex; flex-direction:column; padding:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7); position:relative; color:#f2f5f8; transform:scale(0.95); transition:transform 0.3s ease; box-sizing:border-box;">
+                <button id="closeCartBtn" style="position:absolute; top:16px; right:16px; background:none; border:none; color:#93a0ac; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+                <h3 style="font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
                     🛒 Mi Carrito de Compras
                 </h3>
-                <div id="cartItemsList" style="flex:1; overflow-y:auto; margin-bottom:20px; padding-right:6px;">
+
+                <div id="cartItemsList" style="flex:1; overflow-y:auto; margin-bottom:14px; padding-right:4px;">
                     <!-- Items dinámicos -->
                 </div>
-                <div style="border-top:1px solid #232b34; padding-top:16px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:18px; font-weight:700; margin-bottom:16px;">
-                        <span>Total:</span>
-                        <span id="cartTotalAmount" style="color:#3ddc84;">$0.00 MXN</span>
+
+                <!-- Sección del Calculador de Envío (Envia.com) -->
+                <div id="cartShippingBox" style="background:#161c24; border:1px solid #232b34; border-radius:10px; padding:12px; margin-bottom:14px;">
+                    <div style="font-size:13px; font-weight:700; color:#3ddc84; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between;">
+                        <span>🚚 Opciones de Envío (Envia.com)</span>
+                        <span style="font-size:10.5px; background:rgba(61,220,132,0.15); color:#3ddc84; padding:2px 6px; border-radius:4px; font-weight:600;">32 Estados México</span>
                     </div>
-                    <div style="display:flex; flex-direction:column; gap:10px;">
-                        <button id="stripeCheckoutBtn" style="background:linear-gradient(90deg, #3ddc84, #22b8f0); color:#0a0e13; border:none; padding:14px; border-radius:8px; font-weight:700; font-size:16px; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <select id="cartShippingSelect" style="width:100%; background:#0a0e13; color:#f2f5f8; border:1px solid #232b34; padding:8px 10px; border-radius:6px; font-size:12.5px; font-family:'Inter',sans-serif; cursor:pointer; outline:none;">
+                        <option value="estandar">🚚 Estándar Envia.com (FedEx/Estafeta 3-5 días) — $150.00 (Gratis > $1,499)</option>
+                        <option value="expres">⚡ Exprés Envia.com (DHL/FedEx 1-2 días) — $250.00 MXN</option>
+                        <option value="sucursal">🏢 Recoger en Tienda (Reset Supply MX) — GRATIS</option>
+                    </select>
+                    <div id="freeShippingBanner" style="font-size:11.5px; margin-top:6px; color:#93a0ac; text-align:center; font-weight:500;">
+                        <!-- Texto dinámico -->
+                    </div>
+                </div>
+
+                <!-- Resumen de Totales -->
+                <div style="border-top:1px solid #232b34; padding-top:12px;">
+                    <div style="display:flex; justify-content:space-between; font-size:13.5px; color:#93a0ac; margin-bottom:4px;">
+                        <span>Subtotal Productos:</span>
+                        <span id="cartSubtotalAmount">$0.00 MXN</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:13.5px; color:#93a0ac; margin-bottom:8px;">
+                        <span>Envío (Envia.com):</span>
+                        <span id="cartShippingAmount" style="color:#22b8f0; font-weight:600;">$0.00 MXN</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:18px; font-weight:700; margin-bottom:14px; border-top:1px solid #1f2730; padding-top:8px;">
+                        <span>TOTAL ESTIMADO:</span>
+                        <span id="cartTotalAmount" style="color:#3ddc84; font-size:22px; font-family:'Rajdhani',sans-serif;">$0.00 MXN</span>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button id="stripeCheckoutBtn" style="background:linear-gradient(90deg, #3ddc84, #22b8f0); color:#0a0e13; border:none; padding:12px; border-radius:8px; font-weight:700; font-size:15px; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; justify-content:center; gap:8px;">
                             💳 Pagar Seguro con Stripe
                         </button>
-                        <button id="whatsappCheckoutBtn" style="background:#25d366; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:600; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-                            💬 Cotizar / Pedir por WhatsApp
+                        <button id="whatsappCheckoutBtn" style="background:#25d366; color:#fff; border:none; padding:11px; border-radius:8px; font-weight:600; font-size:14.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+                            💬 Cotizar / Pedir con Envío por WhatsApp
                         </button>
                     </div>
                 </div>
             </div>
         </div>
         <div id="paymentToast" style="display:none; position:fixed; bottom:30px; right:30px; z-index:10000; padding:16px 24px; border-radius:10px; font-weight:600; box-shadow:0 10px 30px rgba(0,0,0,0.5); font-size:15px; max-width:400px; line-height:1.4;"></div>
-        `;
+`;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
 
         var cartModal = document.getElementById('cartModal');
         var closeCartBtn = document.getElementById('closeCartBtn');
         var cartItemsList = document.getElementById('cartItemsList');
+        var cartSubtotalAmount = document.getElementById('cartSubtotalAmount');
+        var cartShippingAmount = document.getElementById('cartShippingAmount');
         var cartTotalAmount = document.getElementById('cartTotalAmount');
+        var cartShippingSelect = document.getElementById('cartShippingSelect');
+        var freeShippingBanner = document.getElementById('freeShippingBanner');
         var stripeCheckoutBtn = document.getElementById('stripeCheckoutBtn');
         var whatsappCheckoutBtn = document.getElementById('whatsappCheckoutBtn');
         var paymentToast = document.getElementById('paymentToast');
+
+        // Listener cambio de envío
+        if (cartShippingSelect) {
+            cartShippingSelect.addEventListener('change', function() {
+                selectedShipping = this.value;
+                renderCartModal();
+            });
+        }
 
         // Mostrar Notificación de Pago si viene de Stripe
         (function checkPaymentStatus() {
@@ -1909,10 +2063,42 @@ section{padding:96px 0;}
             }
         }
 
+        function getShippingDetails(subtotal) {
+            var cost = 0;
+            var label = 'Gratis';
+            var bannerText = '';
+
+            if (selectedShipping === 'estandar') {
+                if (subtotal >= 1499) {
+                    cost = 0;
+                    label = 'GRATIS (Envia.com)';
+                    bannerText = '🎉 ¡Felicidades! Calificas para <strong style="color:#3ddc84;">ENVÍO ESTÁNDAR GRATIS</strong> vía Envia.com';
+                } else {
+                    cost = 150;
+                    label = '$150.00 MXN';
+                    var diff = (1499 - subtotal).toFixed(2);
+                    bannerText = '💡 Agrega <strong style="color:#22b8f0;">$' + diff + ' MXN</strong> más para tener <strong>Envío GRATIS</strong>';
+                }
+            } else if (selectedShipping === 'expres') {
+                cost = 250;
+                label = '$250.00 MXN';
+                bannerText = '⚡ Envío Exprés Prioritario (DHL / FedEx 1-2 días hábiles)';
+            } else if (selectedShipping === 'sucursal') {
+                cost = 0;
+                label = 'GRATIS (Recoger en Sucursal)';
+                bannerText = '🏢 Recogida en tienda sin costo de envío';
+            }
+
+            return { cost: cost, label: label, bannerText: bannerText };
+        }
+
         function renderCartModal() {
             if (cart.length === 0) {
                 cartItemsList.innerHTML = '<p style="text-align:center; color:#93a0ac; padding:30px 0;">Tu carrito está vacío.</p>';
-                cartTotalAmount.textContent = '$0.00 MXN';
+                if (cartSubtotalAmount) cartSubtotalAmount.textContent = '$0.00 MXN';
+                if (cartShippingAmount) cartShippingAmount.textContent = '$0.00 MXN';
+                if (cartTotalAmount) cartTotalAmount.textContent = '$0.00 MXN';
+                if (freeShippingBanner) freeShippingBanner.innerHTML = '🚚 Agrega productos para calcular opciones de envío';
                 stripeCheckoutBtn.disabled = true;
                 stripeCheckoutBtn.style.opacity = '0.5';
                 return;
@@ -1921,30 +2107,36 @@ section{padding:96px 0;}
             stripeCheckoutBtn.disabled = false;
             stripeCheckoutBtn.style.opacity = '1';
 
-            var total = 0;
+            var subtotal = 0;
             var html = '';
             cart.forEach(function(item, index) {
                 var itemSubtotal = item.price * item.quantity;
-                total += itemSubtotal;
+                subtotal += itemSubtotal;
                 html += `
-                <div style="display:flex; align-items:center; gap:12px; border-bottom:1px solid #1f2730; padding:12px 0;">
-                    <img src="${item.image}" alt="${item.name}" style="width:50px; height:50px; object-fit:cover; border-radius:6px; background:#161c24;">
-                    <div style="flex:1;">
-                        <h4 style="font-size:14px; font-weight:600; margin-bottom:4px;">${item.name}</h4>
-                        <div style="font-size:13px; color:#3ddc84;">$${item.price.toFixed(2)} MXN</div>
+                <div style="display:flex; align-items:center; gap:12px; border-bottom:1px solid #1f2730; padding:10px 0;">
+                    <img src="${item.image}" alt="${item.name}" style="width:46px; height:46px; object-fit:cover; border-radius:6px; background:#161c24;">
+                    <div style="flex:1; min-width:0;">
+                        <h4 style="font-size:13px; font-weight:600; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.name}</h4>
+                        <div style="font-size:12.5px; color:#3ddc84;">$${item.price.toFixed(2)} MXN</div>
                     </div>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <button onclick="changeQty(${index}, -1)" style="background:#1f2730; border:none; color:#fff; width:26px; height:26px; border-radius:4px; cursor:pointer; font-weight:bold;">-</button>
-                        <span style="font-weight:600; font-size:14px;">${item.quantity}</span>
-                        <button onclick="changeQty(${index}, 1)" style="background:#1f2730; border:none; color:#fff; width:26px; height:26px; border-radius:4px; cursor:pointer; font-weight:bold;">+</button>
-                        <button onclick="removeItem(${index})" style="background:none; border:none; color:#e74c3c; cursor:pointer; margin-left:8px;">🗑️</button>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <button onclick="changeQty(${index}, -1)" style="background:#1f2730; border:none; color:#fff; width:24px; height:24px; border-radius:4px; cursor:pointer; font-weight:bold;">-</button>
+                        <span style="font-weight:600; font-size:13.5px;">${item.quantity}</span>
+                        <button onclick="changeQty(${index}, 1)" style="background:#1f2730; border:none; color:#fff; width:24px; height:24px; border-radius:4px; cursor:pointer; font-weight:bold;">+</button>
+                        <button onclick="removeItem(${index})" style="background:none; border:none; color:#e74c3c; cursor:pointer; margin-left:4px; font-size:14px;">🗑️</button>
                     </div>
                 </div>
                 `;
             });
 
+            var shipInfo = getShippingDetails(subtotal);
+            var grandTotal = subtotal + shipInfo.cost;
+
             cartItemsList.innerHTML = html;
-            cartTotalAmount.textContent = '$' + total.toFixed(2) + ' MXN';
+            if (cartSubtotalAmount) cartSubtotalAmount.textContent = '$' + subtotal.toLocaleString('es-MX', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' MXN';
+            if (cartShippingAmount) cartShippingAmount.textContent = shipInfo.label;
+            if (cartTotalAmount) cartTotalAmount.textContent = '$' + grandTotal.toLocaleString('es-MX', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' MXN';
+            if (freeShippingBanner) freeShippingBanner.innerHTML = shipInfo.bannerText;
         }
 
         window.changeQty = function(index, delta) {
@@ -1966,182 +2158,135 @@ section{padding:96px 0;}
             }
         };
 
-        
-        // ========== CAROUSEL SHOWCASE LOGIC ==========
-        (function initProductCarousel() {
-            var prevBtn = document.getElementById('carouselPrev');
-            var nextBtn = document.getElementById('carouselNext');
-            var container = document.getElementById('carouselTrackContainer');
-            var pills = document.querySelectorAll('#carouselFilterBar .carousel-pill');
-            var items = document.querySelectorAll('#carouselTrack .carousel-item');
-
-            if (!container || !prevBtn || !nextBtn) return;
-
-            prevBtn.addEventListener('click', function() {
-                container.scrollBy({ left: -280, behavior: 'smooth' });
-            });
-
-            nextBtn.addEventListener('click', function() {
-                container.scrollBy({ left: 280, behavior: 'smooth' });
-            });
-
-            // Filtrado por categorías en el Carrusel
-            pills.forEach(function(pill) {
-                pill.addEventListener('click', function() {
-                    pills.forEach(function(p) { p.classList.remove('active'); });
-                    this.classList.add('active');
-                    var filter = this.getAttribute('data-filter');
-
-                    items.forEach(function(item) {
-                        var cat = item.getAttribute('data-category');
-                        if (filter === 'all' || cat === filter || (filter === 'cristales' && (cat === 'cristales' || cat === 'piel'))) {
-                            item.style.display = 'flex';
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
-
-                    container.scrollTo({ left: 0, behavior: 'smooth' });
-                });
-            });
-
-            // Auto-scroll opcional con pausa al pasar el mouse
-            var autoScrollTimer = null;
-            function startAutoScroll() {
-                autoScrollTimer = setInterval(function() {
-                    if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
-                        container.scrollTo({ left: 0, behavior: 'smooth' });
-                    } else {
-                        container.scrollBy({ left: 240, behavior: 'smooth' });
-                    }
-                }, 4000);
-            }
-
-            function stopAutoScroll() {
-                if (autoScrollTimer) clearInterval(autoScrollTimer);
-            }
-
-            container.addEventListener('mouseenter', stopAutoScroll);
-            container.addEventListener('mouseleave', startAutoScroll);
-            startAutoScroll();
-        })();
-
-
-        // Listener para Agregar al Carrito (tarjetas de productos y destacados)
-        document.querySelectorAll('.btn-add-cart').forEach(function (btn) {
-            btn.addEventListener('click', function (e) {
+        // Abrir y Cerrar Modal de Carrito
+        var cartBtn = document.getElementById('cartBtn');
+        if (cartBtn) {
+            cartBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                var card = this.closest('.product-card') || this.closest('.featured-card');
-                var name = this.getAttribute('data-product') || (card ? (card.querySelector('.product-name') || card.querySelector('.featured-name')).textContent.trim() : 'Producto');
-                var priceEl = card ? (card.querySelector('.product-price') || card.querySelector('.featured-price')) : null;
-                var priceText = priceEl ? priceEl.textContent : '$0';
-                
-                // Extraer el primer precio numérico encontrado
-                var priceMatch = priceText.match(/([0-9,]+(?:.[0-9]{2})?)/);
-                var price = 0;
-                if (priceMatch) {
-                    price = parseFloat(priceMatch[1].replace(',', ''));
-                }
-                
-                var imgEl = card ? card.querySelector('.product-image img, .featured-image img') : null;
-                var image = imgEl ? imgEl.src : '';
+                cartModal.style.display = 'flex';
+                setTimeout(function() {
+                    cartModal.style.opacity = '1';
+                    cartModal.querySelector('.cart-modal-content').style.transform = 'scale(1)';
+                }, 10);
+                renderCartModal();
+            });
+        }
 
-                // Verificar si ya existe en el carrito
-                var existing = cart.find(function(item) { return item.name === name; });
+        if (closeCartBtn) {
+            closeCartBtn.addEventListener('click', function() {
+                cartModal.style.opacity = '0';
+                cartModal.querySelector('.cart-modal-content').style.transform = 'scale(0.95)';
+                setTimeout(function() {
+                    cartModal.style.display = 'none';
+                }, 300);
+            });
+        }
+
+        // Agregar Producto al Carrito
+        document.addEventListener('click', function(e) {
+            var btnAdd = e.target.closest('.btn-add-cart');
+            if (btnAdd) {
+                var productName = btnAdd.getAttribute('data-product');
+                var card = btnAdd.closest('.product-card') || btnAdd.closest('.featured-card') || btnAdd.closest('.carousel-item');
+                
+                var price = 0;
+                var image = '';
+
+                if (card) {
+                    var priceElem = card.querySelector('.product-price') || card.querySelector('.featured-price') || card.querySelector('.carousel-item-price');
+                    var imgElem = card.querySelector('img');
+                    
+                    if (priceElem) {
+                        var textPrice = priceElem.textContent.replace(/[^0-9.]/g, '');
+                        var match = priceElem.textContent.match(/\$([0-9,]+(\.[0-9]{2})?)/);
+                        if (match) {
+                            price = parseFloat(match[1].replace(/,/g, ''));
+                        } else {
+                            price = parseFloat(textPrice) || 250.00;
+                        }
+                    }
+                    if (imgElem) {
+                        image = imgElem.src;
+                    }
+                }
+
+                if (!price) price = 250.00;
+                if (!image) image = 'https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png';
+
+                var existing = cart.find(function(i) { return i.name === productName; });
                 if (existing) {
-                    existing.quantity++;
+                    existing.quantity += 1;
                 } else {
                     cart.push({
-                        name: name,
+                        name: productName,
                         price: price,
                         image: image,
                         quantity: 1
                     });
                 }
 
+                btnAdd.classList.add('added');
+                setTimeout(function() { btnAdd.classList.remove('added'); }, 1200);
+
                 updateCartBadge();
-                showToast('🛒 "' + name + '" agregado al carrito', '#3ddc84', '#0a0e13', 2500);
-
-                var self = this;
-                self.classList.add('added');
-                setTimeout(function() {
-                    self.classList.remove('added');
-                }, 1200);
-            });
+                showToast('✅ Producto "' + productName + '" agregado al carrito', '#3ddc84', '#0a0e13', 2500);
+            }
         });
 
-        // Listener para Cotizar Directamente por WhatsApp por Producto
-        document.querySelectorAll('.btn-quote-wa').forEach(function (btn) {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                var card = this.closest('.product-card') || this.closest('.featured-card');
-                var name = this.getAttribute('data-product') || (card ? (card.querySelector('.product-name') || card.querySelector('.featured-name')).textContent.trim() : 'Producto');
-                var priceEl = card ? (card.querySelector('.product-price') || card.querySelector('.featured-price')) : null;
-                var priceText = priceEl ? priceEl.textContent.trim() : '';
-                
-                var text = 'Hola Reset Supply MX! 👋\nMe interesa cotizar el siguiente producto:\n\n';
-                text += '📌 *' + name + '*\n';
-                if (priceText) {
-                    text += 'Precio referencia: *' + priceText + ' MXN*\n';
-                }
-                text += '\n¿Tienen disponibilidad inmediata y costo de envío? ¡Gracias!';
-
-                window.open('https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(text), '_blank');
-            });
-        });
-
-        // Abrir y Cerrar Modal
-        function openCartModal() {
-            renderCartModal();
-            cartModal.style.display = 'flex';
-            setTimeout(function() {
-                cartModal.style.opacity = '1';
-                cartModal.querySelector('.cart-modal-content').style.transform = 'scale(1)';
-            }, 10);
-        }
-
-        function closeCartModal() {
-            cartModal.style.opacity = '0';
-            cartModal.querySelector('.cart-modal-content').style.transform = 'scale(0.95)';
-            setTimeout(function() {
-                cartModal.style.display = 'none';
-            }, 300);
-        }
-
-        document.getElementById('cartBtn').addEventListener('click', openCartModal);
-        closeCartBtn.addEventListener('click', closeCartModal);
-        cartModal.addEventListener('click', function(e) {
-            if (e.target === cartModal) closeCartModal();
-        });
-
-        // Checkout con Stripe
+        // Checkout con Stripe (incluye envío)
         stripeCheckoutBtn.addEventListener('click', async function() {
             if (cart.length === 0) return;
 
             stripeCheckoutBtn.disabled = true;
-            stripeCheckoutBtn.textContent = '⏳ Procesando con Stripe...';
+            stripeCheckoutBtn.textContent = '⌛ Procesando pago...';
 
             try {
-                const response = await fetch('/api/create-checkout-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ items: cart })
+                var subtotal = cart.reduce(function(acc, i) { return acc + i.price * i.quantity; }, 0);
+                var shipInfo = getShippingDetails(subtotal);
+
+                var checkoutItems = cart.map(function(item) {
+                    return {
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity,
+                        image: item.image
+                    };
                 });
 
-                const data = await response.json();
+                if (shipInfo.cost > 0) {
+                    checkoutItems.push({
+                        name: 'Costo de Envío (Envia.com - ' + selectedShipping.toUpperCase() + ')',
+                        price: shipInfo.cost,
+                        quantity: 1,
+                        image: 'https://cdn-icons-png.flaticon.com/512/2838/2838694.png'
+                    });
+                }
+
+                var response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: checkoutItems
+                    })
+                });
+
+                var data = await response.json();
                 if (data.url) {
                     window.location.href = data.url;
-                } else {
-                    throw new Error(data.error || 'Error al iniciar la sesión de Stripe');
+                } else if (data.error) {
+                    showToast('❌ Error: ' + data.error, '#e74c3c', '#ffffff', 5000);
+                    stripeCheckoutBtn.disabled = false;
+                    stripeCheckoutBtn.textContent = '💳 Pagar Seguro con Stripe';
                 }
             } catch (err) {
-                alert('⚠️ No se pudo iniciar el pago: ' + err.message + '\n\nAsegúrate de configurar STRIPE_SECRET_KEY en Render.');
+                console.error('Error en checkout:', err);
+                showToast('❌ Ocurrió un error al conectar con la pasarela de pago.', '#e74c3c', '#ffffff', 5000);
                 stripeCheckoutBtn.disabled = false;
                 stripeCheckoutBtn.textContent = '💳 Pagar Seguro con Stripe';
             }
         });
 
-                // Enviar Cotización del Carrito por WhatsApp
+        // Enviar Cotización del Carrito por WhatsApp con Desglose de Envío Envia.com
         whatsappCheckoutBtn.addEventListener('click', function() {
             if (cart.length === 0) {
                 var message = encodeURIComponent('Hola Reset Supply MX! Quisiera consultar precios y disponibilidad de productos en catálogo.');
@@ -2149,21 +2294,34 @@ section{padding:96px 0;}
                 return;
             }
 
-            var text = 'Hola Reset Supply MX! 👋\nQuisiera solicitar la cotización formal de los siguientes productos de mi carrito:\n\n';
-            var total = 0;
+            var subtotal = 0;
+            var text = 'Hola Reset Supply MX! 👋\nQuisiera solicitar el pedido / cotización formal con envío Envia.com de los siguientes productos de mi carrito:\n\n';
+            
             cart.forEach(function(item, index) {
                 var sub = item.price * item.quantity;
-                total += sub;
+                subtotal += sub;
                 text += (index + 1) + '. *' + item.quantity + 'x ' + item.name + '*\n';
-                text += '   Precio u.: ' + item.price.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN';
+                text += '   Precio u.: $' + item.price.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN';
                 if (item.quantity > 1) {
-                    text += ' | Subtotal: ' + sub.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN';
+                    text += ' | Subtotal: $' + sub.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN';
                 }
                 text += '\n\n';
             });
+
+            var shipInfo = getShippingDetails(subtotal);
+            var grandTotal = subtotal + shipInfo.cost;
+
+            var shipName = 'Estándar Envia.com (3-5 días)';
+            if (selectedShipping === 'expres') shipName = 'Exprés Envia.com (1-2 días)';
+            if (selectedShipping === 'sucursal') shipName = 'Recogida en Sucursal (Reset Supply MX)';
+
             text += '----------------------------------\n';
-            text += '📋 *TOTAL ESTIMADO DE COTIZACIÓN:* ' + total.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN\n\n';
-            text += 'Por favor confirmen existencias y opciones de envío a mi domicilio. ¡Gracias!';
+            text += '📦 *Subtotal Productos:* $' + subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN\n';
+            text += '🚚 *Método de Envío:* ' + shipName + '\n';
+            text += '💵 *Costo Envío (Envia.com):* ' + shipInfo.label + '\n';
+            text += '----------------------------------\n';
+            text += '📋 *TOTAL PEDIDO:* $' + grandTotal.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' MXN\n\n';
+            text += 'Por favor confirmen existencias y datos de envío a mi domicilio. ¡Gracias!';
 
             window.open('https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(text), '_blank');
         });
@@ -2173,7 +2331,7 @@ section{padding:96px 0;}
             var btnQuote = e.target.closest('.btn-quote-wa');
             if (btnQuote) {
                 var productName = btnQuote.getAttribute('data-product');
-                var text = 'Hola Reset Supply MX! 👋 Quisiera cotizar el producto: *' + productName + '*. ¿Me podrían dar información sobre existencias y precio de envío? ¡Gracias!';
+                var text = 'Hola Reset Supply MX! 👋 Quisiera cotizar el producto: *' + productName + '*. ¿Me podrían dar información sobre existencias y precio de envío con Envia.com? ¡Gracias!';
                 window.open('https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(text), '_blank');
             }
         });
@@ -2219,11 +2377,3 @@ section{padding:96px 0;}
 
     })();
     </script>
-
-    <!-- SDKs externos de Stripe y Firebase -->
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-</body>
-</html>

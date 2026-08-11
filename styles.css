@@ -1958,3 +1958,115 @@ ul {
   box-shadow: 0 4px 15px rgba(61, 220, 132, 0.4);
   opacity: 0.7;
 }
+
+
+/* ---------- Mobile Responsive Fixes for Product Action Buttons ---------- */
+.product-card-actions, .featured-actions {
+  display: flex !important;
+  gap: 6px !important;
+  margin-top: 10px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.btn-card-action {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  padding: 8px 6px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  font-family: 'Rajdhani', sans-serif !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--line) !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  box-sizing: border-box !important;
+  transition: all .2s ease !important;
+}
+
+.btn-card-action svg {
+  flex-shrink: 0 !important;
+}
+
+.btn-card-action span {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+@media (max-width: 768px) {
+  .product-card-actions, .featured-actions {
+    gap: 4px !important;
+    margin-top: 8px !important;
+    width: 100% !important;
+  }
+
+  .btn-card-action {
+    padding: 7px 4px !important;
+    font-size: 11px !important;
+    gap: 3px !important;
+    border-radius: 6px !important;
+  }
+
+  .btn-card-action svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .btn-card-action span {
+    font-size: 10.5px !important;
+  }
+
+  .featured-grid, .catalog-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .product-card {
+    padding: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .featured-grid, .catalog-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .carousel-item {
+    flex: 0 0 170px !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  .carousel-item-img-wrapper {
+    height: 130px !important;
+  }
+
+  .carousel-item-img-wrapper img {
+    max-height: 110px !important;
+  }
+
+  .btn-card-action {
+    padding: 6px 3px !important;
+    font-size: 10px !important;
+    gap: 2px !important;
+  }
+
+  .btn-card-action svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .btn-card-action span {
+    font-size: 10px !important;
+  }
+}
