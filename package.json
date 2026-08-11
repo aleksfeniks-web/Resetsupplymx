@@ -1,0 +1,27 @@
+{
+  "name": "resetsupplymx",
+  "version": "1.0.0",
+  "description": "Reset Supply MX - Distribuidor Autorizado Vonixx en México con Stripe & Firebase",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "vonixx",
+    "detailing",
+    "stripe",
+    "firebase",
+    "render",
+    "ecommerce"
+  ],
+  "author": "Reset Supply MX",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0",
+    "stripe": "^15.8.0"
+  }
+}
