@@ -105,4 +105,4 @@ Visita `http://localhost:3000` en tu navegador.
 
 ## 📱 Contacto y Soporte
 - **Distribuidor:** Reset Supply MX - Vonixx México
-- **WhatsApp:** [+52 33 3969 3935](https://wa.me/523339693935)
+- **WhatsApp:** [+52 663 460 6566](https://wa.me/526634606566)
