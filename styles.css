@@ -1664,3 +1664,67 @@ ul {
     color: #000;
   }
 }
+
+
+/* ---------- Action Buttons for Products ---------- */
+.product-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  width: 100%;
+}
+.featured-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-card-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  padding: 9px 10px;
+  border-radius: 6px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  transition: all .18s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-card-action svg {
+  flex-shrink: 0;
+}
+.btn-add-cart {
+  background: var(--panel-2);
+  border: 1.5px solid var(--line);
+  color: var(--text);
+}
+.btn-add-cart:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(61, 220, 132, 0.08);
+  box-shadow: 0 4px 12px rgba(61, 220, 132, 0.2);
+  transform: translateY(-2px);
+}
+.btn-add-cart.added {
+  background: var(--grad);
+  color: #04130b;
+  border-color: transparent;
+}
+.btn-quote-wa {
+  background: rgba(37, 211, 102, 0.12);
+  border: 1.5px solid rgba(37, 211, 102, 0.4);
+  color: #25d366;
+}
+.btn-quote-wa:hover {
+  background: #25d366;
+  color: #04130b;
+  border-color: #25d366;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+  transform: translateY(-2px);
+}
