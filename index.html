@@ -95,6 +95,236 @@ h1,h2,h3,h4{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.01
 .btn-cart:hover{border-color:var(--green);color:var(--green);}
 .btn-cart.added{background:var(--grad);color:#04130b;border-color:transparent;}
 
+
+/* ---------- TOP PRODUCT SHOWCASE CAROUSEL ---------- */
+.top-carousel-section {
+  padding: 50px 0 60px;
+  background: radial-gradient(80% 60% at 50% 10%, rgba(34, 184, 240, 0.12), transparent 70%), var(--panel);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.carousel-eyebrow {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .16em;
+  color: var(--green);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.carousel-title {
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  margin: 0;
+}
+
+.carousel-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.carousel-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--panel-2);
+  border: 1.5px solid var(--line);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.carousel-btn:hover {
+  border-color: var(--green);
+  color: var(--green);
+  background: rgba(61, 220, 132, 0.12);
+  transform: translateY(-2px);
+}
+
+.carousel-filter-bar {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  margin-bottom: 28px;
+  scrollbar-width: thin;
+}
+
+.carousel-filter-bar::-webkit-scrollbar {
+  height: 4px;
+}
+.carousel-filter-bar::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+
+.carousel-pill {
+  padding: 8px 18px;
+  border-radius: 20px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 13.5px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all .18s ease;
+}
+
+.carousel-pill:hover, .carousel-pill.active {
+  background: var(--grad-soft);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.shelf-wrapper {
+  position: relative;
+  padding: 20px 0 14px;
+  background: radial-gradient(ellipse at center, rgba(18, 23, 30, 0.85) 0%, rgba(10, 14, 19, 0.98) 100%);
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.8), 0 20px 50px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.shelf-backdrop {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to right, rgba(10,14,19,0.95) 0%, transparent 8%, transparent 92%, rgba(10,14,19,0.95) 100%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.carousel-track-container {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 20px 24px 28px;
+  scrollbar-width: none;
+}
+
+.carousel-track-container::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 20px;
+}
+
+.carousel-item {
+  flex: 0 0 220px;
+  background: rgba(18, 23, 30, 0.7);
+  border: 1px solid rgba(35, 43, 52, 0.8);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: all .25s ease;
+  backdrop-filter: blur(8px);
+}
+
+.carousel-item:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--green);
+  box-shadow: 0 15px 30px -10px rgba(61, 220, 132, 0.35);
+  background: rgba(22, 28, 36, 0.95);
+  z-index: 2;
+}
+
+.carousel-item-img-wrapper {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 10px;
+  background: radial-gradient(circle at bottom, rgba(61, 220, 132, 0.08) 0%, transparent 70%);
+}
+
+.carousel-item-img-wrapper img {
+  max-width: 100%;
+  max-height: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6));
+  transition: transform .25s ease;
+}
+
+.carousel-item:hover .carousel-item-img-wrapper img {
+  transform: scale(1.08);
+}
+
+.carousel-item-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(10, 14, 19, 0.85);
+  color: var(--green);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+}
+
+.carousel-item-info {
+  width: 100%;
+  text-align: center;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.carousel-item-title {
+  font-size: 13.5px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 6px;
+  height: 34px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.carousel-item-price {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 15.5px;
+  color: var(--green);
+  margin-bottom: 12px;
+}
+
+.shelf-stand {
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, #1f2730, #3ddc84 50%, #1f2730);
+  box-shadow: 0 4px 15px rgba(61, 220, 132, 0.4);
+  opacity: 0.7;
+}
+
 /* ---------- Action Buttons for Products ---------- */
 .product-card-actions {
   display: flex;
@@ -524,6 +754,643 @@ section{padding:96px 0;}
             </div>
         </div>
     </section>
+
+
+<!-- ========== TOP PRODUCT SHOWCASE CAROUSEL (VONIXX STUDIO LINEUP) ========== -->
+<section class="top-carousel-section" id="vitrina-vonixx">
+    <div class="container">
+        <div class="carousel-header">
+            <div>
+                <span class="carousel-eyebrow">COLECCIÓN COMPLETA VONIXX</span>
+                <h2 class="carousel-title">VITRINA DE PRODUCTOS <span class="gradient-text">PRODUCTO POR PRODUCTO</span></h2>
+            </div>
+            <div class="carousel-controls">
+                <button class="carousel-btn prev-btn" id="carouselPrev" title="Anterior" aria-label="Anterior">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <button class="carousel-btn next-btn" id="carouselNext" title="Siguiente" aria-label="Siguiente">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="carousel-filter-bar" id="carouselFilterBar">
+            <button class="carousel-pill active" data-filter="all">Todos (37)</button>
+            <button class="carousel-pill" data-filter="limpieza">Limpieza</button>
+            <button class="carousel-pill" data-filter="vsc">Sistema VSC</button>
+            <button class="carousel-pill" data-filter="cera">Ceras</button>
+            <button class="carousel-pill" data-filter="shampoo">Shampoo</button>
+            <button class="carousel-pill" data-filter="ceramicos">Cerámicos</button>
+            <button class="carousel-pill" data-filter="plasticos">Restauración</button>
+            <button class="carousel-pill" data-filter="llantas">Llantas</button>
+            <button class="carousel-pill" data-filter="cristales">Cristales & Piel</button>
+        </div>
+
+        <!-- Studio Shelf Wrapper -->
+        <div class="shelf-wrapper">
+            <div class="shelf-backdrop"></div>
+            <div class="carousel-track-container" id="carouselTrackContainer">
+                <div class="carousel-track" id="carouselTrack">
+                    
+        <div class="carousel-item" data-category="limpieza">
+            <span class="carousel-item-badge">Limpieza</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png" alt="ALUMAX – DESINCRUSTANTE ÁCIDO" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">ALUMAX – DESINCRUSTANTE ÁCIDO</h4>
+                <div class="carousel-item-price">$2,261.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="ALUMAX – DESINCRUSTANTE ÁCIDO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="ALUMAX – DESINCRUSTANTE ÁCIDO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="limpieza">
+            <span class="carousel-item-badge">Limpieza</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png" alt="DELET – LIMPIADOR DE PLÁSTICOS Y CAUCHO" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">DELET – LIMPIADOR DE PLÁSTICOS Y CAUCHO</h4>
+                <div class="carousel-item-price">$200.00 – $566.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="DELET – LIMPIADOR DE PLÁSTICOS Y CAUCHO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="DELET – LIMPIADOR DE PLÁSTICOS Y CAUCHO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="limpieza">
+            <span class="carousel-item-badge">Limpieza</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IMPACT-.png" alt="IMPACT – DESENGRASANTE MULTIUSOS" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">IMPACT – DESENGRASANTE MULTIUSOS</h4>
+                <div class="carousel-item-price">$225.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="IMPACT – DESENGRASANTE MULTIUSOS" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="IMPACT – DESENGRASANTE MULTIUSOS" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="limpieza">
+            <span class="carousel-item-badge">Limpieza</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IZER-1.png" alt="IZER – REMOVEDOR DE ÓXIDO" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">IZER – REMOVEDOR DE ÓXIDO</h4>
+                <div class="carousel-item-price">$212.00 – $422.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="IZER – REMOVEDOR DE ÓXIDO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="IZER – REMOVEDOR DE ÓXIDO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="limpieza">
+            <span class="carousel-item-badge">Limpieza</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REMOVEX-1.png" alt="REMOVEX – DESENGRASANTE Y LIMPIADOR DE CHASIS" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">REMOVEX – DESENGRASANTE Y LIMPIADOR DE CHASIS</h4>
+                <div class="carousel-item-price">$1,817.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="REMOVEX – DESENGRASANTE Y LIMPIADOR DE CHASIS" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="REMOVEX – DESENGRASANTE Y LIMPIADOR DE CHASIS" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="limpieza">
+            <span class="carousel-item-badge">Limpieza</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REZET.png" alt="REZET – ZACS" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">REZET – ZACS</h4>
+                <div class="carousel-item-price">$206.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="REZET – ZACS" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="REZET – ZACS" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="limpieza">
+            <span class="carousel-item-badge">Limpieza</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-FAST.png" alt="SINTRA FAST – LIMPIADOR DE INTERIORES" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">SINTRA FAST – LIMPIADOR DE INTERIORES</h4>
+                <div class="carousel-item-price">$179.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="SINTRA FAST – LIMPIADOR DE INTERIORES" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="SINTRA FAST – LIMPIADOR DE INTERIORES" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="limpieza">
+            <span class="carousel-item-badge">Limpieza</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-PRO.png" alt="SINTRA PRO – LIMPIADOR DE INTERIORES" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">SINTRA PRO – LIMPIADOR DE INTERIORES</h4>
+                <div class="carousel-item-price">$246.00 – $531.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="SINTRA PRO – LIMPIADOR DE INTERIORES" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="SINTRA PRO – LIMPIADOR DE INTERIORES" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="vsc">
+            <span class="carousel-item-badge">Sistema VSC</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/07/Copia-de-Copia-de-REZET.png" alt="SISTEMA VSC – KIT COMPLETO" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">SISTEMA VSC – KIT COMPLETO</h4>
+                <div class="carousel-item-price">$555.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="SISTEMA VSC – KIT COMPLETO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="SISTEMA VSC – KIT COMPLETO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="vsc">
+            <span class="carousel-item-badge">Sistema VSC</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-6.png" alt="BACTRAN – LIMPIADOR BACTERICIDA 7 EN 1" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">BACTRAN – LIMPIADOR BACTERICIDA 7 EN 1</h4>
+                <div class="carousel-item-price">$206.00 – $423.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="BACTRAN – LIMPIADOR BACTERICIDA 7 EN 1" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="BACTRAN – LIMPIADOR BACTERICIDA 7 EN 1" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="vsc">
+            <span class="carousel-item-badge">Sistema VSC</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-7.png" alt="EXTRACTUS – LIMPIADOR ULTRA CONCENTRADO" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">EXTRACTUS – LIMPIADOR ULTRA CONCENTRADO</h4>
+                <div class="carousel-item-price">$195.00 – $407.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="EXTRACTUS – LIMPIADOR ULTRA CONCENTRADO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="EXTRACTUS – LIMPIADOR ULTRA CONCENTRADO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="vsc">
+            <span class="carousel-item-badge">Sistema VSC</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-8.png" alt="SANITIZANTE – FINALIZADOR 4 EN 1" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">SANITIZANTE – FINALIZADOR 4 EN 1</h4>
+                <div class="carousel-item-price">$216.00 – $449.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="SANITIZANTE – FINALIZADOR 4 EN 1" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="SANITIZANTE – FINALIZADOR 4 EN 1" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="cera">
+            <span class="carousel-item-badge">Ceras</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEND-PASTE-WAX.png" alt="BLEND PASTE WAX – CERA CON SIO2 Y CARNAÚBA" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">BLEND PASTE WAX – CERA CON SIO2 Y CARNAÚBA</h4>
+                <div class="carousel-item-price">$580.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="BLEND PASTE WAX – CERA CON SIO2 Y CARNAÚBA" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="BLEND PASTE WAX – CERA CON SIO2 Y CARNAÚBA" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="cera">
+            <span class="carousel-item-badge">Ceras</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-HYBRID-WAX.png" alt="CARNAUBA HYBRID WAX" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">CARNAUBA HYBRID WAX</h4>
+                <div class="carousel-item-price">$426.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="CARNAUBA HYBRID WAX" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="CARNAUBA HYBRID WAX" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="cera">
+            <span class="carousel-item-badge">Ceras</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-PASTE-WAX.png" alt="NATIVE PASTE WAX – CARNAÚBA BRASILEÑA" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">NATIVE PASTE WAX – CARNAÚBA BRASILEÑA</h4>
+                <div class="carousel-item-price">$638.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="NATIVE PASTE WAX – CARNAÚBA BRASILEÑA" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="NATIVE PASTE WAX – CARNAÚBA BRASILEÑA" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="cera">
+            <span class="carousel-item-badge">Ceras</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEN-SPRAY-.png" alt="BLEND SPRAY – CERA LÍQUIDA CON SiO2" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">BLEND SPRAY – CERA LÍQUIDA CON SiO2</h4>
+                <div class="carousel-item-price">$296.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="BLEND SPRAY – CERA LÍQUIDA CON SiO2" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="BLEND SPRAY – CERA LÍQUIDA CON SiO2" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="cera">
+            <span class="carousel-item-badge">Ceras</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-TOK-FINAL.png" alt="CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO</h4>
+                <div class="carousel-item-price">$180.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="cera">
+            <span class="carousel-item-badge">Ceras</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-SPRAY-WAX.png" alt="NATIVE SPRAY WAX – CARNAÚBA LÍQUIDA" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">NATIVE SPRAY WAX – CARNAÚBA LÍQUIDA</h4>
+                <div class="carousel-item-price">$309.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="NATIVE SPRAY WAX – CARNAÚBA LÍQUIDA" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="NATIVE SPRAY WAX – CARNAÚBA LÍQUIDA" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="cera">
+            <span class="carousel-item-badge">Ceras</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-PLUS.png" alt="CARNAÚBA PLUS – CERA DE LIMPIEZA" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">CARNAÚBA PLUS – CERA DE LIMPIEZA</h4>
+                <div class="carousel-item-price">$219.00 – $477.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="CARNAÚBA PLUS – CERA DE LIMPIEZA" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="CARNAÚBA PLUS – CERA DE LIMPIEZA" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="shampoo">
+            <span class="carousel-item-badge">Shampoo</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CITRON.png" alt="CITRON – SHAMPOO DESENGRASANTE" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">CITRON – SHAMPOO DESENGRASANTE</h4>
+                <div class="carousel-item-price">$280.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="CITRON – SHAMPOO DESENGRASANTE" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="CITRON – SHAMPOO DESENGRASANTE" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="shampoo">
+            <span class="carousel-item-badge">Shampoo</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-WASH.png" alt="HYDROX WASH – SHAMPOO CERÁMICO" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">HYDROX WASH – SHAMPOO CERÁMICO</h4>
+                <div class="carousel-item-price">$492.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="HYDROX WASH – SHAMPOO CERÁMICO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="HYDROX WASH – SHAMPOO CERÁMICO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="ceramicos">
+            <span class="carousel-item-badge">Cerámicos</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-PAINT.png" alt="SINERGY PAINT – SELLADOR CERÁMICO PARA PINTURA" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">SINERGY PAINT – SELLADOR CERÁMICO PARA PINTURA</h4>
+                <div class="carousel-item-price">$632.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="SINERGY PAINT – SELLADOR CERÁMICO PARA PINTURA" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="SINERGY PAINT – SELLADOR CERÁMICO PARA PINTURA" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="ceramicos">
+            <span class="carousel-item-badge">Cerámicos</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-WHEEL.png" alt="SINERGY WHEEL – CERÁMICO PARA LLANTAS" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">SINERGY WHEEL – CERÁMICO PARA LLANTAS</h4>
+                <div class="carousel-item-price">$618.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="SINERGY WHEEL – CERÁMICO PARA LLANTAS" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="SINERGY WHEEL – CERÁMICO PARA LLANTAS" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="ceramicos">
+            <span class="carousel-item-badge">Cerámicos</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-PRO-.png" alt="HYDROX PRO – CERÁMICO HIDROREACTIVO" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">HYDROX PRO – CERÁMICO HIDROREACTIVO</h4>
+                <div class="carousel-item-price">$571.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="HYDROX PRO – CERÁMICO HIDROREACTIVO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="HYDROX PRO – CERÁMICO HIDROREACTIVO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="ceramicos">
+            <span class="carousel-item-badge">Cerámicos</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-FAST.png" alt="HYDROX FAST – CERÁMICO HIDROREACTIVO" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">HYDROX FAST – CERÁMICO HIDROREACTIVO</h4>
+                <div class="carousel-item-price">$201.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="HYDROX FAST – CERÁMICO HIDROREACTIVO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="HYDROX FAST – CERÁMICO HIDROREACTIVO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="plasticos">
+            <span class="carousel-item-badge">Restauración</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-12.png" alt="RESTAURAX – RESTAURADOR DE PLÁSTICOS" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">RESTAURAX – RESTAURADOR DE PLÁSTICOS</h4>
+                <div class="carousel-item-price">$368.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="RESTAURAX – RESTAURADOR DE PLÁSTICOS" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="RESTAURAX – RESTAURADOR DE PLÁSTICOS" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="plasticos">
+            <span class="carousel-item-badge">Restauración</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-13.png" alt="RESTAURAX EN AEROSOL" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">RESTAURAX EN AEROSOL</h4>
+                <div class="carousel-item-price">$253.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="RESTAURAX EN AEROSOL" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="RESTAURAX EN AEROSOL" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="plasticos">
+            <span class="carousel-item-badge">Restauración</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-11.png" alt="FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR</h4>
+                <div class="carousel-item-price">$277.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="plasticos">
+            <span class="carousel-item-badge">Restauración</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-16.png" alt="INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL</h4>
+                <div class="carousel-item-price">$201.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="llantas">
+            <span class="carousel-item-badge">Llantas</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SHINY-5.png" alt="SHINY – ABRILLANTADOR DE LLANTAS BRILLANTE" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">SHINY – ABRILLANTADOR DE LLANTAS BRILLANTE</h4>
+                <div class="carousel-item-price">$321.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="SHINY – ABRILLANTADOR DE LLANTAS BRILLANTE" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="SHINY – ABRILLANTADOR DE LLANTAS BRILLANTE" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="llantas">
+            <span class="carousel-item-badge">Llantas</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REVOX.png" alt="REVOX – ABRILLANTADOR ACABADO SATINADO" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">REVOX – ABRILLANTADOR ACABADO SATINADO</h4>
+                <div class="carousel-item-price">$248.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="REVOX – ABRILLANTADOR ACABADO SATINADO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="REVOX – ABRILLANTADOR ACABADO SATINADO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="llantas">
+            <span class="carousel-item-badge">Llantas</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REXER.png" alt="REXER – RESTAURADOR DE NEUMÁTICOS" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">REXER – RESTAURADOR DE NEUMÁTICOS</h4>
+                <div class="carousel-item-price">$333.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="REXER – RESTAURADOR DE NEUMÁTICOS" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="REXER – RESTAURADOR DE NEUMÁTICOS" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="cristales">
+            <span class="carousel-item-badge">Cristales</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/GLAZY.png" alt="GLAZY – LIMPIADOR DE CRISTALES" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">GLAZY – LIMPIADOR DE CRISTALES</h4>
+                <div class="carousel-item-price">$193.00 – $725.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="GLAZY – LIMPIADOR DE CRISTALES" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="GLAZY – LIMPIADOR DE CRISTALES" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="cristales">
+            <span class="carousel-item-badge">Cristales</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/FOCUS.png" alt="FOCUS – REMOVEDOR DE MARCAS DE AGUA" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">FOCUS – REMOVEDOR DE MARCAS DE AGUA</h4>
+                <div class="carousel-item-price">$254.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="FOCUS – REMOVEDOR DE MARCAS DE AGUA" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="FOCUS – REMOVEDOR DE MARCAS DE AGUA" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="cristales">
+            <span class="carousel-item-badge">Cristales</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PRIZM.png" alt="PRIZM – RESTAURADOR DE VIDRIOS" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">PRIZM – RESTAURADOR DE VIDRIOS</h4>
+                <div class="carousel-item-price">$184.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="PRIZM – RESTAURADOR DE VIDRIOS" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="PRIZM – RESTAURADOR DE VIDRIOS" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="piel">
+            <span class="carousel-item-badge">Piel</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HIGICOURO-LIMPIADOR-DE-PIEL-5.png" alt="HIGICOURO – LIMPIADOR DE PIEL" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">HIGICOURO – LIMPIADOR DE PIEL</h4>
+                <div class="carousel-item-price">$296.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="HIGICOURO – LIMPIADOR DE PIEL" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="HIGICOURO – LIMPIADOR DE PIEL" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="carousel-item" data-category="piel">
+            <span class="carousel-item-badge">Piel</span>
+            <div class="carousel-item-img-wrapper">
+                <img src="https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HIDRACOURO-HIDRATANTE-Y-PROTECTOR-DE-PIEL-3.png" alt="HIDROCOURO – HIDRATANTE Y PROTECTOR DE PIEL" loading="lazy">
+            </div>
+            <div class="carousel-item-info">
+                <h4 class="carousel-item-title">HIDROCOURO – HIDRATANTE Y PROTECTOR DE PIEL</h4>
+                <div class="carousel-item-price">$251.00</div>
+                <div class="product-card-actions">
+                    <button class="btn-card-action btn-add-cart" data-product="HIDROCOURO – HIDRATANTE Y PROTECTOR DE PIEL" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="HIDROCOURO – HIDRATANTE Y PROTECTOR DE PIEL" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                </div>
+            </div>
+        </div>
+        
+                </div>
+            </div>
+            <div class="shelf-stand"></div>
+        </div>
+    </div>
+</section>
+
 
     <!-- ========== WHY SECTION ========== -->
     <section id="nosotros" class="why-section">
@@ -1098,6 +1965,67 @@ section{padding:96px 0;}
                 renderCartModal();
             }
         };
+
+        
+        // ========== CAROUSEL SHOWCASE LOGIC ==========
+        (function initProductCarousel() {
+            var prevBtn = document.getElementById('carouselPrev');
+            var nextBtn = document.getElementById('carouselNext');
+            var container = document.getElementById('carouselTrackContainer');
+            var pills = document.querySelectorAll('#carouselFilterBar .carousel-pill');
+            var items = document.querySelectorAll('#carouselTrack .carousel-item');
+
+            if (!container || !prevBtn || !nextBtn) return;
+
+            prevBtn.addEventListener('click', function() {
+                container.scrollBy({ left: -280, behavior: 'smooth' });
+            });
+
+            nextBtn.addEventListener('click', function() {
+                container.scrollBy({ left: 280, behavior: 'smooth' });
+            });
+
+            // Filtrado por categorías en el Carrusel
+            pills.forEach(function(pill) {
+                pill.addEventListener('click', function() {
+                    pills.forEach(function(p) { p.classList.remove('active'); });
+                    this.classList.add('active');
+                    var filter = this.getAttribute('data-filter');
+
+                    items.forEach(function(item) {
+                        var cat = item.getAttribute('data-category');
+                        if (filter === 'all' || cat === filter || (filter === 'cristales' && (cat === 'cristales' || cat === 'piel'))) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    container.scrollTo({ left: 0, behavior: 'smooth' });
+                });
+            });
+
+            // Auto-scroll opcional con pausa al pasar el mouse
+            var autoScrollTimer = null;
+            function startAutoScroll() {
+                autoScrollTimer = setInterval(function() {
+                    if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+                        container.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        container.scrollBy({ left: 240, behavior: 'smooth' });
+                    }
+                }, 4000);
+            }
+
+            function stopAutoScroll() {
+                if (autoScrollTimer) clearInterval(autoScrollTimer);
+            }
+
+            container.addEventListener('mouseenter', stopAutoScroll);
+            container.addEventListener('mouseleave', startAutoScroll);
+            startAutoScroll();
+        })();
+
 
         // Listener para Agregar al Carrito (tarjetas de productos y destacados)
         document.querySelectorAll('.btn-add-cart').forEach(function (btn) {
