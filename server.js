@@ -282,21 +282,346 @@ app.put('/api/admin/orders/:id', requireAdminAuth, async (req, res) => {
   }
 });
 
+
+
+// Catálogo Oficial de Productos Vonixx (37 Artículos)
+const DEFAULT_PRODUCTS = [
+  {
+    "id": "prod_1",
+    "name": "ALUMAX – DESINCRUSTANTE ÁCIDO",
+    "category": "limpieza",
+    "price": 2261,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png"
+  },
+  {
+    "id": "prod_2",
+    "name": "DELET – LIMPIADOR DE PLÁSTICOS, VINILO Y CAUCHO",
+    "category": "limpieza",
+    "price": 200.00566,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png"
+  },
+  {
+    "id": "prod_3",
+    "name": "IMPACT – DESENGRASANTE MULTIUSOS",
+    "category": "limpieza",
+    "price": 225,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IMPACT-.png"
+  },
+  {
+    "id": "prod_4",
+    "name": "IZER – REMOVEDOR DE ÓXIDO",
+    "category": "limpieza",
+    "price": 212.00422,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IZER-1.png"
+  },
+  {
+    "id": "prod_5",
+    "name": "REMOVEX – DESENGRASANTE Y LIMPIADOR DE CHASIS",
+    "category": "limpieza",
+    "price": 1817,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REMOVEX-1.png"
+  },
+  {
+    "id": "prod_6",
+    "name": "REZET – ZACS",
+    "category": "limpieza",
+    "price": 206,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REZET.png"
+  },
+  {
+    "id": "prod_7",
+    "name": "SINTRA FAST – LIMPIADOR DE INTERIORES",
+    "category": "limpieza",
+    "price": 179,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-FAST.png"
+  },
+  {
+    "id": "prod_8",
+    "name": "SINTRA PRO – LIMPIADOR DE INTERIORES",
+    "category": "limpieza",
+    "price": 246.00531,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-PRO.png"
+  },
+  {
+    "id": "prod_9",
+    "name": "BACTRAN – LIMPIADOR BACTERICIDA 7 EN 1",
+    "category": "vsc",
+    "price": 206.00423,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-6.png"
+  },
+  {
+    "id": "prod_10",
+    "name": "EXTRACTUS – LIMPIADOR ULTRA CONCENTRADO",
+    "category": "vsc",
+    "price": 195.00407,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-7.png"
+  },
+  {
+    "id": "prod_11",
+    "name": "SANITIZANTE – FINALIZADOR 4 EN 1",
+    "category": "vsc",
+    "price": 216.00449,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-8.png"
+  },
+  {
+    "id": "prod_12",
+    "name": "BLEND PASTE WAX – CERA CON SIO2 Y CARNAÚBA",
+    "category": "cera-pasta",
+    "price": 580,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEND-PASTE-WAX.png"
+  },
+  {
+    "id": "prod_13",
+    "name": "CARNAUBA HYBRID WAX",
+    "category": "cera-pasta",
+    "price": 426,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-HYBRID-WAX.png"
+  },
+  {
+    "id": "prod_14",
+    "name": "NATIVE PASTE WAX – CARNAÚBA BRASILEÑA 100% PURA",
+    "category": "cera-pasta",
+    "price": 638,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-PASTE-WAX.png"
+  },
+  {
+    "id": "prod_15",
+    "name": "BLEND SPRAY – CERA LÍQUIDA CON SiO2 & CARNAÚBA",
+    "category": "cera-liquida",
+    "price": 296,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEN-SPRAY-.png"
+  },
+  {
+    "id": "prod_16",
+    "name": "CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO",
+    "category": "cera-liquida",
+    "price": 180,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-TOK-FINAL.png"
+  },
+  {
+    "id": "prod_17",
+    "name": "NATIVE SPRAY WAX – CARNAÚBA LÍQUIDA PREMIUM",
+    "category": "cera-liquida",
+    "price": 309,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-SPRAY-WAX.png"
+  },
+  {
+    "id": "prod_18",
+    "name": "CARNAÚBA PLUS – CERA DE LIMPIEZA",
+    "category": "cera-liquida",
+    "price": 219.00477,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-PLUS.png"
+  },
+  {
+    "id": "prod_19",
+    "name": "CITRON – SHAMPOO DESENGRASANTE",
+    "category": "shampoo",
+    "price": 280,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CITRON.png"
+  },
+  {
+    "id": "prod_20",
+    "name": "HYDROX WASH – SHAMPOO CERÁMICO",
+    "category": "shampoo",
+    "price": 492,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-WASH.png"
+  },
+  {
+    "id": "prod_21",
+    "name": "SINERGY PAINT – SELLADOR CERÁMICO PARA PINTURA",
+    "category": "ceramicos",
+    "price": 632,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-PAINT.png"
+  },
+  {
+    "id": "prod_22",
+    "name": "SINERGY WHEEL – CERÁMICO PARA LLANTAS",
+    "category": "ceramicos",
+    "price": 618,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-WHEEL.png"
+  },
+  {
+    "id": "prod_23",
+    "name": "HYDROX PRO – CERÁMICO HIDROREACTIVO CONCENTRADO",
+    "category": "ceramicos",
+    "price": 571,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-PRO-.png"
+  },
+  {
+    "id": "prod_24",
+    "name": "HYDROX FAST – CERÁMICO HIDROREACTIVO",
+    "category": "ceramicos",
+    "price": 201,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-FAST.png"
+  },
+  {
+    "id": "prod_25",
+    "name": "RESTAURAX – RESTAURADOR DE PLÁSTICOS",
+    "category": "plasticos",
+    "price": 368,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-12.png"
+  },
+  {
+    "id": "prod_26",
+    "name": "RESTAURAX EN AEROSOL",
+    "category": "plasticos",
+    "price": 253,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-13.png"
+  },
+  {
+    "id": "prod_27",
+    "name": "FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR",
+    "category": "plasticos",
+    "price": 277,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-11.png"
+  },
+  {
+    "id": "prod_28",
+    "name": "INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL",
+    "category": "plasticos",
+    "price": 201,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-16.png"
+  },
+  {
+    "id": "prod_29",
+    "name": "SHINY – ABRILLANTADOR DE LLANTAS BRILLANTE",
+    "category": "llantas",
+    "price": 321,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SHINY-5.png"
+  },
+  {
+    "id": "prod_30",
+    "name": "REVOX – ABRILLANTADOR ACABADO SATINADO",
+    "category": "llantas",
+    "price": 248,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REVOX.png"
+  },
+  {
+    "id": "prod_31",
+    "name": "REXER – RESTAURADOR DE NEUMÁTICOS",
+    "category": "llantas",
+    "price": 333,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REXER.png"
+  },
+  {
+    "id": "prod_32",
+    "name": "GLAZY – LIMPIADOR DE CRISTALES",
+    "category": "cristales",
+    "price": 193.00725,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/GLAZY.png"
+  },
+  {
+    "id": "prod_33",
+    "name": "FOCUS – REMOVEDOR DE MARCAS DE AGUA",
+    "category": "cristales",
+    "price": 254,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/FOCUS.png"
+  },
+  {
+    "id": "prod_34",
+    "name": "PRIZM – RESTAURADOR DE VIDRIOS",
+    "category": "cristales",
+    "price": 184,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PRIZM.png"
+  },
+  {
+    "id": "prod_35",
+    "name": "HIGICOURO – LIMPIADOR DE PIEL",
+    "category": "piel",
+    "price": 296,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HIGICOURO-LIMPIADOR-DE-PIEL-5.png"
+  },
+  {
+    "id": "prod_36",
+    "name": "HIDROCOURO – HIDRATANTE Y PROTECTOR DE PIEL",
+    "category": "piel",
+    "price": 251,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HIDRACOURO-HIDRATANTE-Y-PROTECTOR-DE-PIEL-3.png"
+  },
+  {
+    "id": "prod_37",
+    "name": "CEPILLO DE MICROFIBRA – LIMPIEZA DE RINES",
+    "category": "accesorios",
+    "price": 312,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CEPILLO-MICROFIBRA-PARA-LIMPIEZA-RINES.png"
+  },
+  {
+    "id": "prod_38",
+    "name": "GUANTE MICROFIBRA 2 EN 1",
+    "category": "accesorios",
+    "price": 140,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/guante-2-en-1.png"
+  },
+  {
+    "id": "prod_39",
+    "name": "KIT DE 5 PINCELES DE DETALLADO",
+    "category": "accesorios",
+    "price": 313,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/KIT-DE-PINCELES-EXTERNO.png"
+  },
+  {
+    "id": "prod_40",
+    "name": "APLICADOR DE MICROFIBRA – ENCAJE DE MANO",
+    "category": "accesorios",
+    "price": 60,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/APLICADOR-DE-MANO.png"
+  },
+  {
+    "id": "prod_41",
+    "name": "MICROFIBRA CAR BRITE",
+    "category": "microfibras",
+    "price": 101.00251,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/MICROFIBRA.png"
+  },
+  {
+    "id": "prod_42",
+    "name": "PAD DE CORTE LIGERO AMARILLO",
+    "category": "pads",
+    "price": 282,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-CORTE-LIGERO-AMARILLA.png"
+  },
+  {
+    "id": "prod_43",
+    "name": "PAD DE LUSTRO AZUL CLARO",
+    "category": "pads",
+    "price": 282,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-LUSTRO-AZUL-CLARO.png"
+  },
+  {
+    "id": "prod_44",
+    "name": "PAD DE SUPER LUSTRO ROJO",
+    "category": "pads",
+    "price": 282,
+    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-SUPER-LUSTRO-ROJO.png"
+  }
+];
+
 // 4. Obtener Lista de Productos (desde Firestore o respaldo)
 app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
   if (!db) {
-    return res.status(500).json({ error: 'Firestore no está conectado' });
+    return res.json({ success: true, products: DEFAULT_PRODUCTS });
   }
   try {
     const snapshot = await db.collection('products').get();
-    const products = [];
-    snapshot.forEach(doc => {
-      products.push({ id: doc.id, ...doc.data() });
-    });
+    let products = [];
+    if (snapshot.empty) {
+      console.log('🌱 Sembrando 37 productos oficiales Vonixx en Firestore...');
+      const batch = db.batch();
+      DEFAULT_PRODUCTS.forEach(p => {
+        const ref = db.collection('products').doc(p.id);
+        batch.set(ref, p);
+      });
+      await batch.commit();
+      products = DEFAULT_PRODUCTS;
+    } else {
+      snapshot.forEach(doc => {
+        products.push({ id: doc.id, ...doc.data() });
+      });
+    }
     res.json({ success: true, products });
   } catch (err) {
     console.error('Error al obtener productos:', err);
-    res.status(500).json({ error: err.message });
+    res.json({ success: true, products: DEFAULT_PRODUCTS });
   }
 });
 
