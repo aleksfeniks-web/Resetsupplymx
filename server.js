@@ -211,6 +211,135 @@ app.get('/api/verify-checkout-session', async (req, res) => {
   }
 });
 
+
+// ==================== RUTAS DE ADMINISTRACIÓN SEGURAS ====================
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'ResetAdmin2026!';
+
+// Middleware para verificar token/clave admin
+function requireAdminAuth(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token === ADMIN_PASSWORD) {
+    next();
+  } else {
+    res.status(401).json({ error: 'Acceso no autorizado. Clave de administración requerida.' });
+  }
+}
+
+// 1. Login de Administración
+app.post('/api/admin/login', (req, res) => {
+  const { password } = req.body;
+  if (password === ADMIN_PASSWORD) {
+    res.json({ success: true, token: ADMIN_PASSWORD });
+  } else {
+    res.status(401).json({ success: false, error: 'Contraseña de administración incorrecta.' });
+  }
+});
+
+// 2. Obtener Lista de Pedidos desde Firestore
+app.get('/api/admin/orders', requireAdminAuth, async (req, res) => {
+  if (!db) {
+    return res.status(500).json({ error: 'Firestore no está conectado' });
+  }
+  try {
+    const snapshot = await db.collection('orders').orderBy('createdAt', 'desc').get();
+    const orders = [];
+    snapshot.forEach(doc => {
+      orders.push({ id: doc.id, ...doc.data() });
+    });
+    res.json({ success: true, orders });
+  } catch (err) {
+    console.error('Error al obtener pedidos:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 3. Actualizar Estado de Pedido y Guía de Rastreo (Envia.com / FedEx / Estafeta / DHL)
+app.put('/api/admin/orders/:id', requireAdminAuth, async (req, res) => {
+  if (!db) {
+    return res.status(500).json({ error: 'Firestore no está conectado' });
+  }
+  const { id } = req.params;
+  const { orderStatus, trackingNumber, trackingCarrier, trackingUrl } = req.body;
+
+  try {
+    const docRef = db.collection('orders').doc(id);
+    const updateData = {
+      updatedAt: new Date().toISOString()
+    };
+
+    if (orderStatus) updateData.orderStatus = orderStatus;
+    if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber;
+    if (trackingCarrier !== undefined) updateData.trackingCarrier = trackingCarrier;
+    if (trackingUrl !== undefined) updateData.trackingUrl = trackingUrl;
+
+    await docRef.update(updateData);
+    console.log(`🚚 Guía/Estado de pedido ${id} actualizado correctamente`);
+    res.json({ success: true, message: 'Pedido actualizado correctamente' });
+  } catch (err) {
+    console.error('Error al actualizar pedido:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 4. Obtener Lista de Productos (desde Firestore o respaldo)
+app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
+  if (!db) {
+    return res.status(500).json({ error: 'Firestore no está conectado' });
+  }
+  try {
+    const snapshot = await db.collection('products').get();
+    const products = [];
+    snapshot.forEach(doc => {
+      products.push({ id: doc.id, ...doc.data() });
+    });
+    res.json({ success: true, products });
+  } catch (err) {
+    console.error('Error al obtener productos:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 5. Crear o Actualizar Producto en Firestore
+app.post('/api/admin/products', requireAdminAuth, async (req, res) => {
+  if (!db) {
+    return res.status(500).json({ error: 'Firestore no está conectado' });
+  }
+  const { id, name, price, category, image, description } = req.body;
+  try {
+    const docId = id || 'prod_' + Date.now();
+    const docRef = db.collection('products').doc(docId);
+    const productData = {
+      name,
+      price: parseFloat(price),
+      category,
+      image,
+      description: description || '',
+      updatedAt: new Date().toISOString()
+    };
+    await docRef.set(productData, { merge: true });
+    res.json({ success: true, id: docId, product: productData });
+  } catch (err) {
+    console.error('Error al guardar producto:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 6. Eliminar Producto
+app.delete('/api/admin/products/:id', requireAdminAuth, async (req, res) => {
+  if (!db) {
+    return res.status(500).json({ error: 'Firestore no está conectado' });
+  }
+  const { id } = req.params;
+  try {
+    await db.collection('products').doc(id).delete();
+    res.json({ success: true, message: 'Producto eliminado' });
+  } catch (err) {
+    console.error('Error al eliminar producto:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
   console.log(`🔗 Sitio local: http://localhost:${PORT}`);

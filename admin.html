@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración — Reset Supply MX</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+        :root {
+            --void: #0a0e13;
+            --panel: #12171e;
+            --panel-2: #161c24;
+            --line: #232b34;
+            --text: #f2f5f8;
+            --muted: #93a0ac;
+            --green: #3ddc84;
+            --blue: #22b8f0;
+            --red: #e74c3c;
+            --yellow: #f39c12;
+            --grad: linear-gradient(90deg, var(--green), var(--blue));
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--void); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        h1, h2, h3, h4 { font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; }
+        .gradient-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+        /* Login Screen */
+        #loginScreen { position: fixed; inset: 0; background: rgba(10,14,19,0.95); backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 36px; width: 100%; max-width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
+        .login-logo { font-size: 24px; font-weight: 700; margin-bottom: 20px; font-family: 'Rajdhani', sans-serif; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; font-size: 12.5px; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+        .form-input { width: 100%; background: var(--void); border: 1px solid var(--line); color: var(--text); padding: 12px 14px; border-radius: 8px; font-size: 14px; outline: none; }
+        .form-input:focus { border-color: var(--green); }
+        .btn-primary { width: 100%; background: var(--grad); color: var(--void); border: none; padding: 13px; border-radius: 8px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all .2s; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Header */
+        .admin-header { background: var(--panel); border-bottom: 1px solid var(--line); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-title { font-size: 20px; display: flex; align-items: center; gap: 10px; }
+        .btn-logout { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+        /* Container & Tabs */
+        .admin-container { max-width: 1280px; margin: 30px auto; padding: 0 20px; width: 100%; flex: 1; }
+        .admin-tabs { display: flex; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 30px; }
+        .tab-btn { background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); padding: 10px 22px; border-radius: 8px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; transition: all .2s; }
+        .tab-btn:hover, .tab-btn.active { background: var(--grad); color: var(--void); border-color: transparent; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+        .stat-label { font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+        .stat-value { font-size: 26px; font-weight: 700; font-family: 'Rajdhani', sans-serif; color: var(--green); }
+
+        /* Tables & Cards */
+        .table-wrapper { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: var(--panel-2); padding: 14px 18px; font-size: 13px; font-weight: 700; color: var(--muted); font-family: 'Rajdhani', sans-serif; border-bottom: 1px solid var(--line); }
+        td { padding: 14px 18px; font-size: 13.5px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+        tr:hover { background: rgba(22, 28, 36, 0.6); }
+
+        /* Status Badges */
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; }
+        .status-pending { background: rgba(243, 156, 18, 0.2); color: var(--yellow); border: 1px solid var(--yellow); }
+        .status-shipped { background: rgba(34, 184, 240, 0.2); color: var(--blue); border: 1px solid var(--blue); }
+        .status-completed { background: rgba(61, 220, 132, 0.2); color: var(--green); border: 1px solid var(--green); }
+
+        /* Action Buttons */
+        .btn-action { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); font-size: 12.5px; font-weight: 600; cursor: pointer; margin-right: 6px; transition: all .2s; }
+        .btn-action:hover { border-color: var(--green); color: var(--green); }
+        .btn-delete { color: var(--red); }
+        .btn-delete:hover { border-color: var(--red); background: rgba(231, 76, 60, 0.15); }
+
+        /* Modals */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); }
+        .modal-content { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 26px; width: 100%; max-width: 520px; box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de Login -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <div class="login-logo">🛡️ <span class="gradient-text">ADMINISTRACIÓN RESET SUPPLY</span></div>
+            <p style="color:var(--muted); font-size:13.5px; margin-bottom:24px;">Ingresa la contraseña segura para acceder al panel de control.</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Contraseña de Administrador</label>
+                    <input type="password" id="adminPasswordInput" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Iniciar Sesión Seguro</button>
+            </form>
+            <div id="loginError" style="color:var(--red); font-size:13px; margin-top:14px; display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Panel de Administración -->
+    <header class="admin-header">
+        <div class="admin-title">
+            <span>⚙️</span>
+            <span>Panel de Administración <strong class="gradient-text">Reset Supply MX</strong></span>
+        </div>
+        <button class="btn-logout" id="logoutBtn">🔒 Cerrar Sesión</button>
+    </header>
+
+    <div class="admin-container">
+        <!-- Tarjetas de Métricas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Ventas Totales (Stripe/Firestore)</div>
+                <div class="stat-value" id="statTotalSales">$0.00 MXN</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Pedidos Totales</div>
+                <div class="stat-value" id="statTotalOrders" style="color:var(--blue);">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Envíos Pendientes de Guía</div>
+                <div class="stat-value" id="statPendingShippings" style="color:var(--yellow);">0</div>
+            </div>
+        </div>
+
+        <!-- Pestañas principales -->
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="orders">📋 Órdenes y Guías de Rastreo</button>
+            <button class="tab-btn" data-tab="products">📦 Catálogo de Productos y Precios</button>
+        </div>
+
+        <!-- Sección 1: Órdenes y Guías -->
+        <div id="tabOrders" class="tab-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3>Pedidos Registrados (<span id="ordersCount">0</span>)</h3>
+                <button class="btn-action" id="refreshOrdersBtn">🔄 Actualizar Lista</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>ID / Cliente</th>
+                            <th>Productos</th>
+                            <th>Total</th>
+                            <th>Estado / Guía Rastreo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <tr><td colspan="6" style="text-align:center; color:var(--muted); padding:30px;">Cargando pedidos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sección 2: Productos y Precios -->
+        <div id="tabProducts" class="tab-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3>Productos en Catálogo</h3>
+                <button class="btn-primary" id="newProductBtn" style="width:auto; padding:8px 18px; font-size:13.5px;">➕ Agregar Nuevo Producto</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <tr><td colspan="5" style="text-align:center; color:var(--muted); padding:30px;">Cargando catálogo...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Guía de Rastreo -->
+    <div id="trackingModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3 style="margin-bottom:16px;">🚚 Agregar / Editar Guía de Rastreo</h3>
+            <form id="trackingForm">
+                <input type="hidden" id="trackOrderId">
+                <div class="form-group">
+                    <label>Estado del Pedido</label>
+                    <select id="trackOrderStatus" class="form-input">
+                        <option value="Pendiente">Pendiente (En Preparación)</option>
+                        <option value="Enviado">Enviado (Guía Asignada)</option>
+                        <option value="Entregado">Entregado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Paquetería (Envia.com / FedEx / Estafeta / DHL)</label>
+                    <input type="text" id="trackCarrierInput" class="form-input" placeholder="ej. FedEx / Envia.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Número de Guía de Rastreo</label>
+                    <input type="text" id="trackNumberInput" class="form-input" placeholder="ej. 123456789012" required>
+                </div>
+                <div class="form-group">
+                    <label>URL / Link de Rastreo (Opcional)</label>
+                    <input type="url" id="trackUrlInput" class="form-input" placeholder="https://fedex.com/tracking?number=...">
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-action" id="closeTrackingModalBtn" style="flex:1;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="flex:1;">Guardar Guía</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar / Crear Producto -->
+    <div id="productModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3 id="productModalTitle" style="margin-bottom:16px;">📦 Editar Producto</h3>
+            <form id="productForm">
+                <input type="hidden" id="prodId">
+                <div class="form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="prodName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Precio ($ MXN)</label>
+                    <input type="number" step="0.01" id="prodPrice" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="prodCategory" class="form-input">
+                        <option value="limpieza">Limpieza</option>
+                        <option value="vsc">Sistema VSC</option>
+                        <option value="cera">Ceras</option>
+                        <option value="shampoo">Shampoo</option>
+                        <option value="ceramicos">Cerámicos</option>
+                        <option value="plasticos">Restauración</option>
+                        <option value="llantas">Llantas</option>
+                        <option value="cristales">Cristales & Piel</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>URL de Imagen</label>
+                    <input type="url" id="prodImage" class="form-input" required>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-action" id="closeProductModalBtn" style="flex:1;">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="flex:1;">Guardar Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var adminToken = sessionStorage.getItem('adminToken') || '';
+
+        var loginScreen = document.getElementById('loginScreen');
+        var loginForm = document.getElementById('loginForm');
+        var adminPasswordInput = document.getElementById('adminPasswordInput');
+        var loginError = document.getElementById('loginError');
+        var logoutBtn = document.getElementById('logoutBtn');
+
+        var tabs = document.querySelectorAll('.tab-btn');
+        var tabOrders = document.getElementById('tabOrders');
+        var tabProducts = document.getElementById('tabProducts');
+
+        var ordersTableBody = document.getElementById('ordersTableBody');
+        var productsTableBody = document.getElementById('productsTableBody');
+        var refreshOrdersBtn = document.getElementById('refreshOrdersBtn');
+        var newProductBtn = document.getElementById('newProductBtn');
+
+        var trackingModal = document.getElementById('trackingModal');
+        var trackingForm = document.getElementById('trackingForm');
+        var closeTrackingModalBtn = document.getElementById('closeTrackingModalBtn');
+
+        var productModal = document.getElementById('productModal');
+        var productForm = document.getElementById('productForm');
+        var closeProductModalBtn = document.getElementById('closeProductModalBtn');
+
+        if (adminToken) {
+            loginScreen.style.display = 'none';
+            loadOrders();
+        }
+
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            var pass = adminPasswordInput.value;
+            try {
+                var res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pass })
+                });
+                var data = await res.json();
+                if (data.success) {
+                    adminToken = data.token;
+                    sessionStorage.setItem('adminToken', adminToken);
+                    loginScreen.style.display = 'none';
+                    loadOrders();
+                } else {
+                    loginError.textContent = data.error || 'Contraseña incorrecta';
+                    loginError.style.display = 'block';
+                }
+            } catch (err) {
+                loginError.textContent = 'Error al conectar con el servidor';
+                loginError.style.display = 'block';
+            }
+        });
+
+        logoutBtn.addEventListener('click', function() {
+            sessionStorage.removeItem('adminToken');
+            location.reload();
+        });
+
+        // Tabs
+        tabs.forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                tabs.forEach(function(t) { t.classList.remove('active'); });
+                this.classList.add('active');
+                var target = this.getAttribute('data-tab');
+                if (target === 'orders') {
+                    tabOrders.style.display = 'block';
+                    tabProducts.style.display = 'none';
+                    loadOrders();
+                } else {
+                    tabOrders.style.display = 'none';
+                    tabProducts.style.display = 'block';
+                    loadProducts();
+                }
+            });
+        });
+
+        // Cargar Órdenes
+        async function loadOrders() {
+            try {
+                var res = await fetch('/api/admin/orders', {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                if (!data.success) {
+                    if (res.status === 401) {
+                        sessionStorage.removeItem('adminToken');
+                        loginScreen.style.display = 'flex';
+                    }
+                    return;
+                }
+
+                var orders = data.orders || [];
+                document.getElementById('ordersCount').textContent = orders.length;
+
+                var totalSales = 0;
+                var pendingCount = 0;
+                var html = '';
+
+                orders.forEach(function(order) {
+                    totalSales += order.amountTotal || 0;
+                    var status = order.orderStatus || 'Pendiente';
+                    if (status === 'Pendiente') pendingCount++;
+
+                    var badgeClass = 'status-pending';
+                    if (status === 'Enviado') badgeClass = 'status-shipped';
+                    if (status === 'Entregado') badgeClass = 'status-completed';
+
+                    var itemsText = '';
+                    if (order.items && Array.isArray(order.items)) {
+                        itemsText = order.items.map(function(i) { return i.quantity + 'x ' + (i.description || i.name); }).join(', ');
+                    } else {
+                        itemsText = 'Detalle en Stripe';
+                    }
+
+                    var date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('es-MX', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : 'N/A';
+
+                    html += `
+                    <tr>
+                        <td>${date}</td>
+                        <td>
+                            <strong>${order.customerName || 'Cliente'}</strong><br>
+                            <span style="color:var(--muted); font-size:12px;">${order.customerEmail || ''}</span>
+                        </td>
+                        <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis;">${itemsText}</td>
+                        <td style="font-weight:700; color:var(--green);">$${(order.amountTotal || 0).toFixed(2)} MXN</td>
+                        <td>
+                            <span class="status-badge ${badgeClass}">${status}</span>
+                            ${order.trackingNumber ? '<br><span style="font-size:11.5px; color:var(--blue);">📦 ' + (order.trackingCarrier || '') + ': ' + order.trackingNumber + '</span>' : ''}
+                        </td>
+                        <td>
+                            <button class="btn-action" onclick="openTrackingModal('${order.id}', '${status}', '${order.trackingCarrier || ''}', '${order.trackingNumber || ''}', '${order.trackingUrl || ''}')">🚚 Editar Guía</button>
+                        </td>
+                    </tr>
+                    `;
+                });
+
+                ordersTableBody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:30px;">No se encontraron pedidos en Firestore.</td></tr>';
+                document.getElementById('statTotalSales').textContent = '$' + totalSales.toLocaleString('es-MX', {minimumFractionDigits:2}) + ' MXN';
+                document.getElementById('statTotalOrders').textContent = orders.length;
+                document.getElementById('statPendingShippings').textContent = pendingCount;
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        refreshOrdersBtn.addEventListener('click', loadOrders);
+
+        // Abrir Modal Tracking
+        window.openTrackingModal = function(id, status, carrier, number, url) {
+            document.getElementById('trackOrderId').value = id;
+            document.getElementById('trackOrderStatus').value = status || 'Pendiente';
+            document.getElementById('trackCarrierInput').value = carrier || 'Envia.com (FedEx)';
+            document.getElementById('trackNumberInput').value = number || '';
+            document.getElementById('trackUrlInput').value = url || '';
+            trackingModal.style.display = 'flex';
+        };
+
+        closeTrackingModalBtn.addEventListener('click', function() {
+            trackingModal.style.display = 'none';
+        });
+
+        trackingForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            var id = document.getElementById('trackOrderId').value;
+            var status = document.getElementById('trackOrderStatus').value;
+            var carrier = document.getElementById('trackCarrierInput').value;
+            var number = document.getElementById('trackNumberInput').value;
+            var url = document.getElementById('trackUrlInput').value;
+
+            try {
+                var res = await fetch('/api/admin/orders/' + id, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify({
+                        orderStatus: status,
+                        trackingCarrier: carrier,
+                        trackingNumber: number,
+                        trackingUrl: url
+                    })
+                });
+                var data = await res.json();
+                if (data.success) {
+                    trackingModal.style.display = 'none';
+                    loadOrders();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // Cargar Productos
+        async function loadProducts() {
+            try {
+                var res = await fetch('/api/admin/products', {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                var products = data.products || [];
+
+                var html = '';
+                products.forEach(function(prod) {
+                    html += `
+                    <tr>
+                        <td><img src="${prod.image}" style="width:40px; height:40px; object-fit:cover; border-radius:6px;"></td>
+                        <td><strong>${prod.name}</strong></td>
+                        <td><span style="text-transform:uppercase; font-size:12px; color:var(--muted);">${prod.category}</span></td>
+                        <td style="font-weight:700; color:var(--green);">$${parseFloat(prod.price).toFixed(2)} MXN</td>
+                        <td>
+                            <button class="btn-action" onclick="editProduct('${prod.id}', '${prod.name}', ${prod.price}, '${prod.category}', '${prod.image}')">✏️ Editar</button>
+                            <button class="btn-action btn-delete" onclick="deleteProduct('${prod.id}')">🗑️ Eliminar</button>
+                        </td>
+                    </tr>
+                    `;
+                });
+
+                productsTableBody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:30px;">No hay productos guardados en Firestore aún.</td></tr>';
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        newProductBtn.addEventListener('click', function() {
+            document.getElementById('productModalTitle').textContent = '📦 Agregar Nuevo Producto';
+            document.getElementById('prodId').value = '';
+            document.getElementById('prodName').value = '';
+            document.getElementById('prodPrice').value = '';
+            document.getElementById('prodImage').value = '';
+            productModal.style.display = 'flex';
+        });
+
+        window.editProduct = function(id, name, price, category, image) {
+            document.getElementById('productModalTitle').textContent = '📦 Editar Producto';
+            document.getElementById('prodId').value = id;
+            document.getElementById('prodName').value = name;
+            document.getElementById('prodPrice').value = price;
+            document.getElementById('prodCategory').value = category;
+            document.getElementById('prodImage').value = image;
+            productModal.style.display = 'flex';
+        };
+
+        closeProductModalBtn.addEventListener('click', function() {
+            productModal.style.display = 'none';
+        });
+
+        productForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            var id = document.getElementById('prodId').value;
+            var name = document.getElementById('prodName').value;
+            var price = document.getElementById('prodPrice').value;
+            var category = document.getElementById('prodCategory').value;
+            var image = document.getElementById('prodImage').value;
+
+            try {
+                var res = await fetch('/api/admin/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify({ id, name, price, category, image })
+                });
+                var data = await res.json();
+                if (data.success) {
+                    productModal.style.display = 'none';
+                    loadProducts();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        window.deleteProduct = async function(id) {
+            if (!confirm('¿Estás seguro de eliminar este producto de la base de datos?')) return;
+            try {
+                var res = await fetch('/api/admin/products/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                if (data.success) {
+                    loadProducts();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+    </script>
+</body>
+</html>
