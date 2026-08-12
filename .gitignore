@@ -9,10 +9,13 @@ yarn-error.log
 .env.local
 .env.production
 
-# Firebase
+# Firebase & Secret Keys (NEVER commit secret keys!)
 .firebase/
 firebase-debug.log
 firestore-debug.log
+firebase-key.json
+serviceAccountKey.json
+*-key.json
 
 # OS & IDE files
 .DS_Store
