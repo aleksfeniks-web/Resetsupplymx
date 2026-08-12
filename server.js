@@ -34,6 +34,55 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
 // Middleware
 app.use(cors());
 
+
+// Función auxiliar para guardar pedido en Firestore
+async function saveOrderToFirestore(session) {
+  if (!db) {
+    console.warn('⚠️ Firestore no está conectado en el servidor (revisa FIREBASE_SERVICE_ACCOUNT en .env)');
+    return false;
+  }
+  try {
+    const docRef = db.collection('orders').doc(session.id);
+    const doc = await docRef.get();
+    if (doc.exists) {
+      console.log(`ℹ️ El pedido ${session.id} ya existe en Firestore.`);
+      return true;
+    }
+
+    let lineItems = [];
+    if (stripe) {
+      try {
+        const itemsRes = await stripe.checkout.sessions.listLineItems(session.id);
+        lineItems = itemsRes.data.map(item => ({
+          description: item.description,
+          amountTotal: item.amount_total / 100,
+          quantity: item.quantity
+        }));
+      } catch (e) {
+        console.warn('No se pudieron obtener detalles de items:', e.message);
+      }
+    }
+
+    await docRef.set({
+      sessionId: session.id,
+      customerEmail: session.customer_details ? session.customer_details.email : (session.customer_email || 'N/A'),
+      customerName: session.customer_details ? session.customer_details.name : 'N/A',
+      shippingAddress: session.customer_details ? session.customer_details.address : null,
+      amountTotal: session.amount_total / 100,
+      currency: session.currency || 'mxn',
+      paymentStatus: session.payment_status,
+      createdAt: new Date().toISOString(),
+      items: lineItems,
+      metadata: session.metadata || {}
+    });
+    console.log(`📦 ¡Pedido ${session.id} guardado con ÉXITO en Firestore!`);
+    return true;
+  } catch (err) {
+    console.error('❌ Error guardando pedido en Firestore:', err);
+    return false;
+  }
+}
+
 // Webhook Stripe (debe usar raw body antes de express.json())
 app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
@@ -56,22 +105,7 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, 
     const session = event.data.object;
     console.log('✅ Pago recibido exitosamente para la sesión:', session.id);
 
-    // Guardar en Firestore si está configurado
-    if (db) {
-      try {
-        await db.collection('orders').doc(session.id).set({
-          customerEmail: session.customer_details ? session.customer_details.email : session.customer_email,
-          amountTotal: session.amount_total / 100,
-          currency: session.currency,
-          paymentStatus: session.payment_status,
-          createdAt: new Date().toISOString(),
-          metadata: session.metadata || {}
-        });
-        console.log('📦 Pedido guardado en Firestore');
-      } catch (dbErr) {
-        console.error('Error guardando pedido en Firestore:', dbErr);
-      }
-    }
+    await saveOrderToFirestore(session);
   }
 
   res.json({ received: true });
@@ -155,6 +189,28 @@ app.get('/', (req, res) => {
 app.use(express.static(__dirname));
 
 // Iniciar servidor
+
+// Endpoint de Verificación y Rescate de Sesión de Pago (sirve en Localhost y Producción)
+app.get('/api/verify-checkout-session', async (req, res) => {
+  const { session_id } = req.query;
+  if (!session_id || !stripe) {
+    return res.status(400).json({ error: 'Parámetros inválidos o Stripe no disponible' });
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    if (session && session.payment_status === 'paid') {
+      const saved = await saveOrderToFirestore(session);
+      return res.json({ success: true, paid: true, savedInFirestore: saved, session: { id: session.id, amountTotal: session.amount_total / 100 } });
+    } else {
+      return res.json({ success: false, paid: false });
+    }
+  } catch (err) {
+    console.error('Error al verificar sesión:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
   console.log(`🔗 Sitio local: http://localhost:${PORT}`);

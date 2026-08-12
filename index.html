@@ -2034,12 +2034,29 @@ section{padding:96px 0;}
             });
         }
 
-        // Mostrar Notificación de Pago si viene de Stripe
+        // Mostrar Notificación de Pago y Verificar Guardado en Firestore
         (function checkPaymentStatus() {
             var urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('payment') === 'success') {
+            var paymentStatus = urlParams.get('payment');
+            var sessionId = urlParams.get('session_id');
+
+            if (paymentStatus === 'success') {
                 showToast('🎉 ¡Pago completado con éxito mediante Stripe! Gracias por tu compra en Reset Supply MX.', '#3ddc84', '#0a0e13', 8000);
-            } else if (urlParams.get('payment') === 'cancelled') {
+                
+                // Si viene session_id, verificar e ingresar automáticamente a Firestore en caso de que el webhook no haya llegado (ej. localhost)
+                if (sessionId) {
+                    fetch('/api/verify-checkout-session?session_id=' + encodeURIComponent(sessionId))
+                        .then(function(res) { return res.json(); })
+                        .then(function(data) {
+                            if (data.savedInFirestore) {
+                                console.log('📦 Pedido verificado y guardado en Firestore:', data);
+                            }
+                        })
+                        .catch(function(err) {
+                            console.warn('Error al verificar sesión con el servidor:', err);
+                        });
+                }
+            } else if (paymentStatus === 'cancelled') {
                 showToast('⚠️ El pago con Stripe fue cancelado. Si tuviste un problema, contáctanos por WhatsApp.', '#e74c3c', '#ffffff', 8000);
             }
         })();
