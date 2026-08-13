@@ -125,6 +125,7 @@
         <div class="admin-tabs">
             <button class="tab-btn active" data-tab="orders">📋 Órdenes y Guías de Rastreo</button>
             <button class="tab-btn" data-tab="products">📦 Catálogo de Productos y Precios</button>
+            <button class="tab-btn" data-tab="editor">🎨 Editor Visual de la Página</button>
         </div>
 
         <!-- Sección 1: Órdenes y Guías -->
@@ -173,6 +174,136 @@
                         <tr><td colspan="5" style="text-align:center; color:var(--muted); padding:30px;">Cargando catálogo...</td></tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Sección 3: Editor Visual de la Página Web -->
+        <div id="tabEditor" class="tab-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>🎨 Editor Visual de la Página (Modificador Web en Tiempo Real)</h3>
+                <button class="btn-primary" id="saveSiteConfigBtn" style="width:auto; padding:10px 24px; font-size:14px;">💾 Guardar Cambios en la Web</button>
+            </div>
+
+            <!-- Layout Dividido: Panel de Controles + Vista Previa Live -->
+            <div style="display:flex; gap:20px; align-items:flex-start;">
+                <!-- Controles de Edición -->
+                <div style="flex:1; max-height:80vh; overflow-y:auto; padding-right:12px; display:flex; flex-direction:column; gap:20px;">
+                    
+                    <!-- Bloque 1: Barra de Anuncios -->
+                    <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;">
+                        <h4 style="color:var(--green); margin-bottom:14px;">1. 📢 Barra de Anuncios Superior (Top Bar)</h4>
+                        <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" id="editBarEnabled" checked style="width:18px; height:18px; cursor:pointer;">
+                            <label for="editBarEnabled" style="margin:0; cursor:pointer; font-weight:700; color:var(--text);">Activar Barra de Anuncios Superior</label>
+                        </div>
+                        <div class="form-group">
+                            <label>Texto del Anuncio</label>
+                            <input type="text" id="editBarText" class="form-input" placeholder="ej. 🚚 Envíos gratis en compras mayores a $1,499 MXN">
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div class="form-group">
+                                <label>Color de Fondo</label>
+                                <input type="color" id="editBarBg" class="form-input" value="#12171e" style="height:42px; padding:4px; cursor:pointer;">
+                            </div>
+                            <div class="form-group">
+                                <label>Color de Texto</label>
+                                <input type="color" id="editBarTextColor" class="form-input" value="#3ddc84" style="height:42px; padding:4px; cursor:pointer;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloque 2: Hero & Banner Principal -->
+                    <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;">
+                        <h4 style="color:var(--blue); margin-bottom:14px;">2. 🚀 Banner Principal (Hero Section)</h4>
+                        <div class="form-group">
+                            <label>Etiqueta / Badge Superior</label>
+                            <input type="text" id="editHeroBadge" class="form-input" placeholder="ej. DISTRIBUIDOR AUTORIZADO VONIXX">
+                        </div>
+                        <div class="form-group">
+                            <label>Título Principal</label>
+                            <input type="text" id="editHeroTitle" class="form-input" placeholder="ej. CUIDADO AUTOMOTRIZ DE NIVEL PROFESIONAL">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtítulo / Descripción</label>
+                            <textarea id="editHeroSubtitle" class="form-input" rows="3" placeholder="Descripción de los productos y servicios..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>URL de Imagen Destacada / Producto Hero</label>
+                            <input type="text" id="editHeroImg" class="form-input" placeholder="https://ejemplo.com/imagen.png">
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div class="form-group">
+                                <label>Texto Botón Principal (CTA)</label>
+                                <input type="text" id="editHeroCtaText" class="form-input" placeholder="ej. Ver Catálogo Completo">
+                            </div>
+                            <div class="form-group">
+                                <label>Enlace Botón (CTA)</label>
+                                <input type="text" id="editHeroCtaLink" class="form-input" placeholder="#catalogo">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloque 3: Banners Promocionales Secundarios -->
+                    <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                            <h4 style="color:var(--yellow);">3. 🏷️ Banners Promocionales</h4>
+                            <button class="btn-action" id="addPromoBannerBtn" style="font-size:12px;">➕ Agregar Banner</button>
+                        </div>
+                        <div id="promoBannersList" style="display:flex; flex-direction:column; gap:14px;">
+                            <!-- Lista dinámica de banners promocionales -->
+                        </div>
+                    </div>
+
+                    <!-- Bloque 4: Modificación Rápida de Precios de Productos -->
+                    <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;">
+                        <h4 style="color:var(--green); margin-bottom:14px;">4. 🏷️ Precios e Imágenes de Productos (Edición Rápida)</h4>
+                        <p style="font-size:12.5px; color:var(--muted); margin-bottom:12px;">Cambia directamente los precios e imágenes del catálogo en vivo:</p>
+                        <input type="text" id="quickProductSearch" class="form-input" placeholder="🔍 Buscar producto por nombre..." style="margin-bottom:12px;">
+                        <div style="max-height:260px; overflow-y:auto; border:1px solid var(--line); border-radius:8px;">
+                            <table style="width:100%; font-size:12.5px;">
+                                <thead>
+                                    <tr>
+                                        <th>Imagen</th>
+                                        <th>Producto</th>
+                                        <th>Precio (MXN)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="quickProductsTableBody">
+                                    <!-- Productos con inputs de precio instantáneo -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Bloque 5: Identidad & Redes -->
+                    <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;">
+                        <h4 style="color:var(--text); margin-bottom:14px;">5. 📞 Contacto e Identidad</h4>
+                        <div class="form-group">
+                            <label>Número de WhatsApp para Pedidos (sin espacios ni +)</label>
+                            <input type="text" id="editWhatsapp" class="form-input" placeholder="ej. 526634606566">
+                        </div>
+                        <div class="form-group">
+                            <label>Texto del Pie de Página (Footer Copyright)</label>
+                            <input type="text" id="editFooterText" class="form-input" placeholder="© 2026 Reset Supply MX. Todos los derechos reservados.">
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Vista Previa Live Iframe -->
+                <div style="flex:1; height:80vh; border:1px solid var(--line); border-radius:12px; background:var(--panel-2); display:flex; flex-direction:column; overflow:hidden; position:sticky; top:20px;">
+                    <div style="background:var(--panel); padding:10px 16px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:14px;">📱 Vista Previa en Vivo (Live Preview)</span>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-action" id="previewDesktopBtn" style="font-size:11px;">💻 Escritorio</button>
+                            <button class="btn-action" id="previewMobileBtn" style="font-size:11px;">📱 Móvil</button>
+                            <button class="btn-action" id="reloadPreviewBtn" style="font-size:11px;">🔄 Recargar</button>
+                        </div>
+                    </div>
+                    <div id="iframeWrapper" style="flex:1; width:100%; display:flex; justify-content:center; align-items:center; background:#000; overflow:hidden;">
+                        <iframe id="livePreviewFrame" src="index.html" style="width:100%; height:100%; border:none; transition:width 0.3s ease;"></iframe>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -311,6 +442,12 @@
             location.reload();
         });
 
+        // Variables globales del editor visual
+        var currentSiteConfig = null;
+        var currentProductsList = [];
+        var livePreviewFrame = document.getElementById('livePreviewFrame');
+        var tabEditor = document.getElementById('tabEditor');
+
         // Tabs
         tabs.forEach(function(tab) {
             tab.addEventListener('click', function() {
@@ -320,11 +457,18 @@
                 if (target === 'orders') {
                     tabOrders.style.display = 'block';
                     tabProducts.style.display = 'none';
+                    tabEditor.style.display = 'none';
                     loadOrders();
-                } else {
+                } else if (target === 'products') {
                     tabOrders.style.display = 'none';
                     tabProducts.style.display = 'block';
+                    tabEditor.style.display = 'none';
                     loadProducts();
+                } else if (target === 'editor') {
+                    tabOrders.style.display = 'none';
+                    tabProducts.style.display = 'none';
+                    tabEditor.style.display = 'block';
+                    loadSiteConfigForEditor();
                 }
             });
         });
@@ -875,6 +1019,294 @@
                 console.error(err);
             }
         };
+
+        // ==========================================================================
+        // LÓGICA DEL EDITOR VISUAL DE LA PÁGINA WEB & LIVE PREVIEW
+        // ==========================================================================
+        
+        // Controles de cambio de vista Móvil / Escritorio
+        document.getElementById('previewDesktopBtn').addEventListener('click', function() {
+            document.getElementById('iframeWrapper').style.width = '100%';
+            livePreviewFrame.style.width = '100%';
+        });
+
+        document.getElementById('previewMobileBtn').addEventListener('click', function() {
+            livePreviewFrame.style.width = '375px';
+        });
+
+        document.getElementById('reloadPreviewBtn').addEventListener('click', function() {
+            livePreviewFrame.src = 'index.html?t=' + Date.now();
+        });
+
+        // Cargar Configuración del Sitio para el Editor
+        async function loadSiteConfigForEditor() {
+            try {
+                var res = await fetch('/api/admin/site-config', {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                if (data.success && data.config) {
+                    currentSiteConfig = data.config;
+                    populateEditorFields(data.config);
+                }
+
+                // Cargar también lista de productos para el modificador rápido de precios
+                var prodRes = await fetch('/api/admin/products', {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var prodData = await prodRes.json();
+                if (prodData.success && prodData.products) {
+                    currentProductsList = prodData.products;
+                    renderQuickProductsTable(currentProductsList);
+                }
+            } catch (err) {
+                console.error('Error al cargar configuración para el editor:', err);
+            }
+        }
+
+        // Poblado de campos del editor con la configuración actual
+        function populateEditorFields(cfg) {
+            if (!cfg) return;
+            // 1. Barra de Anuncios
+            if (cfg.announcementBar) {
+                document.getElementById('editBarEnabled').checked = cfg.announcementBar.enabled !== false;
+                document.getElementById('editBarText').value = cfg.announcementBar.text || '';
+                document.getElementById('editBarBg').value = cfg.announcementBar.bgColor || '#12171e';
+                document.getElementById('editBarTextColor').value = cfg.announcementBar.textColor || '#3ddc84';
+            }
+
+            // 2. Hero Section
+            if (cfg.hero) {
+                document.getElementById('editHeroBadge').value = cfg.hero.badge || '';
+                document.getElementById('editHeroTitle').value = cfg.hero.title || '';
+                document.getElementById('editHeroSubtitle').value = cfg.hero.subtitle || '';
+                document.getElementById('editHeroImg').value = cfg.hero.bgImage || '';
+                document.getElementById('editHeroCtaText').value = cfg.hero.ctaText || '';
+                document.getElementById('editHeroCtaLink').value = cfg.hero.ctaLink || '';
+            }
+
+            // 3. Banners Promocionales
+            renderPromoBannersList(cfg.promoBanners || []);
+
+            // 4. Identidad & Redes
+            if (cfg.branding) {
+                document.getElementById('editWhatsapp').value = cfg.branding.whatsapp || '';
+                document.getElementById('editFooterText').value = cfg.branding.footerText || '';
+            }
+
+            // Disparar vista previa inicial
+            setTimeout(sendLivePreviewUpdate, 500);
+        }
+
+        // Renderizar lista de Banners Promocionales
+        function renderPromoBannersList(banners) {
+            var container = document.getElementById('promoBannersList');
+            var html = '';
+            banners.forEach(function(b, idx) {
+                html += `
+                <div style="background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:14px; position:relative;" data-banner-idx="${idx}">
+                    <button class="btn-action btn-delete" onclick="deletePromoBanner(${idx})" style="position:absolute; top:10px; right:10px; padding:4px 8px; font-size:11px;">🗑️ Eliminar</button>
+                    <div class="form-group" style="margin-bottom:8px;">
+                        <label style="font-size:11px;">Etiqueta / Badge</label>
+                        <input type="text" class="form-input promo-tag" value="${b.tag || ''}" style="font-size:12px; padding:6px 10px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:8px;">
+                        <label style="font-size:11px;">Título del Banner</label>
+                        <input type="text" class="form-input promo-title" value="${b.title || ''}" style="font-size:12px; padding:6px 10px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:8px;">
+                        <label style="font-size:11px;">Subtítulo / Descripción</label>
+                        <input type="text" class="form-input promo-subtitle" value="${b.subtitle || ''}" style="font-size:12px; padding:6px 10px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:8px;">
+                        <label style="font-size:11px;">URL Imagen de Banner</label>
+                        <input type="text" class="form-input promo-image" value="${b.image || ''}" style="font-size:12px; padding:6px 10px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:11px;">Enlace del Banner</label>
+                        <input type="text" class="form-input promo-link" value="${b.link || ''}" style="font-size:12px; padding:6px 10px;">
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html || '<p style="color:var(--muted); font-size:12px;">No hay banners promocionales creados.</p>';
+            
+            // Agregar event listeners para cambios dinámicos
+            container.querySelectorAll('input').forEach(function(input) {
+                input.addEventListener('input', sendLivePreviewUpdate);
+            });
+        }
+
+        // Agregar nuevo banner promocional
+        document.getElementById('addPromoBannerBtn').addEventListener('click', function() {
+            var banners = getPromoBannersFromInputs();
+            banners.push({
+                id: 'promo_' + Date.now(),
+                title: 'Nuevo Banner Promocional',
+                subtitle: 'Descripción breve de la promoción',
+                tag: 'NUEVA OFERTA',
+                image: 'https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-6.png',
+                link: '#catalogo'
+            });
+            renderPromoBannersList(banners);
+            sendLivePreviewUpdate();
+        });
+
+        // Eliminar banner promocional
+        window.deletePromoBanner = function(idx) {
+            var banners = getPromoBannersFromInputs();
+            banners.splice(idx, 1);
+            renderPromoBannersList(banners);
+            sendLivePreviewUpdate();
+        };
+
+        // Obtener arreglo de banners promocionales de las entradas
+        function getPromoBannersFromInputs() {
+            var list = [];
+            var items = document.querySelectorAll('#promoBannersList > div');
+            items.forEach(function(item, idx) {
+                list.push({
+                    id: 'promo_' + idx,
+                    tag: item.querySelector('.promo-tag').value,
+                    title: item.querySelector('.promo-title').value,
+                    subtitle: item.querySelector('.promo-subtitle').value,
+                    image: item.querySelector('.promo-image').value,
+                    link: item.querySelector('.promo-link').value
+                });
+            });
+            return list;
+        }
+
+        // Tabla rápida de modificación de precios e imágenes
+        function renderQuickProductsTable(products) {
+            var tbody = document.getElementById('quickProductsTableBody');
+            var filter = (document.getElementById('quickProductSearch').value || '').toLowerCase();
+            var html = '';
+            products.forEach(function(p) {
+                if (filter && !p.name.toLowerCase().includes(filter)) return;
+                html += `
+                <tr data-prod-id="${p.id}">
+                    <td style="padding:6px;"><img src="${p.image}" style="width:32px; height:32px; object-fit:cover; border-radius:4px;"></td>
+                    <td style="padding:6px; font-weight:600;">${p.name}</td>
+                    <td style="padding:6px;">
+                        <input type="number" step="0.01" class="form-input quick-price-input" value="${parseFloat(p.price).toFixed(2)}" style="width:90px; padding:4px 8px; font-size:12px; text-align:right;" data-prod-id="${p.id}">
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html || '<tr><td colspan="3" style="text-align:center; padding:12px; color:var(--muted);">No se encontraron productos.</td></tr>';
+
+            // Escuchar cambios inmediatos de precio
+            tbody.querySelectorAll('.quick-price-input').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    var pid = this.getAttribute('data-prod-id');
+                    var newPrice = parseFloat(this.value) || 0;
+                    var prodObj = currentProductsList.find(function(item) { return item.id === pid; });
+                    if (prodObj) {
+                        prodObj.price = newPrice;
+                    }
+                    sendLivePreviewUpdate();
+                });
+            });
+        }
+
+        document.getElementById('quickProductSearch').addEventListener('input', function() {
+            renderQuickProductsTable(currentProductsList);
+        });
+
+        // Capturar estado actual del formulario del editor
+        function getDraftSiteConfig() {
+            return {
+                announcementBar: {
+                    enabled: document.getElementById('editBarEnabled').checked,
+                    text: document.getElementById('editBarText').value,
+                    bgColor: document.getElementById('editBarBg').value,
+                    textColor: document.getElementById('editBarTextColor').value,
+                    linkUrl: '#catalogo'
+                },
+                hero: {
+                    badge: document.getElementById('editHeroBadge').value,
+                    title: document.getElementById('editHeroTitle').value,
+                    subtitle: document.getElementById('editHeroSubtitle').value,
+                    bgImage: document.getElementById('editHeroImg').value,
+                    ctaText: document.getElementById('editHeroCtaText').value,
+                    ctaLink: document.getElementById('editHeroCtaLink').value
+                },
+                promoBanners: getPromoBannersFromInputs(),
+                branding: {
+                    whatsapp: document.getElementById('editWhatsapp').value,
+                    footerText: document.getElementById('editFooterText').value
+                }
+            };
+        }
+
+        // Transmitir cambio en tiempo real al iframe via postMessage
+        function sendLivePreviewUpdate() {
+            var draftCfg = getDraftSiteConfig();
+            if (livePreviewFrame && livePreviewFrame.contentWindow) {
+                livePreviewFrame.contentWindow.postMessage({
+                    type: 'UPDATE_SITE_CONFIG',
+                    config: draftCfg,
+                    products: currentProductsList
+                }, '*');
+            }
+        }
+
+        // Agregar event listeners a todos los campos del editor para actualización instantánea
+        ['editBarEnabled', 'editBarText', 'editBarBg', 'editBarTextColor', 
+         'editHeroBadge', 'editHeroTitle', 'editHeroSubtitle', 'editHeroImg', 'editHeroCtaText', 'editHeroCtaLink',
+         'editWhatsapp', 'editFooterText'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', sendLivePreviewUpdate);
+                el.addEventListener('change', sendLivePreviewUpdate);
+            }
+        });
+
+        // Guardar Cambios en la Base de Datos Backend / Firestore
+        document.getElementById('saveSiteConfigBtn').addEventListener('click', async function() {
+            var draftCfg = getDraftSiteConfig();
+            var btn = this;
+            btn.disabled = true;
+            btn.textContent = '⏳ Guardando...';
+
+            try {
+                // 1. Guardar Configuración del Sitio
+                var res = await fetch('/api/admin/site-config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify({ config: draftCfg })
+                });
+                var data = await res.json();
+
+                // 2. Guardar Precios Modificados de Productos
+                for (var i = 0; i < currentProductsList.length; i++) {
+                    var p = currentProductsList[i];
+                    await fetch('/api/admin/products', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + adminToken
+                        },
+                        body: JSON.stringify(p)
+                    });
+                }
+
+                if (data.success) {
+                    alert('🎉 ¡Cambios guardados con ÉXITO en la página web!');
+                    sendLivePreviewUpdate();
+                } else {
+                    alert('⚠️ Error al guardar: ' + (data.error || 'Error desconocido'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('❌ Error de conexión al guardar los cambios.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Guardar Cambios en la Web';
+            }
+        });
     </script>
 </body>
 </html>

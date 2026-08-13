@@ -665,6 +665,99 @@ app.delete('/api/admin/products/:id', requireAdminAuth, async (req, res) => {
   }
 });
 
+// ==================== CONFIGURACIÓN Y EDITOR VISUAL DEL SITIO ====================
+let localSiteConfig = {
+  announcementBar: {
+    enabled: true,
+    text: "🚚 Envíos gratis a todo México en compras mayores a $1,499 MXN",
+    bgColor: "#12171e",
+    textColor: "#3ddc84",
+    linkUrl: "#catalogo"
+  },
+  hero: {
+    badge: "DISTRIBUIDOR AUTORIZADO VONIXX EN MÉXICO",
+    title: "PRODUCTOS DE DETAILING AUTOMOTRIZ DE ALTA TECNOLOGÍA",
+    subtitle: "Soluciones profesionales para limpieza, restauración y protección cerámico de tu vehículo.",
+    bgImage: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png",
+    ctaText: "Ver Catálogo Completo",
+    ctaLink: "#catalogo"
+  },
+  promoBanners: [
+    {
+      id: "promo_1",
+      title: "Línea de Cerámicos SiO2",
+      subtitle: "Protección extrema y brillo hidrofóbico duradero",
+      tag: "OFERTA DESTACADA",
+      image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-PAINT.png",
+      link: "#ceramicos"
+    },
+    {
+      id: "promo_2",
+      title: "Limpiadores de Interiores",
+      subtitle: "Sintra Fast & Bactericida Bactran con fórmulas exclusivas",
+      tag: "MÁS VENDIDOS",
+      image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-FAST.png",
+      link: "#limpieza"
+    }
+  ],
+  branding: {
+    logoText: "RESET SUPPLY MX",
+    whatsapp: "526634606566",
+    footerText: "© 2026 Reset Supply MX. Todos los derechos reservados. Distribuidor Autorizado Vonixx.",
+    primaryColor: "#3ddc84",
+    accentColor: "#22b8f0"
+  }
+};
+
+// Endpoint público para obtener la configuración del sitio
+app.get('/api/site-config', async (req, res) => {
+  if (db) {
+    try {
+      const doc = await db.collection('site_config').doc('main').get();
+      if (doc.exists) {
+        return res.json({ success: true, config: { ...localSiteConfig, ...doc.data() } });
+      }
+    } catch (err) {
+      console.warn('⚠️ No se pudo leer site_config de Firestore, usando respaldo:', err.message);
+    }
+  }
+  res.json({ success: true, config: localSiteConfig });
+});
+
+// Endpoint admin para obtener la configuración del sitio
+app.get('/api/admin/site-config', requireAdminAuth, async (req, res) => {
+  if (db) {
+    try {
+      const doc = await db.collection('site_config').doc('main').get();
+      if (doc.exists) {
+        localSiteConfig = { ...localSiteConfig, ...doc.data() };
+      }
+    } catch (err) {
+      console.warn('⚠️ No se pudo leer site_config de Firestore:', err.message);
+    }
+  }
+  res.json({ success: true, config: localSiteConfig });
+});
+
+// Endpoint admin para guardar la configuración del sitio
+app.post('/api/admin/site-config', requireAdminAuth, async (req, res) => {
+  const { config } = req.body;
+  if (!config) {
+    return res.status(400).json({ error: 'Configuración no enviada' });
+  }
+  localSiteConfig = { ...localSiteConfig, ...config, updatedAt: new Date().toISOString() };
+
+  if (db) {
+    try {
+      await db.collection('site_config').doc('main').set(localSiteConfig, { merge: true });
+      console.log('✅ Configuración del sitio guardada en Firestore');
+    } catch (err) {
+      console.error('❌ Error al guardar site_config en Firestore:', err);
+    }
+  }
+  res.json({ success: true, message: 'Configuración del sitio guardada con éxito', config: localSiteConfig });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
   console.log(`🔗 Sitio local: http://localhost:${PORT}`);

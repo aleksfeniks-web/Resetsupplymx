@@ -2392,5 +2392,111 @@ section{padding:96px 0;}
         }
         window.addEventListener('scroll', highlightNavOnScroll, { passive: true });
 
+        // ==========================================================================
+        // SISTEMA DE CONFIGURACIÓN DINÁMICA DEL SITIO & EDITOR VISUAL (LIVE PREVIEW)
+        // ==========================================================================
+        function applySiteConfig(cfg) {
+            if (!cfg) return;
+            // 1. Barra de Anuncios Superior
+            var topBar = document.getElementById('topAnnouncementBar');
+            if (!topBar) {
+                topBar = document.createElement('div');
+                topBar.id = 'topAnnouncementBar';
+                topBar.style.cssText = 'padding:10px 16px; text-align:center; font-family:"Rajdhani",sans-serif; font-weight:700; font-size:13.5px; transition:all 0.3s ease; position:relative; z-index:1001;';
+                document.body.insertBefore(topBar, document.body.firstChild);
+            }
+            if (cfg.announcementBar) {
+                topBar.style.display = cfg.announcementBar.enabled ? 'block' : 'none';
+                topBar.style.backgroundColor = cfg.announcementBar.bgColor || '#12171e';
+                topBar.style.color = cfg.announcementBar.textColor || '#3ddc84';
+                topBar.innerHTML = `<a href="${cfg.announcementBar.linkUrl || '#catalogo'}" style="color:inherit; text-decoration:none;">${cfg.announcementBar.text || ''}</a>`;
+            }
+
+            // 2. Hero Section
+            if (cfg.hero) {
+                var heroEyebrow = document.querySelector('.hero-eyebrow');
+                if (heroEyebrow && cfg.hero.badge) heroEyebrow.textContent = cfg.hero.badge;
+                
+                var heroTitle = document.querySelector('.hero-title');
+                if (heroTitle && cfg.hero.title) heroTitle.innerHTML = cfg.hero.title;
+                
+                var heroText = document.querySelector('.hero-text');
+                if (heroText && cfg.hero.subtitle) heroText.textContent = cfg.hero.subtitle;
+
+                var heroCta = document.querySelector('.hero-buttons .btn-primary');
+                if (heroCta && cfg.hero.ctaText) {
+                    heroCta.textContent = cfg.hero.ctaText;
+                    if (cfg.hero.ctaLink) heroCta.setAttribute('href', cfg.hero.ctaLink);
+                }
+
+                var heroImg = document.querySelector('.hero-visual-frame img');
+                if (heroImg && cfg.hero.bgImage) {
+                    heroImg.src = cfg.hero.bgImage;
+                }
+            }
+
+            // 3. Branding & WhatsApp & Footer
+            if (cfg.branding) {
+                if (cfg.branding.whatsapp) {
+                    window.whatsappNumber = cfg.branding.whatsapp;
+                    document.querySelectorAll('a[href*="wa.me"]').forEach(function(a) {
+                        a.href = 'https://wa.me/' + cfg.branding.whatsapp + '?text=Hola%20Reset%20Supply%20MX,%20quisiera%20informaci%C3%B3n';
+                    });
+                }
+                if (cfg.branding.footerText) {
+                    var footerBottom = document.querySelector('.footer-bottom p');
+                    if (footerBottom) footerBottom.textContent = cfg.branding.footerText;
+                }
+            }
+
+            // 4. Banners Promocionales
+            if (cfg.promoBanners && Array.isArray(cfg.promoBanners) && cfg.promoBanners.length > 0) {
+                var promoBannersContainer = document.querySelector('.promo-section .container');
+                if (promoBannersContainer) {
+                    var html = '';
+                    cfg.promoBanners.forEach(function(b) {
+                        html += `
+                        <div class="promo-banner animate-on-scroll" style="margin-bottom:30px;">
+                            <div class="promo-banner-img"><img src="${b.image}" alt="${b.title}"></div>
+                            <div class="promo-banner-body">
+                                <span class="promo-banner-eyebrow">${b.tag || 'OFERTA DESTACADA'}</span>
+                                <h3 class="promo-banner-title">${b.title}</h3>
+                                <p class="promo-banner-desc">${b.subtitle}</p>
+                                <div><a href="${b.link || '#catalogo'}" class="btn btn-primary btn-sm">Ver Colección</a></div>
+                            </div>
+                        </div>`;
+                    });
+                    promoBannersContainer.innerHTML = html;
+                }
+            }
+        }
+
+        // Cargar configuración inicial del sitio desde el backend
+        fetch('/api/site-config')
+            .then(function(r) { return r.json(); })
+            .then(function(d) {
+                if (d.success && d.config) {
+                    applySiteConfig(d.config);
+                }
+            })
+            .catch(function(err) { console.warn('No se pudo cargar site-config:', err); });
+
+        // Escuchar eventos en tiempo real del Editor Visual en Admin
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'UPDATE_SITE_CONFIG') {
+                if (event.data.config) {
+                    applySiteConfig(event.data.config);
+                }
+                if (event.data.products && Array.isArray(event.data.products)) {
+                    event.data.products.forEach(function(p) {
+                        var priceEls = document.querySelectorAll(`[data-product-price-id="${p.id}"]`);
+                        priceEls.forEach(function(el) {
+                            el.textContent = '$' + parseFloat(p.price).toFixed(2) + ' MXN';
+                        });
+                    });
+                }
+            }
+        });
+
     })();
     </script>
