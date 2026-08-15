@@ -1452,44 +1452,6 @@
                     performVonixxSearch(document.getElementById('vonixxSearchInput').value);
                     sendLivePreviewUpdate();
                 }
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-            try {
-                var res = await fetch('/api/admin/products', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + adminToken
-                    },
-                    body: JSON.stringify({ id, name, price, category, image })
-                });
-                var data = await res.json();
-                if (data.success) {
-                    productModal.style.display = 'none';
-                    loadProducts();
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        });
-
-        window.deleteProduct = async function(id) {
-            if (!confirm('¿Estás seguro de eliminar este producto de la base de datos?')) return;
-            try {
-                var res = await fetch('/api/admin/products/' + id, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': 'Bearer ' + adminToken }
-                });
-                var data = await res.json();
-                if (data.success) {
-                    loadProducts();
-                }
-            } catch (err) {
-                console.error(err);
-            }
         };
 
         // ==========================================================================
