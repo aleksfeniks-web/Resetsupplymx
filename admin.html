@@ -1452,6 +1452,9 @@
                     performVonixxSearch(document.getElementById('vonixxSearchInput').value);
                     sendLivePreviewUpdate();
                 }
+            } catch (err) {
+                console.error(err);
+            }
         };
 
         // ==========================================================================
