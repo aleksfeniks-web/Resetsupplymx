@@ -2334,6 +2334,30 @@ section{padding:96px 0;}
 
         window.openProductDetailModal = function(prod) {
             if (!prod) return;
+            
+            // Buscar en el inventario completo cargado para asegurar descripción exacta
+            if (window.currentLoadedProductsMap) {
+                var found = null;
+                if (prod.id && window.currentLoadedProductsMap[prod.id]) found = window.currentLoadedProductsMap[prod.id];
+                if (!found && prod.code && window.currentLoadedProductsMap[prod.code]) found = window.currentLoadedProductsMap[prod.code];
+                if (!found && prod.name) {
+                    var norm = prod.name.trim().toLowerCase();
+                    found = window.currentLoadedProductsMap[norm];
+                    if (!found && Array.isArray(window.allCatalogProducts)) {
+                        found = window.allCatalogProducts.find(function(p) {
+                            var pName = (p.name || '').trim().toLowerCase();
+                            return pName === norm || pName.includes(norm) || norm.includes(pName);
+                        });
+                    }
+                }
+                if (found) {
+                    prod = Object.assign({}, found, prod, { 
+                        description: (found.description && found.description.trim()) ? found.description.trim() : (prod.description || ''),
+                        variations: (found.variations && found.variations.length > 0) ? found.variations : prod.variations
+                    });
+                }
+            }
+
             activeDetailProduct = prod;
             
             var basePrice = parseFloat(prod.price) || 0;
@@ -2345,8 +2369,8 @@ section{padding:96px 0;}
             detailModalCategory.textContent = (prod.category || 'LIMPIEZA').toUpperCase();
             detailModalBadge.textContent = (prod.category || 'Limpieza').toUpperCase();
 
-            // Descripción detallada
-            var desc = prod.description || 'Producto original Vonixx formulado para detailing automotriz profesional con máxima durabilidad, protección y brillo.';
+            // Descripción detallada desde el Inventario
+            var desc = (prod.description && prod.description.trim()) ? prod.description.trim() : 'Producto original Vonixx formulado con los más altos estándares tecnológicos para detailing automotriz y cuidado profesional.';
             detailModalDescription.textContent = desc;
 
             if (pct !== 0 && newPrice !== basePrice) {
@@ -2448,37 +2472,28 @@ section{padding:96px 0;}
             if (!card) return;
 
             var prodId = card.getAttribute('data-product-id') || card.getAttribute('data-id');
-            var prod = null;
-
-            if (prodId && window.currentLoadedProductsMap && window.currentLoadedProductsMap[prodId]) {
-                prod = window.currentLoadedProductsMap[prodId];
-            } else {
-                // Extraer datos directamente de la tarjeta
-                var title = card.querySelector('.product-name') || card.querySelector('.featured-title') || card.querySelector('.carousel-item-title');
-                var img = card.querySelector('img');
-                var priceEl = card.querySelector('.product-price-val') || card.querySelector('.product-price') || card.querySelector('.featured-price') || card.querySelector('.carousel-item-price');
-                var price = 0;
-                if (priceEl) {
-                    var match = priceEl.textContent.match(/\$([0-9,]+(\.[0-9]{2})?)/);
-                    if (match) price = parseFloat(match[1].replace(/,/g, ''));
-                }
-                var cat = card.getAttribute('data-category') || 'Limpieza';
-                var descEl = card.querySelector('p');
-                var desc = descEl ? descEl.textContent : '';
-
-                prod = {
-                    id: prodId || 'p_' + Date.now(),
-                    name: title ? title.textContent.trim() : 'Producto Vonixx',
-                    price: price,
-                    image: img ? img.src : '',
-                    category: cat,
-                    description: desc
-                };
+            var title = card.querySelector('.product-name') || card.querySelector('.featured-title') || card.querySelector('.carousel-item-title');
+            var img = card.querySelector('img');
+            var priceEl = card.querySelector('.product-price-val') || card.querySelector('.product-price') || card.querySelector('.featured-price') || card.querySelector('.carousel-item-price');
+            var price = 0;
+            if (priceEl) {
+                var match = priceEl.textContent.match(/\$([0-9,]+(\.[0-9]{2})?)/);
+                if (match) price = parseFloat(match[1].replace(/,/g, ''));
             }
+            var cat = card.getAttribute('data-category') || 'Limpieza';
+            var descEl = card.querySelector('p');
+            var desc = descEl ? descEl.textContent : '';
 
-            if (prod) {
-                openProductDetailModal(prod);
-            }
+            var prod = {
+                id: prodId || 'p_' + Date.now(),
+                name: title ? title.textContent.trim() : 'Producto Vonixx',
+                price: price,
+                image: img ? img.src : '',
+                category: cat,
+                description: desc
+            };
+
+            openProductDetailModal(prod);
         });
 
         // Agregar Producto al Carrito rápido
