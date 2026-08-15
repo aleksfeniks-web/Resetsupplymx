@@ -2358,14 +2358,14 @@ section{padding:96px 0;}
 
         // Filtrado por Categorías
         var categoryLinks = document.querySelectorAll('.category-link');
-        var productCards = document.querySelectorAll('.product-card');
         categoryLinks.forEach(function (link) {
             link.addEventListener('click', function (e) {
                 e.preventDefault();
                 categoryLinks.forEach(function (l) { l.classList.remove('active'); });
                 this.classList.add('active');
                 var selectedCategory = this.getAttribute('data-category');
-                productCards.forEach(function (card) {
+                var allCards = document.querySelectorAll('#productsGrid .product-card');
+                allCards.forEach(function (card) {
                     if (selectedCategory === 'all' || card.getAttribute('data-category') === selectedCategory) {
                         card.style.display = '';
                     } else {
@@ -2493,6 +2493,32 @@ section{padding:96px 0;}
                         }
                     }
                 });
+            });
+
+            // Actualizar conteos de categoría en la barra lateral
+            var counts = { all: products.length };
+            products.forEach(function(p) {
+                var cat = (p.category || 'limpieza').toLowerCase();
+                counts[cat] = (counts[cat] || 0) + 1;
+            });
+            document.querySelectorAll('.category-link').forEach(function(link) {
+                var cat = link.getAttribute('data-category');
+                var countSpan = link.querySelector('.category-count');
+                var num = counts[cat] || 0;
+                if (countSpan) {
+                    countSpan.textContent = '(' + num + ')';
+                }
+            });
+
+            // Respetar categoría activa seleccionada
+            var activeLink = document.querySelector('.category-link.active');
+            var selectedCat = activeLink ? activeLink.getAttribute('data-category') : 'all';
+            grid.querySelectorAll('.product-card').forEach(function(card) {
+                if (selectedCat === 'all' || card.getAttribute('data-category') === selectedCat) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
             });
 
             bindCartAndWaButtons(grid);
