@@ -213,13 +213,13 @@ app.get('/api/verify-checkout-session', async (req, res) => {
 
 
 // ==================== RUTAS DE ADMINISTRACIÓN SEGURAS ====================
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'ResetAdmin2026!';
+const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || 'ResetAdmin2026!').trim();
 
 // Middleware para verificar token/clave admin
 function requireAdminAuth(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  if (token && token === ADMIN_PASSWORD) {
+  if (token && token.trim() === ADMIN_PASSWORD) {
     next();
   } else {
     res.status(401).json({ error: 'Acceso no autorizado. Clave de administración requerida.' });
@@ -228,8 +228,9 @@ function requireAdminAuth(req, res, next) {
 
 // 1. Login de Administración
 app.post('/api/admin/login', (req, res) => {
-  const { password } = req.body;
-  if (password && password === ADMIN_PASSWORD) {
+  const { password } = req.body || {};
+  const inputPass = (password || '').trim();
+  if (inputPass && inputPass === ADMIN_PASSWORD) {
     res.json({ success: true, token: ADMIN_PASSWORD });
   } else {
     res.status(401).json({ success: false, error: 'Contraseña de administración incorrecta.' });
