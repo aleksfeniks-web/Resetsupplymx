@@ -284,385 +284,247 @@ app.put('/api/admin/orders/:id', requireAdminAuth, async (req, res) => {
 
 
 
-// Catálogo Oficial de Productos Vonixx (37 Artículos)
-const DEFAULT_PRODUCTS = [
-  {
-    "id": "prod_1",
-    "name": "ALUMAX – DESINCRUSTANTE ÁCIDO",
-    "category": "limpieza",
-    "price": 2261,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png"
-  },
-  {
-    "id": "prod_2",
-    "name": "DELET – LIMPIADOR DE PLÁSTICOS, VINILO Y CAUCHO",
-    "category": "limpieza",
-    "price": 200.00566,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png"
-  },
-  {
-    "id": "prod_3",
-    "name": "IMPACT – DESENGRASANTE MULTIUSOS",
-    "category": "limpieza",
-    "price": 225,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IMPACT-.png"
-  },
-  {
-    "id": "prod_4",
-    "name": "IZER – REMOVEDOR DE ÓXIDO",
-    "category": "limpieza",
-    "price": 212.00422,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IZER-1.png"
-  },
-  {
-    "id": "prod_5",
-    "name": "REMOVEX – DESENGRASANTE Y LIMPIADOR DE CHASIS",
-    "category": "limpieza",
-    "price": 1817,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REMOVEX-1.png"
-  },
-  {
-    "id": "prod_6",
-    "name": "REZET – ZACS",
-    "category": "limpieza",
-    "price": 206,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REZET.png"
-  },
-  {
-    "id": "prod_7",
-    "name": "SINTRA FAST – LIMPIADOR DE INTERIORES",
-    "category": "limpieza",
-    "price": 179,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-FAST.png"
-  },
-  {
-    "id": "prod_8",
-    "name": "SINTRA PRO – LIMPIADOR DE INTERIORES",
-    "category": "limpieza",
-    "price": 246.00531,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-PRO.png"
-  },
-  {
-    "id": "prod_9",
-    "name": "BACTRAN – LIMPIADOR BACTERICIDA 7 EN 1",
-    "category": "vsc",
-    "price": 206.00423,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-6.png"
-  },
-  {
-    "id": "prod_10",
-    "name": "EXTRACTUS – LIMPIADOR ULTRA CONCENTRADO",
-    "category": "vsc",
-    "price": 195.00407,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-7.png"
-  },
-  {
-    "id": "prod_11",
-    "name": "SANITIZANTE – FINALIZADOR 4 EN 1",
-    "category": "vsc",
-    "price": 216.00449,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-8.png"
-  },
-  {
-    "id": "prod_12",
-    "name": "BLEND PASTE WAX – CERA CON SIO2 Y CARNAÚBA",
-    "category": "cera-pasta",
-    "price": 580,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEND-PASTE-WAX.png"
-  },
-  {
-    "id": "prod_13",
-    "name": "CARNAUBA HYBRID WAX",
-    "category": "cera-pasta",
-    "price": 426,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-HYBRID-WAX.png"
-  },
-  {
-    "id": "prod_14",
-    "name": "NATIVE PASTE WAX – CARNAÚBA BRASILEÑA 100% PURA",
-    "category": "cera-pasta",
-    "price": 638,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-PASTE-WAX.png"
-  },
-  {
-    "id": "prod_15",
-    "name": "BLEND SPRAY – CERA LÍQUIDA CON SiO2 & CARNAÚBA",
-    "category": "cera-liquida",
-    "price": 296,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEN-SPRAY-.png"
-  },
-  {
-    "id": "prod_16",
-    "name": "CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO",
-    "category": "cera-liquida",
-    "price": 180,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-TOK-FINAL.png"
-  },
-  {
-    "id": "prod_17",
-    "name": "NATIVE SPRAY WAX – CARNAÚBA LÍQUIDA PREMIUM",
-    "category": "cera-liquida",
-    "price": 309,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-SPRAY-WAX.png"
-  },
-  {
-    "id": "prod_18",
-    "name": "CARNAÚBA PLUS – CERA DE LIMPIEZA",
-    "category": "cera-liquida",
-    "price": 219.00477,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-PLUS.png"
-  },
-  {
-    "id": "prod_19",
-    "name": "CITRON – SHAMPOO DESENGRASANTE",
-    "category": "shampoo",
-    "price": 280,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CITRON.png"
-  },
-  {
-    "id": "prod_20",
-    "name": "HYDROX WASH – SHAMPOO CERÁMICO",
-    "category": "shampoo",
-    "price": 492,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-WASH.png"
-  },
-  {
-    "id": "prod_21",
-    "name": "SINERGY PAINT – SELLADOR CERÁMICO PARA PINTURA",
-    "category": "ceramicos",
-    "price": 632,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-PAINT.png"
-  },
-  {
-    "id": "prod_22",
-    "name": "SINERGY WHEEL – CERÁMICO PARA LLANTAS",
-    "category": "ceramicos",
-    "price": 618,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-WHEEL.png"
-  },
-  {
-    "id": "prod_23",
-    "name": "HYDROX PRO – CERÁMICO HIDROREACTIVO CONCENTRADO",
-    "category": "ceramicos",
-    "price": 571,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-PRO-.png"
-  },
-  {
-    "id": "prod_24",
-    "name": "HYDROX FAST – CERÁMICO HIDROREACTIVO",
-    "category": "ceramicos",
-    "price": 201,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-FAST.png"
-  },
-  {
-    "id": "prod_25",
-    "name": "RESTAURAX – RESTAURADOR DE PLÁSTICOS",
-    "category": "plasticos",
-    "price": 368,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-12.png"
-  },
-  {
-    "id": "prod_26",
-    "name": "RESTAURAX EN AEROSOL",
-    "category": "plasticos",
-    "price": 253,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-13.png"
-  },
-  {
-    "id": "prod_27",
-    "name": "FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR",
-    "category": "plasticos",
-    "price": 277,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-11.png"
-  },
-  {
-    "id": "prod_28",
-    "name": "INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL",
-    "category": "plasticos",
-    "price": 201,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-16.png"
-  },
-  {
-    "id": "prod_29",
-    "name": "SHINY – ABRILLANTADOR DE LLANTAS BRILLANTE",
-    "category": "llantas",
-    "price": 321,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SHINY-5.png"
-  },
-  {
-    "id": "prod_30",
-    "name": "REVOX – ABRILLANTADOR ACABADO SATINADO",
-    "category": "llantas",
-    "price": 248,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REVOX.png"
-  },
-  {
-    "id": "prod_31",
-    "name": "REXER – RESTAURADOR DE NEUMÁTICOS",
-    "category": "llantas",
-    "price": 333,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REXER.png"
-  },
-  {
-    "id": "prod_32",
-    "name": "GLAZY – LIMPIADOR DE CRISTALES",
-    "category": "cristales",
-    "price": 193.00725,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/GLAZY.png"
-  },
-  {
-    "id": "prod_33",
-    "name": "FOCUS – REMOVEDOR DE MARCAS DE AGUA",
-    "category": "cristales",
-    "price": 254,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/FOCUS.png"
-  },
-  {
-    "id": "prod_34",
-    "name": "PRIZM – RESTAURADOR DE VIDRIOS",
-    "category": "cristales",
-    "price": 184,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PRIZM.png"
-  },
-  {
-    "id": "prod_35",
-    "name": "HIGICOURO – LIMPIADOR DE PIEL",
-    "category": "piel",
-    "price": 296,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HIGICOURO-LIMPIADOR-DE-PIEL-5.png"
-  },
-  {
-    "id": "prod_36",
-    "name": "HIDROCOURO – HIDRATANTE Y PROTECTOR DE PIEL",
-    "category": "piel",
-    "price": 251,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HIDRACOURO-HIDRATANTE-Y-PROTECTOR-DE-PIEL-3.png"
-  },
-  {
-    "id": "prod_37",
-    "name": "CEPILLO DE MICROFIBRA – LIMPIEZA DE RINES",
-    "category": "accesorios",
-    "price": 312,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CEPILLO-MICROFIBRA-PARA-LIMPIEZA-RINES.png"
-  },
-  {
-    "id": "prod_38",
-    "name": "GUANTE MICROFIBRA 2 EN 1",
-    "category": "accesorios",
-    "price": 140,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/guante-2-en-1.png"
-  },
-  {
-    "id": "prod_39",
-    "name": "KIT DE 5 PINCELES DE DETALLADO",
-    "category": "accesorios",
-    "price": 313,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/KIT-DE-PINCELES-EXTERNO.png"
-  },
-  {
-    "id": "prod_40",
-    "name": "APLICADOR DE MICROFIBRA – ENCAJE DE MANO",
-    "category": "accesorios",
-    "price": 60,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/APLICADOR-DE-MANO.png"
-  },
-  {
-    "id": "prod_41",
-    "name": "MICROFIBRA CAR BRITE",
-    "category": "microfibras",
-    "price": 101.00251,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/MICROFIBRA.png"
-  },
-  {
-    "id": "prod_42",
-    "name": "PAD DE CORTE LIGERO AMARILLO",
-    "category": "pads",
-    "price": 282,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-CORTE-LIGERO-AMARILLA.png"
-  },
-  {
-    "id": "prod_43",
-    "name": "PAD DE LUSTRO AZUL CLARO",
-    "category": "pads",
-    "price": 282,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-LUSTRO-AZUL-CLARO.png"
-  },
-  {
-    "id": "prod_44",
-    "name": "PAD DE SUPER LUSTRO ROJO",
-    "category": "pads",
-    "price": 282,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-SUPER-LUSTRO-ROJO.png"
-  }
+// Catálogo Ampliado e Inventario de Productos Vonixx con Variaciones
+let localInventory = [
+  { id: "VON-00042", code: "VON-00042", name: "V-MOL 1.5 L", category: "limpieza", udm: "PZ", qty: 2, price: 131.00, pct: 0, newPrice: 131.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png", description: "LAVADO DESINCRUSTANTE DE ALTA CONCENTRACIÓN", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "1.5 L", price: 131.00, qty: 2 }] },
+  { id: "VON-00026", code: "VON-00026", name: "V FLOC (SHAMPOO PH NEUTRO) 500ML", category: "limpieza", udm: "PZ", qty: 2, price: 91.00, pct: 0, newPrice: 91.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png", description: "SHAMPOO AUTOMOTRIZ DE PH NEUTRO DE ALTO RENDIMIENTO", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 91.00, qty: 2 }, { id: "v2", name: "1.5 L", price: 230.00, qty: 5 }, { id: "v3", name: "3 L", price: 420.00, qty: 2 }] },
+  { id: "VON-00097", code: "VON-00097", name: "HYDROX WASH 500ML", category: "limpieza", udm: "PZ", qty: 2, price: 269.00, pct: 0, newPrice: 269.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-WASH.png", description: "SHAMPOO CERÁMICO DE LIMPIEZA Y PROTECCIÓN SiO2", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 269.00, qty: 2 }] },
+  { id: "VON-00072", code: "VON-00072", name: "ALUMAX EXP 20 L", category: "limpieza", udm: "PZ", qty: 2, price: 1237.00, pct: 0, newPrice: 1237.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png", description: "DESINCRUSTANTE ÁCIDO PARA RINES Y MOTOR PRESENTACIÓN EXP 20L", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "20 L", price: 1237.00, qty: 2 }] },
+  { id: "VON-00084", code: "VON-00084", name: "REMOVEX EXP 20L", category: "limpieza", udm: "PZ", qty: 1, price: 994.00, pct: 0, newPrice: 994.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REMOVEX-1.png", description: "DESENGRASANTE Y LIMPIADOR DE CHASIS INDUSTRIAL 20L", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "20 L", price: 994.00, qty: 1 }] },
+  { id: "VON-00067", code: "VON-00067", name: "V-ECO FAST 500 ML", category: "limpieza", udm: "PZ", qty: 1, price: 85.00, pct: 0, newPrice: 85.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REZET.png", description: "LAVADO ECOLÓGICO EN SECO PARA CARROCERÍA Y CRISTALES", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 85.00, qty: 1 }] },
+  { id: "VON-00039", code: "VON-00039", name: "IZER 500ML", category: "limpieza", udm: "PZ", qty: 4, price: 116.00, pct: 0, newPrice: 116.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IZER-1.png", description: "REMOVEDOR DE CONTAMINACIÓN FÉRREA Y ÓXIDO CON INDICADOR DE COLOR", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 116.00, qty: 4 }, { id: "v2", name: "1.5 L", price: 290.00, qty: 3 }] },
+  { id: "VON-00040", code: "VON-00040", name: "STRIKE 500ML", category: "limpieza", udm: "PZ", qty: 4, price: 193.00, pct: 0, newPrice: 193.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IMPACT-.png", description: "REMOVEDOR DE ALQUITRÁN, BREA Y ADHESIVOS DE PINTURA", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 193.00, qty: 4 }] },
+  { id: "VON-00027", code: "VON-00027", name: "DELET (LIMPIADOR DE PLÁSTICOS, VINILO Y CAUCHO) 500ML", category: "limpieza", udm: "PZ", qty: 2, price: 109.00, pct: 0, newPrice: 109.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png", description: "LIMPIADOR DE ALTO PODER PARA NEUMÁTICOS, CAUCHO Y PLÁSTICOS", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 109.00, qty: 2 }, { id: "v2", name: "1.5 L", price: 285.00, qty: 4 }] },
+  { id: "VON-00028", code: "VON-00028", name: "SINTRA FAST (LIMPIADOR DE INTERIORES) 500ML", category: "limpieza", udm: "PZ", qty: 2, price: 98.00, pct: 0, newPrice: 98.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-FAST.png", description: "LIMPIADOR MULTIUSOS DE INTERIORES LISTO PARA USAR", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 98.00, qty: 2 }] },
+  { id: "VON-00091", code: "VON-00091", name: "BACTRAN 1.5L", category: "vsc", udm: "PZ", qty: 2, price: 113.00, pct: 0, newPrice: 113.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-6.png", description: "LIMPIADOR Y DESINFECTANTE BACTERICIDA 7 EN 1 PARA TAPIZADOS", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "1.5 L", price: 113.00, qty: 2 }, { id: "v2", name: "5 L", price: 340.00, qty: 1 }] },
+  { id: "VON-00093", code: "VON-00093", name: "EXTRACTUS 1.5L", category: "vsc", udm: "PZ", qty: 2, price: 107.00, pct: 0, newPrice: 107.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-7.png", description: "DETERGENTE ULTRA CONCENTRADO PARA EXTRACCIÓN DE ALFOMBRAS Y TAPIZ", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "1.5 L", price: 107.00, qty: 2 }] },
+  { id: "VON-00104", code: "VON-00104", name: "SANITIZANTE FINALIZADOR 1.5 L", category: "vsc", udm: "PZ", qty: 2, price: 118.00, pct: 0, newPrice: 118.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-8.png", description: "PROTECTOR Y NEUTRALIZADOR DE OLORES PARA INTERIORES", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "1.5 L", price: 118.00, qty: 2 }] },
+  { id: "VON-00031", code: "VON-00031", name: "RESTAURAX (RESTAURADOR DE PLÁSTICOS, VINILO Y CAUCHO)", category: "plasticos", udm: "PZ", qty: 4, price: 201.00, pct: 0, newPrice: 201.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-12.png", description: "RESTAURA Y PROTEGE SUPERFICIES DE PLÁSTICO Y VINILO CONTRA UV", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 201.00, qty: 4 }, { id: "v2", name: "1.5 L", price: 480.00, qty: 2 }] },
+  { id: "VON-00061", code: "VON-00061", name: "REVOX 500 ML", category: "llantas", udm: "PZ", qty: 2, price: 136.00, pct: 0, newPrice: 136.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REVOX.png", description: "ABRILLANTADOR DE NEUMÁTICOS CON ACABADO SATINADO Y ALTA DURABILIDAD", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 136.00, qty: 2 }] },
+  { id: "VON-00106", code: "VON-00106", name: "REXER 500ML", category: "llantas", udm: "PZ", qty: 2, price: 182.00, pct: 0, newPrice: 182.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REXER.png", description: "ACONDICIONADOR HIDRÓFOBICO Y PROTECTOR DE LLANTAS", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 182.00, qty: 2 }] },
+  { id: "VON-00062", code: "VON-00062", name: "SHINY 500 ML", category: "llantas", udm: "PZ", qty: 2, price: 176.00, pct: 0, newPrice: 176.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SHINY-5.png", description: "ABRILLANTADOR DE LLANTAS DE EFECTO MOJADO INTENSO Y REPELENTE", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 176.00, qty: 2 }] },
+  { id: "VON-00046", code: "VON-00046", name: "PAD PARA POL DE VIDRIOS TIPO ALFOMBRA 5\"", category: "accesorios", udm: "PZ", qty: 1, price: 219.00, pct: 0, newPrice: 219.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-CORTE-LIGERO-AMARILLA.png", description: "PAD DE ALFOMBRA PARA CORTE Y PULIDO PROFUNDO DE CRISTALES 5 PULGADAS", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "5 pulgadas", price: 219.00, qty: 1 }] },
+  { id: "VON-00047", code: "VON-00047", name: "PAD PARA POL DE VIDRIOS TIPO LONA 5\"", category: "accesorios", udm: "PZ", qty: 1, price: 219.00, pct: 0, newPrice: 219.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-LUSTRO-AZUL-CLARO.png", description: "PAD DE LONA PARA ELIMINACIÓN DE MARCAS DE AGUA EN VIDRIOS 5 PULGADAS", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "5 pulgadas", price: 219.00, qty: 1 }] },
+  { id: "MIC-00001", code: "MIC-00001", name: "MICROFIBRA", category: "accesorios", udm: "PZ", qty: 2, price: 133.00, pct: 0, newPrice: 133.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/MICROFIBRA.png", description: "TOALLA DE MICROFIBRA DE ALTO GRAMAJE 40X40 CM SIN COSTURAS", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "40x40 cm", price: 133.00, qty: 2 }] },
+  { id: "MIC-00002", code: "MIC-00002", name: "MICROFIBRA CHICA", category: "accesorios", udm: "PZ", qty: 2, price: 44.00, pct: 0, newPrice: 44.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/MICROFIBRA.png", description: "MICROFIBRA COMPACTA MULTIUSOS PARA INTERIORES Y DETALLES", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "30x30 cm", price: 44.00, qty: 2 }] },
+
+  { id: "VON-00001", code: "VON-00001", name: "V10 PULIMENTO DE CORTE 500ML", category: "cera-pasta", udm: "PZ", qty: 2, price: 130.00, pct: 0, newPrice: 130.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEND-PASTE-WAX.png", description: "PULIMENTO DE CORTE RÁPIDO PARA ELIMINAR RAYONES PROFUNDOS", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 130.00, qty: 2 }] },
+  { id: "VON-00002", code: "VON-00002", name: "V20 PULIMENTO DE CORTE MEDIO 500ML", category: "cera-pasta", udm: "PZ", qty: 2, price: 152.00, pct: 0, newPrice: 152.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-HYBRID-WAX.png", description: "COMPUESTO PULIDOR MEDIO PARA ACABADO LISO Y SIN HOLOGRAMAS", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 152.00, qty: 2 }] },
+  { id: "VON-00003", code: "VON-00003", name: "V30 PULIMENTO DE ACABADO 500ML", category: "cera-pasta", udm: "PZ", qty: 2, price: 162.00, pct: 0, newPrice: 162.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-PASTE-WAX.png", description: "PULIMENTO DE ULTRA ACABADO Y BRILLO ESPEJO", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 162.00, qty: 2 }] },
+  { id: "VON-00004", code: "VON-00004", name: "LINEA V PULIMENTO DE CORTE PREMIUM V-CUT 500ML", category: "cera-pasta", udm: "PZ", qty: 2, price: 398.00, pct: 0, newPrice: 398.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEND-PASTE-WAX.png", description: "PULIMENTO PREMIUM V-CUT CORTE EXTREMO TECNOLOGÍA BASE AGUA", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 398.00, qty: 2 }] },
+  { id: "VON-00005", code: "VON-00005", name: "LINEA V PULIMENTO CORTE MEDIO PREMIUM V-POLISH 500ML", category: "cera-pasta", udm: "PZ", qty: 2, price: 370.00, pct: 0, newPrice: 370.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-HYBRID-WAX.png", description: "PULIMENTO DE CORTE MEDIO V-POLISH LIBRE DE POLVO Y SILICONAS", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 370.00, qty: 2 }] },
+  { id: "VON-00006", code: "VON-00006", name: "LINEA V PULIMENTO DE ACABADO PREMIUM V-FINISH 500ML", category: "cera-pasta", udm: "PZ", qty: 2, price: 370.00, pct: 0, newPrice: 370.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-PASTE-WAX.png", description: "PULIMENTO FINALIZADOR V-FINISH BRILLO PROFUNDO TIPO SHOW CAR", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 370.00, qty: 2 }] },
+  { id: "VON-00034", code: "VON-00034", name: "OPTY 240 ML", category: "cristales", udm: "PZ", qty: 1, price: 444.00, pct: 0, newPrice: 444.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/GLAZY.png", description: "REPELENTE DE LLUVIA Y SELLADOR DE CRISTALES DE LARGA DURACIÓN", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "240 ML", price: 444.00, qty: 1 }] },
+  { id: "VON-00035", code: "VON-00035", name: "GLAZY 500ML", category: "cristales", udm: "PZ", qty: 2, price: 105.00, pct: 0, newPrice: 105.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/GLAZY.png", description: "LIMPIADOR DE CRISTALES SIN RESIDUOS NI MANCHAS", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 105.00, qty: 2 }] },
+  { id: "VON-00086", code: "VON-00086", name: "FOCUS 240 ML", category: "cristales", udm: "PZ", qty: 2, price: 139.00, pct: 0, newPrice: 139.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/FOCUS.png", description: "DESCONTAMINANTE Y REMOVEDOR DE MARCAS DE AGUA EN VIDRIOS", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "240 ML", price: 139.00, qty: 2 }] },
+  { id: "VON-00007", code: "VON-00007", name: "BLEND ALL IN ONE (3 PASOS EN 1) 500ML", category: "cera-liquida", udm: "PZ", qty: 1, price: 388.00, pct: 0, newPrice: 388.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEN-SPRAY-.png", description: "PULIMENTO TODO EN UNO: CORTE, ACABADO Y PROTECCIÓN SiO2 + CARNAÚBA", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 388.00, qty: 1 }] },
+  { id: "VON-00008", code: "VON-00008", name: "V40 (4 PASOS EN 1) 500ML", category: "cera-liquida", udm: "PZ", qty: 1, price: 190.00, pct: 0, newPrice: 190.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-TOK-FINAL.png", description: "PULIMENTO Y CERA 4 EN 1: CORTE, REFINADO, BRILLO Y PROTECCIÓN", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 190.00, qty: 1 }] },
+  { id: "VON-00036", code: "VON-00036", name: "CARNAUBA HYBRID WAX 240ML", category: "cera-pasta", udm: "PZ", qty: 2, price: 233.00, pct: 0, newPrice: 233.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-HYBRID-WAX.png", description: "CERA HÍBRIDA DE CARNAÚBA Y POLÍMEROS SINTÉTICOS EN PASTA", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "240 ML", price: 233.00, qty: 2 }] },
+  { id: "VON-00010", code: "VON-00010", name: "BLEND PASTE WAX 100ML", category: "cera-pasta", udm: "PZ", qty: 1, price: 317.00, pct: 0, newPrice: 317.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEND-PASTE-WAX.png", description: "CERA DE CARNAÚBA Y SiO2 HASTA 7 MESES DE DURABILIDAD", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "100 ML", price: 317.00, qty: 1 }] },
+  { id: "VON-00011", code: "VON-00011", name: "CARNAUBA PLUS 500ML", category: "cera-liquida", udm: "PZ", qty: 2, price: 120.00, pct: 0, newPrice: 120.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-PLUS.png", description: "CERA LÍQUIDA LIMPIADORA Y PROTECTORA", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 120.00, qty: 2 }] },
+  { id: "VON-00013", code: "VON-00013", name: "NATIVE CLEANER WAX 500ML", category: "cera-liquida", udm: "PZ", qty: 2, price: 200.00, pct: 0, newPrice: 200.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-SPRAY-WAX.png", description: "CERA PREPARADORA CON CARNAÚBA BRASILEÑA 100% PURA", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 200.00, qty: 2 }] },
+  { id: "VON-00014", code: "VON-00014", name: "NATIVE SPRAY WAX 500ML", category: "cera-liquida", udm: "PZ", qty: 2, price: 169.00, pct: 0, newPrice: 169.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-SPRAY-WAX.png", description: "CERA LÍQUIDA EN SPRAY CON CARNAÚBA PURA PARA MANTENIMIENTO", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 169.00, qty: 2 }] },
+  { id: "VON-00015", code: "VON-00015", name: "HIDRACOURO (HIDRATANTE Y PROTECTOR DE PIEL) 500ML", category: "cristales", udm: "PZ", qty: 1, price: 137.00, pct: 0, newPrice: 137.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HIDRACOURO-HIDRATANTE-Y-PROTECTOR-DE-PIEL-3.png", description: "CREMA HIDRATANTE DE PIEL Y CUERO AUTOMOTRIZ", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 137.00, qty: 1 }] },
+  { id: "VON-00016", code: "VON-00016", name: "HIGICOURO (LIMPIADOR DE PIEL) 500ML", category: "cristales", udm: "PZ", qty: 2, price: 88.00, pct: 0, newPrice: 88.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HIGICOURO-LIMPIADOR-DE-PIEL-5.png", description: "LIMPIADOR SUAVE Y EFECTIVO PARA PIEL Y ASIENTOS DE CUERO", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 88.00, qty: 2 }] },
+  { id: "VON-00017", code: "VON-00017", name: "MAKKER (ELIMINADOR DE MARCA DE REMOLINOS) 500ML", category: "cera-pasta", udm: "PZ", qty: 4, price: 162.00, pct: 0, newPrice: 162.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEND-PASTE-WAX.png", description: "RELLENADOR Y MASCARADOR DE SWIRLS Y MICRORAYONES CON BRILLO", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 162.00, qty: 4 }] },
+  { id: "VON-00095", code: "VON-00095", name: "HYDROX FAST 500ML", category: "ceramicos", udm: "PZ", qty: 2, price: 110.00, pct: 0, newPrice: 110.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-FAST.png", description: "SELLADOR CERÁMICO DE RÁPIDA APLICACIÓN HIDROREACTIVO", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 110.00, qty: 2 }] },
+  { id: "VON-00063", code: "VON-00063", name: "SPELL 500 ML", category: "ceramicos", udm: "PZ", qty: 2, price: 130.00, pct: 0, newPrice: 130.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-PAINT.png", description: "SELLADOR RÁPIDO DE SIO2 PARA APLICAR DURANTE EL ENJUAGUE", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 130.00, qty: 2 }] }
 ];
 
-// 4. Obtener Lista de Productos (desde Firestore o respaldo)
-app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
-  if (!db) {
-    return res.json({ success: true, products: DEFAULT_PRODUCTS });
+// Función auxiliar para recalcular nuevo precio
+function calculateItemPrices(item) {
+  const basePrice = parseFloat(item.price) || 0;
+  const pct = parseFloat(item.pct) || 0;
+  const qty = parseInt(item.qty) || 0;
+  const newPrice = item.customNewPrice !== undefined && item.customNewPrice !== null ? parseFloat(item.customNewPrice) : basePrice * (1 + pct / 100);
+  const subtotal = basePrice * qty;
+  const newSubtotal = newPrice * qty;
+
+  return {
+    ...item,
+    price: basePrice,
+    pct: pct,
+    qty: qty,
+    newPrice: Math.round(newPrice * 100) / 100,
+    subtotal: Math.round(subtotal * 100) / 100,
+    newSubtotal: Math.round(newSubtotal * 100) / 100
+  };
+}
+
+// 0. Endpoint Público de Productos (para mostrar en index.html y resetsupplymx.html)
+app.get('/api/products', async (req, res) => {
+  let products = localInventory;
+  if (db) {
+    try {
+      const snapshot = await db.collection('products').get();
+      if (!snapshot.empty) {
+        let dbProds = [];
+        snapshot.forEach(doc => {
+          dbProds.push({ id: doc.id, ...doc.data() });
+        });
+        products = dbProds;
+      }
+    } catch (e) {
+      console.warn('⚠️ No se pudo leer productos de Firestore, usando catálogo local:', e.message);
+    }
   }
-  try {
-    const snapshot = await db.collection('products').get();
-    let products = [];
-    if (snapshot.empty) {
-      console.log('🌱 Sembrando 37 productos oficiales Vonixx en Firestore...');
+  const processedProducts = products.map(calculateItemPrices);
+  res.json({ success: true, products: processedProducts });
+});
+
+// 4. Obtener Lista de Productos para Admin
+app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
+  if (db) {
+    try {
+      const snapshot = await db.collection('products').get();
+      if (snapshot.empty) {
+        console.log('🌱 Sembrando inventario oficial Vonixx en Firestore...');
+        const batch = db.batch();
+        localInventory.forEach(p => {
+          const ref = db.collection('products').doc(p.id);
+          batch.set(ref, calculateItemPrices(p));
+        });
+        await batch.commit();
+      } else {
+        let dbProds = [];
+        snapshot.forEach(doc => {
+          dbProds.push({ id: doc.id, ...doc.data() });
+        });
+        localInventory = dbProds;
+      }
+    } catch (err) {
+      console.error('Error al sincronizar Firestore productos:', err);
+    }
+  }
+  const processed = localInventory.map(calculateItemPrices);
+  res.json({ success: true, products: processed });
+});
+
+// 5. Crear o Actualizar Producto en Inventario
+app.post('/api/admin/products', requireAdminAuth, async (req, res) => {
+  const { id, code, name, price, pct, qty, udm, category, image, description, sec, variations, customNewPrice } = req.body;
+  const docId = id || code || ('VON-' + Date.now().toString().slice(-5));
+  
+  const productData = calculateItemPrices({
+    id: docId,
+    code: code || docId,
+    name: name || 'Nuevo Producto',
+    price: parseFloat(price) || 0,
+    pct: parseFloat(pct) || 0,
+    qty: parseInt(qty) || 1,
+    udm: udm || 'PZ',
+    category: category || 'limpieza',
+    image: image || 'https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png',
+    description: description || '',
+    sec: sec || 'Línea de Detailing / Limpieza',
+    variations: Array.isArray(variations) ? variations : [],
+    customNewPrice: customNewPrice ? parseFloat(customNewPrice) : undefined,
+    updatedAt: new Date().toISOString()
+  });
+
+  const index = localInventory.findIndex(p => p.id === docId || p.code === docId);
+  if (index >= 0) {
+    localInventory[index] = { ...localInventory[index], ...productData };
+  } else {
+    localInventory.push(productData);
+  }
+
+  if (db) {
+    try {
+      await db.collection('products').doc(docId).set(productData, { merge: true });
+    } catch (err) {
+      console.error('Error guardando en Firestore:', err);
+    }
+  }
+
+  res.json({ success: true, id: docId, product: productData, products: localInventory.map(calculateItemPrices) });
+});
+
+// 5b. Guardar Actualización Masiva de Inventario (Batch/Bulk Update)
+app.post('/api/admin/products/batch', requireAdminAuth, async (req, res) => {
+  const { products, globalPct } = req.body;
+  if (!Array.isArray(products)) {
+    return res.status(400).json({ error: 'Array de productos inválido' });
+  }
+
+  let updatedList = products.map(p => {
+    if (globalPct !== undefined && globalPct !== null) {
+      p.pct = parseFloat(globalPct);
+    }
+    return calculateItemPrices(p);
+  });
+
+  localInventory = updatedList;
+
+  if (db) {
+    try {
       const batch = db.batch();
-      DEFAULT_PRODUCTS.forEach(p => {
+      updatedList.forEach(p => {
         const ref = db.collection('products').doc(p.id);
-        batch.set(ref, p);
+        batch.set(ref, p, { merge: true });
       });
       await batch.commit();
-      products = DEFAULT_PRODUCTS;
-    } else {
-      snapshot.forEach(doc => {
-        products.push({ id: doc.id, ...doc.data() });
-      });
+    } catch (err) {
+      console.error('Error batch Firestore:', err);
     }
-    res.json({ success: true, products });
-  } catch (err) {
-    console.error('Error al obtener productos:', err);
-    res.json({ success: true, products: DEFAULT_PRODUCTS });
   }
+
+  res.json({ success: true, message: 'Inventario actualizado con éxito', products: localInventory });
 });
 
-// 5. Crear o Actualizar Producto en Firestore
-app.post('/api/admin/products', requireAdminAuth, async (req, res) => {
-  if (!db) {
-    return res.status(500).json({ error: 'Firestore no está conectado' });
-  }
-  const { id, name, price, category, image, description } = req.body;
-  try {
-    const docId = id || 'prod_' + Date.now();
-    const docRef = db.collection('products').doc(docId);
-    const productData = {
-      name,
-      price: parseFloat(price),
-      category,
-      image,
-      description: description || '',
-      updatedAt: new Date().toISOString()
-    };
-    await docRef.set(productData, { merge: true });
-    res.json({ success: true, id: docId, product: productData });
-  } catch (err) {
-    console.error('Error al guardar producto:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// 6. Eliminar Producto
+// 6. Eliminar Producto de Inventario
 app.delete('/api/admin/products/:id', requireAdminAuth, async (req, res) => {
-  if (!db) {
-    return res.status(500).json({ error: 'Firestore no está conectado' });
-  }
   const { id } = req.params;
-  try {
-    await db.collection('products').doc(id).delete();
-    res.json({ success: true, message: 'Producto eliminado' });
-  } catch (err) {
-    console.error('Error al eliminar producto:', err);
-    res.status(500).json({ error: err.message });
+  localInventory = localInventory.filter(p => p.id !== id && p.code !== id);
+
+  if (db) {
+    try {
+      await db.collection('products').doc(id).delete();
+    } catch (err) {
+      console.error('Error eliminando en Firestore:', err);
+    }
   }
+
+  res.json({ success: true, message: 'Producto eliminado correctamente', products: localInventory });
+});
+
+// 7. Búsqueda y Fallback Oficial en Vonixx México (www.vonixxmexicooficial.com)
+app.get('/api/admin/vonixx-search', requireAdminAuth, async (req, res) => {
+  const query = (req.query.q || '').trim().toLowerCase();
+  
+  // Base de datos completa de catálogo Vonixx Oficial para consulta e importación
+  const OFFICIAL_VONIXX_CATALOG = [
+    { code: "VON-00042", name: "V-MOL 1.5 L", category: "limpieza", price: 131.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png", description: "LAVADO DESINCRUSTANTE DE ALTA CONCENTRACIÓN", variations: [{ name: "1.5 L", price: 131.00 }] },
+    { code: "VON-00026", name: "V FLOC (SHAMPOO PH NEUTRO) 500ML", category: "limpieza", price: 91.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png", description: "SHAMPOO AUTOMOTRIZ DE PH NEUTRO CON ALTO PODER LUBRICANTE", variations: [{ name: "500 ML", price: 91.00 }, { name: "1.5 L", price: 230.00 }] },
+    { code: "VON-00097", name: "HYDROX WASH 500ML", category: "limpieza", price: 269.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-WASH.png", description: "SHAMPOO CERÁMICO DE LIMPIEZA Y PROTECCIÓN CON SIO2", variations: [{ name: "500 ML", price: 269.00 }] },
+    { code: "VON-00072", name: "ALUMAX EXP 20 L", category: "limpieza", price: 1237.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png", description: "DESINCRUSTANTE ÁCIDO DE USO INDUSTRIAL 20 LITROS", variations: [{ name: "20 L", price: 1237.00 }] },
+    { code: "VON-00084", name: "REMOVEX EXP 20L", category: "limpieza", price: 994.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REMOVEX-1.png", description: "DESENGRASANTE INDUSTRIAL DE CHASIS Y MOTORES 20 LITROS", variations: [{ name: "20 L", price: 994.00 }] },
+    { code: "VON-00039", name: "IZER 500ML", category: "limpieza", price: 116.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IZER-1.png", description: "REMOVEDOR DE ÓXIDO Y DESCONTAMINANTE FÉRREO CON CAMBIO DE COLOR", variations: [{ name: "500 ML", price: 116.00 }] },
+    { code: "VON-00040", name: "STRIKE 500ML", category: "limpieza", price: 193.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IMPACT-.png", description: "REMOVEDOR DE ALQUITRÁN Y PEGAMOSOS", variations: [{ name: "500 ML", price: 193.00 }] },
+    { code: "VON-00027", name: "DELET 500ML", category: "limpieza", price: 109.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png", description: "LIMPIADOR EXCLUSIVO PARA CAUCHO Y NEUMÁTICOS", variations: [{ name: "500 ML", price: 109.00 }] },
+    { code: "VON-00028", name: "SINTRA FAST 500ML", category: "limpieza", price: 98.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-FAST.png", description: "LIMPIADOR DE INTERIORES SANITIZANTE LISTO PARA USAR", variations: [{ name: "500 ML", price: 98.00 }] },
+    { code: "VON-00031", name: "RESTAURAX 500ML", category: "plasticos", price: 201.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-12.png", description: "RESTAURADOR Y PROTECTOR DE PLÁSTICOS EXTERNOS", variations: [{ name: "500 ML", price: 201.00 }] },
+    { code: "VON-00061", name: "REVOX 500ML", category: "llantas", price: 136.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REVOX.png", description: "ABRILLANTADOR DE LLANTAS ACABADO SATINADO", variations: [{ name: "500 ML", price: 136.00 }] },
+    { code: "VON-00062", name: "SHINY 500ML", category: "llantas", price: 176.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SHINY-5.png", description: "ABRILLANTADOR DE LLANTAS EFECTO MOJADO", variations: [{ name: "500 ML", price: 176.00 }] },
+    { code: "VON-00010", name: "BLEND PASTE WAX", category: "cera-pasta", price: 317.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEND-PASTE-WAX.png", description: "CERA EN PASTA DE CARNAÚBA Y SIO2", variations: [{ name: "100 ML", price: 317.00 }] },
+    { code: "VON-00021", name: "SINERGY PAINT 500ML", category: "ceramicos", price: 632.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-PAINT.png", description: "SELLADOR CERÁMICO EN SPRAY PARA PINTURA", variations: [{ name: "500 ML", price: 632.00 }] }
+  ];
+
+  let results = OFFICIAL_VONIXX_CATALOG;
+  if (query) {
+    results = OFFICIAL_VONIXX_CATALOG.filter(item => 
+      item.code.toLowerCase().includes(query) ||
+      item.name.toLowerCase().includes(query) ||
+      item.description.toLowerCase().includes(query)
+    );
+  }
+
+  res.json({
+    success: true,
+    source: "www.vonixxmexicooficial.com",
+    count: results.length,
+    results: results
+  });
 });
 
 // ==================== CONFIGURACIÓN Y EDITOR VISUAL DEL SITIO ====================

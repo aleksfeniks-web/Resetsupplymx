@@ -153,26 +153,113 @@
             </div>
         </div>
 
-        <!-- Sección 2: Productos y Precios -->
+        <!-- Sección 2: Inventario y Lista de Precios -->
         <div id="tabProducts" class="tab-content" style="display:none;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h3>Productos en Catálogo</h3>
-                <button class="btn-primary" id="newProductBtn" style="width:auto; padding:8px 18px; font-size:13.5px;">➕ Agregar Nuevo Producto</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+                <div>
+                    <h3>📦 Inventario VON — Lista de Precios</h3>
+                    <p style="font-size:12.5px; color:var(--muted);">Administra productos, edita todas las columnas en vivo, aplica aumentos/descuentos y gestiona variaciones.</p>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn-action" id="openVonixxSearchBtn" style="border-color:var(--blue); color:var(--blue);">🔍 Buscar en Vonixx México</button>
+                    <button class="btn-primary" id="newProductBtn" style="width:auto; padding:8px 18px; font-size:13.5px;">➕ Agregar Producto</button>
+                    <button class="btn-primary" id="saveInventoryBatchBtn" style="width:auto; padding:8px 18px; font-size:13.5px; background:var(--green); color:#0a0e13;">💾 Guardar Cambios Inventario</button>
+                </div>
             </div>
-            <div class="table-wrapper">
-                <table>
+
+            <!-- Panel de Controles e Incrementos -->
+            <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px 20px; display:flex; gap:20px; flex-wrap:wrap; align-items:center; margin-bottom:20px;">
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <label style="font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase;">% de aumento global</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="number" id="globalPctInput" placeholder="0" step="0.5" class="form-input" style="width:90px; text-align:right;">
+                        <button class="btn-action" id="applyGlobalPctBtn">Aplicar a Todos</button>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:4px; flex:1; min-width:200px;">
+                    <label style="font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase;">Buscar por Código o Descripción</label>
+                    <input type="text" id="inventorySearchBox" class="form-input" placeholder="ej. VON-00042 o V-FLOC...">
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <label style="font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase;">Filtrar Categoría</label>
+                    <select id="inventoryCategoryFilter" class="form-input" style="width:160px;">
+                        <option value="all">Todas las Categorías</option>
+                        <option value="limpieza">Limpieza</option>
+                        <option value="vsc">Sistema VSC</option>
+                        <option value="cera-pasta">Cera en Pasta</option>
+                        <option value="cera-liquida">Cera Líquida</option>
+                        <option value="shampoo">Shampoo</option>
+                        <option value="ceramicos">Cerámicos</option>
+                        <option value="plasticos">Restauración</option>
+                        <option value="llantas">Llantas</option>
+                        <option value="cristales">Cristales & Piel</option>
+                        <option value="accesorios">Accesorios</option>
+                    </select>
+                </div>
+
+                <div style="display:flex; align-items:flex-end;">
+                    <button class="btn-action btn-delete" id="resetGlobalPctBtn" style="padding:10px 14px;">Restablecer %</button>
+                </div>
+            </div>
+
+            <!-- Resumen Estadístico del Inventario -->
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom:20px;">
+                <div class="stat-card">
+                    <div class="stat-label">Subtotal Original</div>
+                    <div class="stat-value" id="invSumOriginal" style="font-size:20px;">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Subtotal Con Aumento</div>
+                    <div class="stat-value" id="invSumNew" style="font-size:20px; color:var(--green);">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Diferencia</div>
+                    <div class="stat-value" id="invSumDiff" style="font-size:20px; color:var(--blue);">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Piezas Totales (Stock)</div>
+                    <div class="stat-value" id="invSumPieces" style="font-size:20px; color:var(--yellow);">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Productos Registrados</div>
+                    <div class="stat-value" id="invSumCount" style="font-size:20px;">0</div>
+                </div>
+            </div>
+
+            <!-- Tabla Interactiva de Inventario -->
+            <div class="table-wrapper" style="overflow-x:auto;">
+                <table style="min-width:1150px;">
                     <thead>
                         <tr>
-                            <th>Imagen</th>
-                            <th>Nombre</th>
-                            <th>Categoría</th>
-                            <th>Precio</th>
-                            <th>Acciones</th>
+                            <th style="width:70px;">Imagen</th>
+                            <th style="width:110px;">Código</th>
+                            <th>Descripción / Producto</th>
+                            <th style="width:60px;">UdM</th>
+                            <th style="width:75px; text-align:right;">Cantidad</th>
+                            <th style="width:95px; text-align:right;">Precio Base</th>
+                            <th style="width:100px; text-align:right;">SubTotal</th>
+                            <th style="width:85px; text-align:right;">% Aumento</th>
+                            <th style="width:110px; text-align:right;">Nuevo Precio</th>
+                            <th style="width:110px; text-align:right;">Nuevo SubTotal</th>
+                            <th style="width:90px; text-align:center;">Variaciones</th>
+                            <th style="width:110px; text-align:center;">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="productsTableBody">
-                        <tr><td colspan="5" style="text-align:center; color:var(--muted); padding:30px;">Cargando catálogo...</td></tr>
+                    <tbody id="inventoryTableBody">
+                        <tr><td colspan="12" style="text-align:center; color:var(--muted); padding:30px;">Cargando inventario...</td></tr>
                     </tbody>
+                    <tfoot>
+                        <tr style="background:var(--panel-2); font-weight:700;">
+                            <td colspan="6" style="padding:14px; color:var(--text);">TOTALES ACUMULADOS</td>
+                            <td style="text-align:right; font-family:'Rajdhani',sans-serif; font-size:16px;" id="footInvOriginal">$0.00</td>
+                            <td></td>
+                            <td></td>
+                            <td style="text-align:right; color:var(--green); font-family:'Rajdhani',sans-serif; font-size:16px;" id="footInvNew">$0.00</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -342,42 +429,148 @@
         </div>
     </div>
 
-    <!-- Modal Editar / Crear Producto -->
+    <!-- Modal Editar / Crear Producto Completo -->
     <div id="productModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <h3 id="productModalTitle" style="margin-bottom:16px;">📦 Editar Producto</h3>
+        <div class="modal-content" style="max-width:620px;">
+            <h3 id="productModalTitle" style="margin-bottom:16px;">📦 Editar Producto de Inventario</h3>
             <form id="productForm">
                 <input type="hidden" id="prodId">
-                <div class="form-group">
-                    <label>Nombre del Producto</label>
-                    <input type="text" id="prodName" class="form-input" required>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label>Código del Producto</label>
+                        <input type="text" id="prodCode" class="form-input" placeholder="ej. VON-00042" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Unidad de Medida (UdM)</label>
+                        <input type="text" id="prodUdm" class="form-input" placeholder="ej. PZ" value="PZ" required>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Precio ($ MXN)</label>
-                    <input type="number" step="0.01" id="prodPrice" class="form-input" required>
+                    <label>Nombre / Descripción Corta</label>
+                    <input type="text" id="prodName" class="form-input" placeholder="ej. V-MOL 1.5 L" required>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label>Cantidad (Stock)</label>
+                        <input type="number" id="prodQty" class="form-input" value="1" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Precio Base ($ MXN)</label>
+                        <input type="number" step="0.01" id="prodPrice" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>% Aumento / Descuento</label>
+                        <input type="number" step="0.5" id="prodPct" class="form-input" value="0">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Categoría</label>
                     <select id="prodCategory" class="form-input">
                         <option value="limpieza">Limpieza</option>
                         <option value="vsc">Sistema VSC</option>
-                        <option value="cera">Ceras</option>
+                        <option value="cera-pasta">Cera en Pasta</option>
+                        <option value="cera-liquida">Cera Líquida</option>
                         <option value="shampoo">Shampoo</option>
                         <option value="ceramicos">Cerámicos</option>
                         <option value="plasticos">Restauración</option>
                         <option value="llantas">Llantas</option>
                         <option value="cristales">Cristales & Piel</option>
+                        <option value="accesorios">Accesorios</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>URL de Imagen</label>
-                    <input type="url" id="prodImage" class="form-input" required>
+                    <input type="url" id="prodImage" class="form-input" placeholder="https://..." required>
+                </div>
+                <div class="form-group">
+                    <label>Descripción Larga / Detalles del Producto</label>
+                    <textarea id="prodDescription" class="form-input" rows="3" placeholder="Información detallada para la página principal..."></textarea>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
                     <button type="button" class="btn-action" id="closeProductModalBtn" style="flex:1;">Cancelar</button>
                     <button type="submit" class="btn-primary" style="flex:1;">Guardar Producto</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Gestionar Variaciones de Producto -->
+    <div id="variationsModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:580px;">
+            <h3 style="margin-bottom:6px;">⚙️ Variaciones del Producto</h3>
+            <p id="varProdName" style="color:var(--muted); font-size:13px; margin-bottom:16px;"></p>
+            <div style="margin-bottom:16px;">
+                <h4 style="color:var(--green); margin-bottom:10px; font-size:14px;">Agregar Nueva Variación</h4>
+                <div style="display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:8px; align-items:flex-end;">
+                    <div class="form-group" style="margin:0;">
+                        <label style="font-size:11px;">Nombre / Tamaño</label>
+                        <input type="text" id="newVarName" class="form-input" placeholder="ej. 500 ML, 1.5 L, 20 L">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label style="font-size:11px;">Precio ($)</label>
+                        <input type="number" step="0.01" id="newVarPrice" class="form-input" placeholder="0.00">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label style="font-size:11px;">Stock</label>
+                        <input type="number" id="newVarQty" class="form-input" placeholder="1" value="1">
+                    </div>
+                    <button class="btn-primary" id="addVariationBtn" style="padding:10px 14px; font-size:12px;">➕</button>
+                </div>
+            </div>
+
+            <div style="border:1px solid var(--line); border-radius:8px; overflow:hidden; max-height:220px; overflow-y:auto; margin-bottom:20px;">
+                <table style="width:100%; font-size:13px;">
+                    <thead>
+                        <tr>
+                            <th>Variación</th>
+                            <th style="text-align:right;">Precio Base</th>
+                            <th style="text-align:right;">Stock</th>
+                            <th style="text-align:center;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="variationsListBody">
+                        <tr><td colspan="4" style="text-align:center; padding:15px; color:var(--muted);">Sin variaciones registradas.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn-action" id="closeVariationsModalBtn">Cerrar</button>
+                <button class="btn-primary" id="saveVariationsModalBtn" style="width:auto; padding:8px 20px;">Guardar Variaciones</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Búsqueda e Importación desde Vonixx México -->
+    <div id="vonixxSearchModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:700px;">
+            <h3 style="margin-bottom:6px;">🌐 Buscar en Vonixx México (www.vonixxmexicooficial.com)</h3>
+            <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">En caso de no existir un producto en la lista, puedes buscar e importarlo directamente desde el catálogo oficial.</p>
+            <div style="display:flex; gap:10px; margin-bottom:16px;">
+                <input type="text" id="vonixxSearchInput" class="form-input" placeholder="Buscar por código, nombre o ingrediente activo (ej. DELET, ALUMAX, SINTRA)..." style="flex:1;">
+                <button class="btn-primary" id="triggerVonixxSearchBtn" style="width:auto; padding:10px 20px;">🔍 Buscar</button>
+            </div>
+
+            <div style="border:1px solid var(--line); border-radius:8px; max-height:300px; overflow-y:auto; margin-bottom:20px;">
+                <table style="width:100%; font-size:13px;">
+                    <thead>
+                        <tr>
+                            <th>Imagen</th>
+                            <th>Código</th>
+                            <th>Producto Oficial</th>
+                            <th>Precio Sugerido</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vonixxSearchResultsBody">
+                        <tr><td colspan="5" style="text-align:center; padding:20px; color:var(--muted);">Escribe una palabra clave o haz clic en Buscar para consultar la base oficial.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end;">
+                <button class="btn-action" id="closeVonixxSearchModalBtn">Cerrar</button>
+            </div>
         </div>
     </div>
 
@@ -704,272 +897,300 @@
     "category": "cera-liquida",
     "price": 180,
     "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-TOK-FINAL.png"
-  },
-  {
-    "id": "prod_17",
-    "name": "NATIVE SPRAY WAX – CARNAÚBA LÍQUIDA PREMIUM",
-    "category": "cera-liquida",
-    "price": 309,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-SPRAY-WAX.png"
-  },
-  {
-    "id": "prod_18",
-    "name": "CARNAÚBA PLUS – CERA DE LIMPIEZA",
-    "category": "cera-liquida",
-    "price": 219.00477,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-PLUS.png"
-  },
-  {
-    "id": "prod_19",
-    "name": "CITRON – SHAMPOO DESENGRASANTE",
-    "category": "shampoo",
-    "price": 280,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CITRON.png"
-  },
-  {
-    "id": "prod_20",
-    "name": "HYDROX WASH – SHAMPOO CERÁMICO",
-    "category": "shampoo",
-    "price": 492,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-WASH.png"
-  },
-  {
-    "id": "prod_21",
-    "name": "SINERGY PAINT – SELLADOR CERÁMICO PARA PINTURA",
-    "category": "ceramicos",
-    "price": 632,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-PAINT.png"
-  },
-  {
-    "id": "prod_22",
-    "name": "SINERGY WHEEL – CERÁMICO PARA LLANTAS",
-    "category": "ceramicos",
-    "price": 618,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-WHEEL.png"
-  },
-  {
-    "id": "prod_23",
-    "name": "HYDROX PRO – CERÁMICO HIDROREACTIVO CONCENTRADO",
-    "category": "ceramicos",
-    "price": 571,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-PRO-.png"
-  },
-  {
-    "id": "prod_24",
-    "name": "HYDROX FAST – CERÁMICO HIDROREACTIVO",
-    "category": "ceramicos",
-    "price": 201,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HYDROX-FAST.png"
-  },
-  {
-    "id": "prod_25",
-    "name": "RESTAURAX – RESTAURADOR DE PLÁSTICOS",
-    "category": "plasticos",
-    "price": 368,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-12.png"
-  },
-  {
-    "id": "prod_26",
-    "name": "RESTAURAX EN AEROSOL",
-    "category": "plasticos",
-    "price": 253,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-13.png"
-  },
-  {
-    "id": "prod_27",
-    "name": "FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR",
-    "category": "plasticos",
-    "price": 277,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-11.png"
-  },
-  {
-    "id": "prod_28",
-    "name": "INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL",
-    "category": "plasticos",
-    "price": 201,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-16.png"
-  },
-  {
-    "id": "prod_29",
-    "name": "SHINY – ABRILLANTADOR DE LLANTAS BRILLANTE",
-    "category": "llantas",
-    "price": 321,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SHINY-5.png"
-  },
-  {
-    "id": "prod_30",
-    "name": "REVOX – ABRILLANTADOR ACABADO SATINADO",
-    "category": "llantas",
-    "price": 248,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REVOX.png"
-  },
-  {
-    "id": "prod_31",
-    "name": "REXER – RESTAURADOR DE NEUMÁTICOS",
-    "category": "llantas",
-    "price": 333,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REXER.png"
-  },
-  {
-    "id": "prod_32",
-    "name": "GLAZY – LIMPIADOR DE CRISTALES",
-    "category": "cristales",
-    "price": 193.00725,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/GLAZY.png"
-  },
-  {
-    "id": "prod_33",
-    "name": "FOCUS – REMOVEDOR DE MARCAS DE AGUA",
-    "category": "cristales",
-    "price": 254,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/FOCUS.png"
-  },
-  {
-    "id": "prod_34",
-    "name": "PRIZM – RESTAURADOR DE VIDRIOS",
-    "category": "cristales",
-    "price": 184,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PRIZM.png"
-  },
-  {
-    "id": "prod_35",
-    "name": "HIGICOURO – LIMPIADOR DE PIEL",
-    "category": "piel",
-    "price": 296,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HIGICOURO-LIMPIADOR-DE-PIEL-5.png"
-  },
-  {
-    "id": "prod_36",
-    "name": "HIDROCOURO – HIDRATANTE Y PROTECTOR DE PIEL",
-    "category": "piel",
-    "price": 251,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/HIDRACOURO-HIDRATANTE-Y-PROTECTOR-DE-PIEL-3.png"
-  },
-  {
-    "id": "prod_37",
-    "name": "CEPILLO DE MICROFIBRA – LIMPIEZA DE RINES",
-    "category": "accesorios",
-    "price": 312,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CEPILLO-MICROFIBRA-PARA-LIMPIEZA-RINES.png"
-  },
-  {
-    "id": "prod_38",
-    "name": "GUANTE MICROFIBRA 2 EN 1",
-    "category": "accesorios",
-    "price": 140,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/guante-2-en-1.png"
-  },
-  {
-    "id": "prod_39",
-    "name": "KIT DE 5 PINCELES DE DETALLADO",
-    "category": "accesorios",
-    "price": 313,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/KIT-DE-PINCELES-EXTERNO.png"
-  },
-  {
-    "id": "prod_40",
-    "name": "APLICADOR DE MICROFIBRA – ENCAJE DE MANO",
-    "category": "accesorios",
-    "price": 60,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/APLICADOR-DE-MANO.png"
-  },
-  {
-    "id": "prod_41",
-    "name": "MICROFIBRA CAR BRITE",
-    "category": "microfibras",
-    "price": 101.00251,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/MICROFIBRA.png"
-  },
-  {
-    "id": "prod_42",
-    "name": "PAD DE CORTE LIGERO AMARILLO",
-    "category": "pads",
-    "price": 282,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-CORTE-LIGERO-AMARILLA.png"
-  },
-  {
-    "id": "prod_43",
-    "name": "PAD DE LUSTRO AZUL CLARO",
-    "category": "pads",
-    "price": 282,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-LUSTRO-AZUL-CLARO.png"
-  },
-  {
-    "id": "prod_44",
-    "name": "PAD DE SUPER LUSTRO ROJO",
-    "category": "pads",
-    "price": 282,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/PAD-DE-SUPER-LUSTRO-ROJO.png"
-  }
-];
+        // ==================== GESTIÓN DE INVENTARIO Y LISTA DE PRECIOS ====================
+        var currentProductsList = [];
+        var activeVariationProductId = null;
 
+        // Cargar productos del servidor
         async function loadProducts() {
             try {
                 var res = await fetch('/api/admin/products', {
                     headers: { 'Authorization': 'Bearer ' + adminToken }
                 });
                 var data = await res.json();
-                var products = (data.products && data.products.length > 0) ? data.products : DEFAULT_CATALOG;
+                if (data.success && Array.isArray(data.products)) {
+                    currentProductsList = data.products;
+                } else {
+                    currentProductsList = [];
+                }
+            } catch (err) {
+                console.error('Error al cargar inventario:', err);
+            }
+            renderInventoryTable();
+            renderQuickProductsTable(currentProductsList);
+        }
 
-                var html = '';
-                products.forEach(function(prod) {
-                    html += `
-                    <tr>
-                        <td><img src="${prod.image}" style="width:40px; height:40px; object-fit:cover; border-radius:6px; background:#161c24;"></td>
-                        <td><strong>${prod.name}</strong></td>
-                        <td><span style="text-transform:uppercase; font-size:12px; color:var(--muted); font-weight:600;">${prod.category}</span></td>
-                        <td style="font-weight:700; color:var(--green);">${parseFloat(prod.price).toFixed(2)} MXN</td>
-                        <td>
-                            <button class="btn-action" onclick="editProduct('${prod.id}', '${prod.name.replace(/'/g, "\\'")}', ${prod.price}, '${prod.category}', '${prod.image}')">✏️ Editar</button>
-                            <button class="btn-action btn-delete" onclick="deleteProduct('${prod.id}')">🗑️ Eliminar</button>
-                        </td>
-                    </tr>
-                    `;
+        // Helper de formateo de moneda
+        function fmtMXN(num) {
+            var val = parseFloat(num) || 0;
+            return '$' + val.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MXN';
+        }
+
+        // Renderizar la tabla interactiva de inventario
+        function renderInventoryTable() {
+            var tbody = document.getElementById('inventoryTableBody');
+            var search = (document.getElementById('inventorySearchBox').value || '').trim().toLowerCase();
+            var categoryFilter = document.getElementById('inventoryCategoryFilter').value;
+
+            var html = '';
+            var originalSum = 0;
+            var newSum = 0;
+            var totalPieces = 0;
+            var matchCount = 0;
+
+            currentProductsList.forEach(function(p, idx) {
+                var matchesSearch = !search || (p.code && p.code.toLowerCase().includes(search)) || (p.name && p.name.toLowerCase().includes(search));
+                var matchesCat = (categoryFilter === 'all') || (p.category === categoryFilter);
+
+                if (!matchesSearch || !matchesCat) return;
+
+                matchCount++;
+                var basePrice = parseFloat(p.price) || 0;
+                var pct = parseFloat(p.pct) || 0;
+                var qty = parseInt(p.qty) || 0;
+                var newPrice = p.customNewPrice !== undefined && p.customNewPrice !== null ? parseFloat(p.customNewPrice) : basePrice * (1 + pct / 100);
+                var subtotal = basePrice * qty;
+                var newSubtotal = newPrice * qty;
+
+                originalSum += subtotal;
+                newSum += newSubtotal;
+                totalPieces += qty;
+
+                var varCount = (p.variations && Array.isArray(p.variations)) ? p.variations.length : 0;
+
+                html += `
+                <tr data-idx="${idx}" data-prod-id="${p.id}">
+                    <td style="text-align:center;">
+                        <img src="${p.image}" style="width:36px; height:36px; object-fit:cover; border-radius:6px; background:#161c24; cursor:pointer;" onclick="editProduct('${p.id}')">
+                    </td>
+                    <td>
+                        <input type="text" class="form-input row-code" value="${p.code || p.id}" style="font-family:monospace; font-size:12px; padding:4px 6px;" data-idx="${idx}">
+                    </td>
+                    <td>
+                        <input type="text" class="form-input row-name" value="${p.name || ''}" style="font-size:12.5px; padding:4px 6px; font-weight:600;" data-idx="${idx}">
+                    </td>
+                    <td>
+                        <input type="text" class="form-input row-udm" value="${p.udm || 'PZ'}" style="font-size:12px; padding:4px 6px; text-align:center;" data-idx="${idx}">
+                    </td>
+                    <td style="text-align:right;">
+                        <input type="number" class="form-input row-qty" value="${qty}" min="0" style="width:65px; font-size:12px; padding:4px 6px; text-align:right;" data-idx="${idx}">
+                    </td>
+                    <td style="text-align:right;">
+                        <input type="number" step="0.5" class="form-input row-price" value="${basePrice.toFixed(2)}" style="width:85px; font-size:12px; padding:4px 6px; text-align:right;" data-idx="${idx}">
+                    </td>
+                    <td style="text-align:right; font-family:monospace; font-size:12px;" id="st-${idx}">${fmtMXN(subtotal)}</td>
+                    <td style="text-align:right;">
+                        <input type="number" step="0.5" class="form-input row-pct" value="${pct}" style="width:70px; font-size:12px; padding:4px 6px; text-align:right;" data-idx="${idx}">
+                    </td>
+                    <td style="text-align:right; font-weight:700; color:var(--green); font-family:monospace; font-size:12.5px;" id="np-${idx}">${fmtMXN(newPrice)}</td>
+                    <td style="text-align:right; font-weight:700; color:var(--green); font-family:monospace; font-size:12.5px;" id="ns-${idx}">${fmtMXN(newSubtotal)}</td>
+                    <td style="text-align:center;">
+                        <button class="btn-action" onclick="openVariationsModal('${p.id}')" style="font-size:11px; padding:3px 8px;">
+                            ⚙️ ${varCount} var
+                        </button>
+                    </td>
+                    <td style="text-align:center; white-space:nowrap;">
+                        <button class="btn-action" onclick="editProduct('${p.id}')" title="Editar detalles">✏️</button>
+                        <button class="btn-action btn-delete" onclick="deleteProduct('${p.id}')" title="Eliminar">🗑️</button>
+                    </td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = html || '<tr><td colspan="12" style="text-align:center; color:var(--muted); padding:30px;">No se encontraron productos.</td></tr>';
+
+            // Actualizar Métricas Estadísticas
+            document.getElementById('invSumOriginal').textContent = fmtMXN(originalSum);
+            document.getElementById('invSumNew').textContent = fmtMXN(newSum);
+            document.getElementById('invSumDiff').textContent = fmtMXN(newSum - originalSum);
+            document.getElementById('invSumPieces').textContent = totalPieces;
+            document.getElementById('invSumCount').textContent = matchCount;
+
+            document.getElementById('footInvOriginal').textContent = fmtMXN(originalSum);
+            document.getElementById('footInvNew').textContent = fmtMXN(newSum);
+
+            // Asignar Event Listeners para cambios instantáneos en la tabla
+            tbody.querySelectorAll('.row-code').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    var idx = +this.getAttribute('data-idx');
+                    currentProductsList[idx].code = this.value;
+                    sendLivePreviewUpdate();
                 });
+            });
 
-                productsTableBody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:30px;">No hay productos.</td></tr>';
+            tbody.querySelectorAll('.row-name').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    var idx = +this.getAttribute('data-idx');
+                    currentProductsList[idx].name = this.value;
+                    sendLivePreviewUpdate();
+                });
+            });
+
+            tbody.querySelectorAll('.row-udm').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    var idx = +this.getAttribute('data-idx');
+                    currentProductsList[idx].udm = this.value;
+                });
+            });
+
+            tbody.querySelectorAll('.row-qty').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    var idx = +this.getAttribute('data-idx');
+                    var qty = parseInt(this.value) || 0;
+                    currentProductsList[idx].qty = qty;
+                    updateInventoryRowCalc(idx);
+                    updateInventorySummaryCalculations();
+                    sendLivePreviewUpdate();
+                });
+            });
+
+            tbody.querySelectorAll('.row-price').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    var idx = +this.getAttribute('data-idx');
+                    var price = parseFloat(this.value) || 0;
+                    currentProductsList[idx].price = price;
+                    updateInventoryRowCalc(idx);
+                    updateInventorySummaryCalculations();
+                    sendLivePreviewUpdate();
+                });
+            });
+
+            tbody.querySelectorAll('.row-pct').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    var idx = +this.getAttribute('data-idx');
+                    var pct = parseFloat(this.value) || 0;
+                    currentProductsList[idx].pct = pct;
+                    updateInventoryRowCalc(idx);
+                    updateInventorySummaryCalculations();
+                    sendLivePreviewUpdate();
+                });
+            });
+        }
+
+        // Recalcular una fila individualmente sin re-renderizar la tabla entera
+        function updateInventoryRowCalc(idx) {
+            var p = currentProductsList[idx];
+            var basePrice = parseFloat(p.price) || 0;
+            var pct = parseFloat(p.pct) || 0;
+            var qty = parseInt(p.qty) || 0;
+            var newPrice = p.customNewPrice !== undefined && p.customNewPrice !== null ? parseFloat(p.customNewPrice) : basePrice * (1 + pct / 100);
+            var subtotal = basePrice * qty;
+            var newSubtotal = newPrice * qty;
+
+            p.newPrice = Math.round(newPrice * 100) / 100;
+
+            var stEl = document.getElementById('st-' + idx);
+            var npEl = document.getElementById('np-' + idx);
+            var nsEl = document.getElementById('ns-' + idx);
+
+            if (stEl) stEl.textContent = fmtMXN(subtotal);
+            if (npEl) npEl.textContent = fmtMXN(newPrice);
+            if (nsEl) nsEl.textContent = fmtMXN(newSubtotal);
+        }
+
+        // Recalcular métricas acumuladas del inventario
+        function updateInventorySummaryCalculations() {
+            var originalSum = 0, newSum = 0, pieces = 0;
+            currentProductsList.forEach(function(p) {
+                var basePrice = parseFloat(p.price) || 0;
+                var pct = parseFloat(p.pct) || 0;
+                var qty = parseInt(p.qty) || 0;
+                var newPrice = p.customNewPrice !== undefined && p.customNewPrice !== null ? parseFloat(p.customNewPrice) : basePrice * (1 + pct / 100);
+
+                originalSum += basePrice * qty;
+                newSum += newPrice * qty;
+                pieces += qty;
+            });
+
+            document.getElementById('invSumOriginal').textContent = fmtMXN(originalSum);
+            document.getElementById('invSumNew').textContent = fmtMXN(newSum);
+            document.getElementById('invSumDiff').textContent = fmtMXN(newSum - originalSum);
+            document.getElementById('invSumPieces').textContent = pieces;
+
+            document.getElementById('footInvOriginal').textContent = fmtMXN(originalSum);
+            document.getElementById('footInvNew').textContent = fmtMXN(newSum);
+        }
+
+        // Aplicar % de incremento global a todos los productos
+        document.getElementById('applyGlobalPctBtn').addEventListener('click', function() {
+            var pct = parseFloat(document.getElementById('globalPctInput').value) || 0;
+            currentProductsList.forEach(function(p) { p.pct = pct; });
+            renderInventoryTable();
+            sendLivePreviewUpdate();
+        });
+
+        // Restablecer % de incremento global a 0
+        document.getElementById('resetGlobalPctBtn').addEventListener('click', function() {
+            currentProductsList.forEach(function(p) { p.pct = 0; });
+            document.getElementById('globalPctInput').value = '';
+            renderInventoryTable();
+            sendLivePreviewUpdate();
+        });
+
+        // Buscar y Filtrar Inventario
+        document.getElementById('inventorySearchBox').addEventListener('input', renderInventoryTable);
+        document.getElementById('inventoryCategoryFilter').addEventListener('change', renderInventoryTable);
+
+        // Guardar lote entero de inventario en Backend
+        document.getElementById('saveInventoryBatchBtn').addEventListener('click', async function() {
+            var btn = this;
+            btn.disabled = true;
+            btn.textContent = '⏳ Guardando Inventario...';
+            try {
+                var res = await fetch('/api/admin/products/batch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify({ products: currentProductsList })
+                });
+                var data = await res.json();
+                if (data.success) {
+                    alert('📦 ¡Inventario guardado con ÉXITO!');
+                    sendLivePreviewUpdate();
+                } else {
+                    alert('⚠️ Error al guardar inventario: ' + (data.error || 'Desconocido'));
+                }
             } catch (err) {
                 console.error(err);
-                renderDefaultProducts();
+                alert('❌ Error de conexión al guardar inventario.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Guardar Cambios Inventario';
             }
-        }
+        });
 
-        function renderDefaultProducts() {
-            var html = '';
-            DEFAULT_CATALOG.forEach(function(prod) {
-                html += `
-                <tr>
-                    <td><img src="${prod.image}" style="width:40px; height:40px; object-fit:cover; border-radius:6px; background:#161c24;"></td>
-                    <td><strong>${prod.name}</strong></td>
-                    <td><span style="text-transform:uppercase; font-size:12px; color:var(--muted); font-weight:600;">${prod.category}</span></td>
-                    <td style="font-weight:700; color:var(--green);">${parseFloat(prod.price).toFixed(2)} MXN</td>
-                    <td>
-                        <button class="btn-action" onclick="editProduct('${prod.id}', '${prod.name.replace(/'/g, "\\'")}', ${prod.price}, '${prod.category}', '${prod.image}')">✏️ Editar</button>
-                        <button class="btn-action btn-delete" onclick="deleteProduct('${prod.id}')">🗑️ Eliminar</button>
-                    </td>
-                </tr>
-                `;
-            });
-            productsTableBody.innerHTML = html;
-        }
-
-
+        // Modal para Agregar / Editar Producto
         newProductBtn.addEventListener('click', function() {
-            document.getElementById('productModalTitle').textContent = '📦 Agregar Nuevo Producto';
+            document.getElementById('productModalTitle').textContent = '📦 Agregar Nuevo Producto al Inventario';
             document.getElementById('prodId').value = '';
+            document.getElementById('prodCode').value = 'VON-' + Date.now().toString().slice(-5);
             document.getElementById('prodName').value = '';
+            document.getElementById('prodUdm').value = 'PZ';
+            document.getElementById('prodQty').value = '1';
             document.getElementById('prodPrice').value = '';
-            document.getElementById('prodImage').value = '';
+            document.getElementById('prodPct').value = '0';
+            document.getElementById('prodCategory').value = 'limpieza';
+            document.getElementById('prodImage').value = 'https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png';
+            document.getElementById('prodDescription').value = '';
             productModal.style.display = 'flex';
         });
 
-        window.editProduct = function(id, name, price, category, image) {
-            document.getElementById('productModalTitle').textContent = '📦 Editar Producto';
-            document.getElementById('prodId').value = id;
-            document.getElementById('prodName').value = name;
-            document.getElementById('prodPrice').value = price;
-            document.getElementById('prodCategory').value = category;
-            document.getElementById('prodImage').value = image;
+        window.editProduct = function(id) {
+            var prod = currentProductsList.find(function(p) { return p.id === id || p.code === id; });
+            if (!prod) return;
+
+            document.getElementById('productModalTitle').textContent = '📦 Editar Detalles de ' + prod.name;
+            document.getElementById('prodId').value = prod.id || prod.code;
+            document.getElementById('prodCode').value = prod.code || prod.id;
+            document.getElementById('prodName').value = prod.name || '';
+            document.getElementById('prodUdm').value = prod.udm || 'PZ';
+            document.getElementById('prodQty').value = prod.qty || 1;
+            document.getElementById('prodPrice').value = prod.price || 0;
+            document.getElementById('prodPct').value = prod.pct || 0;
+            document.getElementById('prodCategory').value = prod.category || 'limpieza';
+            document.getElementById('prodImage').value = prod.image || '';
+            document.getElementById('prodDescription').value = prod.description || '';
             productModal.style.display = 'flex';
         };
 
@@ -980,10 +1201,256 @@
         productForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             var id = document.getElementById('prodId').value;
+            var code = document.getElementById('prodCode').value;
             var name = document.getElementById('prodName').value;
-            var price = document.getElementById('prodPrice').value;
+            var udm = document.getElementById('prodUdm').value;
+            var qty = parseInt(document.getElementById('prodQty').value) || 1;
+            var price = parseFloat(document.getElementById('prodPrice').value) || 0;
+            var pct = parseFloat(document.getElementById('prodPct').value) || 0;
             var category = document.getElementById('prodCategory').value;
             var image = document.getElementById('prodImage').value;
+            var description = document.getElementById('prodDescription').value;
+
+            var existing = currentProductsList.find(function(p) { return p.id === id || p.code === code; });
+            var variations = existing ? existing.variations : [];
+
+            var payload = {
+                id: id || code,
+                code: code,
+                name: name,
+                udm: udm,
+                qty: qty,
+                price: price,
+                pct: pct,
+                category: category,
+                image: image,
+                description: description,
+                variations: variations
+            };
+
+            try {
+                var res = await fetch('/api/admin/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+                var data = await res.json();
+                if (data.success) {
+                    productModal.style.display = 'none';
+                    await loadProducts();
+                    sendLivePreviewUpdate();
+                } else {
+                    alert('Error al guardar producto: ' + (data.error || 'Desconocido'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error de conexión al guardar producto');
+            }
+        });
+
+        // Eliminar Producto del Inventario
+        window.deleteProduct = async function(id) {
+            if (!confirm('¿Estás seguro de eliminar este producto del inventario?')) return;
+            try {
+                var res = await fetch('/api/admin/products/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                if (data.success) {
+                    await loadProducts();
+                    sendLivePreviewUpdate();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        // ==================== MODAL DE GESTIÓN DE VARIACIONES ====================
+        var variationsModal = document.getElementById('variationsModal');
+        var closeVariationsModalBtn = document.getElementById('closeVariationsModalBtn');
+        var saveVariationsModalBtn = document.getElementById('saveVariationsModalBtn');
+
+        window.openVariationsModal = function(id) {
+            activeVariationProductId = id;
+            var prod = currentProductsList.find(function(p) { return p.id === id || p.code === id; });
+            if (!prod) return;
+
+            document.getElementById('varProdName').textContent = 'Producto: ' + prod.name + ' (' + (prod.code || prod.id) + ')';
+            renderVariationsList(prod.variations || []);
+            variationsModal.style.display = 'flex';
+        };
+
+        closeVariationsModalBtn.addEventListener('click', function() {
+            variationsModal.style.display = 'none';
+        });
+
+        function renderVariationsList(variations) {
+            var tbody = document.getElementById('variationsListBody');
+            var html = '';
+            variations.forEach(function(v, idx) {
+                html += `
+                <tr>
+                    <td style="font-weight:600;">${v.name}</td>
+                    <td style="text-align:right;">${fmtMXN(v.price)}</td>
+                    <td style="text-align:right;">${v.qty || 1}</td>
+                    <td style="text-align:center;">
+                        <button class="btn-action btn-delete" onclick="deleteVariationItem(${idx})" style="padding:2px 6px; font-size:11px;">🗑️</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding:15px; color:var(--muted);">Sin variaciones. Agrega una arriba.</td></tr>';
+        }
+
+        document.getElementById('addVariationBtn').addEventListener('click', function() {
+            var name = document.getElementById('newVarName').value.trim();
+            var price = parseFloat(document.getElementById('newVarPrice').value) || 0;
+            var qty = parseInt(document.getElementById('newVarQty').value) || 1;
+
+            if (!name || price <= 0) {
+                alert('Ingresa un nombre y precio válido para la variación.');
+                return;
+            }
+
+            var prod = currentProductsList.find(function(p) { return p.id === activeVariationProductId || p.code === activeVariationProductId; });
+            if (prod) {
+                if (!prod.variations) prod.variations = [];
+                prod.variations.push({
+                    id: 'v_' + Date.now(),
+                    name: name,
+                    price: price,
+                    qty: qty
+                });
+                renderVariationsList(prod.variations);
+                document.getElementById('newVarName').value = '';
+                document.getElementById('newVarPrice').value = '';
+            }
+        });
+
+        window.deleteVariationItem = function(idx) {
+            var prod = currentProductsList.find(function(p) { return p.id === activeVariationProductId || p.code === activeVariationProductId; });
+            if (prod && prod.variations) {
+                prod.variations.splice(idx, 1);
+                renderVariationsList(prod.variations);
+            }
+        };
+
+        saveVariationsModalBtn.addEventListener('click', async function() {
+            var prod = currentProductsList.find(function(p) { return p.id === activeVariationProductId || p.code === activeVariationProductId; });
+            if (prod) {
+                await fetch('/api/admin/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify(prod)
+                });
+                variationsModal.style.display = 'none';
+                renderInventoryTable();
+                sendLivePreviewUpdate();
+            }
+        });
+
+        // ==================== BÚSQUEDA Y FALLBACK DESDE VONIXX MÉXICO ====================
+        var vonixxSearchModal = document.getElementById('vonixxSearchModal');
+        var openVonixxSearchBtn = document.getElementById('openVonixxSearchBtn');
+        var closeVonixxSearchModalBtn = document.getElementById('closeVonixxSearchModalBtn');
+        var triggerVonixxSearchBtn = document.getElementById('triggerVonixxSearchBtn');
+
+        openVonixxSearchBtn.addEventListener('click', function() {
+            vonixxSearchModal.style.display = 'flex';
+            performVonixxSearch('');
+        });
+
+        closeVonixxSearchModalBtn.addEventListener('click', function() {
+            vonixxSearchModal.style.display = 'none';
+        });
+
+        triggerVonixxSearchBtn.addEventListener('click', function() {
+            var q = document.getElementById('vonixxSearchInput').value;
+            performVonixxSearch(q);
+        });
+
+        document.getElementById('vonixxSearchInput').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                performVonixxSearch(this.value);
+            }
+        });
+
+        async function performVonixxSearch(query) {
+            var tbody = document.getElementById('vonixxSearchResultsBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--muted);">🔍 Conectando con www.vonixxmexicooficial.com...</td></tr>';
+
+            try {
+                var res = await fetch('/api/admin/vonixx-search?q=' + encodeURIComponent(query), {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                var results = data.results || [];
+
+                var html = '';
+                results.forEach(function(item) {
+                    var exists = currentProductsList.some(function(p) { return p.code === item.code; });
+                    html += `
+                    <tr>
+                        <td style="padding:8px;"><img src="${item.image}" style="width:36px; height:36px; object-fit:cover; border-radius:4px;"></td>
+                        <td style="padding:8px; font-family:monospace; font-size:12px;">${item.code}</td>
+                        <td style="padding:8px; font-weight:600;">${item.name}<br><span style="font-size:11px; color:var(--muted);">${item.description}</span></td>
+                        <td style="padding:8px; text-align:right; font-weight:700; color:var(--green);">${fmtMXN(item.price)}</td>
+                        <td style="padding:8px; text-align:center;">
+                            ${exists ? 
+                                '<span style="font-size:11px; color:var(--muted); font-weight:700;">En Inventario</span>' : 
+                                `<button class="btn-primary" onclick="importVonixxProduct('${item.code}', '${item.name.replace(/'/g, "\\'")}', ${item.price}, '${item.category}', '${item.image}', '${item.description.replace(/'/g, "\\'")}')" style="padding:5px 10px; font-size:11px;">➕ Importar</button>`
+                            }
+                        </td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--muted);">No se encontraron coincidencias en Vonixx México.</td></tr>';
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--red);">Error al consultar Vonixx México.</td></tr>';
+            }
+        }
+
+        window.importVonixxProduct = async function(code, name, price, category, image, description) {
+            var newProd = {
+                id: code,
+                code: code,
+                name: name,
+                udm: 'PZ',
+                qty: 5,
+                price: price,
+                pct: 0,
+                category: category,
+                image: image,
+                description: description,
+                variations: [{ id: 'v1', name: 'Estándar', price: price, qty: 5 }]
+            };
+
+            try {
+                var res = await fetch('/api/admin/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify(newProd)
+                });
+                var data = await res.json();
+                if (data.success) {
+                    alert('🎉 Producto ' + name + ' importado con éxito al inventario!');
+                    await loadProducts();
+                    performVonixxSearch(document.getElementById('vonixxSearchInput').value);
+                    sendLivePreviewUpdate();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
 
             try {
                 var res = await fetch('/api/admin/products', {
