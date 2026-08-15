@@ -490,6 +490,7 @@
                     <textarea id="prodDescription" class="form-input" rows="3" placeholder="Información detallada para la página principal..."></textarea>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-action btn-delete" id="deleteProductFromModalBtn" style="display:none; padding:8px 14px;">🗑️ Eliminar</button>
                     <button type="button" class="btn-action" id="closeProductModalBtn" style="flex:1;">Cancelar</button>
                     <button type="submit" class="btn-primary" style="flex:1;">Guardar Producto</button>
                 </div>
@@ -1181,6 +1182,7 @@
             document.getElementById('prodCategory').value = 'limpieza';
             document.getElementById('prodImage').value = 'https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png';
             document.getElementById('prodDescription').value = '';
+            document.getElementById('deleteProductFromModalBtn').style.display = 'none';
             productModal.style.display = 'flex';
         });
 
@@ -1199,6 +1201,14 @@
             document.getElementById('prodCategory').value = prod.category || 'limpieza';
             document.getElementById('prodImage').value = prod.image || '';
             document.getElementById('prodDescription').value = prod.description || '';
+
+            var delBtn = document.getElementById('deleteProductFromModalBtn');
+            delBtn.style.display = 'block';
+            delBtn.onclick = function() {
+                productModal.style.display = 'none';
+                deleteProduct(prod.id || prod.code);
+            };
+
             productModal.style.display = 'flex';
         };
 
@@ -1261,19 +1271,35 @@
 
         // Eliminar Producto del Inventario
         window.deleteProduct = async function(id) {
-            if (!confirm('¿Estás seguro de eliminar este producto del inventario?')) return;
+            var prod = currentProductsList.find(function(p) { return p.id === id || p.code === id; });
+            var prodName = prod ? prod.name : id;
+            if (!confirm('¿Estás seguro de eliminar el producto "' + prodName + '" del inventario?')) return;
+
+            // Eliminar inmediatamente de la memoria local y re-renderizar tabla y métricas
+            currentProductsList = currentProductsList.filter(function(p) { return p.id !== id && p.code !== id; });
+            renderInventoryTable();
+            renderQuickProductsTable(currentProductsList);
+            sendLivePreviewUpdate();
+
             try {
-                var res = await fetch('/api/admin/products/' + id, {
+                var res = await fetch('/api/admin/products/' + encodeURIComponent(id), {
                     method: 'DELETE',
                     headers: { 'Authorization': 'Bearer ' + adminToken }
                 });
                 var data = await res.json();
                 if (data.success) {
-                    await loadProducts();
-                    sendLivePreviewUpdate();
+                    // Guardar lote actualizado en servidor para persistencia completa
+                    await fetch('/api/admin/products/batch', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + adminToken
+                        },
+                        body: JSON.stringify({ products: currentProductsList })
+                    });
                 }
             } catch (err) {
-                console.error(err);
+                console.error('Error eliminando producto:', err);
             }
         };
 
