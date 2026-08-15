@@ -1259,27 +1259,41 @@
         var productModal = document.getElementById('productModal');
         var productForm = document.getElementById('productForm');
         var closeProductModalBtn = document.getElementById('closeProductModalBtn');
-        var addProductBtn = document.getElementById('addProductBtn');
+        var newProductBtn = document.getElementById('newProductBtn') || document.getElementById('addProductBtn');
 
-        addProductBtn.addEventListener('click', function() {
-            document.getElementById('productModalTitle').textContent = '➕ Agregar Nuevo Producto';
-            document.getElementById('prodId').value = '';
-            document.getElementById('prodCode').value = 'VON-' + Math.floor(10000 + Math.random() * 90000);
-            document.getElementById('prodName').value = '';
-            document.getElementById('prodUdm').value = 'PZ';
-            document.getElementById('prodQty').value = '1';
-            document.getElementById('prodPrice').value = '';
-            document.getElementById('prodPct').value = '0';
-            document.getElementById('prodCategory').value = 'limpieza';
-            document.getElementById('prodImage').value = 'https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png';
-            document.getElementById('prodDescription').value = '';
-            document.getElementById('deleteProductFromModalBtn').style.display = 'none';
-            productModal.style.display = 'flex';
-        });
+        if (newProductBtn) {
+            newProductBtn.addEventListener('click', function() {
+                document.getElementById('productModalTitle').textContent = '➕ Agregar Nuevo Producto';
+                document.getElementById('prodId').value = '';
+                document.getElementById('prodCode').value = 'VON-' + Math.floor(10000 + Math.random() * 90000);
+                document.getElementById('prodName').value = '';
+                document.getElementById('prodUdm').value = 'PZ';
+                document.getElementById('prodQty').value = '1';
+                document.getElementById('prodPrice').value = '';
+                document.getElementById('prodPct').value = '0';
+                document.getElementById('prodCategory').value = 'limpieza';
+                document.getElementById('prodImage').value = 'https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png';
+                document.getElementById('prodDescription').value = '';
+                var delBtn = document.getElementById('deleteProductFromModalBtn');
+                if (delBtn) delBtn.style.display = 'none';
+                productModal.style.display = 'flex';
+            });
+        }
 
-        closeProductModalBtn.addEventListener('click', function() {
-            productModal.style.display = 'none';
-        });
+        if (closeProductModalBtn) {
+            closeProductModalBtn.addEventListener('click', function() {
+                productModal.style.display = 'none';
+            });
+        }
+
+        // Cerrar modal al hacer clic en el fondo oscuro
+        if (productModal) {
+            productModal.addEventListener('click', function(e) {
+                if (e.target === productModal) {
+                    productModal.style.display = 'none';
+                }
+            });
+        }
 
         productForm.addEventListener('submit', async function(e) {
             e.preventDefault();
