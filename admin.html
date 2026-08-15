@@ -959,6 +959,53 @@
         var currentProductsList = [];
         var activeVariationProductId = null;
 
+        // Declaración global de funciones de acción de inventario
+        window.editProduct = function(id) {
+            var prod = currentProductsList.find(function(p) { return p.id === id || p.code === id; });
+            if (!prod) return;
+
+            var productModal = document.getElementById('productModal');
+            document.getElementById('productModalTitle').textContent = '📦 Editar Detalles de ' + prod.name;
+            document.getElementById('prodId').value = prod.id || prod.code;
+            document.getElementById('prodCode').value = prod.code || prod.id;
+            document.getElementById('prodName').value = prod.name || '';
+            document.getElementById('prodUdm').value = prod.udm || 'PZ';
+            document.getElementById('prodQty').value = prod.qty !== undefined ? prod.qty : 1;
+            document.getElementById('prodPrice').value = prod.price !== undefined ? prod.price : 0;
+            document.getElementById('prodPct').value = prod.pct !== undefined ? prod.pct : 0;
+            document.getElementById('prodCategory').value = prod.category || 'limpieza';
+            document.getElementById('prodImage').value = prod.image || '';
+            document.getElementById('prodDescription').value = prod.description || '';
+
+            var delBtn = document.getElementById('deleteProductFromModalBtn');
+            if (delBtn) {
+                delBtn.style.display = 'block';
+                delBtn.onclick = function() {
+                    productModal.style.display = 'none';
+                    window.deleteProduct(prod.id || prod.code);
+                };
+            }
+
+            productModal.style.display = 'flex';
+        };
+
+        // Delegación de eventos para clicks y doble clicks en imágenes o botones de edición
+        document.addEventListener('click', function(e) {
+            var btnEdit = e.target.closest('.btn-edit-prod') || e.target.closest('.row-img-edit');
+            if (btnEdit) {
+                var pId = btnEdit.getAttribute('data-id') || (btnEdit.closest('tr') ? btnEdit.closest('tr').getAttribute('data-prod-id') : null);
+                if (pId) window.editProduct(pId);
+            }
+        });
+
+        document.addEventListener('dblclick', function(e) {
+            var img = e.target.closest('.row-img-edit') || e.target.closest('#inventoryTableBody img');
+            if (img) {
+                var pId = img.getAttribute('data-id') || (img.closest('tr') ? img.closest('tr').getAttribute('data-prod-id') : null);
+                if (pId) window.editProduct(pId);
+            }
+        });
+
         // Helper de formateo de moneda
         function fmtMXN(num) {
             var val = parseFloat(num) || 0;
@@ -1000,7 +1047,7 @@
                 html += `
                 <tr data-idx="${idx}" data-prod-id="${p.id}">
                     <td style="text-align:center;">
-                        <img src="${p.image}" style="width:36px; height:36px; object-fit:cover; border-radius:6px; background:#161c24; cursor:pointer;" onclick="editProduct('${p.id}')">
+                        <img src="${p.image}" class="row-img-edit" data-id="${p.id}" style="width:36px; height:36px; object-fit:cover; border-radius:6px; background:#161c24; cursor:pointer;" onclick="window.editProduct('${p.id}')" title="Clic para editar detalles">
                     </td>
                     <td>
                         <input type="text" class="form-input row-code" value="${p.code || p.id}" style="font-family:monospace; font-size:12px; padding:4px 6px;" data-idx="${idx}">
@@ -1024,13 +1071,13 @@
                     <td style="text-align:right; font-weight:700; color:var(--green); font-family:monospace; font-size:12.5px;" id="np-${idx}">${fmtMXN(newPrice)}</td>
                     <td style="text-align:right; font-weight:700; color:var(--green); font-family:monospace; font-size:12.5px;" id="ns-${idx}">${fmtMXN(newSubtotal)}</td>
                     <td style="text-align:center;">
-                        <button class="btn-action" onclick="openVariationsModal('${p.id}')" style="font-size:11px; padding:3px 8px;">
+                        <button class="btn-action" onclick="window.openVariationsModal('${p.id}')" style="font-size:11px; padding:3px 8px;">
                             ⚙️ ${varCount} var
                         </button>
                     </td>
                     <td style="text-align:center; white-space:nowrap;">
-                        <button class="btn-action" onclick="editProduct('${p.id}')" title="Editar detalles">✏️</button>
-                        <button class="btn-action btn-delete" onclick="deleteProduct('${p.id}')" title="Eliminar">🗑️</button>
+                        <button class="btn-action btn-edit-prod" data-id="${p.id}" onclick="window.editProduct('${p.id}')" title="Editar detalles">✏️</button>
+                        <button class="btn-action btn-delete" onclick="window.deleteProduct('${p.id}')" title="Eliminar">🗑️</button>
                     </td>
                 </tr>`;
             });
