@@ -2375,6 +2375,100 @@ section{padding:96px 0;}
             });
         });
 
+        // ==========================================================================
+        // CONTROLADOR DE LA VITRINA DE PRODUCTOS (TOP CAROUSEL)
+        // ==========================================================================
+        (function initShowcaseCarousel() {
+            var track = document.getElementById('carouselTrack');
+            var container = document.getElementById('carouselTrackContainer');
+            var prevBtn = document.getElementById('carouselPrev');
+            var nextBtn = document.getElementById('carouselNext');
+            var filterPills = document.querySelectorAll('#carouselFilterBar .carousel-pill');
+
+            if (!track || !container) return;
+
+            var scrollStep = 280;
+            var autoScrollTimer = null;
+            var isHovered = false;
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    container.scrollBy({ left: -scrollStep * 2, behavior: 'smooth' });
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    container.scrollBy({ left: scrollStep * 2, behavior: 'smooth' });
+                });
+            }
+
+            function startAutoScroll() {
+                if (autoScrollTimer) clearInterval(autoScrollTimer);
+                autoScrollTimer = setInterval(function() {
+                    if (isHovered) return;
+                    var maxScroll = container.scrollWidth - container.clientWidth;
+                    if (container.scrollLeft >= maxScroll - 15) {
+                        container.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        container.scrollBy({ left: scrollStep, behavior: 'smooth' });
+                    }
+                }, 3000);
+            }
+
+            container.addEventListener('mouseenter', function() { isHovered = true; });
+            container.addEventListener('mouseleave', function() { isHovered = false; });
+            container.addEventListener('touchstart', function() { isHovered = true; }, { passive: true });
+            container.addEventListener('touchend', function() { isHovered = false; }, { passive: true });
+
+            startAutoScroll();
+
+            // Filtrado por Pills en la Vitrina
+            filterPills.forEach(function(pill) {
+                pill.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    filterPills.forEach(function(p) { p.classList.remove('active'); });
+                    this.classList.add('active');
+
+                    var filter = (this.getAttribute('data-filter') || 'all').toLowerCase();
+                    var items = track.querySelectorAll('.carousel-item');
+                    items.forEach(function(item) {
+                        var cat = (item.getAttribute('data-category') || '').toLowerCase();
+                        if (filter === 'all' || cat === filter || cat.includes(filter) || (filter === 'cera' && cat.includes('cera')) || (filter === 'cristales' && (cat.includes('cristal') || cat.includes('piel')))) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    container.scrollTo({ left: 0, behavior: 'smooth' });
+                });
+            });
+
+            // Drag to scroll con el mouse
+            var isDown = false;
+            var startX, scrollLeftPos;
+            container.addEventListener('mousedown', function(e) {
+                isDown = true;
+                isHovered = true;
+                startX = e.pageX - container.offsetLeft;
+                scrollLeftPos = container.scrollLeft;
+            });
+            window.addEventListener('mouseup', function() {
+                isDown = false;
+                isHovered = false;
+            });
+            container.addEventListener('mousemove', function(e) {
+                if (!isDown) return;
+                e.preventDefault();
+                var x = e.pageX - container.offsetLeft;
+                var walk = (x - startX) * 1.5;
+                container.scrollLeft = scrollLeftPos - walk;
+            });
+        })();
+
         var navbar = document.getElementById('navbar');
         var sections = document.querySelectorAll('section[id]');
         function highlightNavOnScroll() {
@@ -2443,7 +2537,7 @@ section{padding:96px 0;}
                 }
 
                 html += `
-                <article class="product-card animate-on-scroll" data-category="${p.category || 'limpieza'}" data-product-id="${p.id}">
+                <article class="product-card" data-category="${p.category || 'limpieza'}" data-product-id="${p.id}" style="opacity:1 !important; display:flex !important;">
                     <div class="product-image">
                         <img loading="lazy" src="${p.image}" alt="${p.name}">
                         <span class="${badgeClass}">${badgeText}</span>
