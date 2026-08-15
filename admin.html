@@ -487,7 +487,7 @@
                 </div>
                 <div class="form-group">
                     <label>Descripción Larga / Detalles del Producto</label>
-                    <textarea id="prodDescription" class="form-input" rows="3" placeholder="Información detallada para la página principal..."></textarea>
+                    <textarea id="prodDescription" class="form-input" rows="4" placeholder="Escribe aquí los detalles, beneficios, usos y modo de aplicación del producto..." data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" spellcheck="false" autocomplete="off" style="font-size:13px; line-height:1.45;"></textarea>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
                     <button type="button" class="btn-action btn-delete" id="deleteProductFromModalBtn" style="display:none; padding:8px 14px;">🗑️ Eliminar</button>
@@ -1052,8 +1052,9 @@
                     <td>
                         <input type="text" class="form-input row-code" value="${p.code || p.id}" style="font-family:monospace; font-size:12px; padding:4px 6px;" data-idx="${idx}">
                     </td>
-                    <td>
+                    <td style="max-width:260px;">
                         <input type="text" class="form-input row-name" value="${p.name || ''}" style="font-size:12.5px; padding:4px 6px; font-weight:600;" data-idx="${idx}">
+                        ${p.description ? `<div style="font-size:10.5px; color:#22b8f0; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px; cursor:pointer;" onclick="window.editProduct('${p.id}')" title="${p.description.replace(/"/g, '&quot;')}">📝 ${p.description}</div>` : ''}
                     </td>
                     <td>
                         <input type="text" class="form-input row-udm" value="${p.udm || 'PZ'}" style="font-size:12px; padding:4px 6px; text-align:center;" data-idx="${idx}">
@@ -1276,57 +1277,31 @@
             productModal.style.display = 'flex';
         });
 
-        window.editProduct = function(id) {
-            var prod = currentProductsList.find(function(p) { return p.id === id || p.code === id; });
-            if (!prod) return;
-
-            document.getElementById('productModalTitle').textContent = '📦 Editar Detalles de ' + prod.name;
-            document.getElementById('prodId').value = prod.id || prod.code;
-            document.getElementById('prodCode').value = prod.code || prod.id;
-            document.getElementById('prodName').value = prod.name || '';
-            document.getElementById('prodUdm').value = prod.udm || 'PZ';
-            document.getElementById('prodQty').value = prod.qty !== undefined ? prod.qty : 1;
-            document.getElementById('prodPrice').value = prod.price !== undefined ? prod.price : 0;
-            document.getElementById('prodPct').value = prod.pct !== undefined ? prod.pct : 0;
-            document.getElementById('prodCategory').value = prod.category || 'limpieza';
-            document.getElementById('prodImage').value = prod.image || '';
-            document.getElementById('prodDescription').value = prod.description || '';
-
-            var delBtn = document.getElementById('deleteProductFromModalBtn');
-            delBtn.style.display = 'block';
-            delBtn.onclick = function() {
-                productModal.style.display = 'none';
-                deleteProduct(prod.id || prod.code);
-            };
-
-            productModal.style.display = 'flex';
-        };
-
         closeProductModalBtn.addEventListener('click', function() {
             productModal.style.display = 'none';
         });
 
         productForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            var id = document.getElementById('prodId').value;
-            var code = document.getElementById('prodCode').value;
-            var name = document.getElementById('prodName').value;
-            var udm = document.getElementById('prodUdm').value;
+            var id = document.getElementById('prodId').value.trim();
+            var code = document.getElementById('prodCode').value.trim();
+            var name = document.getElementById('prodName').value.trim();
+            var udm = document.getElementById('prodUdm').value.trim();
             var qty = parseInt(document.getElementById('prodQty').value) || 1;
             var price = parseFloat(document.getElementById('prodPrice').value) || 0;
             var pct = parseFloat(document.getElementById('prodPct').value) || 0;
             var category = document.getElementById('prodCategory').value;
-            var image = document.getElementById('prodImage').value;
-            var description = document.getElementById('prodDescription').value;
+            var image = document.getElementById('prodImage').value.trim();
+            var description = document.getElementById('prodDescription').value.trim();
 
-            var existing = currentProductsList.find(function(p) { return p.id === id || p.code === code; });
+            var existing = currentProductsList.find(function(p) { return (id && p.id === id) || (code && p.code === code); });
             var variations = existing ? (existing.variations || []) : [];
 
             var payload = {
                 id: id || code || ('VON-' + Date.now().toString().slice(-5)),
                 code: code || id,
                 name: name,
-                udm: udm,
+                udm: udm || 'PZ',
                 qty: qty,
                 price: price,
                 pct: pct,
@@ -1336,10 +1311,10 @@
                 variations: variations
             };
 
-            // 1. Actualizar estado local inmediatamente
-            var idx = currentProductsList.findIndex(function(p) { return p.id === payload.id || p.code === payload.code; });
+            // 1. Actualizar estado local inmediatamente con la descripción exacta
+            var idx = currentProductsList.findIndex(function(p) { return (payload.id && p.id === payload.id) || (payload.code && p.code === payload.code); });
             if (idx >= 0) {
-                currentProductsList[idx] = Object.assign({}, currentProductsList[idx], payload);
+                currentProductsList[idx] = Object.assign({}, currentProductsList[idx], payload, { description: description });
             } else {
                 currentProductsList.unshift(payload);
             }
@@ -1365,11 +1340,11 @@
                 if (data.success) {
                     showToastAdmin('✅ Detalles y descripción guardados con éxito');
                 } else {
-                    showToastAdmin('✅ Guardado localmente en el navegador');
+                    showToastAdmin('✅ Guardado en memoria local del navegador');
                 }
             } catch (err) {
                 console.error(err);
-                showToastAdmin('✅ Guardado localmente en el navegador');
+                showToastAdmin('✅ Guardado en memoria local del navegador');
             }
         });
 
