@@ -3025,11 +3025,23 @@ section{padding:96px 0;}
             });
         }
 
-        // Cargar productos del inventario backend
+        // Cargar productos del almacenamiento local inmediatamente
+        try {
+            var localSaved = localStorage.getItem('resetsupply_inventory');
+            if (localSaved) {
+                var parsed = JSON.parse(localSaved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    renderProductsGrid(parsed);
+                }
+            }
+        } catch(e) {}
+
+        // Cargar productos del inventario backend y sincronizar
         fetch('/api/products')
             .then(function(r) { return r.json(); })
             .then(function(d) {
-                if (d.success && Array.isArray(d.products)) {
+                if (d.success && Array.isArray(d.products) && d.products.length > 0) {
+                    try { localStorage.setItem('resetsupply_inventory', JSON.stringify(d.products)); } catch(e) {}
                     renderProductsGrid(d.products);
                 }
             })

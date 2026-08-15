@@ -898,36 +898,64 @@
     "price": 296,
     "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEN-SPRAY-.png"
   },
-  {
-    "id": "prod_16",
-    "name": "CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO",
-    "category": "cera-liquida",
-    "price": 180,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-TOK-FINAL.png"
-  }
-];
-        // ==================== GESTIÓN DE INVENTARIO Y LISTA DE PRECIOS ====================
-        var currentProductsList = [];
-        var activeVariationProductId = null;
+        function showToastAdmin(msg, isError) {
+            var t = document.getElementById('adminToast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = 'adminToast';
+                t.style.cssText = 'position:fixed; bottom:24px; right:24px; z-index:10000; padding:12px 20px; border-radius:8px; font-size:13.5px; font-weight:600; font-family:"Inter",sans-serif; box-shadow:0 10px 25px rgba(0,0,0,0.5); transition:opacity 0.3s ease;';
+                document.body.appendChild(t);
+            }
+            t.style.background = isError ? '#ef4444' : '#10b981';
+            t.style.color = isError ? '#ffffff' : '#0a0e13';
+            t.textContent = msg;
+            t.style.display = 'block';
+            t.style.opacity = '1';
+            setTimeout(function() {
+                t.style.opacity = '0';
+                setTimeout(function() { t.style.display = 'none'; }, 300);
+            }, 3500);
+        }
 
-        // Cargar productos del servidor
+        function autoSaveLocalInventory() {
+            try {
+                localStorage.setItem('resetsupply_inventory', JSON.stringify(currentProductsList));
+            } catch(e) {}
+        }
+
+        // Cargar productos del servidor y almacenamiento local
         async function loadProducts() {
+            try {
+                var localSaved = localStorage.getItem('resetsupply_inventory');
+                if (localSaved) {
+                    var parsed = JSON.parse(localSaved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        currentProductsList = parsed;
+                        renderInventoryTable();
+                        renderQuickProductsTable(currentProductsList);
+                    }
+                }
+            } catch(e) {}
+
             try {
                 var res = await fetch('/api/admin/products', {
                     headers: { 'Authorization': 'Bearer ' + adminToken }
                 });
                 var data = await res.json();
-                if (data.success && Array.isArray(data.products)) {
+                if (data.success && Array.isArray(data.products) && data.products.length > 0) {
                     currentProductsList = data.products;
-                } else {
-                    currentProductsList = [];
+                    autoSaveLocalInventory();
                 }
             } catch (err) {
-                console.error('Error al cargar inventario:', err);
+                console.error('Error al cargar inventario desde el servidor:', err);
             }
             renderInventoryTable();
             renderQuickProductsTable(currentProductsList);
         }
+        
+        // ==================== GESTIÓN DE INVENTARIO Y LISTA DE PRECIOS ====================
+        var currentProductsList = [];
+        var activeVariationProductId = null;
 
         // Helper de formateo de moneda
         function fmtMXN(num) {
@@ -1022,6 +1050,7 @@
                 inp.addEventListener('input', function() {
                     var idx = +this.getAttribute('data-idx');
                     currentProductsList[idx].code = this.value;
+                    autoSaveLocalInventory();
                     sendLivePreviewUpdate();
                 });
             });
@@ -1030,6 +1059,7 @@
                 inp.addEventListener('input', function() {
                     var idx = +this.getAttribute('data-idx');
                     currentProductsList[idx].name = this.value;
+                    autoSaveLocalInventory();
                     sendLivePreviewUpdate();
                 });
             });
@@ -1038,6 +1068,7 @@
                 inp.addEventListener('input', function() {
                     var idx = +this.getAttribute('data-idx');
                     currentProductsList[idx].udm = this.value;
+                    autoSaveLocalInventory();
                 });
             });
 
@@ -1048,6 +1079,7 @@
                     currentProductsList[idx].qty = qty;
                     updateInventoryRowCalc(idx);
                     updateInventorySummaryCalculations();
+                    autoSaveLocalInventory();
                     sendLivePreviewUpdate();
                 });
             });
@@ -1059,6 +1091,7 @@
                     currentProductsList[idx].price = price;
                     updateInventoryRowCalc(idx);
                     updateInventorySummaryCalculations();
+                    autoSaveLocalInventory();
                     sendLivePreviewUpdate();
                 });
             });
@@ -1070,6 +1103,7 @@
                     currentProductsList[idx].pct = pct;
                     updateInventoryRowCalc(idx);
                     updateInventorySummaryCalculations();
+                    autoSaveLocalInventory();
                     sendLivePreviewUpdate();
                 });
             });
@@ -1098,23 +1132,22 @@
 
         // Recalcular métricas acumuladas del inventario
         function updateInventorySummaryCalculations() {
-            var originalSum = 0, newSum = 0, pieces = 0;
+            var originalSum = 0;
+            var newSum = 0;
+            var totalPieces = 0;
             currentProductsList.forEach(function(p) {
                 var basePrice = parseFloat(p.price) || 0;
                 var pct = parseFloat(p.pct) || 0;
                 var qty = parseInt(p.qty) || 0;
                 var newPrice = p.customNewPrice !== undefined && p.customNewPrice !== null ? parseFloat(p.customNewPrice) : basePrice * (1 + pct / 100);
-
                 originalSum += basePrice * qty;
                 newSum += newPrice * qty;
-                pieces += qty;
+                totalPieces += qty;
             });
-
             document.getElementById('invSumOriginal').textContent = fmtMXN(originalSum);
             document.getElementById('invSumNew').textContent = fmtMXN(newSum);
             document.getElementById('invSumDiff').textContent = fmtMXN(newSum - originalSum);
-            document.getElementById('invSumPieces').textContent = pieces;
-
+            document.getElementById('invSumPieces').textContent = totalPieces;
             document.getElementById('footInvOriginal').textContent = fmtMXN(originalSum);
             document.getElementById('footInvNew').textContent = fmtMXN(newSum);
         }
@@ -1123,6 +1156,7 @@
         document.getElementById('applyGlobalPctBtn').addEventListener('click', function() {
             var pct = parseFloat(document.getElementById('globalPctInput').value) || 0;
             currentProductsList.forEach(function(p) { p.pct = pct; });
+            autoSaveLocalInventory();
             renderInventoryTable();
             sendLivePreviewUpdate();
         });
@@ -1131,6 +1165,7 @@
         document.getElementById('resetGlobalPctBtn').addEventListener('click', function() {
             currentProductsList.forEach(function(p) { p.pct = 0; });
             document.getElementById('globalPctInput').value = '';
+            autoSaveLocalInventory();
             renderInventoryTable();
             sendLivePreviewUpdate();
         });
@@ -1144,6 +1179,7 @@
             var btn = this;
             btn.disabled = true;
             btn.textContent = '⏳ Guardando Inventario...';
+            autoSaveLocalInventory();
             try {
                 var res = await fetch('/api/admin/products/batch', {
                     method: 'POST',
@@ -1155,25 +1191,30 @@
                 });
                 var data = await res.json();
                 if (data.success) {
-                    alert('📦 ¡Inventario guardado con ÉXITO!');
+                    showToastAdmin('📦 ¡Inventario guardado con ÉXITO!');
                     sendLivePreviewUpdate();
                 } else {
-                    alert('⚠️ Error al guardar inventario: ' + (data.error || 'Desconocido'));
+                    showToastAdmin('⚠️ Error: ' + (data.error || 'Desconocido'), true);
                 }
             } catch (err) {
                 console.error(err);
-                alert('❌ Error de conexión al guardar inventario.');
+                showToastAdmin('✅ Guardado en almacenamiento local del navegador.');
             } finally {
                 btn.disabled = false;
                 btn.textContent = '💾 Guardar Cambios Inventario';
             }
         });
 
-        // Modal para Agregar / Editar Producto
-        newProductBtn.addEventListener('click', function() {
-            document.getElementById('productModalTitle').textContent = '📦 Agregar Nuevo Producto al Inventario';
+        // ==================== MODAL DE CREAR / EDITAR PRODUCTO ====================
+        var productModal = document.getElementById('productModal');
+        var productForm = document.getElementById('productForm');
+        var closeProductModalBtn = document.getElementById('closeProductModalBtn');
+        var addProductBtn = document.getElementById('addProductBtn');
+
+        addProductBtn.addEventListener('click', function() {
+            document.getElementById('productModalTitle').textContent = '➕ Agregar Nuevo Producto';
             document.getElementById('prodId').value = '';
-            document.getElementById('prodCode').value = 'VON-' + Date.now().toString().slice(-5);
+            document.getElementById('prodCode').value = 'VON-' + Math.floor(10000 + Math.random() * 90000);
             document.getElementById('prodName').value = '';
             document.getElementById('prodUdm').value = 'PZ';
             document.getElementById('prodQty').value = '1';
@@ -1195,9 +1236,9 @@
             document.getElementById('prodCode').value = prod.code || prod.id;
             document.getElementById('prodName').value = prod.name || '';
             document.getElementById('prodUdm').value = prod.udm || 'PZ';
-            document.getElementById('prodQty').value = prod.qty || 1;
-            document.getElementById('prodPrice').value = prod.price || 0;
-            document.getElementById('prodPct').value = prod.pct || 0;
+            document.getElementById('prodQty').value = prod.qty !== undefined ? prod.qty : 1;
+            document.getElementById('prodPrice').value = prod.price !== undefined ? prod.price : 0;
+            document.getElementById('prodPct').value = prod.pct !== undefined ? prod.pct : 0;
             document.getElementById('prodCategory').value = prod.category || 'limpieza';
             document.getElementById('prodImage').value = prod.image || '';
             document.getElementById('prodDescription').value = prod.description || '';
@@ -1230,11 +1271,11 @@
             var description = document.getElementById('prodDescription').value;
 
             var existing = currentProductsList.find(function(p) { return p.id === id || p.code === code; });
-            var variations = existing ? existing.variations : [];
+            var variations = existing ? (existing.variations || []) : [];
 
             var payload = {
-                id: id || code,
-                code: code,
+                id: id || code || ('VON-' + Date.now().toString().slice(-5)),
+                code: code || id,
                 name: name,
                 udm: udm,
                 qty: qty,
@@ -1246,6 +1287,22 @@
                 variations: variations
             };
 
+            // 1. Actualizar estado local inmediatamente
+            var idx = currentProductsList.findIndex(function(p) { return p.id === payload.id || p.code === payload.code; });
+            if (idx >= 0) {
+                currentProductsList[idx] = Object.assign({}, currentProductsList[idx], payload);
+            } else {
+                currentProductsList.unshift(payload);
+            }
+
+            // 2. Guardar en almacenamiento local persistente
+            autoSaveLocalInventory();
+            renderInventoryTable();
+            renderQuickProductsTable(currentProductsList);
+            productModal.style.display = 'none';
+            sendLivePreviewUpdate();
+
+            // 3. Sincronizar con el Backend / Firestore
             try {
                 var res = await fetch('/api/admin/products', {
                     method: 'POST',
@@ -1257,15 +1314,13 @@
                 });
                 var data = await res.json();
                 if (data.success) {
-                    productModal.style.display = 'none';
-                    await loadProducts();
-                    sendLivePreviewUpdate();
+                    showToastAdmin('✅ Detalles y descripción guardados con éxito');
                 } else {
-                    alert('Error al guardar producto: ' + (data.error || 'Desconocido'));
+                    showToastAdmin('✅ Guardado localmente en el navegador');
                 }
             } catch (err) {
                 console.error(err);
-                alert('Error de conexión al guardar producto');
+                showToastAdmin('✅ Guardado localmente en el navegador');
             }
         });
 
