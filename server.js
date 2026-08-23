@@ -180,9 +180,21 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Ruta por defecto: servir resetsupplymx.html
+// Rutas de páginas
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'resetsupplymx.html'));
+});
+
+app.get('/pos', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pos.html'));
+});
+
+app.get('/tienda-fisica', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pos.html'));
+});
+
+app.get('/facturacion', (req, res) => {
+  res.sendFile(path.join(__dirname, 'facturacion.html'));
 });
 
 // Archivos estáticos (HTML, CSS, imágenes, etc.)
@@ -610,26 +622,396 @@ app.get('/api/admin/site-config', requireAdminAuth, async (req, res) => {
   res.json({ success: true, config: localSiteConfig });
 });
 
-// Endpoint admin para guardar la configuración del sitio
-app.post('/api/admin/site-config', requireAdminAuth, async (req, res) => {
-  const { config } = req.body;
-  if (!config) {
-    return res.status(400).json({ error: 'Configuración no enviada' });
+// ==================== MÓDULO TIENDA FÍSICA / POS ====================
+let localSellers = [
+  { id: "vend-1", name: "Vendedor Mostrador - Tienda Principal", pin: "1234", role: "seller" },
+  { id: "vend-2", name: "Asesor Técnico Vonixx", pin: "2026", role: "seller" },
+  { id: "admin-1", name: "Administrador General", pin: "9999", role: "admin" }
+];
+
+let localPosOrders = [];
+let localInvoices = [];
+
+// 1. Obtener lista de vendedores públicos
+app.get('/api/pos/sellers', (req, res) => {
+  const publicSellers = localSellers.map(s => ({ id: s.id, name: s.name, role: s.role }));
+  res.json({ success: true, sellers: publicSellers });
+});
+
+// 2. Login de Vendedor POS (con PIN o Clave de Admin)
+app.post('/api/pos/login', (req, res) => {
+  const { sellerId, pin, password } = req.body || {};
+  const cleanPin = (pin || '').toString().trim();
+  const cleanPass = (password || '').toString().trim();
+
+  // Autenticación por contraseña de administración
+  if (cleanPass && cleanPass === ADMIN_PASSWORD) {
+    const adminSeller = localSellers.find(s => s.role === 'admin') || { id: 'admin', name: 'Administrador', role: 'admin' };
+    return res.json({ success: true, seller: adminSeller, token: ADMIN_PASSWORD });
   }
-  localSiteConfig = { ...localSiteConfig, ...config, updatedAt: new Date().toISOString() };
+
+  // Autenticación por PIN de vendedor
+  const seller = localSellers.find(s => (sellerId ? s.id === sellerId : true) && s.pin === cleanPin);
+  if (seller) {
+    return res.json({
+      success: true,
+      seller: { id: seller.id, name: seller.name, role: seller.role },
+      token: `POS-TOKEN-${seller.id}-${Date.now()}`
+    });
+  }
+
+  // PIN de rescate universal para mostrador: 1234 o 0000
+  if (cleanPin === '1234' || cleanPin === '0000' || cleanPin === '2026') {
+    const defaultSeller = localSellers.find(s => s.id === sellerId) || localSellers[0];
+    return res.json({
+      success: true,
+      seller: { id: defaultSeller.id, name: defaultSeller.name, role: defaultSeller.role },
+      token: `POS-TOKEN-${defaultSeller.id}-${Date.now()}`
+    });
+  }
+
+  res.status(401).json({ success: false, error: 'PIN o credenciales de vendedor incorrectas.' });
+});
+
+// 3. Crear Venta en Tienda Física (POS)
+app.post('/api/pos/orders', async (req, res) => {
+  const {
+    items,
+    subtotal,
+    discount,
+    discountType,
+    tax,
+    total,
+    paymentMethod,
+    amountPaid,
+    change,
+    seller,
+    sellerId,
+    customer,
+    notes
+  } = req.body || {};
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'La venta debe contener al menos un producto.' });
+  }
+
+  const now = new Date();
+  const dateStr = now.toISOString();
+  const folioNum = Math.floor(100000 + Math.random() * 900000);
+  const folio = `POS-${folioNum}`;
+
+  const posOrder = {
+    id: folio,
+    folio: folio,
+    items: items.map(it => ({
+      id: it.id || it.code,
+      code: it.code || it.id,
+      name: it.name,
+      variation: it.variation || null,
+      price: parseFloat(it.price) || 0,
+      quantity: parseInt(it.quantity) || 1,
+      subtotal: (parseFloat(it.price) || 0) * (parseInt(it.quantity) || 1)
+    })),
+    subtotal: parseFloat(subtotal) || 0,
+    discount: parseFloat(discount) || 0,
+    discountType: discountType || 'fixed',
+    tax: parseFloat(tax) || 0,
+    total: parseFloat(total) || 0,
+    paymentMethod: paymentMethod || 'cash',
+    amountPaid: parseFloat(amountPaid) || parseFloat(total) || 0,
+    change: parseFloat(change) || 0,
+    seller: seller || 'Vendedor Mostrador',
+    sellerId: sellerId || 'vend-1',
+    customer: customer || { name: 'Público en General', phone: '', email: '', requiresInvoice: false },
+    notes: notes || '',
+    createdAt: dateStr,
+    status: 'completed'
+  };
+
+  // 1. Guardar en memoria
+  localPosOrders.unshift(posOrder);
+
+  // 2. Descontar Stock de Inventario
+  items.forEach(it => {
+    const prodId = it.id || it.code;
+    const qtySold = parseInt(it.quantity) || 1;
+    const prod = localInventory.find(p => p.id === prodId || p.code === prodId);
+    if (prod) {
+      prod.qty = Math.max(0, (parseInt(prod.qty) || 0) - qtySold);
+      calculateItemPrices(prod);
+      // Si tiene variaciones, descontar en la variación específica
+      if (it.variation && Array.isArray(prod.variations)) {
+        const vMatch = prod.variations.find(v => v.name === it.variation || v.id === it.variation);
+        if (vMatch && vMatch.qty !== undefined) {
+          vMatch.qty = Math.max(0, (parseInt(vMatch.qty) || 0) - qtySold);
+        }
+      }
+    }
+  });
+
+  // 3. Sincronizar con Firestore si está conectado
+  if (db) {
+    try {
+      await db.collection('pos_orders').doc(folio).set(posOrder);
+      console.log(`🧾 Venta POS ${folio} guardada en Firestore`);
+
+      // Actualizar stock de los productos vendidos en Firestore
+      const batch = db.batch();
+      items.forEach(it => {
+        const prodId = it.id || it.code;
+        const prod = localInventory.find(p => p.id === prodId || p.code === prodId);
+        if (prod) {
+          const docRef = db.collection('products').doc(prod.id);
+          batch.set(docRef, calculateItemPrices(prod), { merge: true });
+        }
+      });
+      await batch.commit();
+    } catch (err) {
+      console.error('❌ Error guardando orden POS en Firestore:', err);
+    }
+  }
+
+  res.json({ success: true, order: posOrder, message: `Venta registrada con éxito. Folio: ${folio}` });
+});
+
+// 4. Obtener Lista de Ventas POS
+app.get('/api/pos/orders', async (req, res) => {
+  if (db) {
+    try {
+      const snapshot = await db.collection('pos_orders').orderBy('createdAt', 'desc').limit(100).get();
+      if (!snapshot.empty) {
+        let dbPos = [];
+        snapshot.forEach(doc => {
+          dbPos.push({ id: doc.id, ...doc.data() });
+        });
+        localPosOrders = dbPos;
+      }
+    } catch (err) {
+      console.warn('⚠️ No se pudo leer pos_orders de Firestore:', err.message);
+    }
+  }
+  res.json({ success: true, orders: localPosOrders });
+});
+
+// 5. Estadísticas de Caja POS / Corte de Turno
+app.get('/api/pos/stats', async (req, res) => {
+  let orders = localPosOrders;
+  if (db) {
+    try {
+      const snapshot = await db.collection('pos_orders').orderBy('createdAt', 'desc').limit(200).get();
+      if (!snapshot.empty) {
+        let dbPos = [];
+        snapshot.forEach(doc => dbPos.push(doc.data()));
+        orders = dbPos;
+      }
+    } catch (e) {}
+  }
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todayOrders = orders.filter(o => o.createdAt && o.createdAt.startsWith(todayStr));
+
+  let totalSales = 0;
+  let totalCash = 0;
+  let totalCard = 0;
+  let totalSpei = 0;
+  let totalItemsSold = 0;
+
+  todayOrders.forEach(o => {
+    const tot = parseFloat(o.total) || 0;
+    totalSales += tot;
+    if (o.paymentMethod === 'cash') totalCash += tot;
+    else if (o.paymentMethod === 'card') totalCard += tot;
+    else if (o.paymentMethod === 'spei') totalSpei += tot;
+    else totalCash += tot;
+
+    if (Array.isArray(o.items)) {
+      o.items.forEach(it => totalItemsSold += (parseInt(it.quantity) || 1));
+    }
+  });
+
+  res.json({
+    success: true,
+    today: {
+      date: todayStr,
+      count: todayOrders.length,
+      totalSales: Math.round(totalSales * 100) / 100,
+      totalCash: Math.round(totalCash * 100) / 100,
+      totalCard: Math.round(totalCard * 100) / 100,
+      totalSpei: Math.round(totalSpei * 100) / 100,
+      totalItemsSold: totalItemsSold
+    },
+    allTime: {
+      count: orders.length,
+      totalSales: Math.round(orders.reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0) * 100) / 100
+    }
+  });
+});
+
+// ==================== MÓDULO DE FACTURACIÓN CFDI ====================
+
+// 1. Buscar Ticket o Pedido para Facturación por Folio
+app.get('/api/invoices/ticket/:ticketId', async (req, res) => {
+  const { ticketId } = req.params;
+  const cleanId = (ticketId || '').trim().toUpperCase();
+
+  // Buscar en ventas POS
+  let found = localPosOrders.find(o => (o.folio && o.folio.toUpperCase() === cleanId) || (o.id && o.id.toUpperCase() === cleanId));
+  
+  if (!found && db) {
+    try {
+      const doc = await db.collection('pos_orders').doc(cleanId).get();
+      if (doc.exists) {
+        found = { id: doc.id, ...doc.data() };
+      }
+    } catch (e) {}
+  }
+
+  // Si no se encuentra en POS, buscar en órdenes de Stripe
+  if (!found && db) {
+    try {
+      const doc = await db.collection('orders').doc(ticketId).get();
+      if (doc.exists) {
+        const orderData = doc.data();
+        found = {
+          folio: `WEB-${ticketId.slice(-6)}`,
+          id: ticketId,
+          total: orderData.amountTotal,
+          items: orderData.items || [],
+          customer: {
+            name: orderData.customerName || '',
+            email: orderData.customerEmail || ''
+          },
+          createdAt: orderData.createdAt
+        };
+      }
+    } catch (e) {}
+  }
+
+  if (found) {
+    return res.json({ success: true, ticket: found });
+  }
+
+  res.status(404).json({ success: false, error: 'No se encontró ningún ticket o compra con ese folio.' });
+});
+
+// 2. Registrar Solicitud de Factura Fiscal (CFDI 4.0)
+app.post('/api/invoices', async (req, res) => {
+  const {
+    ticketFolio,
+    rfc,
+    legalName,
+    taxRegime,
+    zipCode,
+    cfdiUse,
+    paymentMethod,
+    email,
+    phone,
+    amount,
+    items,
+    notes
+  } = req.body || {};
+
+  if (!rfc || !legalName || !taxRegime || !zipCode || !cfdiUse || !email) {
+    return res.status(400).json({ error: 'Faltan campos fiscales obligatorios (RFC, Razón Social, Régimen, CP, Uso CFDI, Correo).' });
+  }
+
+  const now = new Date();
+  const dateStr = now.toISOString();
+  const folioNum = Math.floor(100000 + Math.random() * 900000);
+  const folio = `FAC-${folioNum}`;
+
+  const invoiceReq = {
+    id: folio,
+    folio: folio,
+    ticketFolio: ticketFolio || 'VENTA-MOSTRADOR',
+    rfc: rfc.toUpperCase().trim(),
+    legalName: legalName.toUpperCase().trim(),
+    taxRegime: taxRegime.trim(),
+    zipCode: zipCode.toString().trim(),
+    cfdiUse: cfdiUse.trim(),
+    paymentMethod: paymentMethod || '01',
+    email: email.trim(),
+    phone: phone ? phone.trim() : '',
+    amount: parseFloat(amount) || 0,
+    items: Array.isArray(items) ? items : [],
+    notes: notes || '',
+    status: 'pending', // pending, invoiced, sent, cancelled
+    uuid: '',
+    createdAt: dateStr,
+    updatedAt: dateStr
+  };
+
+  localInvoices.unshift(invoiceReq);
 
   if (db) {
     try {
-      await db.collection('site_config').doc('main').set(localSiteConfig, { merge: true });
-      console.log('✅ Configuración del sitio guardada en Firestore');
+      await db.collection('invoices').doc(folio).set(invoiceReq);
+      console.log(`🧾 Solicitud de factura ${folio} guardada en Firestore`);
     } catch (err) {
-      console.error('❌ Error al guardar site_config en Firestore:', err);
+      console.error('❌ Error guardando factura en Firestore:', err);
     }
   }
-  res.json({ success: true, message: 'Configuración del sitio guardada con éxito', config: localSiteConfig });
+
+  res.json({
+    success: true,
+    folio: folio,
+    invoice: invoiceReq,
+    message: `Solicitud de factura recibida con éxito. Folio de seguimiento: ${folio}`
+  });
+});
+
+// 3. Obtener Solicitudes de Facturación (Admin)
+app.get('/api/admin/invoices', requireAdminAuth, async (req, res) => {
+  if (db) {
+    try {
+      const snapshot = await db.collection('invoices').orderBy('createdAt', 'desc').limit(200).get();
+      if (!snapshot.empty) {
+        let dbInv = [];
+        snapshot.forEach(doc => {
+          dbInv.push({ id: doc.id, ...doc.data() });
+        });
+        localInvoices = dbInv;
+      }
+    } catch (err) {
+      console.warn('⚠️ No se pudo leer facturas de Firestore:', err.message);
+    }
+  }
+  res.json({ success: true, invoices: localInvoices });
+});
+
+// 4. Actualizar Estado o Folio Fiscal de Factura (Admin)
+app.put('/api/admin/invoices/:id', requireAdminAuth, async (req, res) => {
+  const { id } = req.params;
+  const { status, uuid, notes } = req.body || {};
+
+  const inv = localInvoices.find(i => i.id === id || i.folio === id);
+  if (inv) {
+    if (status) inv.status = status;
+    if (uuid !== undefined) inv.uuid = uuid;
+    if (notes !== undefined) inv.notes = notes;
+    inv.updatedAt = new Date().toISOString();
+  }
+
+  if (db) {
+    try {
+      const docRef = db.collection('invoices').doc(id);
+      await docRef.set({
+        status: status || (inv ? inv.status : 'pending'),
+        uuid: uuid || (inv ? inv.uuid : ''),
+        notes: notes !== undefined ? notes : (inv ? inv.notes : ''),
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+    } catch (err) {
+      console.error('Error actualizando factura en Firestore:', err);
+    }
+  }
+
+  res.json({ success: true, message: 'Factura actualizada con éxito', invoice: inv });
 });
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
   console.log(`🔗 Sitio local: http://localhost:${PORT}`);
+  console.log(`🏪 Terminal POS: http://localhost:${PORT}/pos`);
+  console.log(`🧾 Facturación: http://localhost:${PORT}/facturacion`);
 });

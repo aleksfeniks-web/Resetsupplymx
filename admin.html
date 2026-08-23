@@ -104,7 +104,11 @@
             <span>⚙️</span>
             <span>Panel de Administración <strong class="gradient-text">Reset Supply MX</strong></span>
         </div>
-        <button class="btn-logout" id="logoutBtn">🔒 Cerrar Sesión</button>
+        <div style="display:flex; align-items:center;">
+            <a href="pos.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--green); color:var(--green); font-weight:700;">🏪 Terminal POS (Tienda Física)</a>
+            <a href="facturacion.html" target="_blank" class="btn-action" style="text-decoration:none; margin-right:14px;">🧾 Portal Facturación</a>
+            <button class="btn-logout" id="logoutBtn">🔒 Cerrar Sesión</button>
+        </div>
     </header>
 
     <div class="admin-container">
@@ -122,11 +126,17 @@
                 <div class="stat-label">Envíos Pendientes de Guía</div>
                 <div class="stat-value" id="statPendingShippings" style="color:var(--yellow);">0</div>
             </div>
+            <div class="stat-card">
+                <div class="stat-label">Facturas Pendientes</div>
+                <div class="stat-value" id="statPendingInvoices" style="color:var(--purple);">0</div>
+            </div>
         </div>
 
         <!-- Pestañas principales -->
         <div class="admin-tabs">
             <button class="tab-btn active" data-tab="orders">📋 Órdenes y Guías de Rastreo</button>
+            <button class="tab-btn" data-tab="pos-sales">🏪 Ventas Tienda Física (POS)</button>
+            <button class="tab-btn" data-tab="invoices">🧾 Solicitudes de Facturación</button>
             <button class="tab-btn" data-tab="products">📦 Catálogo de Productos y Precios</button>
             <button class="tab-btn" data-tab="editor">🎨 Editor Visual de la Página</button>
         </div>
@@ -151,6 +161,83 @@
                     </thead>
                     <tbody id="ordersTableBody">
                         <tr><td colspan="6" style="text-align:center; color:var(--muted); padding:30px;">Cargando pedidos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sección POS: Ventas en Tienda Física -->
+        <div id="tabPosSales" class="tab-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <h3>🏪 Ventas de Mostrador / POS (<span id="posSalesCount">0</span>)</h3>
+                    <p style="font-size:12.5px; color:var(--muted);">Historial de transacciones generadas en la terminal de punto de venta de la tienda física.</p>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-action" id="refreshPosBtn" onclick="loadPosSales()">🔄 Actualizar Ventas</button>
+                    <a href="pos.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--green); color:var(--green); font-weight:700;">➕ Abrir Terminal POS</a>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Fecha y Hora</th>
+                            <th>Cajero / Vendedor</th>
+                            <th>Cliente</th>
+                            <th>Productos Vendidos</th>
+                            <th>Método de Pago</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="posSalesTableBody">
+                        <tr><td colspan="8" style="text-align:center; color:var(--muted); padding:30px;">Cargando ventas de tienda física...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sección Facturación: Solicitudes CFDI 4.0 -->
+        <div id="tabInvoices" class="tab-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <h3>🧾 Solicitudes de Facturación CFDI (<span id="invoicesCount">0</span>)</h3>
+                    <p style="font-size:12.5px; color:var(--muted);">Gestiona los datos fiscales de clientes para timbrado y envío de XML y PDF.</p>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-action" onclick="exportInvoicesToCSV()">📥 Exportar a Excel (CSV)</button>
+                    <button class="btn-action" onclick="loadInvoices()">🔄 Actualizar Lista</button>
+                    <a href="facturacion.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--blue); color:var(--blue);">➕ Nueva Solicitud</a>
+                </div>
+            </div>
+
+            <!-- Filtros Rápidos de Facturas -->
+            <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+                <button class="btn-action active" id="btnFilterInvAll" onclick="filterInvoicesByStatus('all', this)">Todas</button>
+                <button class="btn-action" onclick="filterInvoicesByStatus('pending', this)">⏳ Pendientes</button>
+                <button class="btn-action" onclick="filterInvoicesByStatus('invoiced', this)">✅ Facturadas</button>
+                <button class="btn-action" onclick="filterInvoicesByStatus('sent', this)">✉️ Enviadas</button>
+                <button class="btn-action" onclick="filterInvoicesByStatus('cancelled', this)">❌ Canceladas</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Folio Solicitud</th>
+                            <th>Fecha</th>
+                            <th>RFC</th>
+                            <th>Razón Social</th>
+                            <th>Ticket / Compra</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoicesTableBody">
+                        <tr><td colspan="8" style="text-align:center; color:var(--muted); padding:30px;">Cargando solicitudes de facturación...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -578,6 +665,42 @@
         </div>
     </div>
 
+    <!-- Modal Detalles y Timbrado de Factura -->
+    <div id="invoiceDetailModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:620px;">
+            <h3 id="invModalTitle" style="margin-bottom:12px;">🧾 Detalle de Solicitud de Factura</h3>
+            <div id="invModalBody" style="background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:16px; font-size:13px; margin-bottom:16px; line-height:1.6; max-height:280px; overflow-y:auto;"></div>
+            
+            <form id="invEditForm" onsubmit="event.preventDefault(); saveInvoiceDetails();">
+                <input type="hidden" id="editInvId">
+                <div class="form-group">
+                    <label>Estado de la Factura</label>
+                    <select id="editInvStatus" class="form-input">
+                        <option value="pending">⏳ Pendiente de Timbrado</option>
+                        <option value="invoiced">✅ Facturada (Timbrada)</option>
+                        <option value="sent">✉️ Factura Enviada al Cliente</option>
+                        <option value="cancelled">❌ Cancelada</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Folio Fiscal (UUID SAT)</label>
+                    <input type="text" id="editInvUuid" class="form-input" style="font-family:'JetBrains Mono',monospace;" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label>Notas Internas de Facturación</label>
+                    <input type="text" id="editInvNotes" class="form-input" placeholder="Comentarios de contabilidad...">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; flex-wrap:wrap; gap:10px;">
+                    <button type="button" class="btn-action" id="btnInvWhatsApp" style="border-color:#25d366; color:#25d366;" onclick="contactClientWhatsApp()">📱 WhatsApp Cliente</button>
+                    <div style="display:flex; gap:10px;">
+                        <button type="button" class="btn-action" onclick="closeInvoiceDetailModal()">Cerrar</button>
+                        <button type="submit" class="btn-primary" style="width:auto; padding:8px 20px;">Guardar Cambios</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         var adminToken = sessionStorage.getItem('adminToken') || '';
 
@@ -589,6 +712,8 @@
 
         var tabs = document.querySelectorAll('.tab-btn');
         var tabOrders = document.getElementById('tabOrders');
+        var tabPosSales = document.getElementById('tabPosSales');
+        var tabInvoices = document.getElementById('tabInvoices');
         var tabProducts = document.getElementById('tabProducts');
 
         var ordersTableBody = document.getElementById('ordersTableBody');
@@ -607,6 +732,8 @@
         if (adminToken) {
             loginScreen.style.display = 'none';
             loadOrders();
+            loadPosSales();
+            loadInvoices();
             loadProducts();
         }
 
@@ -626,6 +753,8 @@
                     sessionStorage.setItem('adminToken', adminToken);
                     loginScreen.style.display = 'none';
                     loadOrders();
+                    loadPosSales();
+                    loadInvoices();
                     loadProducts();
                 } else {
                     loginError.textContent = data.error || 'Contraseña de administración incorrecta.';
@@ -645,6 +774,8 @@
         // Variables globales del editor visual
         var currentSiteConfig = null;
         var currentProductsList = [];
+        var currentInvoicesList = [];
+        var currentSelectedInvoice = null;
         var livePreviewFrame = document.getElementById('livePreviewFrame');
         var tabEditor = document.getElementById('tabEditor');
 
@@ -654,19 +785,26 @@
                 tabs.forEach(function(t) { t.classList.remove('active'); });
                 this.classList.add('active');
                 var target = this.getAttribute('data-tab');
+
+                tabOrders.style.display = 'none';
+                tabPosSales.style.display = 'none';
+                tabInvoices.style.display = 'none';
+                tabProducts.style.display = 'none';
+                tabEditor.style.display = 'none';
+
                 if (target === 'orders') {
                     tabOrders.style.display = 'block';
-                    tabProducts.style.display = 'none';
-                    tabEditor.style.display = 'none';
                     loadOrders();
+                } else if (target === 'pos-sales') {
+                    tabPosSales.style.display = 'block';
+                    loadPosSales();
+                } else if (target === 'invoices') {
+                    tabInvoices.style.display = 'block';
+                    loadInvoices();
                 } else if (target === 'products') {
-                    tabOrders.style.display = 'none';
                     tabProducts.style.display = 'block';
-                    tabEditor.style.display = 'none';
                     loadProducts();
                 } else if (target === 'editor') {
-                    tabOrders.style.display = 'none';
-                    tabProducts.style.display = 'none';
                     tabEditor.style.display = 'block';
                     loadSiteConfigForEditor();
                 }
@@ -790,6 +928,244 @@
                 console.error(err);
             }
         });
+
+        // ==================== FUNCIONES POS (TIENDA FÍSICA) ====================
+        async function loadPosSales() {
+            var tbody = document.getElementById('posSalesTableBody');
+            try {
+                var res = await fetch('/api/pos/orders');
+                var data = await res.json();
+                var orders = data.orders || [];
+                document.getElementById('posSalesCount').textContent = orders.length;
+
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--muted); padding:30px;">No hay ventas registradas en mostrador aún.</td></tr>';
+                    return;
+                }
+
+                var html = '';
+                orders.forEach(function(o) {
+                    var itemsSummary = '';
+                    if (Array.isArray(o.items)) {
+                        itemsSummary = o.items.map(function(it) {
+                            return (it.quantity || 1) + 'x ' + it.name + (it.variation ? ' (' + it.variation + ')' : '');
+                        }).join(', ');
+                    }
+
+                    var methodBadge = '<span class="status-badge status-pending">Efectivo</span>';
+                    if (o.paymentMethod === 'card') methodBadge = '<span class="status-badge status-shipped">Tarjeta</span>';
+                    else if (o.paymentMethod === 'spei') methodBadge = '<span class="status-badge status-completed">SPEI</span>';
+
+                    html += `
+                    <tr>
+                        <td style="font-weight:700; color:var(--green);">${o.folio || o.id}</td>
+                        <td style="color:var(--muted);">${new Date(o.createdAt).toLocaleString('es-MX')}</td>
+                        <td>${o.seller || 'Vendedor'}</td>
+                        <td>
+                            <strong>${(o.customer && o.customer.name) ? o.customer.name : 'Público en General'}</strong>
+                            ${(o.customer && o.customer.phone) ? '<br><span style="font-size:11px; color:var(--muted);">' + o.customer.phone + '</span>' : ''}
+                        </td>
+                        <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; font-size:12.5px;">${itemsSummary}</td>
+                        <td>${methodBadge}</td>
+                        <td style="font-weight:700; color:var(--green); font-size:15px;">$${(o.total || 0).toFixed(2)}</td>
+                        <td>
+                            <a href="pos.html" target="_blank" class="btn-action" style="font-size:11.5px; text-decoration:none;">🖨️ POS</a>
+                        </td>
+                    </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } catch (err) {
+                console.error('Error cargando ventas POS:', err);
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--red); padding:20px;">Error al cargar ventas de tienda física.</td></tr>';
+            }
+        }
+
+        // ==================== FUNCIONES FACTURACIÓN CFDI ====================
+        async function loadInvoices() {
+            var tbody = document.getElementById('invoicesTableBody');
+            try {
+                var res = await fetch('/api/admin/invoices', {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                var invoices = data.invoices || [];
+                currentInvoicesList = invoices;
+                document.getElementById('invoicesCount').textContent = invoices.length;
+
+                // Contar pendientes
+                var pendingCount = invoices.filter(function(i) { return i.status === 'pending'; }).length;
+                document.getElementById('statPendingInvoices').textContent = pendingCount;
+
+                renderInvoicesTable(currentInvoicesList);
+            } catch (err) {
+                console.error('Error cargando facturas:', err);
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--red); padding:20px;">Error al cargar solicitudes de facturas.</td></tr>';
+            }
+        }
+
+        function renderInvoicesTable(list) {
+            var tbody = document.getElementById('invoicesTableBody');
+            if (!list || list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--muted); padding:30px;">No hay solicitudes de facturación en este filtro.</td></tr>';
+                return;
+            }
+
+            var html = '';
+            list.forEach(function(inv) {
+                var badgeClass = 'status-pending';
+                var statusLabel = 'Pendiente';
+                if (inv.status === 'invoiced') { badgeClass = 'status-shipped'; statusLabel = 'Facturada'; }
+                else if (inv.status === 'sent') { badgeClass = 'status-completed'; statusLabel = 'Enviada'; }
+                else if (inv.status === 'cancelled') { badgeClass = 'status-pending'; statusLabel = 'Cancelada'; }
+
+                html += `
+                <tr>
+                    <td style="font-weight:700; color:var(--blue);">${inv.folio}</td>
+                    <td style="color:var(--muted); font-size:12px;">${new Date(inv.createdAt).toLocaleDateString('es-MX')}</td>
+                    <td style="font-family:'JetBrains Mono',monospace; font-weight:700;">${inv.rfc}</td>
+                    <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis;"><strong>${inv.legalName}</strong></td>
+                    <td style="font-size:12px; color:var(--muted);">${inv.ticketFolio || 'N/A'}</td>
+                    <td style="font-weight:700; color:var(--green);">$${(parseFloat(inv.amount) || 0).toFixed(2)}</td>
+                    <td><span class="status-badge ${badgeClass}">${statusLabel}</span></td>
+                    <td>
+                        <button class="btn-action" style="font-size:12px;" onclick="openInvoiceDetail('${inv.id || inv.folio}')">🔍 Ver / Timbrar</button>
+                    </td>
+                </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function filterInvoicesByStatus(status, btn) {
+            document.querySelectorAll('#tabInvoices .btn-action').forEach(function(b) { b.classList.remove('active'); });
+            if (btn) btn.classList.add('active');
+
+            if (status === 'all') {
+                renderInvoicesTable(currentInvoicesList);
+            } else {
+                var filtered = currentInvoicesList.filter(function(i) { return i.status === status; });
+                renderInvoicesTable(filtered);
+            }
+        }
+
+        window.openInvoiceDetail = function(id) {
+            var inv = currentInvoicesList.find(function(i) { return i.id === id || i.folio === id; });
+            if (!inv) return;
+            currentSelectedInvoice = inv;
+
+            document.getElementById('editInvId').value = inv.id || inv.folio;
+            document.getElementById('editInvStatus').value = inv.status || 'pending';
+            document.getElementById('editInvUuid').value = inv.uuid || '';
+            document.getElementById('editInvNotes').value = inv.notes || '';
+
+            var bodyHtml = `
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                    <div><strong>Folio:</strong> <span style="color:var(--blue); font-weight:700;">${inv.folio}</span></div>
+                    <div><strong>Ticket Vinculado:</strong> <span>${inv.ticketFolio || 'N/A'}</span></div>
+                    <div><strong>Fecha Solicitud:</strong> <span>${new Date(inv.createdAt).toLocaleString('es-MX')}</span></div>
+                    <div><strong>Total a Facturar:</strong> <span style="color:var(--green); font-weight:700;">$${(parseFloat(inv.amount) || 0).toFixed(2)} MXN</span></div>
+                </div>
+                <div style="border-top:1px solid var(--line); padding-top:10px;">
+                    <div><strong>RFC:</strong> <span style="font-family:'JetBrains Mono',monospace; color:var(--text); font-weight:700;">${inv.rfc}</span></div>
+                    <div><strong>Razón Social:</strong> <span>${inv.legalName}</span></div>
+                    <div><strong>Régimen Fiscal:</strong> <span>${inv.taxRegime}</span></div>
+                    <div><strong>Código Postal Fiscal:</strong> <span>${inv.zipCode}</span></div>
+                    <div><strong>Uso de CFDI:</strong> <span>${inv.cfdiUse}</span></div>
+                    <div><strong>Forma de Pago SAT:</strong> <span>${inv.paymentMethod}</span></div>
+                    <div><strong>Correo para Envío:</strong> <span style="color:var(--blue);">${inv.email}</span></div>
+                    ${inv.phone ? '<div><strong>Teléfono/WhatsApp:</strong> <span>' + inv.phone + '</span></div>' : ''}
+                </div>
+            `;
+            document.getElementById('invModalBody').innerHTML = bodyHtml;
+            document.getElementById('invoiceDetailModal').style.display = 'flex';
+        };
+
+        window.closeInvoiceDetailModal = function() {
+            document.getElementById('invoiceDetailModal').style.display = 'none';
+        };
+
+        window.saveInvoiceDetails = async function() {
+            var id = document.getElementById('editInvId').value;
+            var status = document.getElementById('editInvStatus').value;
+            var uuid = document.getElementById('editInvUuid').value.trim();
+            var notes = document.getElementById('editInvNotes').value.trim();
+
+            try {
+                var res = await fetch('/api/admin/invoices/' + encodeURIComponent(id), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify({ status: status, uuid: uuid, notes: notes })
+                });
+                var data = await res.json();
+                if (data.success) {
+                    closeInvoiceDetailModal();
+                    loadInvoices();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo actualizar la factura'));
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        window.contactClientWhatsApp = function() {
+            if (!currentSelectedInvoice) return;
+            var inv = currentSelectedInvoice;
+            var phone = inv.phone ? inv.phone.replace(/[^0-9]/g, '') : '';
+            if (phone.length === 10) phone = '52' + phone;
+
+            var msg = encodeURIComponent(
+                `Hola ${inv.legalName}, te contactamos de *Reset Supply MX* sobre tu solicitud de factura *#${inv.folio}* (Ticket ${inv.ticketFolio}).\n\n` +
+                `Estatus actual: ${inv.status === 'invoiced' || inv.status === 'sent' ? '✅ Timbrada y lista' : '⏳ En proceso de timbrado'}.\n` +
+                (inv.uuid ? `Folio Fiscal UUID: ${inv.uuid}\n\n` : '\n') +
+                `¿Tienes alguna duda o requieres apoyo adicional? Estamos a tus órdenes.`
+            );
+
+            var url = phone ? `https://wa.me/${phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
+            window.open(url, '_blank');
+        };
+
+        window.exportInvoicesToCSV = function() {
+            if (!currentInvoicesList || currentInvoicesList.length === 0) {
+                alert('No hay facturas para exportar.');
+                return;
+            }
+
+            var csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Folio,Fecha,Ticket,RFC,Razon_Social,Regimen,CP,Uso_CFDI,Forma_Pago,Email,Telefono,Monto,Estado,UUID\n";
+
+            currentInvoicesList.forEach(function(i) {
+                var row = [
+                    i.folio,
+                    new Date(i.createdAt).toISOString().split('T')[0],
+                    i.ticketFolio || '',
+                    i.rfc,
+                    '"' + (i.legalName || '').replace(/"/g, '""') + '"',
+                    i.taxRegime,
+                    i.zipCode,
+                    i.cfdiUse,
+                    i.paymentMethod,
+                    i.email,
+                    i.phone || '',
+                    (parseFloat(i.amount) || 0).toFixed(2),
+                    i.status,
+                    i.uuid || ''
+                ].join(",");
+                csvContent += row + "\n";
+            });
+
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Facturacion_ResetSupply_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
 
         // Cargar Productos
                 var DEFAULT_CATALOG = [
