@@ -185,12 +185,20 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'resetsupplymx.html'));
 });
 
+app.get('/tienda.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'tienda.html'));
+});
+
+app.get('/tienda', (req, res) => {
+  res.sendFile(path.join(__dirname, 'tienda.html'));
+});
+
 app.get('/pos', (req, res) => {
-  res.sendFile(path.join(__dirname, 'pos.html'));
+  res.sendFile(path.join(__dirname, 'tienda.html'));
 });
 
 app.get('/tienda-fisica', (req, res) => {
-  res.sendFile(path.join(__dirname, 'pos.html'));
+  res.sendFile(path.join(__dirname, 'tienda.html'));
 });
 
 app.get('/facturacion', (req, res) => {
@@ -624,9 +632,9 @@ app.get('/api/admin/site-config', requireAdminAuth, async (req, res) => {
 
 // ==================== MÓDULO TIENDA FÍSICA / POS ====================
 let localSellers = [
-  { id: "vend-1", name: "Vendedor Mostrador - Tienda Principal", pin: "1234", role: "seller" },
-  { id: "vend-2", name: "Asesor Técnico Vonixx", pin: "2026", role: "seller" },
-  { id: "admin-1", name: "Administrador General", pin: "9999", role: "admin" }
+  { id: "vend-1", name: "Vendedor Mostrador — Tienda Principal", pin: "0808", role: "seller" },
+  { id: "vend-2", name: "Asesor Técnico Vonixx", pin: "0808", role: "seller" },
+  { id: "admin-1", name: "Administrador General", pin: "0808", role: "admin" }
 ];
 
 let localPosOrders = [];
@@ -638,39 +646,53 @@ app.get('/api/pos/sellers', (req, res) => {
   res.json({ success: true, sellers: publicSellers });
 });
 
-// 2. Login de Vendedor POS (con PIN o Clave de Admin)
+// 2. Paso 1 de Seguridad POS: Verificar Contraseña de Admin
+app.post('/api/pos/verify-admin', (req, res) => {
+  const { adminPassword } = req.body || {};
+  let inputPass = (adminPassword || '').toString();
+  try { inputPass = decodeURIComponent(inputPass); } catch(e) {}
+  inputPass = inputPass.replace(/^['"]|['"]$/g, '').trim();
+
+  if (inputPass && inputPass === ADMIN_PASSWORD) {
+    return res.json({ success: true, message: 'Acceso de Administrador verificado correctamente.' });
+  } else {
+    return res.status(401).json({ success: false, error: 'Contraseña de administrador incorrecta.' });
+  }
+});
+
+// 2b. Paso 2 de Seguridad POS: Login de Vendedor (PIN default 0808)
 app.post('/api/pos/login', (req, res) => {
-  const { sellerId, pin, password } = req.body || {};
+  const { sellerId, pin, password, sellerName } = req.body || {};
   const cleanPin = (pin || '').toString().trim();
   const cleanPass = (password || '').toString().trim();
 
-  // Autenticación por contraseña de administración
+  // Autenticación por contraseña de administración directa
   if (cleanPass && cleanPass === ADMIN_PASSWORD) {
     const adminSeller = localSellers.find(s => s.role === 'admin') || { id: 'admin', name: 'Administrador', role: 'admin' };
     return res.json({ success: true, seller: adminSeller, token: ADMIN_PASSWORD });
   }
 
-  // Autenticación por PIN de vendedor
-  const seller = localSellers.find(s => (sellerId ? s.id === sellerId : true) && s.pin === cleanPin);
+  // Autenticación por PIN de vendedor (Default: 0808 o PIN configurado)
+  const seller = localSellers.find(s => (sellerId ? s.id === sellerId : true) && (s.pin === cleanPin || cleanPin === '0808'));
   if (seller) {
     return res.json({
       success: true,
-      seller: { id: seller.id, name: seller.name, role: seller.role },
+      seller: { id: seller.id, name: sellerName || seller.name, role: seller.role },
       token: `POS-TOKEN-${seller.id}-${Date.now()}`
     });
   }
 
-  // PIN de rescate universal para mostrador: 1234 o 0000
-  if (cleanPin === '1234' || cleanPin === '0000' || cleanPin === '2026') {
+  // PIN de rescate / default universal 0808
+  if (cleanPin === '0808' || cleanPin === '1234' || cleanPin === '0000') {
     const defaultSeller = localSellers.find(s => s.id === sellerId) || localSellers[0];
     return res.json({
       success: true,
-      seller: { id: defaultSeller.id, name: defaultSeller.name, role: defaultSeller.role },
+      seller: { id: defaultSeller.id, name: sellerName || defaultSeller.name, role: defaultSeller.role },
       token: `POS-TOKEN-${defaultSeller.id}-${Date.now()}`
     });
   }
 
-  res.status(401).json({ success: false, error: 'PIN o credenciales de vendedor incorrectas.' });
+  res.status(401).json({ success: false, error: 'PIN de vendedor incorrecto (PIN default: 0808).' });
 });
 
 // 3. Crear Venta en Tienda Física (POS)
