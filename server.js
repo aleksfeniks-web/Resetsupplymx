@@ -205,6 +205,14 @@ app.get('/facturacion', (req, res) => {
   res.sendFile(path.join(__dirname, 'facturacion.html'));
 });
 
+app.get('/clientes/puntodeventa.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'clientes', 'puntodeventa.html'));
+});
+
+app.get('/clientes/puntodeventa', (req, res) => {
+  res.sendFile(path.join(__dirname, 'clientes', 'puntodeventa.html'));
+});
+
 // Archivos estáticos (HTML, CSS, imágenes, etc.)
 app.use(express.static(__dirname));
 
@@ -639,6 +647,7 @@ let localSellers = [
 
 let localPosOrders = [];
 let localInvoices = [];
+let localPosClients = [];
 
 // 1. Obtener lista de vendedores públicos
 app.get('/api/pos/sellers', (req, res) => {
@@ -1031,9 +1040,84 @@ app.put('/api/admin/invoices/:id', requireAdminAuth, async (req, res) => {
   res.json({ success: true, message: 'Factura actualizada con éxito', invoice: inv });
 });
 
+// ==================== CLIENTES PUNTO DE VENTA ====================
+
+// Registrar Cliente Punto de Venta
+app.post('/api/puntodeventa/register', async (req, res) => {
+  try {
+    const {
+      nombre,
+      telefono,
+      celular,
+      email,
+      negocio,
+      direccion,
+      tieneConstancia,
+      nombreConstancia
+    } = req.body || {};
+
+    if (!nombre || !telefono || !email) {
+      return res.status(400).json({ error: 'Nombre, teléfono y correo electrónico son obligatorios.' });
+    }
+
+    const folioId = `POS-CLI-${Date.now()}`;
+    const newClient = {
+      id: folioId,
+      nombre: nombre.trim(),
+      telefono: telefono.trim(),
+      celular: (celular || '').trim(),
+      email: email.trim().toLowerCase(),
+      negocio: (negocio || '').trim(),
+      direccion: (direccion || '').trim(),
+      tieneConstancia: !!tieneConstancia,
+      nombreConstancia: nombreConstancia || null,
+      status: 'nuevo',
+      createdAt: new Date().toISOString()
+    };
+
+    localPosClients.unshift(newClient);
+
+    if (db) {
+      try {
+        await db.collection('pos_clients').doc(folioId).set(newClient);
+        console.log(`🤝 Cliente Punto de Venta guardado en Firestore: ${nombre} (${folioId})`);
+      } catch (err) {
+        console.warn('⚠️ No se pudo guardar cliente POS en Firestore:', err.message);
+      }
+    }
+
+    res.json({
+      success: true,
+      client: newClient,
+      message: 'Registro de cliente punto de venta guardado con éxito.'
+    });
+  } catch (err) {
+    console.error('❌ Error registrando cliente POS:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Listar Clientes Punto de Venta (Admin)
+app.get('/api/admin/pos-clients', requireAdminAuth, async (req, res) => {
+  if (db) {
+    try {
+      const snap = await db.collection('pos_clients').orderBy('createdAt', 'desc').limit(300).get();
+      if (!snap.empty) {
+        const list = [];
+        snap.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+        localPosClients = list;
+      }
+    } catch (e) {
+      console.warn('⚠️ No se pudo obtener clientes POS de Firestore:', e.message);
+    }
+  }
+  res.json({ success: true, clients: localPosClients });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
   console.log(`🔗 Sitio local: http://localhost:${PORT}`);
   console.log(`🏪 Terminal POS: http://localhost:${PORT}/pos`);
   console.log(`🧾 Facturación: http://localhost:${PORT}/facturacion`);
+  console.log(`🤝 Clientes Punto de Venta: http://localhost:${PORT}/clientes/puntodeventa.html`);
 });
