@@ -815,14 +815,306 @@
             margin-top: auto;
         }
 
-        /* Responsive */
+        /* ================= EXPERIENCIA MÓVIL OPTIMIZADA ================= */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:active, .btn-nav:active, .btn-submit:active, .btn-catalog-trigger:active, .btn-modal-catalog:active, .btn-modal-close:active {
+            transform: scale(0.97) !important;
+            transition: transform 0.1s ease !important;
+        }
+
         @media (max-width: 768px) {
-            .benefits-grid { grid-template-columns: 1fr 1fr; }
-            .form-grid, .form-grid.col-3 { grid-template-columns: 1fr; }
-            .form-grid.full-width { grid-column: span 1; }
-            .form-card { padding: 22px 18px; }
-            .pos-title { font-size: 28px; }
-            .pos-header { padding: 12px 18px; }
+            /* Cabecera Móvil */
+            .pos-header {
+                padding: 10px 14px;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .pos-brand {
+                gap: 8px;
+            }
+            .pos-logo {
+                height: 32px;
+            }
+            .pos-brand .font-raj {
+                font-size: 16px !important;
+                letter-spacing: 0.3px;
+            }
+            .pos-nav-links {
+                width: 100%;
+                display: flex;
+                gap: 8px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 2px;
+                scrollbar-width: none;
+            }
+            .pos-nav-links::-webkit-scrollbar {
+                display: none;
+            }
+            .btn-nav {
+                flex: 1;
+                min-width: fit-content;
+                padding: 8px 10px;
+                font-size: 12px;
+                justify-content: center;
+                border-radius: 8px;
+            }
+
+            /* Contenedor y Hero */
+            .pos-container {
+                margin: 16px auto;
+                padding: 0 12px;
+            }
+            .pos-hero {
+                margin-bottom: 20px;
+                padding: 0 4px;
+            }
+            .pos-badge {
+                font-size: 10px;
+                padding: 5px 12px;
+                letter-spacing: 0.8px;
+                line-height: 1.3;
+                text-align: center;
+                white-space: normal;
+                margin-bottom: 10px;
+            }
+            .pos-title {
+                font-size: 24px;
+                line-height: 1.25;
+                margin-bottom: 10px;
+            }
+            .pos-desc {
+                font-size: 13.5px;
+                line-height: 1.5;
+                color: #b3c0ce;
+            }
+
+            /* Beneficios en Móvil (Formato compacto y limpio) */
+            .benefits-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            .benefit-card {
+                display: flex;
+                align-items: center;
+                text-align: left;
+                gap: 14px;
+                padding: 12px 14px;
+            }
+            .benefit-icon {
+                font-size: 26px;
+                margin-bottom: 0;
+                flex-shrink: 0;
+            }
+            .benefit-title {
+                font-size: 14px;
+                margin-bottom: 2px;
+            }
+            .benefit-text {
+                font-size: 12px;
+                line-height: 1.35;
+            }
+
+            /* Banner Exclusivo de Catálogo */
+            .catalog-exclusive-banner {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 18px 16px;
+                gap: 14px;
+                text-align: left;
+                border-radius: 12px;
+            }
+            .catalog-title {
+                font-size: 18px;
+            }
+            .catalog-desc {
+                font-size: 13px;
+                line-height: 1.45;
+            }
+            .btn-catalog-trigger {
+                width: 100%;
+                justify-content: center;
+                padding: 12px;
+                font-size: 14.5px;
+                border-radius: 8px;
+            }
+
+            /* Formulario */
+            .form-card {
+                padding: 20px 14px;
+                border-radius: 12px;
+                margin-bottom: 24px;
+            }
+            .section-header {
+                font-size: 16px;
+                margin: 20px 0 14px 0;
+                padding-bottom: 8px;
+            }
+            .form-grid, .form-grid.col-3 {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .form-grid.full-width {
+                grid-column: span 1;
+            }
+
+            /* Inputs optimizados para Touch e iOS Safari (evita auto-zoom) */
+            .form-input, .form-select, .form-textarea {
+                font-size: 16px !important;
+                padding: 12px 14px 12px 40px;
+                border-radius: 8px;
+                min-height: 48px;
+            }
+            .form-input.no-icon, .form-select.no-icon {
+                padding-left: 14px;
+            }
+            .form-textarea {
+                min-height: 80px;
+            }
+
+            /* Zona de subida de archivo para móvil */
+            .file-upload-box {
+                padding: 24px 14px;
+                border-radius: 10px;
+            }
+            .upload-icon {
+                font-size: 32px;
+                margin-bottom: 6px;
+            }
+            .upload-text {
+                font-size: 13.5px;
+            }
+            .upload-hint {
+                font-size: 11px;
+            }
+            .file-selected-badge {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+                text-align: center;
+            }
+            .file-selected-badge .file-info-group {
+                justify-content: center;
+            }
+            .btn-remove-file {
+                width: 100%;
+                padding: 8px;
+                justify-content: center;
+            }
+
+            /* Botón de Envío */
+            .btn-submit-container {
+                margin-top: 24px;
+            }
+            .btn-submit {
+                height: 52px;
+                font-size: 15.5px;
+                border-radius: 10px;
+            }
+            .submit-notice {
+                font-size: 11.5px;
+                line-height: 1.4;
+                text-align: center;
+            }
+
+            /* Modales en Móvil */
+            .modal-overlay {
+                padding: 12px;
+            }
+            .modal-card {
+                padding: 26px 16px;
+                max-width: 100%;
+                max-height: 90vh;
+                overflow-y: auto;
+                border-radius: 12px;
+            }
+            .modal-icon-wrap {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 14px;
+            }
+            .modal-icon-wrap svg {
+                width: 30px;
+                height: 30px;
+            }
+            .modal-title {
+                font-size: 22px;
+            }
+            .modal-message {
+                font-size: 14.5px;
+                margin-bottom: 16px;
+            }
+            .modal-summary {
+                padding: 12px;
+                font-size: 12px;
+            }
+            .modal-summary-row {
+                flex-direction: column;
+                gap: 2px;
+                padding: 6px 0;
+            }
+            .summary-val {
+                text-align: left;
+                max-width: 100%;
+            }
+
+            /* Visor de Catálogo en Móvil (Full-Screen App Experience) */
+            .catalog-modal-overlay {
+                padding: 0;
+            }
+            .catalog-modal-container {
+                width: 100vw;
+                height: 100vh;
+                max-width: 100vw;
+                max-height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            .catalog-modal-header {
+                padding: 10px 12px;
+            }
+            .catalog-modal-title .font-raj {
+                font-size: 14px !important;
+            }
+            .catalog-modal-title div div:last-child {
+                display: none; /* ocultar subtítulo largo en pantallas móviles */
+            }
+            #btnToggleFullscreen {
+                display: none; /* redundante en móvil porque ocupa el 100% de la pantalla */
+            }
+            .btn-cat-close {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            .catalog-iframe-wrap {
+                height: calc(100vh - 48px);
+            }
+
+            /* Footer */
+            .pos-footer {
+                padding: 20px 14px;
+                font-size: 12px;
+                padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            }
+        }
+
+        @media (max-width: 380px) {
+            .pos-title {
+                font-size: 21px;
+            }
+            .pos-brand .font-raj {
+                font-size: 14px !important;
+            }
+            .btn-nav span {
+                font-size: 11px;
+            }
+            .btn-submit {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -1078,8 +1370,8 @@
                     <div class="file-upload-box" id="dropArea">
                         <input type="file" id="constanciaFile" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.webp">
                         <div class="upload-icon">📄</div>
-                        <div class="upload-text">Haz clic aquí o arrastra tu archivo</div>
-                        <div class="upload-hint">Formatos soportados: PDF, JPG, PNG (Máx. 15 MB)</div>
+                        <div class="upload-text">Toca aquí para seleccionar tu archivo o foto</div>
+                        <div class="upload-hint">Soporta PDF o Foto/Imagen (Máx. 15 MB)</div>
                     </div>
 
                     <!-- Badge de archivo seleccionado -->
