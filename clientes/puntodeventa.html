@@ -799,9 +799,217 @@
             box-shadow: 0 8px 25px var(--green-glow);
             width: 100%;
         }
-        .btn-modal-catalog:hover {
+        /* ================= MODALIDAD PARTNER RESET SUPPLY ================= */
+        .partner-showcase-card {
+            background: linear-gradient(135deg, rgba(34, 184, 240, 0.12), rgba(18, 23, 30, 0.95) 55%, rgba(61, 220, 132, 0.1));
+            border: 1.5px solid rgba(34, 184, 240, 0.4);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(34, 184, 240, 0.15);
+        }
+        .partner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(34, 184, 240, 0.18);
+            color: var(--blue);
+            border: 1px solid rgba(34, 184, 240, 0.45);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .partner-title {
+            font-size: 26px;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+        .partner-subtitle {
+            font-size: 14.5px;
+            color: var(--muted);
+            max-width: 820px;
+            line-height: 1.55;
+            margin-bottom: 22px;
+        }
+        .partner-features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+        .partner-feature-item {
+            background: var(--panel-2);
+            border: 1px solid var(--line-light);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all .25s ease;
+        }
+        .partner-feature-item:hover {
+            border-color: var(--blue);
             transform: translateY(-2px);
-            box-shadow: 0 12px 30px var(--blue-glow);
+            box-shadow: 0 8px 25px rgba(34, 184, 240, 0.2);
+        }
+        .p-feat-icon {
+            font-size: 28px;
+            width: 46px;
+            height: 46px;
+            background: rgba(34, 184, 240, 0.12);
+            border: 1px solid rgba(34, 184, 240, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+        .partner-feature-item h4 {
+            font-size: 15px;
+            color: var(--text);
+            letter-spacing: 0.3px;
+        }
+        .partner-feature-item p {
+            font-size: 12.5px;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+        .partner-cta-box {
+            background: var(--panel-3);
+            border: 1px dashed rgba(34, 184, 240, 0.35);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            font-size: 13.5px;
+            color: var(--text);
+        }
+        .btn-select-partner {
+            background: linear-gradient(90deg, #22b8f0, #3ddc84);
+            color: #04130b;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 18px var(--blue-glow);
+        }
+        .btn-select-partner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--green-glow);
+        }
+
+        /* Selector de Modalidad en Formulario */
+        .modality-selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        .modality-card {
+            background: var(--panel-2);
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            cursor: pointer;
+            transition: all .2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            user-select: none;
+        }
+        .modality-card:hover {
+            border-color: var(--blue);
+            background: rgba(34, 184, 240, 0.05);
+        }
+        .modality-card.selected {
+            border-color: var(--green);
+            background: rgba(61, 220, 132, 0.08);
+            box-shadow: 0 0 20px var(--green-glow);
+        }
+        .modality-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modality-radio-circle {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--muted-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+        }
+        .modality-card.selected .modality-radio-circle {
+            border-color: var(--green);
+            background: var(--green);
+        }
+        .modality-card.selected .modality-radio-circle::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #04130b;
+            border-radius: 50%;
+        }
+        .modality-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+        }
+        .modality-desc {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+        .modality-tag {
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .modality-tag.tag-partner {
+            background: rgba(34, 184, 240, 0.2);
+            color: var(--blue);
+            border: 1px solid var(--blue);
+        }
+        .modality-tag.tag-pos {
+            background: rgba(61, 220, 132, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(61, 220, 132, 0.4);
+        }
+        .partner-extra-fields {
+            background: rgba(34, 184, 240, 0.05);
+            border: 1px solid rgba(34, 184, 240, 0.25);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-top: 10px;
+            margin-bottom: 16px;
+            display: none;
+            animation: fadeIn .3s ease;
         }
 
         /* Footer */
@@ -917,6 +1125,42 @@
             .benefit-text {
                 font-size: 12px;
                 line-height: 1.35;
+            }
+
+            /* Modalidad Partner en Móvil */
+            .partner-showcase-card {
+                padding: 20px 16px;
+                border-radius: 12px;
+                margin-bottom: 20px;
+            }
+            .partner-title {
+                font-size: 21px;
+            }
+            .partner-subtitle {
+                font-size: 13px;
+                margin-bottom: 16px;
+            }
+            .partner-features-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+            .partner-cta-box {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                gap: 12px;
+                padding: 14px;
+            }
+            .btn-select-partner {
+                width: 100%;
+                justify-content: center;
+                padding: 12px;
+                font-size: 13.5px;
+            }
+            .modality-selector-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
             }
 
             /* Banner Exclusivo de Catálogo */
@@ -1135,9 +1379,8 @@
                 <span>📖 Catálogo Vonixx</span>
                 <span id="navCatalogLockBadge" style="font-size:11px; background:rgba(255,165,2,0.2); color:var(--yellow); padding:1px 6px; border-radius:10px; margin-left:4px;">🔒 Bloqueado</span>
             </button>
-            <a href="/tienda.html" class="btn-nav" style="border-color:var(--green); color:var(--green);">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                Tienda POS
+            <a href="#seccionPartner" class="btn-nav" style="border-color:rgba(34,184,240,0.5); color:var(--blue);">
+                <span>🚀 Partner Reset Supply</span>
             </a>
         </div>
     </header>
@@ -1146,10 +1389,10 @@
     <main class="pos-container">
         <!-- Hero -->
         <div class="pos-hero">
-            <span class="pos-badge">PROGRAMA DE PUNTOS DE VENTA & DISTRIBUCIÓN AUTORIZADA</span>
-            <h1 class="pos-title">ALTA DE CLIENTES <span class="gradient-text">PUNTO DE VENTA</span></h1>
+            <span class="pos-badge">PROGRAMA DE PUNTOS DE VENTA & PARTNERS AUTORIZADOS</span>
+            <h1 class="pos-title">ALTA DE CLIENTES & <span class="gradient-text">PARTNER RESET SUPPLY</span></h1>
             <p class="pos-desc">
-                Conviértete en punto de venta oficial de productos <strong>Vonixx</strong> en México a través de <strong>Reset Supply MX</strong>. Accede a precios exclusivos de mayoreo, abastecimiento prioritario y soporte comercial directo.
+                Conviértete en punto de venta oficial o en <strong>Partner Reset Supply</strong> de productos <strong>Vonixx</strong> en México. Accede a precios exclusivos de mayoreo, abastecimiento prioritario y la opción de tener tu propia tienda online y sistema POS.
             </p>
         </div>
 
@@ -1174,6 +1417,46 @@
                 <div class="benefit-icon">🛡️</div>
                 <div class="benefit-title">Garantía Oficial</div>
                 <div class="benefit-text">Productos 100% originales Vonixx con material publicitario y respaldo de marca.</div>
+            </div>
+        </div>
+
+        <!-- Tarjeta Showcase: Modalidad Partner Reset Supply -->
+        <div class="partner-showcase-card" id="seccionPartner">
+            <div class="partner-badge">🚀 NUEVA MODALIDAD DESTACADA</div>
+            <h2 class="partner-title font-raj">MODALIDAD <span class="gradient-text">PARTNER RESET SUPPLY</span></h2>
+            <p class="partner-subtitle">
+                ¿Quieres vender en internet y en mostrador con tu propia identidad? Con la modalidad <strong>Partner Reset Supply</strong> te ayudamos a construir tu ecosistema comercial completo de detailing:
+            </p>
+
+            <div class="partner-features-grid">
+                <div class="partner-feature-item">
+                    <div class="p-feat-icon">🌐</div>
+                    <h4 class="font-raj">Tu Tienda en Línea con tu Marca</h4>
+                    <p>Desarrollamos tu plataforma e-commerce personalizada con tu logotipo, dominio propio, pasarela de pagos integrada y catálogo oficial Vonixx listo para vender a todo México.</p>
+                </div>
+
+                <div class="partner-feature-item">
+                    <div class="p-feat-icon">💻</div>
+                    <h4 class="font-raj">Sistema Punto de Venta (POS) Físico</h4>
+                    <p>Software profesional para tu mostrador o taller: cobros ágiles, control de inventario en tiempo real, emisión de tickets de venta y administración de clientes presenciales.</p>
+                </div>
+
+                <div class="partner-feature-item">
+                    <div class="p-feat-icon">🔄</div>
+                    <h4 class="font-raj">Sincronización Total & Mayoreo</h4>
+                    <p>Inventario sincronizado entre tu tienda web y tu mostrador físico, con precios preferenciales de mayoreo directo y soporte continuo de Reset Supply MX.</p>
+                </div>
+            </div>
+
+            <div class="partner-cta-box">
+                <div>
+                    <strong>¿Deseas registrarte en esta modalidad?</strong>
+                    <div style="font-size:12px; color:var(--muted); margin-top:2px;">Selecciona la opción en el formulario inferior para que un asesor te contacte de inmediato.</div>
+                </div>
+                <button type="button" class="btn-select-partner" id="btnSelectPartner">
+                    <span>Elegir Modalidad Partner</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 13l5 5 5-5M12 4v14"/></svg>
+                </button>
             </div>
         </div>
 
@@ -1206,11 +1489,67 @@
                 <input type="hidden" name="_template" value="table">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="text" name="_honey" style="display:none">
-                <input type="hidden" name="Tipo_Registro" value="Cliente Punto de Venta (Mayorista / Distribuidor)">
+                <input type="hidden" name="Tipo_Registro" id="tipoRegistroInput" value="Punto de Venta Tradicional">
+                <input type="hidden" name="Modalidad_Registro" id="modalidadInput" value="Punto de Venta Tradicional">
 
-                <!-- 1. DATOS DE CONTACTO -->
-                <div class="section-header">
+                <!-- 1. SELECCIÓN DE MODALIDAD -->
+                <div class="section-header" style="margin-top:0;">
                     <span class="sec-num">1</span>
+                    <span>Elige tu Modalidad de Registro</span>
+                </div>
+
+                <div class="modality-selector-grid">
+                    <!-- Opción 1: POS Tradicional -->
+                    <div class="modality-card selected" id="cardModalityPos" data-value="Punto de Venta Tradicional">
+                        <div class="modality-header">
+                            <span class="modality-tag tag-pos">Mayoreo</span>
+                            <div class="modality-radio-circle"></div>
+                        </div>
+                        <div class="modality-title">🏪 Cliente Punto de Venta Tradicional</div>
+                        <div class="modality-desc">
+                            Abastecimiento directo a precios de mayoreo para revender productos Vonixx en tu mostrador, taller o autolavado existente, con facturación y envíos rápidos.
+                        </div>
+                    </div>
+
+                    <!-- Opción 2: Partner Reset Supply -->
+                    <div class="modality-card" id="cardModalityPartner" data-value="Partner Reset Supply (Tienda en Línea + POS Físico)">
+                        <div class="modality-header">
+                            <span class="modality-tag tag-partner">Ecosistema Completo</span>
+                            <div class="modality-radio-circle"></div>
+                        </div>
+                        <div class="modality-title">🚀 Partner Reset Supply</div>
+                        <div class="modality-desc">
+                            <strong>Tu Tienda en Línea con tu Marca</strong> + <strong>Sistema Punto de Venta para tu tienda física</strong> + Precios de mayoreo y soporte integral de digitalización.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos de Personalización para Partner Reset Supply -->
+                <div class="partner-extra-fields" id="partnerExtraFields">
+                    <div style="font-size:13.5px; font-weight:700; color:var(--blue); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                        <span>🚀</span>
+                        <span>Personalización para tu Proyecto Partner:</span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="marcaDeseada">Nombre de tu Marca o Tienda <span class="opt">(Si ya tienes o tienes en mente)</span></label>
+                            <input type="text" id="marcaDeseada" name="Marca_Deseada_Partner" class="form-input no-icon" placeholder="Ej. Supreme Detailing Lab, Elite Car Care">
+                        </div>
+                        <div class="form-group">
+                            <label for="estadoLocalFisico">¿Cuentas con Local o Tienda Física actualmente?</label>
+                            <select id="estadoLocalFisico" name="Local_Fisico_Actual" class="form-select no-icon">
+                                <option value="Sí, tengo tienda/taller operando">Sí, cuento con tienda / taller físico en operación</option>
+                                <option value="En proceso de apertura física">En proceso de apertura física próximamente</option>
+                                <option value="Solo opero online o a domicilio">Por el momento solo online o a domicilio</option>
+                                <option value="Emprendimiento nuevo desde cero">Es un emprendimiento nuevo desde cero</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. DATOS DE CONTACTO -->
+                <div class="section-header">
+                    <span class="sec-num">2</span>
                     <span>Información de Contacto y Representante</span>
                 </div>
 
@@ -1265,9 +1604,9 @@
                     </div>
                 </div>
 
-                <!-- 2. DIRECCIÓN DE ENVÍO -->
+                <!-- 3. DIRECCIÓN DE ENVÍO -->
                 <div class="section-header">
-                    <span class="sec-num">2</span>
+                    <span class="sec-num">3</span>
                     <span>Dirección de Envío de Mercancía</span>
                 </div>
 
@@ -1355,9 +1694,9 @@
                     </div>
                 </div>
 
-                <!-- 3. DOCUMENTACIÓN FISCAL -->
+                <!-- 4. DOCUMENTACIÓN FISCAL -->
                 <div class="section-header">
-                    <span class="sec-num">3</span>
+                    <span class="sec-num">4</span>
                     <span>Constancia de Situación Fiscal (SAT)</span>
                 </div>
 
@@ -1420,6 +1759,10 @@
 
             <!-- Resumen del Registro -->
             <div class="modal-summary">
+                <div class="modal-summary-row">
+                    <span class="summary-label">Modalidad:</span>
+                    <span class="summary-val" id="sumModalidad" style="color:var(--blue); font-weight:700;">-</span>
+                </div>
                 <div class="modal-summary-row">
                     <span class="summary-label">Nombre:</span>
                     <span class="summary-val" id="sumNombre">-</span>
@@ -1717,6 +2060,43 @@
                 });
             }
 
+            // Control de selección de modalidad (Punto de Venta Tradicional vs Partner Reset Supply)
+            const cardModalityPos = document.getElementById('cardModalityPos');
+            const cardModalityPartner = document.getElementById('cardModalityPartner');
+            const modalidadInput = document.getElementById('modalidadInput');
+            const tipoRegistroInput = document.getElementById('tipoRegistroInput');
+            const partnerExtraFields = document.getElementById('partnerExtraFields');
+            const btnSelectPartner = document.getElementById('btnSelectPartner');
+
+            function setModality(mod) {
+                if (mod === 'partner') {
+                    cardModalityPartner.classList.add('selected');
+                    cardModalityPos.classList.remove('selected');
+                    modalidadInput.value = 'Partner Reset Supply (Tienda en Línea + POS Físico)';
+                    if (tipoRegistroInput) tipoRegistroInput.value = 'Partner Reset Supply (Tienda en Línea + POS Físico)';
+                    partnerExtraFields.style.display = 'block';
+                } else {
+                    cardModalityPos.classList.add('selected');
+                    cardModalityPartner.classList.remove('selected');
+                    modalidadInput.value = 'Punto de Venta Tradicional';
+                    if (tipoRegistroInput) tipoRegistroInput.value = 'Punto de Venta Tradicional';
+                    partnerExtraFields.style.display = 'none';
+                }
+            }
+
+            if (cardModalityPos) {
+                cardModalityPos.addEventListener('click', () => setModality('pos'));
+            }
+            if (cardModalityPartner) {
+                cardModalityPartner.addEventListener('click', () => setModality('partner'));
+            }
+            if (btnSelectPartner) {
+                btnSelectPartner.addEventListener('click', () => {
+                    setModality('partner');
+                    cardModalityPartner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+            }
+
             // 3. Envío del Formulario
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
@@ -1726,6 +2106,14 @@
                     form.reportValidity();
                     return;
                 }
+
+                // Modalidad seleccionada
+                const modalidad = modalidadInput ? modalidadInput.value : 'Punto de Venta Tradicional';
+                const marcaDeseada = document.getElementById('marcaDeseada') ? document.getElementById('marcaDeseada').value.trim() : '';
+                const estadoLocal = document.getElementById('estadoLocalFisico') ? document.getElementById('estadoLocalFisico').value : '';
+                const detallesPartner = (modalidad.includes('Partner')) 
+                    ? `Marca deseada: ${marcaDeseada || 'No especificada'} | Estado local: ${estadoLocal}` 
+                    : '';
 
                 // Datos capturados
                 const nombre = document.getElementById('nombreCompleto').value.trim();
@@ -1743,6 +2131,9 @@
                 const direccionCompleta = `${calle}, Col. ${col}, C.P. ${cp}, ${ciudad}, ${estado}${referencias ? ` (Ref: ${referencias})` : ''}`;
 
                 // Preparar datos para resumen del modal
+                const sumMod = document.getElementById('sumModalidad');
+                if (sumMod) sumMod.textContent = modalidad.includes('Partner') ? '🚀 Partner Reset Supply' : '🏪 Punto de Venta Tradicional';
+
                 document.getElementById('sumNombre').textContent = nombre;
                 document.getElementById('sumTelefono').textContent = tel;
                 document.getElementById('sumCelular').textContent = cel;
@@ -1807,6 +2198,8 @@
                             email,
                             negocio,
                             direccion: direccionCompleta,
+                            modalidad: modalidad,
+                            detallesPartner: detallesPartner,
                             tieneConstancia: hasFile,
                             nombreConstancia: nombreConstancia,
                             archivoBase64: archivoBase64,
@@ -1819,8 +2212,12 @@
 
                 // 2. Enviar datos de texto a FormSubmit (SIN el archivo adjunto)
                 const formData = new FormData(form);
+                formData.append('Modalidad_Seleccionada', modalidad);
+                if (detallesPartner) {
+                    formData.append('Detalles_Partner_Reset_Supply', detallesPartner);
+                }
                 formData.append('Direccion_Completa_Envio', direccionCompleta);
-                formData.append('_subject', `🚀 Nuevo Registro Punto de Venta: ${nombre}${negocio ? ` (${negocio})` : ''}`);
+                formData.set('_subject', `🚀 Nuevo Registro [${modalidad.includes('Partner') ? 'PARTNER' : 'PUNTO DE VENTA'}]: ${nombre}${negocio ? ` (${negocio})` : ''}`);
                 formData.append('Constancia_Fiscal', hasFile ? `✅ Guardada en almacenamiento interno de Reset Supply MX (${nombreConstancia})` : 'No adjuntada');
 
                 // Eliminar archivo adjunto de FormSubmit para que se conserve solo internamente

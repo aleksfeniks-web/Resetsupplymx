@@ -1056,6 +1056,8 @@ app.post('/api/puntodeventa/register', async (req, res) => {
       email,
       negocio,
       direccion,
+      modalidad,
+      detallesPartner,
       tieneConstancia,
       nombreConstancia,
       archivoBase64
@@ -1102,6 +1104,8 @@ app.post('/api/puntodeventa/register', async (req, res) => {
       email: email.trim().toLowerCase(),
       negocio: (negocio || '').trim(),
       direccion: (direccion || '').trim(),
+      modalidad: (modalidad || 'Punto de Venta Tradicional').trim(),
+      detallesPartner: (detallesPartner || '').trim(),
       tieneConstancia: !!tieneConstancia || !!archivoUrl,
       nombreConstancia: nombreArchivoFinal,
       archivoUrl: archivoUrl,
