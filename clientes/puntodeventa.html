@@ -1481,6 +1481,13 @@
                 formData.append('Direccion_Completa_Envio', direccionCompleta);
                 formData.append('_subject', `🚀 Nuevo Registro Punto de Venta: ${nombre}${negocio ? ` (${negocio})` : ''}`);
 
+                // Garantizar inclusión del archivo adjunto para FormSubmit
+                if (hasFile && fileInput.files[0]) {
+                    formData.set('attachment', fileInput.files[0], fileInput.files[0].name);
+                } else {
+                    formData.delete('attachment');
+                }
+
                 // Desbloquear acceso a catálogo en la sesión
                 sessionStorage.setItem('posClientRegistered', 'true');
                 isRegistered = true;
