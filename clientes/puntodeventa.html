@@ -594,6 +594,216 @@
             box-shadow: 0 8px 25px var(--green-glow);
         }
 
+        /* ================= SECCIÓN / BANNER CATÁLOGO VONIXX ================= */
+        .catalog-exclusive-banner {
+            background: linear-gradient(135deg, rgba(34, 184, 240, 0.08), rgba(61, 220, 132, 0.08));
+            border: 1px solid var(--line-light);
+            border-radius: var(--radius-lg);
+            padding: 22px 26px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            transition: all .3s ease;
+        }
+        .catalog-exclusive-banner.unlocked {
+            border-color: var(--green);
+            background: linear-gradient(135deg, rgba(61, 220, 132, 0.14), rgba(34, 184, 240, 0.14));
+            box-shadow: 0 10px 35px var(--green-glow);
+        }
+        .catalog-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 620px;
+        }
+        .catalog-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+        .catalog-status-badge.locked {
+            background: rgba(255, 165, 2, 0.15);
+            color: var(--yellow);
+            border: 1px solid rgba(255, 165, 2, 0.4);
+        }
+        .catalog-status-badge.unlocked {
+            background: rgba(61, 220, 132, 0.15);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+        .catalog-title {
+            font-size: 21px;
+            color: var(--text);
+            margin: 0;
+        }
+        .catalog-desc {
+            font-size: 13.5px;
+            color: var(--muted);
+            line-height: 1.5;
+            margin: 0;
+        }
+        .btn-catalog-trigger {
+            background: var(--panel-2);
+            border: 1.5px solid var(--line-light);
+            color: var(--text);
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 14.5px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-catalog-trigger:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+            box-shadow: 0 0 15px var(--blue-glow);
+        }
+        .btn-catalog-trigger.unlocked {
+            background: var(--grad);
+            color: #04130b;
+            border-color: transparent;
+            box-shadow: 0 8px 25px var(--green-glow);
+        }
+        .btn-catalog-trigger.unlocked:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px var(--blue-glow);
+        }
+
+        /* ================= MODAL VISOR CATÁLOGO EN LÍNEA ================= */
+        .catalog-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(8, 11, 15, 0.96);
+            backdrop-filter: blur(12px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+            animation: fadeIn .25s ease;
+        }
+        .catalog-modal-container {
+            background: var(--panel);
+            border: 1px solid var(--line-light);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 1320px;
+            height: 94vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.9);
+            overflow: hidden;
+            position: relative;
+        }
+        .catalog-modal-header {
+            background: var(--panel-2);
+            border-bottom: 1px solid var(--line);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .catalog-modal-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .catalog-modal-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-cat-ctrl {
+            background: var(--panel-3);
+            border: 1px solid var(--line);
+            color: var(--text);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-cat-ctrl:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+        .btn-cat-close {
+            background: rgba(255, 71, 87, 0.15);
+            border-color: rgba(255, 71, 87, 0.35);
+            color: var(--red);
+        }
+        .btn-cat-close:hover {
+            background: var(--red);
+            color: #fff;
+            border-color: var(--red);
+        }
+        .catalog-iframe-wrap {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #0a0e13;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .catalog-iframe-wrap iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        .btn-modal-catalog {
+            background: var(--grad);
+            color: #04130b;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 8px 25px var(--green-glow);
+            width: 100%;
+        }
+        .btn-modal-catalog:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px var(--blue-glow);
+        }
+
         /* Footer */
         .pos-footer {
             background: var(--panel);
@@ -629,9 +839,13 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 Inicio
             </a>
+            <button type="button" class="btn-nav" id="btnNavCatalog" style="border-color:var(--blue); color:var(--blue); font-weight:700; cursor:pointer;">
+                <span>📖 Catálogo Vonixx</span>
+                <span id="navCatalogLockBadge" style="font-size:11px; background:rgba(255,165,2,0.2); color:var(--yellow); padding:1px 6px; border-radius:10px; margin-left:4px;">🔒 Bloqueado</span>
+            </button>
             <a href="/tienda.html" class="btn-nav" style="border-color:var(--green); color:var(--green);">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                Catálogo
+                Tienda POS
             </a>
         </div>
     </header>
@@ -668,6 +882,26 @@
                 <div class="benefit-icon">🛡️</div>
                 <div class="benefit-title">Garantía Oficial</div>
                 <div class="benefit-text">Productos 100% originales Vonixx con material publicitario y respaldo de marca.</div>
+            </div>
+        </div>
+
+        <!-- Tarjeta Exclusiva Catálogo Vonixx -->
+        <div class="catalog-exclusive-banner" id="catalogBanner">
+            <div class="catalog-info">
+                <span class="catalog-status-badge locked" id="catalogStatusBadge">
+                    <span id="badgeLockIcon">🔒</span>
+                    <span id="badgeLockText">EXCLUSIVO PARA CLIENTES REGISTRADOS</span>
+                </span>
+                <h3 class="catalog-title font-raj">CATÁLOGO DIGITAL OFICIAL <span class="gradient-text">VONIXX MÉXICO</span></h3>
+                <p class="catalog-desc" id="catalogStatusDesc">
+                    Explora el catálogo interactivo completo con fichas técnicas, líneas de producto y guías de aplicación. <strong>Solo disponible una vez completado tu registro.</strong>
+                </p>
+            </div>
+            <div>
+                <button type="button" class="btn-catalog-trigger" id="btnBannerCatalog">
+                    <span id="btnBannerIcon">🔒</span>
+                    <span id="btnBannerText">Ver Catálogo Interactivo</span>
+                </button>
             </div>
         </div>
 
@@ -920,10 +1154,68 @@
                 </div>
             </div>
 
-            <button type="button" class="btn-modal-close" id="btnModalClose">
-                <span>Aceptar y Volver a la Tienda</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </button>
+            <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
+                <button type="button" class="btn-modal-catalog" id="btnModalOpenCatalog">
+                    <span>📖 Abrir Catálogo Vonixx Interactivo</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+                <button type="button" class="btn-modal-close" id="btnModalClose">
+                    <span>Aceptar y Volver a la Tienda</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL DE ACCESO RESTRINGIDO A CATÁLOGO ================= -->
+    <div class="modal-overlay" id="catalogLockedModal">
+        <div class="modal-card" style="max-width:480px;">
+            <div class="modal-icon-wrap" style="background:rgba(255,165,2,0.15); border-color:var(--yellow); box-shadow:0 0 25px rgba(255,165,2,0.25);">
+                <span style="font-size:32px;">🔒</span>
+            </div>
+            <h2 class="modal-title font-raj" style="font-size:24px;">Acceso Exclusivo a Puntos de Venta</h2>
+            <p class="modal-message" style="font-size:14.5px;">
+                El <strong>Catálogo Oficial Vonixx</strong> con precios y líneas profesionales está reservado para clientes registrados. Completa el formulario a continuación para desbloquear el visor interactivo de inmediato.
+            </p>
+            <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
+                <button type="button" class="btn-modal-catalog" id="btnGoToRegister" style="font-size:14px; padding:12px 20px;">
+                    ✍️ Completar Formulario de Registro
+                </button>
+                <button type="button" class="btn-nav" id="btnCloseLockedModal" style="justify-content:center; padding:10px;">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL VISOR DE CATÁLOGO VONIXX EN LÍNEA ================= -->
+    <div class="catalog-modal-overlay" id="catalogModal">
+        <div class="catalog-modal-container">
+            <div class="catalog-modal-header">
+                <div class="catalog-modal-title">
+                    <span style="font-size:22px;">📖</span>
+                    <div>
+                        <div class="font-raj" style="font-size:17px; font-weight:700; letter-spacing:0.5px; color:var(--text);">
+                            CATÁLOGO OFICIAL <span class="gradient-text">VONIXX MÉXICO</span>
+                        </div>
+                        <div style="font-size:12px; color:var(--muted);">
+                            Visor Interactivo Oficial • Exclusivo Puntos de Venta • Solo visualización en línea
+                        </div>
+                    </div>
+                </div>
+                <div class="catalog-modal-actions">
+                    <button type="button" class="btn-cat-ctrl" id="btnToggleFullscreen">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                        <span id="txtFullscreen">Pantalla Completa</span>
+                    </button>
+                    <button type="button" class="btn-cat-ctrl btn-cat-close" id="btnCloseCatalog">
+                        <span>✖ Cerrar Catálogo</span>
+                    </button>
+                </div>
+            </div>
+            <div class="catalog-iframe-wrap" oncontextmenu="return false;">
+                <iframe id="catalogIframe" src="about:blank" allowfullscreen="true" allow="fullscreen" loading="lazy"></iframe>
+            </div>
         </div>
     </div>
 
@@ -996,7 +1288,144 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
 
-            // 2. Envío del Formulario
+            // 2. Elementos del visor de catálogo
+            const catalogModal = document.getElementById('catalogModal');
+            const catalogIframe = document.getElementById('catalogIframe');
+            const btnNavCatalog = document.getElementById('btnNavCatalog');
+            const btnBannerCatalog = document.getElementById('btnBannerCatalog');
+            const btnModalOpenCatalog = document.getElementById('btnModalOpenCatalog');
+            const btnCloseCatalog = document.getElementById('btnCloseCatalog');
+            const btnToggleFullscreen = document.getElementById('btnToggleFullscreen');
+            const catalogLockedModal = document.getElementById('catalogLockedModal');
+            const btnCloseLockedModal = document.getElementById('btnCloseLockedModal');
+            const btnGoToRegister = document.getElementById('btnGoToRegister');
+
+            // Token protegido para visualización en línea (sin exponer link en HTML plano)
+            const catalogSecToken = 'aHR0cHM6Ly9vbmxpbmUuZmxpcGh0bWw1LmNvbS9zY3J0dS9kbnRiLw==';
+            let isRegistered = sessionStorage.getItem('posClientRegistered') === 'true';
+
+            function updateCatalogUI() {
+                if (isRegistered) {
+                    const navBadge = document.getElementById('navCatalogLockBadge');
+                    if (navBadge) {
+                        navBadge.textContent = '🔓 Desbloqueado';
+                        navBadge.style.background = 'rgba(61, 220, 132, 0.2)';
+                        navBadge.style.color = 'var(--green)';
+                    }
+                    const banner = document.getElementById('catalogBanner');
+                    if (banner) banner.classList.add('unlocked');
+                    const statusBadge = document.getElementById('catalogStatusBadge');
+                    if (statusBadge) {
+                        statusBadge.className = 'catalog-status-badge unlocked';
+                        statusBadge.innerHTML = '<span>🔓</span><span>ACCESO DESBLOQUEADO</span>';
+                    }
+                    const btnBanner = document.getElementById('btnBannerCatalog');
+                    if (btnBanner) {
+                        btnBanner.classList.add('unlocked');
+                        btnBanner.innerHTML = '<span>📖</span><span>Abrir Catálogo Interactivo</span>';
+                    }
+                }
+            }
+
+            // Inicializar estado del catálogo
+            updateCatalogUI();
+
+            function openCatalogViewer() {
+                if (!isRegistered) {
+                    catalogLockedModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                    return;
+                }
+
+                // Cargar URL en el iframe solo cuando el cliente está registrado
+                if (!catalogIframe.src || catalogIframe.src.endsWith('about:blank')) {
+                    try {
+                        catalogIframe.src = atob(catalogSecToken);
+                    } catch (e) {
+                        console.error('Error cargando visor:', e);
+                    }
+                }
+
+                catalogModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeCatalogViewer() {
+                catalogModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            // Eventos del catálogo
+            if (btnNavCatalog) {
+                btnNavCatalog.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (isRegistered) {
+                        openCatalogViewer();
+                    } else {
+                        catalogLockedModal.style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            }
+
+            if (btnBannerCatalog) {
+                btnBannerCatalog.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (isRegistered) {
+                        openCatalogViewer();
+                    } else {
+                        catalogLockedModal.style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            }
+
+            if (btnCloseCatalog) {
+                btnCloseCatalog.addEventListener('click', closeCatalogViewer);
+            }
+
+            if (btnToggleFullscreen) {
+                btnToggleFullscreen.addEventListener('click', function() {
+                    const container = document.querySelector('.catalog-modal-container');
+                    if (!document.fullscreenElement) {
+                        container.requestFullscreen().catch(() => {});
+                        document.getElementById('txtFullscreen').textContent = 'Salir Pantalla Completa';
+                    } else {
+                        document.exitFullscreen().catch(() => {});
+                        document.getElementById('txtFullscreen').textContent = 'Pantalla Completa';
+                    }
+                });
+
+                document.addEventListener('fullscreenchange', function() {
+                    if (!document.fullscreenElement) {
+                        document.getElementById('txtFullscreen').textContent = 'Pantalla Completa';
+                    }
+                });
+            }
+
+            if (btnCloseLockedModal) {
+                btnCloseLockedModal.addEventListener('click', function() {
+                    catalogLockedModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                });
+            }
+
+            if (btnGoToRegister) {
+                btnGoToRegister.addEventListener('click', function() {
+                    catalogLockedModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    form.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            if (btnModalOpenCatalog) {
+                btnModalOpenCatalog.addEventListener('click', function() {
+                    successModal.style.display = 'none';
+                    openCatalogViewer();
+                });
+            }
+
+            // 3. Envío del Formulario
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
 
@@ -1052,6 +1481,11 @@
                 formData.append('Direccion_Completa_Envio', direccionCompleta);
                 formData.append('_subject', `🚀 Nuevo Registro Punto de Venta: ${nombre}${negocio ? ` (${negocio})` : ''}`);
 
+                // Desbloquear acceso a catálogo en la sesión
+                sessionStorage.setItem('posClientRegistered', 'true');
+                isRegistered = true;
+                updateCatalogUI();
+
                 // Guardar registro también en backend local si está disponible
                 try {
                     fetch('/api/puntodeventa/register', {
@@ -1078,11 +1512,9 @@
                         body: formData
                     });
 
-                    // Tanto si responde éxito de FormSubmit como si se procesa
                     showConfirmationModal();
                 } catch (err) {
                     console.warn('Envío AJAX falló o bloqueado por CORS, mostrando confirmación igualmente...', err);
-                    // Mostrar siempre la ventana solicitada al usuario
                     showConfirmationModal();
                 } finally {
                     btnSubmit.disabled = false;
@@ -1098,11 +1530,6 @@
             btnModalClose.addEventListener('click', function () {
                 successModal.style.display = 'none';
                 document.body.style.overflow = 'auto';
-                // Reset form
-                form.reset();
-                fileBadge.style.display = 'none';
-                // Redirigir a inicio o catálogo
-                window.location.href = '/tienda.html';
             });
         });
     </script>
