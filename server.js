@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
@@ -111,9 +112,12 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), async (req, 
   res.json({ received: true });
 });
 
-// Parsers estándar para JSON y URL-Encoded
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Parsers estándar para JSON y URL-Encoded (límite para almacenamiento de constancias)
+app.use(express.json({ limit: '35mb' }));
+app.use(express.urlencoded({ extended: true, limit: '35mb' }));
+
+// Servir archivos estáticos de almacenamiento interno
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Endpoint para entregar configuración pública al Frontend
 app.get('/api/config', (req, res) => {
@@ -1053,7 +1057,8 @@ app.post('/api/puntodeventa/register', async (req, res) => {
       negocio,
       direccion,
       tieneConstancia,
-      nombreConstancia
+      nombreConstancia,
+      archivoBase64
     } = req.body || {};
 
     if (!nombre || !telefono || !email) {
@@ -1061,6 +1066,34 @@ app.post('/api/puntodeventa/register', async (req, res) => {
     }
 
     const folioId = `POS-CLI-${Date.now()}`;
+    let archivoUrl = null;
+    let nombreArchivoFinal = nombreConstancia || null;
+
+    // Si viene archivo adjunto en Base64, guardarlo en el almacenamiento interno
+    if (archivoBase64) {
+      try {
+        const uploadDir = path.join(__dirname, 'uploads', 'constancias');
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const rawName = (nombreConstancia || 'constancia_fiscal.pdf').replace(/[^a-zA-Z0-9._-]/g, '_');
+        const filename = `${folioId}_${rawName}`;
+        const filePath = path.join(uploadDir, filename);
+
+        const base64Data = archivoBase64.includes(';base64,')
+          ? archivoBase64.split(';base64,')[1]
+          : archivoBase64;
+
+        fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+        archivoUrl = `/uploads/constancias/${filename}`;
+        nombreArchivoFinal = rawName;
+        console.log(`📁 Constancia fiscal guardada en almacenamiento interno: ${filePath}`);
+      } catch (fileErr) {
+        console.error('⚠️ Error guardando constancia en almacenamiento local:', fileErr.message);
+      }
+    }
+
     const newClient = {
       id: folioId,
       nombre: nombre.trim(),
@@ -1069,8 +1102,9 @@ app.post('/api/puntodeventa/register', async (req, res) => {
       email: email.trim().toLowerCase(),
       negocio: (negocio || '').trim(),
       direccion: (direccion || '').trim(),
-      tieneConstancia: !!tieneConstancia,
-      nombreConstancia: nombreConstancia || null,
+      tieneConstancia: !!tieneConstancia || !!archivoUrl,
+      nombreConstancia: nombreArchivoFinal,
+      archivoUrl: archivoUrl,
       status: 'nuevo',
       createdAt: new Date().toISOString()
     };

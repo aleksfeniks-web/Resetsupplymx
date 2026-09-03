@@ -886,7 +886,14 @@
             var html = '';
             clients.forEach(function (c) {
                 var fechaStr = c.createdAt ? new Date(c.createdAt).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
-                var constanciaBadge = c.tieneConstancia ? '<span style="color:var(--green); font-weight:700;">✅ Adjunta</span>' : '<span style="color:var(--muted-2);">No adjunta</span>';
+                
+                var constanciaBadge = '<span style="color:var(--muted-2);">No adjunta</span>';
+                if (c.archivoUrl) {
+                    constanciaBadge = '<a href="' + c.archivoUrl + '" target="_blank" download class="btn-action" style="padding:4px 10px; font-size:11px; text-decoration:none; background:rgba(61,220,132,0.15); color:var(--green); border-color:var(--green); display:inline-flex; align-items:center; gap:4px;">📥 ' + (c.nombreConstancia || 'Descargar PDF') + '</a>';
+                } else if (c.tieneConstancia) {
+                    constanciaBadge = '<span style="color:var(--green); font-weight:700;">✅ ' + (c.nombreConstancia || 'Adjuntada') + '</span>';
+                }
+
                 var cleanPhone = (c.celular || c.telefono || '').replace(/\D/g, '');
                 var waLink = cleanPhone ? '<a href="https://wa.me/52' + cleanPhone + '" target="_blank" class="btn-action" style="padding:4px 8px; font-size:11px; text-decoration:none; margin-right:4px;">💬 WhatsApp</a>' : '';
                 var mailLink = '<a href="mailto:' + c.email + '" class="btn-action" style="padding:4px 8px; font-size:11px; text-decoration:none;">✉️ Correo</a>';
@@ -913,7 +920,7 @@
                 alert('No hay clientes punto de venta para exportar.');
                 return;
             }
-            var headers = ['ID', 'Fecha', 'Nombre Completo', 'Telefono', 'Celular WhatsApp', 'Correo', 'Negocio', 'Direccion Envio', 'Tiene Constancia'];
+            var headers = ['ID', 'Fecha', 'Nombre Completo', 'Telefono', 'Celular WhatsApp', 'Correo', 'Negocio', 'Direccion Envio', 'Tiene Constancia', 'Enlace Archivo'];
             var rows = currentPosClientsList.map(function (c) {
                 return [
                     c.id || '',
@@ -924,7 +931,8 @@
                     '"' + (c.email || '') + '"',
                     '"' + (c.negocio || '').replace(/"/g, '""') + '"',
                     '"' + (c.direccion || '').replace(/"/g, '""') + '"',
-                    c.tieneConstancia ? 'SI' : 'NO'
+                    c.tieneConstancia ? 'SI' : 'NO',
+                    c.archivoUrl ? ('"' + window.location.origin + c.archivoUrl + '"') : '""'
                 ];
             });
 
