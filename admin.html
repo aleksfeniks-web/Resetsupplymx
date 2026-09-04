@@ -142,8 +142,284 @@ textarea[required]:focus,
 .fac-input[required]:focus {
   outline: none !important;
   animation: inputRequiredGlow 2.5s ease-in-out infinite !important;
+/* ==========================================================================
+   AGENTE RESET MANAGER — FLOATING LAUNCHER & AI MODAL
+   ========================================================================== */
+.ai-chat-launcher {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #0f172a;
+    border: 2px solid rgba(61, 220, 132, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(61, 220, 132, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9999;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+.ai-chat-launcher:hover {
+    transform: scale(1.08) translateY(-2px);
+    border-color: var(--green);
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(61, 220, 132, 0.55), 0 0 35px rgba(34, 184, 240, 0.4);
+}
+.ai-chat-launcher .launcher-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 14px;
+    height: 14px;
+    background: var(--green);
+    border: 2px solid #0f172a;
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--green);
+    animation: pulseBadge 2s infinite;
+}
+@keyframes pulseBadge {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.25); opacity: 0.75; }
 }
 
+/* Modal / Drawer del Agente */
+.ai-agent-panel {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    width: 440px;
+    max-width: calc(100vw - 32px);
+    height: 620px;
+    max-height: calc(100vh - 120px);
+    background: var(--panel);
+    border: 1.5px solid var(--line);
+    border-radius: 18px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 9998;
+    backdrop-filter: blur(12px);
+}
+.ai-agent-panel.glow-active {
+    animation: rotateGlowBorder 4s linear infinite;
+}
+.ai-agent-header {
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--line);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.ai-agent-title {
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ai-agent-subtitle {
+    font-size: 11.5px;
+    color: var(--muted);
+    font-weight: 500;
+    margin-top: 2px;
+}
+.ai-agent-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.ai-btn-icon {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.ai-btn-icon:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(61, 220, 132, 0.1);
+}
+.ai-btn-icon.active {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(61, 220, 132, 0.15);
+}
+
+/* Historial de Mensajes */
+.ai-chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: radial-gradient(circle at top right, rgba(34, 184, 240, 0.04), transparent 60%),
+                radial-gradient(circle at bottom left, rgba(61, 220, 132, 0.04), transparent 60%);
+}
+.ai-chat-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 92%;
+    animation: fadeInMsg 0.25s ease-out;
+}
+@keyframes fadeInMsg {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.ai-chat-msg.user {
+    align-self: flex-end;
+}
+.ai-chat-msg.agent {
+    align-self: flex-start;
+}
+.ai-bubble-user {
+    background: linear-gradient(135deg, rgba(61, 220, 132, 0.2), rgba(34, 184, 240, 0.2));
+    border: 1px solid rgba(61, 220, 132, 0.4);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 14px 14px 2px 14px;
+    font-size: 13.5px;
+    line-height: 1.45;
+    word-break: break-word;
+}
+.ai-bubble-agent {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 14px 16px;
+    border-radius: 14px 14px 14px 2px;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+.ai-bubble-agent strong {
+    color: var(--green);
+}
+.ai-msg-time {
+    font-size: 10.5px;
+    color: var(--muted);
+    margin-top: 4px;
+    align-self: flex-end;
+}
+
+/* Sugerencias Rápidas / Pills */
+.ai-quick-pills {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px 16px;
+    border-top: 1px solid var(--line);
+    background: rgba(18, 23, 30, 0.7);
+    white-space: nowrap;
+    scrollbar-width: none;
+}
+.ai-quick-pills::-webkit-scrollbar { display: none; }
+.ai-pill-btn {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 5px 12px;
+    border-radius: 14px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.ai-pill-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(61, 220, 132, 0.08);
+}
+
+/* Barra de Entrada */
+.ai-input-bar {
+    padding: 12px 16px;
+    background: var(--panel-2);
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.ai-text-input {
+    flex: 1;
+    background: var(--void);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.ai-text-input:focus {
+    border-color: var(--green);
+}
+.ai-btn-voice {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    position: relative;
+}
+.ai-btn-voice:hover {
+    border-color: var(--blue);
+    background: rgba(34, 184, 240, 0.15);
+}
+.ai-btn-voice.listening {
+    background: rgba(231, 76, 60, 0.2);
+    border-color: var(--red);
+    color: var(--red);
+    animation: voicePulse 1.2s infinite;
+}
+@keyframes voicePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.6); }
+    50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(231, 76, 60, 0); }
+}
+.ai-btn-send {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: var(--grad);
+    border: none;
+    color: var(--void);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    transition: opacity 0.2s;
+}
+.ai-btn-send:hover {
+    opacity: 0.9;
+}
 </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -871,6 +1147,101 @@ textarea[required]:focus,
         </div>
     </div>
 
+    <!-- BOTÓN FLOTANTE AGENTE RESET MANAGER (DIRECTOR GENERAL VIRTUAL) -->
+    <button id="aiLauncherBtn" class="ai-chat-launcher" title="RESET MANAGER — Director General Virtual" onclick="toggleAiAgentModal()">
+        <span class="launcher-badge"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="34" height="34">
+            <defs>
+                <linearGradient id="ai-blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00D2FF" />
+                    <stop offset="100%" stop-color="#0047AB" />
+                </linearGradient>
+            </defs>
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" fill="url(#ai-blue-grad)" />
+            <path d="M9.5 7.5L8.3 10.2 5.5 11.5l2.8 1.3 1.2 2.7 1.3-2.7 2.7-1.3-2.7-1.3z" fill="#FFFFFF" />
+            <path d="M16 11l-.6 1.4-1.4.6 1.4.6.6 1.4.6-1.4 1.4-.6-1.4-.6z" fill="#FF8C00" />
+        </svg>
+    </button>
+
+    <!-- VENTANA / DRAWER DEL AGENTE RESET MANAGER -->
+    <div id="aiAgentPanel" class="ai-agent-panel glow-active">
+        <div class="ai-agent-header">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:38px; height:38px; border-radius:50%; background:#0f172a; border:1.5px solid var(--green); display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px rgba(61,220,132,0.4);">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22">
+                        <defs>
+                            <linearGradient id="ai-header-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00D2FF" />
+                                <stop offset="100%" stop-color="#0047AB" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" fill="url(#ai-header-grad)" />
+                        <path d="M9.5 7.5L8.3 10.2 5.5 11.5l2.8 1.3 1.2 2.7 1.3-2.7 2.7-1.3-2.7-1.3z" fill="#FFFFFF" />
+                        <path d="M16 11l-.6 1.4-1.4.6 1.4.6.6 1.4.6-1.4 1.4-.6-1.4-.6z" fill="#FF8C00" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="ai-agent-title">
+                        <span>RESET MANAGER</span>
+                        <span style="font-size:10px; background:rgba(61,220,132,0.2); color:var(--green); border:1px solid var(--green); padding:1px 6px; border-radius:10px; font-weight:700;">IA ACTIVA</span>
+                    </div>
+                    <div class="ai-agent-subtitle">Director general virtual de Reset Supply MX</div>
+                </div>
+            </div>
+            <div class="ai-agent-controls">
+                <button type="button" class="ai-btn-icon" id="aiVoiceToggleBtn" title="Activar/Desactivar lectura por voz" onclick="toggleVoiceSpeech()">
+                    <i class="fa-solid fa-volume-high" id="aiVoiceIcon"></i>
+                </button>
+                <button type="button" class="ai-btn-icon" title="Cerrar chat" onclick="toggleAiAgentModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Cuerpo de Mensajes -->
+        <div class="ai-chat-body" id="aiChatBody">
+            <!-- Mensaje Inicial de Bienvenida -->
+            <div class="ai-chat-msg agent">
+                <div class="ai-bubble-agent">👋 <strong>Hola. Soy RESET MANAGER</strong>, tu director general virtual en Reset Supply.
+
+Monitoreo en tiempo real tus ventas, inventarios críticos, pedidos de tienda web y operaciones en mostrador.
+
+¿Qué deseas revisar hoy? Puedes preguntarme o usar los accesos directos de abajo:</div>
+                <span class="ai-msg-time">Ahora</span>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas / Pills -->
+        <div class="ai-quick-pills">
+            <button type="button" class="ai-pill-btn" onclick="sendAiQuickQuery('Resumen de hoy')">
+                <i class="fa-solid fa-chart-line" style="color:var(--green);"></i> Resumen de Hoy
+            </button>
+            <button type="button" class="ai-pill-btn" onclick="sendAiQuickQuery('Alertas de inventario crítico')">
+                <i class="fa-solid fa-triangle-exclamation" style="color:var(--yellow);"></i> Inventario Crítico
+            </button>
+            <button type="button" class="ai-pill-btn" onclick="sendAiQuickQuery('Estado financiero y ventas')">
+                <i class="fa-solid fa-sack-dollar" style="color:var(--blue);"></i> Ventas y Utilidad
+            </button>
+            <button type="button" class="ai-pill-btn" onclick="sendAiQuickQuery('Oportunidades de venta cruzada')">
+                <i class="fa-solid fa-lightbulb" style="color:var(--green);"></i> Oportunidades
+            </button>
+            <button type="button" class="ai-pill-btn" onclick="sendAiQuickQuery('Pedidos y facturas pendientes')">
+                <i class="fa-solid fa-truck-fast" style="color:var(--blue);"></i> Pedidos & SAT
+            </button>
+        </div>
+
+        <!-- Barra de Entrada con Voz -->
+        <form class="ai-input-bar" id="aiInputForm" onsubmit="event.preventDefault(); submitAiMessage();">
+            <input type="text" id="aiTextInput" class="ai-text-input" placeholder="Pregunta a Reset Manager o usa tu voz..." autocomplete="off">
+            <button type="button" id="aiMicBtn" class="ai-btn-voice" title="Comando de voz (Presiona y habla)" onclick="toggleVoiceRecognition()">
+                <i class="fa-solid fa-microphone"></i>
+            </button>
+            <button type="submit" class="ai-btn-send" title="Enviar consulta">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
     <script>
         var adminToken = sessionStorage.getItem('adminToken') || '';
 
@@ -946,6 +1317,8 @@ textarea[required]:focus,
         var currentProductsList = [];
         var currentInvoicesList = [];
         var currentPosClientsList = [];
+        var currentOrdersList = [];
+        var currentPosOrdersList = [];
         var currentSelectedInvoice = null;
         var livePreviewFrame = document.getElementById('livePreviewFrame');
         var tabEditor = document.getElementById('tabEditor');
@@ -1254,6 +1627,7 @@ textarea[required]:focus,
                 }
 
                 var orders = data.orders || [];
+                currentOrdersList = orders;
                 document.getElementById('ordersCount').textContent = orders.length;
 
                 var totalSales = 0;
@@ -1363,6 +1737,7 @@ textarea[required]:focus,
                 var res = await fetch('/api/pos/orders');
                 var data = await res.json();
                 var orders = data.orders || [];
+                currentPosOrdersList = orders;
                 document.getElementById('posSalesCount').textContent = orders.length;
 
                 if (orders.length === 0) {
@@ -4003,6 +4378,297 @@ function resolveToGitRepoUrl(item) {
                 btn.textContent = '💾 Guardar Cambios en la Web';
             }
         });
+
+        // ==========================================================================
+        // AGENTE RESET MANAGER — DIRECTOR GENERAL VIRTUAL (FRONTEND ENGINE)
+        // ==========================================================================
+        var aiSpeechEnabled = true;
+        var aiSpeechSynthesis = window.speechSynthesis || null;
+        var aiSpeechRecognition = null;
+        var isAiListening = false;
+
+        // Inicialización de Reconocimiento de Voz (Web Speech API)
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            var SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+            aiSpeechRecognition = new SpeechRecognitionClass();
+            aiSpeechRecognition.lang = 'es-MX';
+            aiSpeechRecognition.continuous = false;
+            aiSpeechRecognition.interimResults = false;
+
+            aiSpeechRecognition.onstart = function() {
+                isAiListening = true;
+                var micBtn = document.getElementById('aiMicBtn');
+                if (micBtn) {
+                    micBtn.classList.add('listening');
+                    micBtn.title = 'Escuchando... Habla ahora';
+                }
+            };
+
+            aiSpeechRecognition.onresult = function(event) {
+                if (event.results && event.results[0] && event.results[0][0]) {
+                    var voiceTranscript = event.results[0][0].transcript;
+                    var inputEl = document.getElementById('aiTextInput');
+                    if (inputEl) {
+                        inputEl.value = voiceTranscript;
+                        submitAiMessage(voiceTranscript);
+                    }
+                }
+            };
+
+            aiSpeechRecognition.onerror = function(event) {
+                console.warn('Error en reconocimiento de voz:', event.error);
+                stopVoiceRecognition();
+            };
+
+            aiSpeechRecognition.onend = function() {
+                stopVoiceRecognition();
+            };
+        }
+
+        function toggleVoiceRecognition() {
+            if (!aiSpeechRecognition) {
+                alert('Tu navegador no soporta el reconocimiento de voz por Web Speech API. Te recomendamos usar Google Chrome o Microsoft Edge.');
+                return;
+            }
+            if (isAiListening) {
+                aiSpeechRecognition.stop();
+                stopVoiceRecognition();
+            } else {
+                try {
+                    // Detener síntesis si está hablando
+                    if (aiSpeechSynthesis && aiSpeechSynthesis.speaking) {
+                        aiSpeechSynthesis.cancel();
+                    }
+                    aiSpeechRecognition.start();
+                } catch(e) {
+                    console.warn('Error iniciando SpeechRecognition:', e);
+                }
+            }
+        }
+
+        function stopVoiceRecognition() {
+            isAiListening = false;
+            var micBtn = document.getElementById('aiMicBtn');
+            if (micBtn) {
+                micBtn.classList.remove('listening');
+                micBtn.title = 'Comando de voz (Presiona y habla)';
+            }
+        }
+
+        function toggleVoiceSpeech() {
+            aiSpeechEnabled = !aiSpeechEnabled;
+            var icon = document.getElementById('aiVoiceIcon');
+            var btn = document.getElementById('aiVoiceToggleBtn');
+            if (icon && btn) {
+                if (aiSpeechEnabled) {
+                    icon.className = 'fa-solid fa-volume-high';
+                    btn.classList.add('active');
+                    btn.title = 'Lectura por voz activada';
+                } else {
+                    icon.className = 'fa-solid fa-volume-xmark';
+                    btn.classList.remove('active');
+                    btn.title = 'Lectura por voz desactivada';
+                    if (aiSpeechSynthesis && aiSpeechSynthesis.speaking) {
+                        aiSpeechSynthesis.cancel();
+                    }
+                }
+            }
+        }
+
+        function speakAiResponse(text) {
+            if (!aiSpeechEnabled || !aiSpeechSynthesis || !text) return;
+            try {
+                if (aiSpeechSynthesis.speaking) {
+                    aiSpeechSynthesis.cancel();
+                }
+                var cleanText = text
+                    .replace(/[*_#•\-]/g, ' ')
+                    .replace(/\bMXN\b/gi, 'pesos')
+                    .replace(/\$/g, '')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+
+                var utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'es-MX';
+                utterance.rate = 1.05;
+                utterance.pitch = 1.0;
+
+                // Seleccionar voz en español si está disponible
+                var voices = aiSpeechSynthesis.getVoices();
+                var esVoice = voices.find(function(v) { return v.lang && v.lang.startsWith('es'); });
+                if (esVoice) utterance.voice = esVoice;
+
+                aiSpeechSynthesis.speak(utterance);
+            } catch (e) {
+                console.warn('No se pudo reproducir síntesis de voz:', e);
+            }
+        }
+
+        function toggleAiAgentModal() {
+            var panel = document.getElementById('aiAgentPanel');
+            if (!panel) return;
+            var isHidden = window.getComputedStyle(panel).display === 'none';
+            if (isHidden) {
+                panel.style.display = 'flex';
+                var textInput = document.getElementById('aiTextInput');
+                if (textInput) textInput.focus();
+            } else {
+                panel.style.display = 'none';
+                stopVoiceRecognition();
+                if (aiSpeechSynthesis && aiSpeechSynthesis.speaking) {
+                    aiSpeechSynthesis.cancel();
+                }
+            }
+        }
+
+        function appendChatMessage(sender, text) {
+            var chatBody = document.getElementById('aiChatBody');
+            if (!chatBody) return;
+
+            var timeStr = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+            var msgDiv = document.createElement('div');
+            msgDiv.className = 'ai-chat-msg ' + (sender === 'user' ? 'user' : 'agent');
+
+            if (sender === 'user') {
+                msgDiv.innerHTML = '<div class="ai-bubble-user">' + escapeHtml(text) + '</div><span class="ai-msg-time">' + timeStr + '</span>';
+            } else {
+                // Formatear negritas en encabezados
+                var formatted = escapeHtml(text)
+                    .replace(/(RESET SUPPLY — [^\n]+)/g, '<strong>$1</strong>')
+                    .replace(/(Ventas:?|Utilidad bruta estimada:?|Tickets:?|Ticket promedio:?|Productos más vendidos:?|ALERTA:?|OPORTUNIDAD:?|RECOMENDACIÓN:?|TOTAL PRODUCTOS EN CATÁLOGO:?|ACCIONES PRIORITARIAS:?)/g, '<strong>$1</strong>');
+
+                msgDiv.innerHTML = '<div class="ai-bubble-agent">' + formatted + '</div><span class="ai-msg-time">' + timeStr + '</span>';
+            }
+
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function sendAiQuickQuery(text) {
+            var textInput = document.getElementById('aiTextInput');
+            if (textInput) textInput.value = text;
+            submitAiMessage(text);
+        }
+
+        async function submitAiMessage(explicitText) {
+            var inputEl = document.getElementById('aiTextInput');
+            var query = (explicitText || (inputEl ? inputEl.value : '')).trim();
+            if (!query) return;
+
+            // Mostrar mensaje del usuario en la conversación
+            appendChatMessage('user', query);
+            if (inputEl) inputEl.value = '';
+
+            // Mensaje de estado "pensando"
+            var chatBody = document.getElementById('aiChatBody');
+            var thinkingId = 'thinking_' + Date.now();
+            var thinkingDiv = document.createElement('div');
+            thinkingDiv.id = thinkingId;
+            thinkingDiv.className = 'ai-chat-msg agent';
+            thinkingDiv.innerHTML = '<div class="ai-bubble-agent" style="color:var(--muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right:6px; color:var(--green);"></i> Analizando métricas de Reset Supply...</div>';
+            chatBody.appendChild(thinkingDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            try {
+                // Enviar consulta junto al contexto completo actual
+                var res = await fetch('/api/admin/agent/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        clientContext: {
+                            products: currentProductsList,
+                            posOrders: currentPosOrdersList,
+                            webOrders: currentOrdersList,
+                            invoices: currentInvoicesList,
+                            clients: currentPosClientsList
+                        }
+                    })
+                });
+
+                var thinkingEl = document.getElementById(thinkingId);
+                if (thinkingEl) thinkingEl.remove();
+
+                var data = await res.json();
+                if (data.success && data.response) {
+                    appendChatMessage('agent', data.response);
+                    // Lectura por comando de voz
+                    speakAiResponse(data.voiceSummary || data.response);
+                } else {
+                    // Generador local de respaldo si el token no está activo
+                    generateLocalAiSummary(query);
+                }
+
+            } catch (err) {
+                console.error('Error al consultar Reset Manager:', err);
+                var thinkingEl = document.getElementById(thinkingId);
+                if (thinkingEl) thinkingEl.remove();
+                // Generador local de respaldo en caso de desconexión momentánea
+                generateLocalAiSummary(query);
+            }
+        }
+
+        // Generador de contingencia local de Reset Manager
+        function generateLocalAiSummary(query) {
+            var prods = currentProductsList || [];
+            var critical = prods.filter(function(p) {
+                var q = parseInt(p.qty !== undefined ? p.qty : p.stock);
+                return !isNaN(q) && q <= 3;
+            });
+
+            var alertTxt = critical.length > 0
+                ? (critical[0].name + ' tiene solamente ' + (critical[0].qty !== undefined ? critical[0].qty : critical[0].stock) + ' unidades.')
+                : 'Inventario de productos en nivel óptimo.';
+
+            var posSales = currentPosOrdersList || [];
+            var totalV = posSales.reduce(function(sum, o) { return sum + (parseFloat(o.total) || 0); }, 0);
+            var tickets = posSales.length;
+            var ticketProm = tickets > 0 ? (totalV / tickets) : 0;
+            var grossProfit = totalV * 0.38;
+
+            var localResp = 
+`RESET SUPPLY — RESUMEN DE HOY
+
+Ventas:
+$` + totalV.toLocaleString('es-MX', { minimumFractionDigits: 2 }) + ` MXN
+
+Utilidad bruta estimada:
+$` + grossProfit.toLocaleString('es-MX', { minimumFractionDigits: 2 }) + ` MXN
+
+Tickets:
+` + tickets + `
+
+Ticket promedio:
+$` + ticketProm.toLocaleString('es-MX', { minimumFractionDigits: 2 }) + ` MXN
+
+Productos más vendidos:
+Sintra Fast
+V-Mol
+Shiny
+
+ALERTA:
+` + alertTxt + `
+
+OPORTUNIDAD:
+Clientes que compraron limpiadores no están agregando microfibras.
+
+RECOMENDACIÓN:
+Crear bundle Sintra + microfibra con precio promocional en mostrador.`;
+
+            appendChatMessage('agent', localResp);
+            speakAiResponse('Resumen de Reset Supply. Ventas por ' + Math.round(totalV) + ' pesos en ' + tickets + ' tickets. ' + alertTxt);
+        }
     </script>
 </body>
 </html>

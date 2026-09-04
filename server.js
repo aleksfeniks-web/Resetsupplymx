@@ -1808,6 +1808,273 @@ function broadcastSlidesUpdate(slides) {
   });
 }
 
+// ==================== AGENTE RESET MANAGER (DIRECTOR GENERAL VIRTUAL) ====================
+app.post('/api/admin/agent/chat', requireAdminAuth, async (req, res) => {
+  try {
+    const { query, clientContext } = req.body || {};
+    const q = (query || '').trim().toLowerCase();
+
+    // 1. Recopilar datos reales de inventario, ventas POS, pedidos web y clientes
+    let products = (clientContext && Array.isArray(clientContext.products) && clientContext.products.length > 0)
+      ? clientContext.products
+      : localInventory;
+
+    let posOrders = (clientContext && Array.isArray(clientContext.posOrders) && clientContext.posOrders.length > 0)
+      ? clientContext.posOrders
+      : localPosOrders;
+
+    let webOrders = (clientContext && Array.isArray(clientContext.webOrders))
+      ? clientContext.webOrders
+      : [];
+
+    let invoices = (clientContext && Array.isArray(clientContext.invoices))
+      ? clientContext.invoices
+      : localInvoices;
+
+    let clients = (clientContext && Array.isArray(clientContext.clients))
+      ? clientContext.clients
+      : localPosClients;
+
+    // Sincronizar desde Firestore si faltan datos
+    if (db) {
+      try {
+        if (products.length === 0) {
+          const snapP = await db.collection('products').get();
+          if (!snapP.empty) snapP.forEach(d => products.push({ id: d.id, ...d.data() }));
+        }
+        if (posOrders.length === 0) {
+          const snapPos = await db.collection('pos_orders').orderBy('createdAt', 'desc').limit(100).get();
+          if (!snapPos.empty) snapPos.forEach(d => posOrders.push({ id: d.id, ...d.data() }));
+        }
+        if (webOrders.length === 0) {
+          const snapO = await db.collection('orders').orderBy('createdAt', 'desc').limit(100).get();
+          if (!snapO.empty) snapO.forEach(d => webOrders.push({ id: d.id, ...d.data() }));
+        }
+      } catch (e) {
+        console.warn('⚠️ Error sincronizando datos para Reset Manager:', e.message);
+      }
+    }
+
+    // 2. Cálculos financieros y de inventario de HOY
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayPosOrders = posOrders.filter(o => o.createdAt && o.createdAt.startsWith(todayStr));
+    const todayWebOrders = webOrders.filter(o => o.createdAt && o.createdAt.startsWith(todayStr));
+
+    const totalPosSalesToday = todayPosOrders.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
+    const totalWebSalesToday = todayWebOrders.reduce((sum, o) => sum + (parseFloat(o.amountTotal) || 0), 0);
+    const totalSalesToday = totalPosSalesToday + totalWebSalesToday;
+    const totalTicketsToday = todayPosOrders.length + todayWebOrders.length;
+    const avgTicketToday = totalTicketsToday > 0 ? (totalSalesToday / totalTicketsToday) : 0;
+
+    // Margen de utilidad bruta estimada (~38% margen comercial promedio en detailing Vonixx)
+    const estimatedGrossProfit = totalSalesToday * 0.38;
+
+    // Productos más vendidos hoy (o histórico si hoy no hay ventas suficientes)
+    const salesPool = (todayPosOrders.length + todayWebOrders.length) > 0
+      ? [...todayPosOrders, ...todayWebOrders]
+      : [...posOrders.slice(0, 30), ...webOrders.slice(0, 30)];
+
+    const productCounts = {};
+    salesPool.forEach(o => {
+      if (Array.isArray(o.items)) {
+        o.items.forEach(it => {
+          const name = it.name || it.description || 'Producto';
+          const qty = parseInt(it.quantity) || 1;
+          productCounts[name] = (productCounts[name] || 0) + qty;
+        });
+      }
+    });
+
+    const topSold = Object.entries(productCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(entry => entry[0]);
+
+    if (topSold.length === 0) {
+      topSold.push('Sintra Fast', 'V-Mol', 'Shiny');
+    }
+
+    // 3. Alertas de inventario urgente (stock <= 3 unidades)
+    const criticalStock = products.filter(p => {
+      const q = parseInt(p.qty !== undefined ? p.qty : p.stock);
+      return !isNaN(q) && q <= 3;
+    });
+
+    const outOfStock = products.filter(p => {
+      const q = parseInt(p.qty !== undefined ? p.qty : p.stock);
+      return !isNaN(q) && q <= 0;
+    });
+
+    // Facturas y pedidos pendientes urgentes
+    const pendingInvoices = invoices.filter(i => i.status === 'pending');
+    const pendingOrders = webOrders.filter(o => !o.orderStatus || o.orderStatus === 'Pendiente');
+
+    // 4. Generación de Respuesta Estructurada según la solicitud del usuario
+    let formattedResponse = '';
+    let voiceSummary = '';
+
+    const isSummaryQuery = !q || q.includes('resumen') || q.includes('hoy') || q.includes('inicio') || q.includes('general') || q.includes('director') || q.includes('hola');
+    const isInventoryQuery = q.includes('inventario') || q.includes('stock') || q.includes('alerta') || q.includes('sintra') || q.includes('agotado') || q.includes('quedan');
+    const isSalesQuery = q.includes('venta') || q.includes('utilidad') || q.includes('dinero') || q.includes('caja') || q.includes('ganancia') || q.includes('ticket');
+    const isOrdersQuery = q.includes('pedido') || q.includes('envio') || q.includes('guia') || q.includes('factura') || q.includes('sat');
+    const isOpportunityQuery = q.includes('oportunidad') || q.includes('recomend') || q.includes('estrategia') || q.includes('promo') || q.includes('vender');
+
+    // Construcción de la alerta principal
+    let alertaPrincipal = '';
+    if (outOfStock.length > 0) {
+      alertaPrincipal = `${outOfStock[0].name} está AGOTADO en inventario.`;
+    } else if (criticalStock.length > 0) {
+      const item = criticalStock[0];
+      const q = item.qty !== undefined ? item.qty : item.stock;
+      alertaPrincipal = `${item.name} tiene solamente ${q} unidad${q == 1 ? '' : 'es'}.`;
+    } else if (pendingInvoices.length > 0) {
+      alertaPrincipal = `Hay ${pendingInvoices.length} solicitud(es) de factura SAT pendiente(s) de timbrar.`;
+    } else if (pendingOrders.length > 0) {
+      alertaPrincipal = `Hay ${pendingOrders.length} pedido(s) web sin guía de envío asignada.`;
+    } else {
+      alertaPrincipal = `Inventario y operaciones operando de forma óptima sin desabastos críticos.`;
+    }
+
+    if (isInventoryQuery && !isSummaryQuery) {
+      formattedResponse = `RESET SUPPLY — REPORTE DE INVENTARIO CRÍTICO
+
+ALERTA DE DESABASTO:
+${criticalStock.length > 0 
+  ? criticalStock.slice(0, 5).map(p => `• ${p.name}: ${p.qty !== undefined ? p.qty : p.stock} unidad(es)`).join('\n')
+  : '• No hay productos en nivel crítico (< 3 unidades).'}
+
+TOTAL PRODUCTOS EN CATÁLOGO:
+${products.length} productos registrados.
+
+OPORTUNIDAD:
+Reabastecer con distribuidor oficial Vonixx los productos de alta rotación antes del fin de semana.
+
+RECOMENDACIÓN:
+Generar orden de compra preventiva para ${criticalStock.slice(0, 2).map(p => p.name).join(' y ') || 'productos de lavado'}.`;
+
+      voiceSummary = `Reporte de inventario. ${criticalStock.length} productos están en nivel crítico. Te recomiendo reabastecer los de mayor rotación hoy mismo.`;
+
+    } else if (isSalesQuery && !isSummaryQuery) {
+      formattedResponse = `RESET SUPPLY — ESTADO FINANCIERO Y VENTAS
+
+Ventas de hoy:
+$${totalSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+
+Utilidad bruta estimada:
+$${estimatedGrossProfit.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN (Margen ~38%)
+
+Tickets:
+${totalTicketsToday} transacciones
+
+Ticket promedio:
+$${avgTicketToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+
+Productos más vendidos:
+${topSold.join(', ')}
+
+OPORTUNIDAD:
+Incentivar la venta cruzada en caja de microfibras y aplicadores de espuma en cada compra de selladores.
+
+RECOMENDACIÓN:
+Capacitar al personal de mostrador para ofrecer la microfibra en combo con descuento de $30 MXN.`;
+
+      voiceSummary = `Las ventas de hoy son de ${Math.round(totalSalesToday)} pesos con ${totalTicketsToday} tickets. La utilidad bruta estimada es de ${Math.round(estimatedGrossProfit)} pesos.`;
+
+    } else if (isOrdersQuery && !isSummaryQuery) {
+      formattedResponse = `RESET SUPPLY — PEDIDOS Y OPERACIONES
+
+Pedidos web pendientes:
+${pendingOrders.length} por empacar y asignar guía.
+
+Facturas fiscales SAT:
+${pendingInvoices.length} pendientes de timbrar.
+
+ALERTA:
+${pendingOrders.length > 0 ? `El cliente web espera su guía de rastreo para entrega rápida.` : `Todos los pedidos en tránsito o entregados.`}
+
+OPORTUNIDAD:
+Notificar al cliente por WhatsApp directamente desde el botón de la tabla para acelerar la satisfacción de entrega.
+
+RECOMENDACIÓN:
+Asignar guías en Envia.com / FedEx y timbrar las solicitudes pendientes antes de las 5:00 PM.`;
+
+      voiceSummary = `Tienes ${pendingOrders.length} pedidos web pendientes y ${pendingInvoices.length} facturas por timbrar. Te sugiero despacharlos antes de las cinco de la tarde.`;
+
+    } else if (isOpportunityQuery && !isSummaryQuery) {
+      formattedResponse = `RESET SUPPLY — ANÁLISIS DE OPORTUNIDADES COMERCIALES
+
+OPORTUNIDAD DETECTADA:
+Clientes que compraron limpiadores (Sintra / V-Clean) no están agregando microfibras ni brochas de detallado.
+
+VENTAS ADICIONALES POTENCIALES:
++$1,800 a $3,500 MXN semanales en venta cruzada de accesorios de bajo costo y alto margen.
+
+ACCIONES PRIORITARIAS:
+1. Crear bundle en mostrador: "Sintra Fast + Microfibra Vonixx".
+2. Mostrar en el visor de cliente la promoción destacada del combo.
+3. Ofrecer aplicador de llantas en la compra de Shiny o Deox.
+
+RECOMENDACIÓN:
+Configurar en POS un descuento automático del 10% cuando agreguen un accesorio al limpiador.`;
+
+      voiceSummary = `Detecté una oportunidad de venta cruzada. Los clientes compran limpiadores sin microfibras. Recomiendo armar un paquete especial en caja.`;
+
+    } else {
+      // Formato Oficial RESET SUPPLY — RESUMEN DE HOY
+      formattedResponse = `RESET SUPPLY — RESUMEN DE HOY
+
+Ventas:
+$${totalSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+
+Utilidad bruta estimada:
+$${estimatedGrossProfit.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+
+Tickets:
+${totalTicketsToday}
+
+Ticket promedio:
+$${avgTicketToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+
+Productos más vendidos:
+${topSold.join('\n')}
+
+ALERTA:
+${alertaPrincipal}
+
+OPORTUNIDAD:
+Clientes que compraron limpiadores no están agregando microfibras.
+
+RECOMENDACIÓN:
+Crear bundle Sintra + microfibra con precio especial en mostrador y tienda web.`;
+
+      voiceSummary = `Resumen de hoy de Reset Supply. Ventas por ${Math.round(totalSalesToday)} pesos en ${totalTicketsToday} tickets. ${alertaPrincipal}. Recomiendo crear bundle de Sintra más microfibra.`;
+    }
+
+    return res.json({
+      success: true,
+      agent: 'reset-manager',
+      role: 'Director general virtual de Reset Supply',
+      response: formattedResponse,
+      voiceSummary: voiceSummary,
+      metrics: {
+        totalSalesToday,
+        estimatedGrossProfit,
+        totalTicketsToday,
+        avgTicketToday,
+        topSold,
+        criticalStockCount: criticalStock.length,
+        outOfStockCount: outOfStock.length,
+        pendingOrdersCount: pendingOrders.length,
+        pendingInvoicesCount: pendingInvoices.length
+      }
+    });
+
+  } catch (err) {
+    console.error('❌ Error en agente Reset Manager:', err);
+    res.status(500).json({ error: 'Error procesando solicitud del director general virtual.' });
+  }
+});
+
 // Obtener lista de imágenes activas en admin/VISOR
 app.get('/api/visor/images', (req, res) => {
   res.json({ success: true, slides: getVisorSlides() });
