@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Registro para Clientes Punto de Venta y Distribuidores de Vonixx en México — Reset Supply MX. Precios preferenciales de mayoreo, envíos a todo México y soporte técnico oficial.">
-    <title>Clientes Punto de Venta | Reset Supply MX — Distribuidor Autorizado Vonixx</title>
+    <meta name="description" content="Conviértete en Punto de Venta Vonixx en México con Reset Supply MX. Accede a precios de mayoreo, catálogo profesional, soporte comercial y opción de tienda online + POS.">
+    <title>Conviértete en Punto de Venta Vonixx | Reset Supply MX</title>
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="../favicon.png">
@@ -12,40 +12,58 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
+    <!-- Definición de Gradientes SVG Globales -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="neonCyanGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00d4ff" />
+                <stop offset="100%" stop-color="#39ff14" />
+            </linearGradient>
+            <linearGradient id="neonGreenCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#39ff14" />
+                <stop offset="100%" stop-color="#00d4ff" />
+            </linearGradient>
+        </defs>
+    </svg>
+
     <style>
         :root {
-            --void: #0a0e13;
-            --panel: #12171e;
-            --panel-2: #161c24;
-            --panel-3: #1d2530;
-            --line: #232b34;
-            --line-light: #2d3744;
-            --text: #f2f5f8;
-            --muted: #93a0ac;
-            --muted-2: #657382;
-            --green: #3ddc84;
-            --green-glow: rgba(61, 220, 132, 0.25);
-            --blue: #22b8f0;
-            --blue-glow: rgba(34, 184, 240, 0.25);
+            --void: #07090b;
+            --panel: #0d1219;
+            --panel-2: #121822;
+            --panel-3: #18202d;
+            --line: rgba(255, 255, 255, 0.08);
+            --line-focus: rgba(0, 212, 255, 0.45);
+            --text: #f3f6f9;
+            --muted: #95a3b3;
+            --muted-2: #5d6d7e;
+            --cyan: #00d4ff;
+            --cyan-glow: rgba(0, 212, 255, 0.25);
+            --green: #39ff14;
+            --green-glow: rgba(57, 255, 20, 0.22);
             --red: #ff4757;
             --yellow: #ffa502;
-            --grad: linear-gradient(90deg, var(--green), var(--blue));
-            --grad-hover: linear-gradient(90deg, #4ef598, #3ac7fc);
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 14px;
+            --grad: linear-gradient(135deg, var(--cyan), var(--green));
+            --grad-hover: linear-gradient(135deg, #33dcff, #5eff3f);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body {
-            background: var(--void);
+            background-color: var(--void);
+            background-image: 
+                radial-gradient(ellipse 70% 40% at 50% -10%, rgba(0, 212, 255, 0.08), transparent),
+                radial-gradient(ellipse 50% 35% at 90% 40%, rgba(57, 255, 20, 0.04), transparent),
+                radial-gradient(ellipse 50% 40% at 10% 80%, rgba(0, 212, 255, 0.04), transparent);
             color: var(--text);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            line-height: 1.55;
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
@@ -66,7 +84,7 @@
 
         /* Header */
         .pos-header {
-            background: var(--panel);
+            background: rgba(7, 9, 11, 0.88);
             border-bottom: 1px solid var(--line);
             padding: 14px 28px;
             display: flex;
@@ -75,7 +93,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(14px);
         }
         .pos-brand {
             display: flex;
@@ -85,141 +103,619 @@
             color: var(--text);
         }
         .pos-logo { height: 38px; width: auto; object-fit: contain; }
-        .pos-nav-links { display: flex; gap: 12px; align-items: center; }
+        .pos-nav-links { display: flex; gap: 10px; align-items: center; }
         .btn-nav {
             background: var(--panel-2);
             border: 1px solid var(--line);
             color: var(--text);
-            padding: 8px 18px;
-            border-radius: 6px;
-            font-size: 13.5px;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
             font-weight: 600;
             text-decoration: none;
             transition: all .2s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            cursor: pointer;
         }
         .btn-nav:hover {
-            border-color: var(--green);
-            color: var(--green);
-            box-shadow: 0 0 12px var(--green-glow);
+            border-color: var(--cyan);
+            color: var(--cyan);
+            box-shadow: 0 0 14px var(--cyan-glow);
         }
 
         /* Container */
         .pos-container {
-            max-width: 980px;
-            margin: 36px auto;
+            max-width: 1080px;
+            margin: 28px auto 60px auto;
             padding: 0 20px;
             width: 100%;
             flex: 1;
         }
 
-        /* Hero */
-        .pos-hero {
+        /* ================= HERO SECTION ================= */
+        .hero-section {
             text-align: center;
-            margin-bottom: 32px;
+            padding: 30px 10px 40px 10px;
             position: relative;
         }
-        .pos-badge {
+        .hero-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(61, 220, 132, 0.12);
-            color: var(--green);
-            border: 1px solid rgba(61, 220, 132, 0.35);
-            padding: 6px 16px;
+            gap: 8px;
+            background: rgba(0, 212, 255, 0.08);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 6px 18px;
             border-radius: 30px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 700;
             letter-spacing: 1.2px;
             text-transform: uppercase;
-            margin-bottom: 14px;
+            margin-bottom: 18px;
         }
-        .pos-badge::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
+        .hero-badge .dot {
+            width: 7px;
+            height: 7px;
             background: var(--green);
             border-radius: 50%;
             box-shadow: 0 0 8px var(--green);
-            animation: pulse 2s infinite;
+            animation: pulseDot 2s infinite;
         }
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
+        @keyframes pulseDot {
+            0% { transform: scale(0.9); opacity: 0.8; }
             50% { transform: scale(1.3); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(0.9); opacity: 0.8; }
         }
-        .pos-title {
-            font-size: 38px;
-            margin-bottom: 12px;
-            line-height: 1.15;
+        .hero-title {
+            font-size: 44px;
+            line-height: 1.12;
+            margin-bottom: 16px;
+            color: #ffffff;
         }
-        .pos-desc {
+        .hero-subtitle {
+            font-size: 17px;
             color: var(--muted);
-            font-size: 15.5px;
-            max-width: 720px;
-            margin: 0 auto;
-            line-height: 1.6;
+            max-width: 740px;
+            margin: 0 auto 30px auto;
+            line-height: 1.55;
+        }
+        .hero-cta-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .btn-hero-primary {
+            background: var(--grad);
+            color: #050b0f;
+            text-decoration: none;
+            padding: 15px 32px;
+            border-radius: 10px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 16.5px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            transition: all .25s ease;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+        .btn-hero-primary:hover {
+            transform: translateY(-2px);
+            background: var(--grad-hover);
+            box-shadow: 0 14px 40px rgba(57, 255, 20, 0.35);
+        }
+        .btn-hero-secondary {
+            background: var(--panel-2);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            color: var(--cyan);
+            text-decoration: none;
+            padding: 15px 28px;
+            border-radius: 10px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            transition: all .25s ease;
+            cursor: pointer;
+        }
+        .btn-hero-secondary:hover {
+            border-color: var(--green);
+            color: var(--green);
+            background: rgba(57, 255, 20, 0.05);
+            box-shadow: 0 0 25px var(--green-glow);
+            transform: translateY(-2px);
         }
 
-        /* Highlights Grid */
-        .benefits-grid {
+        /* ================= FRANJA DE CONFIANZA (4 BENEFICIOS) ================= */
+        .trust-strip {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 14px;
-            margin-bottom: 30px;
+            margin-bottom: 45px;
         }
-        .benefit-card {
+        .trust-item {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: var(--radius-md);
-            padding: 16px;
+            padding: 16px 14px;
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 8px;
-            transition: all .2s ease;
+            align-items: center;
+            gap: 12px;
+            transition: all .25s ease;
         }
-        .benefit-card:hover {
-            border-color: var(--green);
+        .trust-item:hover {
+            border-color: rgba(0, 212, 255, 0.35);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
         }
-        .benefit-icon {
-            font-size: 24px;
-            background: var(--panel-2);
-            width: 44px;
-            height: 44px;
+        .trust-icon-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            background: rgba(0, 212, 255, 0.06);
+            border: 1px solid rgba(0, 212, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
-            border: 1px solid var(--line-light);
+            flex-shrink: 0;
         }
-        .benefit-title {
+        .trust-text {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 14.5px;
+            color: var(--text);
+            line-height: 1.25;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .trust-subtext {
+            font-size: 11.5px;
+            color: var(--muted);
+            font-family: 'Inter', sans-serif;
+            text-transform: none;
+            margin-top: 2px;
+        }
+
+        /* ================= SECCIÓN COMPARATIVA ================= */
+        .comparison-section {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            margin-bottom: 45px;
+            position: relative;
+            overflow: hidden;
+        }
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--cyan);
+            background: rgba(0, 212, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            margin-bottom: 10px;
+        }
+        .comparison-title {
+            font-size: 26px;
+            margin-bottom: 6px;
+        }
+        .comparison-subtitle {
             font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 22px;
+        }
+        
+        .comp-table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--line);
+            background: var(--panel-2);
+        }
+        .comp-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        .comp-table th, .comp-table td {
+            padding: 13px 18px;
+            border-bottom: 1px solid var(--line);
+        }
+        .comp-table th {
+            background: var(--panel-3);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .comp-table th:nth-child(2) {
+            color: var(--green);
+            text-align: center;
+            width: 25%;
+        }
+        .comp-table th:nth-child(3) {
+            color: var(--cyan);
+            text-align: center;
+            width: 28%;
+            background: rgba(0, 212, 255, 0.08);
+            border-left: 1px solid rgba(0, 212, 255, 0.2);
+            border-right: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .comp-table td:nth-child(2) {
+            text-align: center;
+            font-weight: 700;
+        }
+        .comp-table td:nth-child(3) {
+            text-align: center;
+            font-weight: 700;
+            background: rgba(0, 212, 255, 0.03);
+            border-left: 1px solid rgba(0, 212, 255, 0.1);
+            border-right: 1px solid rgba(0, 212, 255, 0.1);
+        }
+        .comp-table tr:last-child td {
+            border-bottom: none;
+        }
+        .check-yes {
+            color: var(--green);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .check-no {
+            color: var(--muted-2);
+            font-size: 17px;
+            font-weight: 400;
+        }
+        .comp-footer {
+            margin-top: 18px;
+            padding: 12px 18px;
+            background: rgba(0, 212, 255, 0.04);
+            border: 1px dashed rgba(0, 212, 255, 0.25);
+            border-radius: var(--radius-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .btn-text-action {
+            color: var(--cyan);
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all .2s;
+            cursor: pointer;
+        }
+        .btn-text-action:hover {
+            color: var(--green);
+        }
+
+        /* ================= BLOQUE PARTNER RENOVADO ================= */
+        .partner-block {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.09) 0%, rgba(13, 18, 25, 0.95) 55%, rgba(57, 255, 20, 0.07) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.35);
+            border-radius: var(--radius-lg);
+            padding: 34px 28px;
+            margin-bottom: 45px;
+            position: relative;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6);
+        }
+        .partner-block-header {
+            text-align: center;
+            max-width: 780px;
+            margin: 0 auto 28px auto;
+        }
+        .partner-hero-title {
+            font-size: 32px;
+            margin-bottom: 6px;
+        }
+        .partner-hero-subtitle {
+            font-size: 16px;
+            color: #dbe4ee;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .partner-slogan {
+            font-size: 13.5px;
+            color: var(--cyan);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .partner-trio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .partner-trio-card {
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 22px 18px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            transition: all .25s ease;
+        }
+        .partner-trio-card:hover {
+            border-color: var(--cyan);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.15);
+        }
+        .trio-icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .partner-trio-card h4 {
+            font-size: 16px;
+            color: var(--text);
+            letter-spacing: 0.4px;
+        }
+        .partner-trio-card p {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+        .partner-cta-row {
+            display: flex;
+            justify-content: center;
+        }
+        .btn-partner-cta {
+            background: linear-gradient(90deg, #00d4ff, #39ff14);
+            color: #050b0f;
+            border: none;
+            padding: 13px 30px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 20px var(--cyan-glow);
+        }
+        .btn-partner-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--green-glow);
+        }
+
+        /* ================= CÓMO FUNCIONA ================= */
+        .how-section {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: 30px 24px;
+            margin-bottom: 45px;
+        }
+        .how-steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+            position: relative;
+        }
+        .how-card {
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 20px 16px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all .25s ease;
+        }
+        .how-card:hover {
+            border-color: rgba(57, 255, 20, 0.4);
+            transform: translateY(-2px);
+        }
+        .how-step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--grad);
+            color: #050b0f;
+            font-weight: 800;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4px;
+        }
+        .how-card-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 16px;
             font-weight: 700;
             color: var(--text);
             text-transform: uppercase;
-            font-family: 'Rajdhani', sans-serif;
         }
-        .benefit-text {
-            font-size: 12px;
+        .how-card-desc {
+            font-size: 12.5px;
             color: var(--muted);
-            line-height: 1.4;
+            line-height: 1.45;
         }
 
-        /* Form Card */
+        /* ================= ¿PARA QUIÉN ES? ================= */
+        .target-section {
+            margin-bottom: 45px;
+            text-align: center;
+        }
+        .target-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .target-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 16px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: all .25s ease;
+        }
+        .target-card:hover {
+            border-color: var(--cyan);
+            transform: translateY(-3px);
+            background: var(--panel-2);
+            box-shadow: 0 6px 18px rgba(0, 212, 255, 0.12);
+        }
+        .target-icon-wrap {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .target-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        /* ================= INCENTIVO DE CATÁLOGO MAYORISTA ================= */
+        .catalog-incentive-banner {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(57, 255, 20, 0.06));
+            border: 1px solid rgba(0, 212, 255, 0.28);
+            border-radius: var(--radius-lg);
+            padding: 22px 26px;
+            margin-bottom: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: all .3s ease;
+        }
+        .catalog-incentive-banner.unlocked {
+            border-color: var(--green);
+            background: linear-gradient(135deg, rgba(57, 255, 20, 0.12), rgba(0, 212, 255, 0.12));
+            box-shadow: 0 10px 35px var(--green-glow);
+        }
+        .cat-inc-info {
+            max-width: 680px;
+        }
+        .cat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            background: rgba(255, 165, 2, 0.15);
+            color: var(--yellow);
+            border: 1px solid rgba(255, 165, 2, 0.35);
+        }
+        .cat-badge.unlocked {
+            background: rgba(57, 255, 20, 0.15);
+            color: var(--green);
+            border-color: var(--green);
+        }
+        .cat-inc-title {
+            font-size: 21px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .cat-inc-desc {
+            font-size: 13.5px;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+        .btn-cat-trigger {
+            background: var(--panel-2);
+            border: 1.5px solid rgba(0, 212, 255, 0.4);
+            color: var(--text);
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 14.5px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-cat-trigger:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            box-shadow: 0 0 15px var(--cyan-glow);
+        }
+        .btn-cat-trigger.unlocked {
+            background: var(--grad);
+            color: #050b0f;
+            border-color: transparent;
+            box-shadow: 0 8px 25px var(--green-glow);
+        }
+        .btn-cat-trigger.unlocked:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ================= WIZARD DE REGISTRO (4 PASOS) ================= */
         .form-card {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: var(--radius-lg);
-            padding: 34px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            padding: 36px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.65);
             position: relative;
             overflow: hidden;
+            margin-bottom: 50px;
         }
         .form-card::before {
             content: '';
@@ -231,48 +727,117 @@
             background: var(--grad);
         }
 
-        .section-header {
+        /* Wizard Stepper Header */
+        .wizard-stepper {
+            margin-bottom: 30px;
+        }
+        .stepper-progress-bar {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            color: var(--text);
-            margin: 24px 0 16px 0;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--line);
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 16px;
+            padding: 0 10px;
         }
-        .section-header:first-of-type {
-            margin-top: 0;
+        .stepper-track-bg {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            right: 20px;
+            height: 2px;
+            background: var(--line);
+            transform: translateY(-50%);
+            z-index: 1;
         }
-        .section-header .sec-num {
+        .stepper-track-fill {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            height: 2px;
             background: var(--grad);
-            color: #04130b;
-            font-weight: 800;
-            font-size: 12px;
-            width: 24px;
-            height: 24px;
+            transform: translateY(-50%);
+            z-index: 2;
+            width: 0%;
+            transition: width .35s ease;
+        }
+        .step-node {
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
-            display: inline-flex;
+            background: var(--panel-2);
+            border: 2px solid var(--muted-2);
+            color: var(--muted);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            z-index: 3;
+            transition: all .3s ease;
+        }
+        .step-node.active {
+            border-color: var(--cyan);
+            background: #09131a;
+            color: var(--cyan);
+            box-shadow: 0 0 16px var(--cyan-glow);
+        }
+        .step-node.completed {
+            border-color: var(--green);
+            background: var(--green);
+            color: #050b0f;
+            box-shadow: 0 0 16px var(--green-glow);
         }
 
-        /* Grid */
+        .stepper-header-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 14px;
+        }
+        .step-current-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            text-transform: uppercase;
+        }
+        .step-counter-badge {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 0.5px;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* Step Panels */
+        .step-panel {
+            display: none;
+            animation: fadeInStep .3s ease forwards;
+        }
+        .step-panel.active {
+            display: block;
+        }
+        @keyframes fadeInStep {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Controls */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 18px;
+            margin-bottom: 20px;
         }
         .form-grid.col-3 {
             grid-template-columns: 1fr 1fr 1fr;
         }
-        .form-grid.full-width {
-            grid-column: span 2;
-        }
         .full-span {
             grid-column: 1 / -1;
         }
-
         .form-group {
             display: flex;
             flex-direction: column;
@@ -288,7 +853,7 @@
             align-items: center;
             gap: 4px;
         }
-        .form-group label span.req { color: var(--green); font-weight: 800; }
+        .form-group label span.req { color: var(--cyan); font-weight: 800; }
         .form-group label span.opt { color: var(--muted-2); font-weight: 500; font-size: 11px; text-transform: none; }
 
         .input-wrap {
@@ -299,17 +864,18 @@
         .input-icon {
             position: absolute;
             left: 14px;
-            color: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             pointer-events: none;
-            font-size: 15px;
         }
         .form-input, .form-select, .form-textarea {
             width: 100%;
-            background: var(--void);
+            background: #07090b;
             border: 1px solid var(--line);
             color: var(--text);
-            padding: 12px 16px;
-            padding-left: 42px;
+            padding: 13px 16px;
+            padding-left: 44px;
             border-radius: 8px;
             font-size: 14px;
             outline: none;
@@ -320,9 +886,9 @@
             padding-left: 14px;
         }
         .form-input:focus, .form-select:focus, .form-textarea:focus {
-            border-color: var(--green);
-            box-shadow: 0 0 12px var(--green-glow);
-            background: #0d1218;
+            border-color: var(--cyan);
+            box-shadow: 0 0 14px var(--cyan-glow);
+            background: #090e14;
         }
         .form-input::placeholder, .form-textarea::placeholder {
             color: var(--muted-2);
@@ -347,20 +913,220 @@
             margin-top: 3px;
         }
 
+        /* Checkbox Opcional Estilizado */
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .checkbox-row input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid var(--muted-2);
+            border-radius: 4px;
+            background: #07090b;
+            cursor: pointer;
+            position: relative;
+            outline: none;
+            transition: all .2s;
+        }
+        .checkbox-row input[type="checkbox"]:checked {
+            background: var(--cyan);
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan-glow);
+        }
+        .checkbox-row input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1px;
+            width: 4px;
+            height: 9px;
+            border: solid #050b0f;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .checkbox-label {
+            font-size: 13px;
+            color: #d1dce7;
+            font-weight: 500;
+        }
+
+        /* Selector de Modalidad en Formulario */
+        .modality-selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .modality-card {
+            background: var(--panel-2);
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            cursor: pointer;
+            transition: all .2s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            user-select: none;
+        }
+        .modality-card:hover {
+            border-color: rgba(0, 212, 255, 0.4);
+            background: rgba(0, 212, 255, 0.04);
+        }
+        .modality-card.selected {
+            border-color: var(--cyan);
+            background: rgba(0, 212, 255, 0.07);
+            box-shadow: 0 0 22px var(--cyan-glow);
+        }
+        .modality-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modality-radio-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--muted-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+        }
+        .modality-card.selected .modality-radio-circle {
+            border-color: var(--cyan);
+            background: var(--cyan);
+        }
+        .modality-card.selected .modality-radio-circle::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #050b0f;
+            border-radius: 50%;
+        }
+        .modality-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modality-desc {
+            font-size: 12.5px;
+            color: var(--muted);
+            line-height: 1.45;
+        }
+        .modality-tag {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .modality-tag.tag-partner {
+            background: rgba(0, 212, 255, 0.18);
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+        }
+        .modality-tag.tag-pos {
+            background: rgba(57, 255, 20, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(57, 255, 20, 0.4);
+        }
+        .partner-extra-fields {
+            background: rgba(0, 212, 255, 0.04);
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeInStep .3s ease;
+        }
+
+        /* Toggle de Facturación en Paso 4 */
+        .factura-toggle-container {
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .factura-question {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .factura-btn-group {
+            display: flex;
+            gap: 12px;
+        }
+        .btn-factura-opt {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: #07090b;
+            border: 1.5px solid var(--line);
+            color: var(--muted);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all .2s;
+            text-align: center;
+            font-family: 'Rajdhani', sans-serif;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .btn-factura-opt.selected {
+            border-color: var(--cyan);
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--cyan);
+            box-shadow: 0 0 16px var(--cyan-glow);
+        }
+        .factura-fields-box {
+            display: none;
+            animation: fadeInStep .3s ease;
+            margin-top: 18px;
+        }
+        .factura-no-box {
+            margin-top: 14px;
+            font-size: 12.5px;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 14px;
+            border-radius: 6px;
+            border-left: 3px solid var(--green);
+        }
+
         /* File Upload Box */
         .file-upload-box {
-            background: var(--void);
-            border: 2px dashed var(--line-light);
+            background: #07090b;
+            border: 2px dashed rgba(0, 212, 255, 0.3);
             border-radius: var(--radius-md);
-            padding: 24px;
+            padding: 26px 20px;
             text-align: center;
             cursor: pointer;
             transition: all .2s ease;
             position: relative;
         }
         .file-upload-box:hover, .file-upload-box.dragover {
-            border-color: var(--green);
-            background: rgba(61, 220, 132, 0.04);
+            border-color: var(--cyan);
+            background: rgba(0, 212, 255, 0.05);
         }
         .file-upload-box input[type="file"] {
             position: absolute;
@@ -373,10 +1139,8 @@
             z-index: 2;
         }
         .upload-icon {
-            font-size: 34px;
             margin-bottom: 8px;
             display: inline-block;
-            filter: drop-shadow(0 0 8px var(--green-glow));
         }
         .upload-text {
             font-size: 14px;
@@ -392,13 +1156,12 @@
             display: none;
             align-items: center;
             justify-content: space-between;
-            background: var(--panel-2);
-            border: 1px solid var(--green);
+            background: var(--panel-3);
+            border: 1px solid var(--cyan);
             padding: 10px 16px;
             border-radius: 8px;
             margin-top: 12px;
             font-size: 13px;
-            animation: fadeIn .3s ease;
         }
         .file-info-group {
             display: flex;
@@ -420,20 +1183,65 @@
             background: rgba(255, 71, 87, 0.15);
         }
 
-        /* Submit Button */
-        .btn-submit-container {
-            margin-top: 32px;
+        /* Wizard Navigation Buttons */
+        .wizard-buttons-row {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
+            margin-top: 24px;
             gap: 12px;
         }
-        .btn-submit {
-            background: var(--grad);
-            color: #04130b;
-            border: none;
-            padding: 16px 40px;
+        .btn-step-prev {
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            padding: 12px 22px;
             border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 14.5px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-step-prev:hover {
+            border-color: var(--muted);
+            color: var(--text);
+        }
+        .btn-step-next {
+            background: var(--cyan);
+            color: #050b0f;
+            border: none;
+            padding: 13px 28px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            box-shadow: 0 6px 20px var(--cyan-glow);
+        }
+        .btn-step-next:hover {
+            background: #33dcff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px var(--cyan-glow);
+        }
+        .btn-final-submit {
+            background: var(--grad);
+            color: #050b0f;
+            border: none;
+            padding: 16px 36px;
+            border-radius: 10px;
             font-family: 'Rajdhani', sans-serif;
             font-weight: 800;
             font-size: 17px;
@@ -441,33 +1249,29 @@
             text-transform: uppercase;
             cursor: pointer;
             transition: all .25s ease;
-            box-shadow: 0 10px 30px rgba(61, 220, 132, 0.35);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.35);
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             width: 100%;
-            max-width: 480px;
-            justify-content: center;
         }
-        .btn-submit:hover:not(:disabled) {
+        .btn-final-submit:hover:not(:disabled) {
             background: var(--grad-hover);
             transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(34, 184, 240, 0.45);
+            box-shadow: 0 15px 40px rgba(57, 255, 20, 0.4);
         }
-        .btn-submit:disabled {
+        .btn-final-submit:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none !important;
             box-shadow: none !important;
         }
-
-        .submit-notice {
-            font-size: 12px;
-            color: var(--muted-2);
+        .submit-subline {
+            font-size: 12.5px;
+            color: var(--muted);
             text-align: center;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            margin-top: 10px;
         }
 
         /* ================= MODAL DE CONFIRMACIÓN ================= */
@@ -477,8 +1281,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 14, 19, 0.94);
-            backdrop-filter: blur(10px);
+            background: rgba(7, 9, 11, 0.94);
+            backdrop-filter: blur(12px);
             z-index: 9999;
             display: none;
             align-items: center;
@@ -493,11 +1297,11 @@
 
         .modal-card {
             background: var(--panel);
-            border: 1px solid var(--line-light);
+            border: 1px solid var(--line);
             border-radius: var(--radius-lg);
             width: 100%;
             max-width: 540px;
-            padding: 40px 32px;
+            padding: 38px 30px;
             text-align: center;
             box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85);
             position: relative;
@@ -512,52 +1316,36 @@
             height: 4px;
             background: var(--grad);
         }
-
         .modal-icon-wrap {
-            width: 76px;
-            height: 76px;
-            background: rgba(61, 220, 132, 0.12);
+            width: 70px;
+            height: 70px;
+            background: rgba(57, 255, 20, 0.12);
             border: 2px solid var(--green);
             border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             box-shadow: 0 0 30px var(--green-glow);
-            animation: bounceIn .6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.1); }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .modal-icon-wrap svg {
-            width: 38px;
-            height: 38px;
-            stroke: var(--green);
-        }
-
         .modal-title {
-            font-size: 28px;
-            margin-bottom: 12px;
-            color: var(--text);
+            font-size: 27px;
+            margin-bottom: 10px;
+            color: #ffffff;
         }
         .modal-message {
             color: #d1dbe5;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 24px;
-            font-weight: 500;
+            font-size: 15px;
+            line-height: 1.55;
+            margin-bottom: 22px;
         }
-
         .modal-summary {
             background: var(--panel-2);
             border: 1px solid var(--line);
             border-radius: var(--radius-md);
             padding: 16px;
             text-align: left;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
             font-size: 13px;
         }
         .modal-summary-row {
@@ -572,120 +1360,46 @@
         .summary-label { color: var(--muted); font-weight: 600; }
         .summary-val { color: var(--text); font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
 
-        .btn-modal-close {
+        .btn-modal-catalog {
             background: var(--grad);
-            color: #04130b;
+            color: #050b0f;
             border: none;
-            padding: 13px 32px;
+            padding: 14px 28px;
             border-radius: 8px;
             font-family: 'Rajdhani', sans-serif;
             font-weight: 800;
-            font-size: 15px;
+            font-size: 15.5px;
             letter-spacing: 0.5px;
             text-transform: uppercase;
             cursor: pointer;
             transition: all .2s;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            box-shadow: 0 8px 25px var(--cyan-glow);
+            width: 100%;
+        }
+        .btn-modal-close {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--muted);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
         }
         .btn-modal-close:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px var(--green-glow);
-        }
-
-        /* ================= SECCIÓN / BANNER CATÁLOGO VONIXX ================= */
-        .catalog-exclusive-banner {
-            background: linear-gradient(135deg, rgba(34, 184, 240, 0.08), rgba(61, 220, 132, 0.08));
-            border: 1px solid var(--line-light);
-            border-radius: var(--radius-lg);
-            padding: 22px 26px;
-            margin-bottom: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            transition: all .3s ease;
-        }
-        .catalog-exclusive-banner.unlocked {
-            border-color: var(--green);
-            background: linear-gradient(135deg, rgba(61, 220, 132, 0.14), rgba(34, 184, 240, 0.14));
-            box-shadow: 0 10px 35px var(--green-glow);
-        }
-        .catalog-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-width: 620px;
-        }
-        .catalog-status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            width: fit-content;
-        }
-        .catalog-status-badge.locked {
-            background: rgba(255, 165, 2, 0.15);
-            color: var(--yellow);
-            border: 1px solid rgba(255, 165, 2, 0.4);
-        }
-        .catalog-status-badge.unlocked {
-            background: rgba(61, 220, 132, 0.15);
-            color: var(--green);
-            border: 1px solid var(--green);
-        }
-        .catalog-title {
-            font-size: 21px;
             color: var(--text);
-            margin: 0;
-        }
-        .catalog-desc {
-            font-size: 13.5px;
-            color: var(--muted);
-            line-height: 1.5;
-            margin: 0;
-        }
-        .btn-catalog-trigger {
-            background: var(--panel-2);
-            border: 1.5px solid var(--line-light);
-            color: var(--text);
-            padding: 12px 22px;
-            border-radius: 8px;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 800;
-            font-size: 14.5px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all .2s;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-catalog-trigger:hover {
-            border-color: var(--blue);
-            color: var(--blue);
-            box-shadow: 0 0 15px var(--blue-glow);
-        }
-        .btn-catalog-trigger.unlocked {
-            background: var(--grad);
-            color: #04130b;
-            border-color: transparent;
-            box-shadow: 0 8px 25px var(--green-glow);
-        }
-        .btn-catalog-trigger.unlocked:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px var(--blue-glow);
+            border-color: var(--muted);
         }
 
         /* ================= MODAL VISOR CATÁLOGO EN LÍNEA ================= */
@@ -695,8 +1409,8 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(8, 11, 15, 0.96);
-            backdrop-filter: blur(12px);
+            background: rgba(7, 9, 11, 0.96);
+            backdrop-filter: blur(14px);
             z-index: 10000;
             display: none;
             align-items: center;
@@ -706,7 +1420,7 @@
         }
         .catalog-modal-container {
             background: var(--panel);
-            border: 1px solid var(--line-light);
+            border: 1px solid var(--line);
             border-radius: var(--radius-lg);
             width: 100%;
             max-width: 1320px;
@@ -751,8 +1465,8 @@
             gap: 6px;
         }
         .btn-cat-ctrl:hover {
-            border-color: var(--blue);
-            color: var(--blue);
+            border-color: var(--cyan);
+            color: var(--cyan);
         }
         .btn-cat-close {
             background: rgba(255, 71, 87, 0.15);
@@ -769,247 +1483,13 @@
             width: 100%;
             height: 100%;
             position: relative;
-            background: #0a0e13;
-            user-select: none;
-            -webkit-user-select: none;
+            background: #07090b;
         }
         .catalog-iframe-wrap iframe {
             width: 100%;
             height: 100%;
             border: none;
             display: block;
-        }
-        .btn-modal-catalog {
-            background: var(--grad);
-            color: #04130b;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 8px;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 800;
-            font-size: 16px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all .2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 8px 25px var(--green-glow);
-            width: 100%;
-        }
-        /* ================= MODALIDAD PARTNER RESET SUPPLY ================= */
-        .partner-showcase-card {
-            background: linear-gradient(135deg, rgba(34, 184, 240, 0.12), rgba(18, 23, 30, 0.95) 55%, rgba(61, 220, 132, 0.1));
-            border: 1.5px solid rgba(34, 184, 240, 0.4);
-            border-radius: var(--radius-lg);
-            padding: 30px;
-            margin-bottom: 28px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(34, 184, 240, 0.15);
-        }
-        .partner-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(34, 184, 240, 0.18);
-            color: var(--blue);
-            border: 1px solid rgba(34, 184, 240, 0.45);
-            padding: 5px 14px;
-            border-radius: 20px;
-            font-size: 11.5px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-        .partner-title {
-            font-size: 26px;
-            color: var(--text);
-            margin-bottom: 8px;
-        }
-        .partner-subtitle {
-            font-size: 14.5px;
-            color: var(--muted);
-            max-width: 820px;
-            line-height: 1.55;
-            margin-bottom: 22px;
-        }
-        .partner-features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 22px;
-        }
-        .partner-feature-item {
-            background: var(--panel-2);
-            border: 1px solid var(--line-light);
-            border-radius: var(--radius-md);
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            transition: all .25s ease;
-        }
-        .partner-feature-item:hover {
-            border-color: var(--blue);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(34, 184, 240, 0.2);
-        }
-        .p-feat-icon {
-            font-size: 28px;
-            width: 46px;
-            height: 46px;
-            background: rgba(34, 184, 240, 0.12);
-            border: 1px solid rgba(34, 184, 240, 0.3);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 4px;
-        }
-        .partner-feature-item h4 {
-            font-size: 15px;
-            color: var(--text);
-            letter-spacing: 0.3px;
-        }
-        .partner-feature-item p {
-            font-size: 12.5px;
-            color: var(--muted);
-            line-height: 1.45;
-        }
-        .partner-cta-box {
-            background: var(--panel-3);
-            border: 1px dashed rgba(34, 184, 240, 0.35);
-            border-radius: var(--radius-md);
-            padding: 14px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            font-size: 13.5px;
-            color: var(--text);
-        }
-        .btn-select-partner {
-            background: linear-gradient(90deg, #22b8f0, #3ddc84);
-            color: #04130b;
-            border: none;
-            padding: 10px 22px;
-            border-radius: 6px;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 800;
-            font-size: 14px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all .2s;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 18px var(--blue-glow);
-        }
-        .btn-select-partner:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px var(--green-glow);
-        }
-
-        /* Selector de Modalidad en Formulario */
-        .modality-selector-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-bottom: 16px;
-        }
-        .modality-card {
-            background: var(--panel-2);
-            border: 1.5px solid var(--line);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            cursor: pointer;
-            transition: all .2s ease;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            user-select: none;
-        }
-        .modality-card:hover {
-            border-color: var(--blue);
-            background: rgba(34, 184, 240, 0.05);
-        }
-        .modality-card.selected {
-            border-color: var(--green);
-            background: rgba(61, 220, 132, 0.08);
-            box-shadow: 0 0 20px var(--green-glow);
-        }
-        .modality-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .modality-radio-circle {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 2px solid var(--muted-2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all .2s;
-        }
-        .modality-card.selected .modality-radio-circle {
-            border-color: var(--green);
-            background: var(--green);
-        }
-        .modality-card.selected .modality-radio-circle::after {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background: #04130b;
-            border-radius: 50%;
-        }
-        .modality-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text);
-            font-family: 'Rajdhani', sans-serif;
-            text-transform: uppercase;
-        }
-        .modality-desc {
-            font-size: 12px;
-            color: var(--muted);
-            line-height: 1.4;
-        }
-        .modality-tag {
-            font-size: 10.5px;
-            font-weight: 800;
-            padding: 2px 8px;
-            border-radius: 10px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-        .modality-tag.tag-partner {
-            background: rgba(34, 184, 240, 0.2);
-            color: var(--blue);
-            border: 1px solid var(--blue);
-        }
-        .modality-tag.tag-pos {
-            background: rgba(61, 220, 132, 0.15);
-            color: var(--green);
-            border: 1px solid rgba(61, 220, 132, 0.4);
-        }
-        .partner-extra-fields {
-            background: rgba(34, 184, 240, 0.05);
-            border: 1px solid rgba(34, 184, 240, 0.25);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-top: 10px;
-            margin-bottom: 16px;
-            display: none;
-            animation: fadeIn .3s ease;
         }
 
         /* Footer */
@@ -1023,341 +1503,87 @@
             margin-top: auto;
         }
 
-        /* ================= EXPERIENCIA MÓVIL OPTIMIZADA ================= */
-        * {
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        button:active, .btn-nav:active, .btn-submit:active, .btn-catalog-trigger:active, .btn-modal-catalog:active, .btn-modal-close:active {
-            transform: scale(0.97) !important;
-            transition: transform 0.1s ease !important;
+        /* ================= RESPONSIVE DESIGN ================= */
+        @media (max-width: 900px) {
+            .trust-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .target-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .how-steps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .partner-trio-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
-            /* Cabecera Móvil */
             .pos-header {
                 padding: 10px 14px;
-                gap: 10px;
                 flex-wrap: wrap;
-            }
-            .pos-brand {
-                gap: 8px;
-            }
-            .pos-logo {
-                height: 32px;
-            }
-            .pos-brand .font-raj {
-                font-size: 16px !important;
-                letter-spacing: 0.3px;
+                gap: 10px;
             }
             .pos-nav-links {
                 width: 100%;
-                display: flex;
-                gap: 8px;
                 overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                padding-bottom: 2px;
                 scrollbar-width: none;
-            }
-            .pos-nav-links::-webkit-scrollbar {
-                display: none;
             }
             .btn-nav {
                 flex: 1;
-                min-width: fit-content;
-                padding: 8px 10px;
-                font-size: 12px;
+                white-space: nowrap;
                 justify-content: center;
-                border-radius: 8px;
             }
-
-            /* Contenedor y Hero */
             .pos-container {
-                margin: 16px auto;
+                margin: 16px auto 40px auto;
                 padding: 0 12px;
             }
-            .pos-hero {
-                margin-bottom: 20px;
-                padding: 0 4px;
+            .hero-title {
+                font-size: 28px;
             }
-            .pos-badge {
-                font-size: 10px;
-                padding: 5px 12px;
-                letter-spacing: 0.8px;
-                line-height: 1.3;
-                text-align: center;
-                white-space: normal;
-                margin-bottom: 10px;
+            .hero-subtitle {
+                font-size: 14.5px;
             }
-            .pos-title {
-                font-size: 24px;
-                line-height: 1.25;
-                margin-bottom: 10px;
-            }
-            .pos-desc {
-                font-size: 13.5px;
-                line-height: 1.5;
-                color: #b3c0ce;
-            }
-
-            /* Beneficios en Móvil (Formato compacto y limpio) */
-            .benefits-grid {
-                grid-template-columns: 1fr;
-                gap: 10px;
-                margin-bottom: 20px;
-            }
-            .benefit-card {
-                display: flex;
-                align-items: center;
-                text-align: left;
-                gap: 14px;
-                padding: 12px 14px;
-            }
-            .benefit-icon {
-                font-size: 26px;
-                margin-bottom: 0;
-                flex-shrink: 0;
-            }
-            .benefit-title {
-                font-size: 14px;
-                margin-bottom: 2px;
-            }
-            .benefit-text {
-                font-size: 12px;
-                line-height: 1.35;
-            }
-
-            /* Modalidad Partner en Móvil */
-            .partner-showcase-card {
-                padding: 20px 16px;
-                border-radius: 12px;
-                margin-bottom: 20px;
-            }
-            .partner-title {
-                font-size: 21px;
-            }
-            .partner-subtitle {
-                font-size: 13px;
-                margin-bottom: 16px;
-            }
-            .partner-features-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-                margin-bottom: 16px;
-            }
-            .partner-cta-box {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-                gap: 12px;
-                padding: 14px;
-            }
-            .btn-select-partner {
+            .btn-hero-primary, .btn-hero-secondary {
                 width: 100%;
                 justify-content: center;
-                padding: 12px;
-                font-size: 13.5px;
+            }
+            .trust-strip {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .how-steps-grid {
+                grid-template-columns: 1fr;
+            }
+            .target-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
             .modality-selector-grid {
                 grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            /* Banner Exclusivo de Catálogo */
-            .catalog-exclusive-banner {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 18px 16px;
-                gap: 14px;
-                text-align: left;
-                border-radius: 12px;
-            }
-            .catalog-title {
-                font-size: 18px;
-            }
-            .catalog-desc {
-                font-size: 13px;
-                line-height: 1.45;
-            }
-            .btn-catalog-trigger {
-                width: 100%;
-                justify-content: center;
-                padding: 12px;
-                font-size: 14.5px;
-                border-radius: 8px;
-            }
-
-            /* Formulario */
-            .form-card {
-                padding: 20px 14px;
-                border-radius: 12px;
-                margin-bottom: 24px;
-            }
-            .section-header {
-                font-size: 16px;
-                margin: 20px 0 14px 0;
-                padding-bottom: 8px;
             }
             .form-grid, .form-grid.col-3 {
                 grid-template-columns: 1fr;
-                gap: 14px;
             }
-            .form-grid.full-width {
-                grid-column: span 1;
+            .form-card {
+                padding: 22px 16px;
             }
-
-            /* Inputs optimizados para Touch e iOS Safari (evita auto-zoom) */
-            .form-input, .form-select, .form-textarea {
-                font-size: 16px !important;
-                padding: 12px 14px 12px 40px;
-                border-radius: 8px;
-                min-height: 48px;
-            }
-            .form-input.no-icon, .form-select.no-icon {
-                padding-left: 14px;
-            }
-            .form-textarea {
-                min-height: 80px;
-            }
-
-            /* Zona de subida de archivo para móvil */
-            .file-upload-box {
-                padding: 24px 14px;
-                border-radius: 10px;
-            }
-            .upload-icon {
-                font-size: 32px;
-                margin-bottom: 6px;
-            }
-            .upload-text {
-                font-size: 13.5px;
-            }
-            .upload-hint {
-                font-size: 11px;
-            }
-            .file-selected-badge {
+            .catalog-incentive-banner {
                 flex-direction: column;
-                gap: 10px;
                 align-items: stretch;
-                text-align: center;
             }
-            .file-selected-badge .file-info-group {
-                justify-content: center;
-            }
-            .btn-remove-file {
+            .btn-cat-trigger {
                 width: 100%;
-                padding: 8px;
                 justify-content: center;
             }
-
-            /* Botón de Envío */
-            .btn-submit-container {
-                margin-top: 24px;
-            }
-            .btn-submit {
-                height: 52px;
-                font-size: 15.5px;
-                border-radius: 10px;
-            }
-            .submit-notice {
-                font-size: 11.5px;
-                line-height: 1.4;
-                text-align: center;
-            }
-
-            /* Modales en Móvil */
-            .modal-overlay {
-                padding: 12px;
-            }
-            .modal-card {
-                padding: 26px 16px;
-                max-width: 100%;
-                max-height: 90vh;
-                overflow-y: auto;
-                border-radius: 12px;
-            }
-            .modal-icon-wrap {
-                width: 60px;
-                height: 60px;
-                margin-bottom: 14px;
-            }
-            .modal-icon-wrap svg {
-                width: 30px;
-                height: 30px;
-            }
-            .modal-title {
-                font-size: 22px;
-            }
-            .modal-message {
-                font-size: 14.5px;
-                margin-bottom: 16px;
-            }
-            .modal-summary {
-                padding: 12px;
-                font-size: 12px;
-            }
-            .modal-summary-row {
-                flex-direction: column;
-                gap: 2px;
-                padding: 6px 0;
-            }
-            .summary-val {
-                text-align: left;
-                max-width: 100%;
-            }
-
-            /* Visor de Catálogo en Móvil (Full-Screen App Experience) */
             .catalog-modal-overlay {
                 padding: 0;
             }
             .catalog-modal-container {
                 width: 100vw;
                 height: 100vh;
-                max-width: 100vw;
-                max-height: 100vh;
                 border-radius: 0;
                 border: none;
-            }
-            .catalog-modal-header {
-                padding: 10px 12px;
-            }
-            .catalog-modal-title .font-raj {
-                font-size: 14px !important;
-            }
-            .catalog-modal-title div div:last-child {
-                display: none; /* ocultar subtítulo largo en pantallas móviles */
-            }
-            #btnToggleFullscreen {
-                display: none; /* redundante en móvil porque ocupa el 100% de la pantalla */
-            }
-            .btn-cat-close {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-            .catalog-iframe-wrap {
-                height: calc(100vh - 48px);
-            }
-
-            /* Footer */
-            .pos-footer {
-                padding: 20px 14px;
-                font-size: 12px;
-                padding-bottom: calc(20px + env(safe-area-inset-bottom));
-            }
-        }
-
-        @media (max-width: 380px) {
-            .pos-title {
-                font-size: 21px;
-            }
-            .pos-brand .font-raj {
-                font-size: 14px !important;
-            }
-            .btn-nav span {
-                font-size: 11px;
-            }
-            .btn-submit {
-                font-size: 14px;
             }
         }
     </style>
@@ -1368,18 +1594,19 @@
     <header class="pos-header">
         <a href="/" class="pos-brand">
             <img src="../logoresetsupply.png" alt="Reset Supply MX" class="pos-logo" onerror="this.onerror=null; this.src='/logoresetsupply.png';">
-            <span class="font-raj" style="font-size:19px;">RESET SUPPLY <span class="gradient-text">PUNTO DE VENTA</span></span>
+            <span class="font-raj" style="font-size:18px; letter-spacing:0.5px;">RESET SUPPLY <span class="gradient-text">PUNTO DE VENTA</span></span>
         </a>
         <div class="pos-nav-links">
             <a href="/" class="btn-nav">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 Inicio
             </a>
-            <button type="button" class="btn-nav" id="btnNavCatalog" style="border-color:var(--blue); color:var(--blue); font-weight:700; cursor:pointer;">
-                <span>📖 Catálogo Vonixx</span>
-                <span id="navCatalogLockBadge" style="font-size:11px; background:rgba(255,165,2,0.2); color:var(--yellow); padding:1px 6px; border-radius:10px; margin-left:4px;">🔒 Bloqueado</span>
+            <button type="button" class="btn-nav" id="btnNavCatalog" style="border-color:rgba(0,212,255,0.4); color:var(--cyan);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                <span>Catálogo Mayorista</span>
+                <span id="navCatalogLockBadge" style="font-size:10.5px; background:rgba(255,165,2,0.18); color:var(--yellow); padding:1px 6px; border-radius:8px; margin-left:4px;">🔒 Disponible tras registro</span>
             </button>
-            <a href="#seccionPartner" class="btn-nav" style="border-color:rgba(34,184,240,0.5); color:var(--blue);">
+            <a href="#seccionPartner" class="btn-nav" style="border-color:rgba(57,255,20,0.4); color:var(--green);">
                 <span>🚀 Partner Reset Supply</span>
             </a>
         </div>
@@ -1387,401 +1614,714 @@
 
     <!-- Contenedor Principal -->
     <main class="pos-container">
-        <!-- Hero -->
-        <div class="pos-hero">
-            <span class="pos-badge">PROGRAMA DE PUNTOS DE VENTA & PARTNERS AUTORIZADOS</span>
-            <h1 class="pos-title">ALTA DE CLIENTES & <span class="gradient-text">PARTNER RESET SUPPLY</span></h1>
-            <p class="pos-desc">
-                Conviértete en punto de venta oficial o en <strong>Partner Reset Supply</strong> de productos <strong>Vonixx</strong> en México. Accede a precios exclusivos de mayoreo, abastecimiento prioritario y la opción de tener tu propia tienda online y sistema POS.
+
+        <!-- ================= 1. HERO COMERCIAL ================= -->
+        <section class="hero-section">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                <span>Programa Oficial de Distribución & Mayoreo</span>
+            </div>
+            <h1 class="hero-title font-raj">Conviértete en <span class="gradient-text">Punto de Venta Vonixx</span></h1>
+            <p class="hero-subtitle">
+                Accede a precios de mayoreo, catálogo profesional, soporte comercial y opción de tienda online + POS.
             </p>
-        </div>
-
-        <!-- Tarjetas de Beneficios -->
-        <div class="benefits-grid">
-            <div class="benefit-card">
-                <div class="benefit-icon">🏷️</div>
-                <div class="benefit-title">Precios Mayoristas</div>
-                <div class="benefit-text">Márgenes comerciales atractivos y listas de precios preferenciales desde tu primer pedido.</div>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">🚚</div>
-                <div class="benefit-title">Envíos Nacionales</div>
-                <div class="benefit-text">Entregas rápidas y aseguradas a cualquier código postal de la República Mexicana.</div>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">🧾</div>
-                <div class="benefit-title">Facturación CFDI 4.0</div>
-                <div class="benefit-text">Emisión fiscal formal con todos tus requisitos fiscales y constancia de situación fiscal.</div>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">🛡️</div>
-                <div class="benefit-title">Garantía Oficial</div>
-                <div class="benefit-text">Productos 100% originales Vonixx con material publicitario y respaldo de marca.</div>
-            </div>
-        </div>
-
-        <!-- Tarjeta Showcase: Modalidad Partner Reset Supply -->
-        <div class="partner-showcase-card" id="seccionPartner">
-            <div class="partner-badge">🚀 NUEVA MODALIDAD DESTACADA</div>
-            <h2 class="partner-title font-raj">MODALIDAD <span class="gradient-text">PARTNER RESET SUPPLY</span></h2>
-            <p class="partner-subtitle">
-                ¿Quieres vender en internet y en mostrador con tu propia identidad? Con la modalidad <strong>Partner Reset Supply</strong> te ayudamos a construir tu ecosistema comercial completo de detailing:
-            </p>
-
-            <div class="partner-features-grid">
-                <div class="partner-feature-item">
-                    <div class="p-feat-icon">🌐</div>
-                    <h4 class="font-raj">Tu Tienda en Línea con tu Marca</h4>
-                    <p>Desarrollamos tu plataforma e-commerce personalizada con tu logotipo, dominio propio, pasarela de pagos integrada y catálogo oficial Vonixx listo para vender a todo México.</p>
-                </div>
-
-                <div class="partner-feature-item">
-                    <div class="p-feat-icon">💻</div>
-                    <h4 class="font-raj">Sistema Punto de Venta (POS) Físico</h4>
-                    <p>Software profesional para tu mostrador o taller: cobros ágiles, control de inventario en tiempo real, emisión de tickets de venta y administración de clientes presenciales.</p>
-                </div>
-
-                <div class="partner-feature-item">
-                    <div class="p-feat-icon">🔄</div>
-                    <h4 class="font-raj">Sincronización Total & Mayoreo</h4>
-                    <p>Inventario sincronizado entre tu tienda web y tu mostrador físico, con precios preferenciales de mayoreo directo y soporte continuo de Reset Supply MX.</p>
-                </div>
-            </div>
-
-            <div class="partner-cta-box">
-                <div>
-                    <strong>¿Deseas registrarte en esta modalidad?</strong>
-                    <div style="font-size:12px; color:var(--muted); margin-top:2px;">Selecciona la opción en el formulario inferior para que un asesor te contacte de inmediato.</div>
-                </div>
-                <button type="button" class="btn-select-partner" id="btnSelectPartner">
-                    <span>Elegir Modalidad Partner</span>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 13l5 5 5-5M12 4v14"/></svg>
+            <div class="hero-cta-group">
+                <button type="button" class="btn-hero-primary" id="btnHeroPos">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                    <span>QUIERO SER PUNTO DE VENTA</span>
+                </button>
+                <button type="button" class="btn-hero-secondary" id="btnHeroPartner">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                    <span>QUIERO SER PARTNER RESET SUPPLY</span>
                 </button>
             </div>
-        </div>
+        </section>
 
-        <!-- Tarjeta Exclusiva Catálogo Vonixx -->
-        <div class="catalog-exclusive-banner" id="catalogBanner">
-            <div class="catalog-info">
-                <span class="catalog-status-badge locked" id="catalogStatusBadge">
-                    <span id="badgeLockIcon">🔒</span>
-                    <span id="badgeLockText">EXCLUSIVO PARA CLIENTES REGISTRADOS</span>
+        <!-- ================= 2. FRANJA DE CONFIANZA (4 BENEFICIOS) ================= -->
+        <section class="trust-strip">
+            <!-- 1. Precios de mayoreo (Etiqueta lineal neón) -->
+            <div class="trust-item">
+                <div class="trust-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                        <line x1="7" y1="7" x2="7.01" y2="7"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="trust-text">Precios de mayoreo</div>
+                    <div class="trust-subtext">Márgenes preferenciales directos</div>
+                </div>
+            </div>
+
+            <!-- 2. Productos originales (Escudo / check) -->
+            <div class="trust-item">
+                <div class="trust-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <polyline points="9 12 11 14 15 10"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="trust-text">Productos originales</div>
+                    <div class="trust-subtext">Línea oficial Vonixx garantizada</div>
+                </div>
+            </div>
+
+            <!-- 3. Envíos nacionales (Camión / logística) -->
+            <div class="trust-item">
+                <div class="trust-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="3" width="15" height="13"/>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                        <circle cx="5.5" cy="18.5" r="2.5"/>
+                        <circle cx="18.5" cy="18.5" r="2.5"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="trust-text">Envíos nacionales</div>
+                    <div class="trust-subtext">Cobertura asegurada en todo México</div>
+                </div>
+            </div>
+
+            <!-- 4. Facturación CFDI (Documento fiscal) -->
+            <div class="trust-item">
+                <div class="trust-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="trust-text">Facturación CFDI</div>
+                    <div class="trust-subtext">Emisión fiscal 4.0 al instante</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 3. COMPARACIÓN VISUAL ENTRE MODALIDADES ================= -->
+        <section class="comparison-section">
+            <span class="section-tag">Transparencia Total</span>
+            <h2 class="comparison-title font-raj">¿QUÉ MODALIDAD SE ADAPTA A TU NEGOCIO?</h2>
+            <p class="comparison-subtitle">
+                Compara las ventajas de surtir tu negocio actual vs. digitalizar tu marca con el ecosistema completo Partner Reset Supply.
+            </p>
+
+            <div class="comp-table-wrap">
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th>Beneficio Comercial</th>
+                            <th>Punto de Venta Tradicional</th>
+                            <th>Partner Reset Supply</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Precios de mayoreo preferenciales</td>
+                            <td><span class="check-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                            <td><span class="check-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                        </tr>
+                        <tr>
+                            <td>Catálogo oficial de productos Vonixx</td>
+                            <td><span class="check-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                            <td><span class="check-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                        </tr>
+                        <tr>
+                            <td>Envíos nacionales rápidos y asegurados</td>
+                            <td><span class="check-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                            <td><span class="check-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                        </tr>
+                        <tr>
+                            <td>Tienda online propia con tu marca y dominio</td>
+                            <td><span class="check-no">—</span></td>
+                            <td><span class="check-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                        </tr>
+                        <tr>
+                            <td>Sistema Punto de Venta (POS) para mostrador</td>
+                            <td><span class="check-no">—</span></td>
+                            <td><span class="check-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                        </tr>
+                        <tr>
+                            <td>Inventario sincronizado (físico + online)</td>
+                            <td><span class="check-no">—</span></td>
+                            <td><span class="check-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                        </tr>
+                        <tr>
+                            <td>Soporte técnico y asesoría de digitalización</td>
+                            <td><span class="check-no">—</span></td>
+                            <td><span class="check-yes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="comp-footer">
+                <span>¿No sabes cuál elegir? Puedes registrarte y te ayudamos a definir la modalidad ideal para tu negocio.</span>
+                <a href="#posClientForm" class="btn-text-action" id="btnGoToForm">Comenzar registro guiado →</a>
+            </div>
+        </section>
+
+        <!-- ================= 4. BLOQUE PARTNER RESET SUPPLY RENOVADO ================= -->
+        <section class="partner-block" id="seccionPartner">
+            <div class="partner-block-header">
+                <span class="section-tag" style="background:rgba(0,212,255,0.15); border-color:var(--cyan);">Programa de Aceleración B2B</span>
+                <h2 class="partner-hero-title font-raj"><span class="gradient-text">PARTNER RESET SUPPLY</span></h2>
+                <div class="partner-hero-subtitle">Tu negocio de detailing, listo para vender online y en tienda.</div>
+                <div class="partner-slogan">Tu marca. Tu dominio. Tu tienda. Tu punto de venta.</div>
+            </div>
+
+            <div class="partner-trio-grid">
+                <!-- Tarjeta 1: Tienda Online -->
+                <div class="partner-trio-card">
+                    <div class="trio-icon-box">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                    </div>
+                    <h4 class="font-raj">TIENDA ONLINE</h4>
+                    <p>Catálogo Vonixx + pagos con tarjeta + gestión de pedidos en tu propia web con tu identidad.</p>
+                </div>
+
+                <!-- Tarjeta 2: Punto de Venta -->
+                <div class="partner-trio-card">
+                    <div class="trio-icon-box">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                            <line x1="6" y1="8" x2="6.01" y2="8"/>
+                            <line x1="10" y1="8" x2="10.01" y2="8"/>
+                            <line x1="14" y1="8" x2="14.01" y2="8"/>
+                            <line x1="18" y1="8" x2="18.01" y2="8"/>
+                            <line x1="6" y1="12" x2="18" y2="12"/>
+                            <line x1="6" y1="16" x2="12" y2="16"/>
+                        </svg>
+                    </div>
+                    <h4 class="font-raj">PUNTO DE VENTA (POS)</h4>
+                    <p>Control ágil de ventas, tickets de mostrador, base de clientes y caja en tu taller o tienda.</p>
+                </div>
+
+                <!-- Tarjeta 3: Todo Sincronizado -->
+                <div class="partner-trio-card">
+                    <div class="trio-icon-box">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg>
+                    </div>
+                    <h4 class="font-raj">TODO SINCRONIZADO</h4>
+                    <p>Web + mostrador + existencias en un solo sistema sin errores de inventario ni sobreventa.</p>
+                </div>
+            </div>
+
+            <div class="partner-cta-row">
+                <button type="button" class="btn-partner-cta" id="btnSelectPartnerHero">
+                    <span>QUIERO CONOCER EL PROGRAMA PARTNER →</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= 5. CÓMO FUNCIONA ================= -->
+        <section class="how-section">
+            <div style="text-align: center;">
+                <span class="section-tag">Paso a Paso</span>
+                <h2 class="font-raj" style="font-size:26px;">¿CÓMO FUNCIONA DESPUÉS DE TU REGISTRO?</h2>
+                <p style="font-size:14px; color:var(--muted); margin-top:4px;">Proceso rápido y claro para comenzar a comprar con condiciones de mayoreo.</p>
+            </div>
+
+            <div class="how-steps-grid">
+                <!-- Paso 1 -->
+                <div class="how-card">
+                    <div class="how-step-num">1</div>
+                    <div class="how-card-title">Regístrate</div>
+                    <div class="how-card-desc">Toma aproximadamente 2 minutos completar tus datos de contacto y entrega.</div>
+                </div>
+
+                <!-- Paso 2 -->
+                <div class="how-card">
+                    <div class="how-step-num">2</div>
+                    <div class="how-card-title">Validamos tus datos</div>
+                    <div class="how-card-desc">Nuestro equipo comercial revisa tu solicitud y perfil comercial de inmediato.</div>
+                </div>
+
+                <!-- Paso 3 -->
+                <div class="how-card">
+                    <div class="how-step-num">3</div>
+                    <div class="how-card-title">Recibe acceso mayorista</div>
+                    <div class="how-card-desc">Desbloquea el catálogo interactivo, listas de precios y condiciones comerciales.</div>
+                </div>
+
+                <!-- Paso 4 -->
+                <div class="how-card">
+                    <div class="how-step-num">4</div>
+                    <div class="how-card-title">Haz tu primer pedido</div>
+                    <div class="how-card-desc">Enviamos tus productos originales Vonixx a cualquier parte de la República Mexicana.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 6. ¿PARA QUIÉN ES? ================= -->
+        <section class="target-section">
+            <span class="section-tag">Perfil de Clientes</span>
+            <h2 class="font-raj" style="font-size:26px; margin-top:6px;">¿PARA QUIÉN ES ESTE PROGRAMA?</h2>
+            <p style="font-size:14px; color:var(--muted); margin-top:4px;">Pensado para profesionales que buscan calidad oficial y rentabilidad en su negocio.</p>
+
+            <div class="target-grid">
+                <div class="target-card">
+                    <div class="target-icon-wrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <div class="target-name">Detailers</div>
+                </div>
+
+                <div class="target-card">
+                    <div class="target-icon-wrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                    </div>
+                    <div class="target-name">Car Wash</div>
+                </div>
+
+                <div class="target-card">
+                    <div class="target-icon-wrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    </div>
+                    <div class="target-name">Autolavados</div>
+                </div>
+
+                <div class="target-card">
+                    <div class="target-icon-wrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+                    </div>
+                    <div class="target-name">Talleres</div>
+                </div>
+
+                <div class="target-card">
+                    <div class="target-icon-wrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                    </div>
+                    <div class="target-name">Refaccionarias</div>
+                </div>
+
+                <div class="target-card">
+                    <div class="target-icon-wrap">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </div>
+                    <div class="target-name">Accesorios & Emprendedores</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 7. BANNER INCENTIVO CATÁLOGO MAYORISTA ================= -->
+        <section class="catalog-incentive-banner" id="catalogBanner">
+            <div class="cat-inc-info">
+                <span class="cat-badge" id="catalogStatusBadge">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <span id="badgeLockText">DISPONIBLE TRAS REGISTRARTE</span>
                 </span>
-                <h3 class="catalog-title font-raj">CATÁLOGO DIGITAL OFICIAL <span class="gradient-text">VONIXX MÉXICO</span></h3>
-                <p class="catalog-desc" id="catalogStatusDesc">
-                    Explora el catálogo interactivo completo con fichas técnicas, líneas de producto y guías de aplicación. <strong>Solo disponible una vez completado tu registro.</strong>
+                <h3 class="cat-inc-title font-raj">CATÁLOGO MAYORISTA <span class="gradient-text">VONIXX MÉXICO</span></h3>
+                <p class="cat-inc-desc" id="catalogStatusDesc">
+                    Regístrate gratis para desbloquear fichas técnicas completas, líneas profesionales y precios de punto de venta en nuestro visor interactivo.
                 </p>
             </div>
             <div>
-                <button type="button" class="btn-catalog-trigger" id="btnBannerCatalog">
+                <button type="button" class="btn-cat-trigger" id="btnBannerCatalog">
                     <span id="btnBannerIcon">🔒</span>
-                    <span id="btnBannerText">Ver Catálogo Interactivo</span>
+                    <span id="btnBannerText">Desbloquear Catálogo</span>
                 </button>
             </div>
-        </div>
+        </section>
 
-        <!-- Formulario Principal -->
-        <div class="form-card">
+        <!-- ================= 8. FORMULARIO POR PASOS (WIZARD 4 PASOS) ================= -->
+        <div class="form-card" id="registro">
             <form id="posClientForm" action="https://formsubmit.co/ventas@resetsupplymx.com" method="POST" enctype="multipart/form-data">
                 
-                <!-- Configuración FormSubmit -->
+                <!-- Campos de Configuración FormSubmit -->
                 <input type="hidden" name="_subject" id="_formSubject" value="🚀 Nuevo Registro de Cliente Punto de Venta — Reset Supply MX">
                 <input type="hidden" name="_template" value="table">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="text" name="_honey" style="display:none">
                 <input type="hidden" name="Tipo_Registro" id="tipoRegistroInput" value="Punto de Venta Tradicional">
                 <input type="hidden" name="Modalidad_Registro" id="modalidadInput" value="Punto de Venta Tradicional">
+                <input type="hidden" name="Requiere_Factura_CFDI" id="facturaInput" value="No">
 
-                <!-- 1. SELECCIÓN DE MODALIDAD -->
-                <div class="section-header" style="margin-top:0;">
-                    <span class="sec-num">1</span>
-                    <span>Elige tu Modalidad de Registro</span>
-                </div>
-
-                <div class="modality-selector-grid">
-                    <!-- Opción 1: POS Tradicional -->
-                    <div class="modality-card selected" id="cardModalityPos" data-value="Punto de Venta Tradicional">
-                        <div class="modality-header">
-                            <span class="modality-tag tag-pos">Mayoreo</span>
-                            <div class="modality-radio-circle"></div>
-                        </div>
-                        <div class="modality-title">🏪 Cliente Punto de Venta Tradicional</div>
-                        <div class="modality-desc">
-                            Abastecimiento directo a precios de mayoreo para revender productos Vonixx en tu mostrador, taller o autolavado existente, con facturación y envíos rápidos.
-                        </div>
+                <!-- Header del Wizard: Barra de Progreso y Contador -->
+                <div class="wizard-stepper">
+                    <div class="stepper-progress-bar">
+                        <div class="stepper-track-bg"></div>
+                        <div class="stepper-track-fill" id="stepperFill"></div>
+                        <div class="step-node active" id="nodeStep1">1</div>
+                        <div class="step-node" id="nodeStep2">2</div>
+                        <div class="step-node" id="nodeStep3">3</div>
+                        <div class="step-node" id="nodeStep4">4</div>
                     </div>
-
-                    <!-- Opción 2: Partner Reset Supply -->
-                    <div class="modality-card" id="cardModalityPartner" data-value="Partner Reset Supply (Tienda en Línea + POS Físico)">
-                        <div class="modality-header">
-                            <span class="modality-tag tag-partner">Ecosistema Completo</span>
-                            <div class="modality-radio-circle"></div>
-                        </div>
-                        <div class="modality-title">🚀 Partner Reset Supply</div>
-                        <div class="modality-desc">
-                            <strong>Tu Tienda en Línea con tu Marca</strong> + <strong>Sistema Punto de Venta para tu tienda física</strong> + Precios de mayoreo y soporte integral de digitalización.
-                        </div>
+                    <div class="stepper-header-text">
+                        <div class="step-current-title" id="stepCurrentTitle">Paso 1 de 4 — Elige tu modalidad</div>
+                        <div class="step-counter-badge" id="stepCounterBadge">MODALIDAD</div>
                     </div>
                 </div>
 
-                <!-- Campos de Personalización para Partner Reset Supply -->
-                <div class="partner-extra-fields" id="partnerExtraFields">
-                    <div style="font-size:13.5px; font-weight:700; color:var(--blue); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
-                        <span>🚀</span>
-                        <span>Personalización para tu Proyecto Partner:</span>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="marcaDeseada">Nombre de tu Marca o Tienda <span class="opt">(Si ya tienes o tienes en mente)</span></label>
-                            <input type="text" id="marcaDeseada" name="Marca_Deseada_Partner" class="form-input no-icon" placeholder="Ej. Supreme Detailing Lab, Elite Car Care">
-                        </div>
-                        <div class="form-group">
-                            <label for="estadoLocalFisico">¿Cuentas con Local o Tienda Física actualmente?</label>
-                            <select id="estadoLocalFisico" name="Local_Fisico_Actual" class="form-select no-icon">
-                                <option value="Sí, tengo tienda/taller operando">Sí, cuento con tienda / taller físico en operación</option>
-                                <option value="En proceso de apertura física">En proceso de apertura física próximamente</option>
-                                <option value="Solo opero online o a domicilio">Por el momento solo online o a domicilio</option>
-                                <option value="Emprendimiento nuevo desde cero">Es un emprendimiento nuevo desde cero</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. DATOS DE CONTACTO -->
-                <div class="section-header">
-                    <span class="sec-num">2</span>
-                    <span>Información de Contacto y Representante</span>
-                </div>
-
-                <div class="form-grid">
-                    <!-- Nombre Completo -->
-                    <div class="form-group full-span">
-                        <label for="nombreCompleto">Nombre Completo <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <span class="input-icon">👤</span>
-                            <input type="text" id="nombreCompleto" name="Nombre_Completo" class="form-input" placeholder="Ej. Roberto García Mendoza" required autocomplete="name">
-                        </div>
-                        <span class="form-help">Nombre de la persona responsable de compras o contacto comercial.</span>
-                    </div>
-
-                    <!-- Teléfono (Cel) -->
-                    <div class="form-group">
-                        <label for="telefonoCel">Teléfono (Cel) <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <span class="input-icon">📞</span>
-                            <input type="tel" id="telefonoCel" name="Telefono_Celular" class="form-input" placeholder="Ej. (664) 123-4567" required autocomplete="tel">
-                        </div>
-                        <span class="form-help">Teléfono principal de contacto / llamadas.</span>
-                    </div>
-
-                    <!-- Celular (WhatsApp / Alterno) -->
-                    <div class="form-group">
-                        <label for="celular">Celular (WhatsApp) <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <span class="input-icon">📱</span>
-                            <input type="tel" id="celular" name="Celular_WhatsApp" class="form-input" placeholder="Ej. (664) 987-6543" required>
-                        </div>
-                        <span class="form-help">Para envío de catálogos y promociones directas vía WhatsApp.</span>
-                    </div>
-
-                    <!-- Correo Electrónico -->
-                    <div class="form-group full-span">
-                        <label for="correoElectronico">Correo Electrónico <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <span class="input-icon">✉️</span>
-                            <input type="email" id="correoElectronico" name="Correo_Electronico" class="form-input" placeholder="ventas@tuempresa.com o tu_correo@gmail.com" required autocomplete="email">
-                        </div>
-                        <span class="form-help">Aquí recibirás la confirmación de registro y cotizaciones.</span>
-                    </div>
-
-                    <!-- Nombre Comercial / Negocio (Opcional) -->
-                    <div class="form-group full-span">
-                        <label for="nombreNegocio">Nombre de tu Negocio o Empresa <span class="opt">(Opcional)</span></label>
-                        <div class="input-wrap">
-                            <span class="input-icon">🏪</span>
-                            <input type="text" id="nombreNegocio" name="Nombre_Negocio" class="form-input" placeholder="Ej. Detailing Garage MX, Autolavado El Pro, Refaccionaria del Norte">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. DIRECCIÓN DE ENVÍO -->
-                <div class="section-header">
-                    <span class="sec-num">3</span>
-                    <span>Dirección de Envío de Mercancía</span>
-                </div>
-
-                <div class="form-grid">
-                    <!-- Calle y Número -->
-                    <div class="form-group full-span">
-                        <label for="calleNumero">Calle y Número (Exterior e Interior) <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <span class="input-icon">📍</span>
-                            <input type="text" id="calleNumero" name="Calle_y_Numero" class="form-input" placeholder="Ej. Av. Revolución #1450, Local B" required>
-                        </div>
-                    </div>
-
-                    <!-- Colonia -->
-                    <div class="form-group">
-                        <label for="colonia">Colonia / Fraccionamiento <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <span class="input-icon">🏘️</span>
-                            <input type="text" id="colonia" name="Colonia" class="form-input" placeholder="Ej. Zona Centro" required>
-                        </div>
-                    </div>
-
-                    <!-- Código Postal -->
-                    <div class="form-group">
-                        <label for="codigoPostal">Código Postal (C.P.) <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <span class="input-icon">📮</span>
-                            <input type="text" id="codigoPostal" name="Codigo_Postal" class="form-input font-mono" placeholder="Ej. 22000" maxlength="5" pattern="[0-9]{5}" required>
-                        </div>
-                    </div>
-
-                    <!-- Ciudad / Municipio -->
-                    <div class="form-group">
-                        <label for="ciudad">Ciudad o Municipio <span class="req">*</span></label>
-                        <div class="input-wrap">
-                            <span class="input-icon">🏙️</span>
-                            <input type="text" id="ciudad" name="Ciudad_Municipio" class="form-input" placeholder="Ej. Tijuana" required>
-                        </div>
-                    </div>
-
-                    <!-- Estado -->
-                    <div class="form-group">
-                        <label for="estado">Estado <span class="req">*</span></label>
-                        <select id="estado" name="Estado" class="form-select no-icon" required>
-                            <option value="" disabled selected>Selecciona tu Estado...</option>
-                            <option value="Aguascalientes">Aguascalientes</option>
-                            <option value="Baja California">Baja California</option>
-                            <option value="Baja California Sur">Baja California Sur</option>
-                            <option value="Campeche">Campeche</option>
-                            <option value="Chiapas">Chiapas</option>
-                            <option value="Chihuahua">Chihuahua</option>
-                            <option value="Ciudad de México">Ciudad de México (CDMX)</option>
-                            <option value="Coahuila">Coahuila</option>
-                            <option value="Colima">Colima</option>
-                            <option value="Durango">Durango</option>
-                            <option value="Estado de México">Estado de México</option>
-                            <option value="Guanajuato">Guanajuato</option>
-                            <option value="Guerrero">Guerrero</option>
-                            <option value="Hidalgo">Hidalgo</option>
-                            <option value="Jalisco">Jalisco</option>
-                            <option value="Michoacán">Michoacán</option>
-                            <option value="Morelos">Morelos</option>
-                            <option value="Nayarit">Nayarit</option>
-                            <option value="Nuevo León">Nuevo León</option>
-                            <option value="Oaxaca">Oaxaca</option>
-                            <option value="Puebla">Puebla</option>
-                            <option value="Querétaro">Querétaro</option>
-                            <option value="Quintana Roo">Quintana Roo</option>
-                            <option value="San Luis Potosí">San Luis Potosí</option>
-                            <option value="Sinaloa">Sinaloa</option>
-                            <option value="Sonora">Sonora</option>
-                            <option value="Tabasco">Tabasco</option>
-                            <option value="Tamaulipas">Tamaulipas</option>
-                            <option value="Tlaxcala">Tlaxcala</option>
-                            <option value="Veracruz">Veracruz</option>
-                            <option value="Yucatán">Yucatán</option>
-                            <option value="Zacatecas">Zacatecas</option>
-                        </select>
-                    </div>
-
-                    <!-- Referencias de entrega -->
-                    <div class="form-group full-span">
-                        <label for="referencias">Referencias de Entrega / Indicaciones Especiales <span class="opt">(Opcional)</span></label>
-                        <textarea id="referencias" name="Referencias_Entrega" class="form-textarea" placeholder="Ej. Entre calle 4ta y 5ta, frente a farmacia, portón negro con letrero de taller..."></textarea>
-                    </div>
-                </div>
-
-                <!-- 4. DOCUMENTACIÓN FISCAL -->
-                <div class="section-header">
-                    <span class="sec-num">4</span>
-                    <span>Constancia de Situación Fiscal (SAT)</span>
-                </div>
-
-                <div class="form-group">
-                    <label>
-                        Constancia de Situación Fiscal
-                        <span class="opt">(Opción para adjuntar — PDF o Imagen)</span>
-                    </label>
-                    
-                    <div class="file-upload-box" id="dropArea">
-                        <input type="file" id="constanciaFile" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.webp">
-                        <div class="upload-icon">📄</div>
-                        <div class="upload-text">Toca aquí para seleccionar tu archivo o foto</div>
-                        <div class="upload-hint">Soporta PDF o Foto/Imagen (Máx. 15 MB)</div>
-                    </div>
-
-                    <!-- Badge de archivo seleccionado -->
-                    <div class="file-selected-badge" id="fileBadge">
-                        <div class="file-info-group">
-                            <span style="font-size:18px;">📎</span>
-                            <div>
-                                <div id="fileNameDisplay" style="font-weight:700; color:var(--green);">archivo.pdf</div>
-                                <div id="fileSizeDisplay" style="font-size:11px; color:var(--muted);">0 KB</div>
+                <!-- ================= PASO 1: MODALIDAD ================= -->
+                <div class="step-panel active" id="stepPanel1">
+                    <div class="modality-selector-grid">
+                        <!-- Opción 1: POS Tradicional -->
+                        <div class="modality-card selected" id="cardModalityPos" data-value="Punto de Venta Tradicional">
+                            <div class="modality-header">
+                                <span class="modality-tag tag-pos">Mayoreo Directo</span>
+                                <div class="modality-radio-circle"></div>
+                            </div>
+                            <div class="modality-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/></svg>
+                                <span>Punto de Venta Tradicional</span>
+                            </div>
+                            <div class="modality-desc">
+                                Abastecimiento directo a precios de mayoreo para revender Vonixx en tu taller, mostrador o autolavado existente, con facturación y envíos rápidos.
                             </div>
                         </div>
-                        <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Quitar archivo">✖ Quitar</button>
+
+                        <!-- Opción 2: Partner Reset Supply -->
+                        <div class="modality-card" id="cardModalityPartner" data-value="Partner Reset Supply (Tienda en Línea + POS Físico)">
+                            <div class="modality-header">
+                                <span class="modality-tag tag-partner">Ecosistema Completo</span>
+                                <div class="modality-radio-circle"></div>
+                            </div>
+                            <div class="modality-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                                <span>Partner Reset Supply</span>
+                            </div>
+                            <div class="modality-desc">
+                                Tu tienda en línea propia + Sistema POS de mostrador + Sincronización de existencias y precios mayoristas preferenciales.
+                            </div>
+                        </div>
                     </div>
-                    <span class="form-help">Si requieres factura CFDI 4.0, adjuntar tu CSF garantiza que tu alta se realice sin retrasos.</span>
+
+                    <!-- Campos Condicionales de Personalización Partner -->
+                    <div class="partner-extra-fields" id="partnerExtraFields">
+                        <div style="font-size:13.5px; font-weight:700; color:var(--cyan); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <span>Detalles para tu proyecto Partner:</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="marcaDeseada">Nombre de tu Marca o Tienda <span class="opt">(Si ya tienes o tienes en mente)</span></label>
+                                <input type="text" id="marcaDeseada" name="Marca_Deseada_Partner" class="form-input no-icon" placeholder="Ej. Detailing Garage, Elite Car Care">
+                            </div>
+                            <div class="form-group">
+                                <label for="estadoLocalFisico">¿Cuentas con Local o Tienda Física actualmente?</label>
+                                <select id="estadoLocalFisico" name="Local_Fisico_Actual" class="form-select no-icon">
+                                    <option value="Sí, tengo tienda/taller operando">Sí, cuento con tienda / taller en operación</option>
+                                    <option value="En proceso de apertura física">En proceso de apertura física próximamente</option>
+                                    <option value="Solo opero online o a domicilio">Por el momento solo online o a domicilio</option>
+                                    <option value="Emprendimiento nuevo desde cero">Es un emprendimiento nuevo desde cero</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-buttons-row">
+                        <div></div>
+                        <button type="button" class="btn-step-next" id="btnNext1">
+                            <span>Continuar a tus datos →</span>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Botón de Envío -->
-                <div class="btn-submit-container">
-                    <button type="submit" id="btnSubmit" class="btn-submit">
-                        <span>🚀 ENVIAR REGISTRO PUNTO DE VENTA</span>
-                    </button>
-                    <div class="submit-notice">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        <span>Tus datos están protegidos y se envían de forma segura a <strong>ventas@resetsupplymx.com</strong></span>
+                <!-- ================= PASO 2: TUS DATOS (CONTACTO) ================= -->
+                <div class="step-panel" id="stepPanel2">
+                    <div class="form-grid">
+                        <!-- Nombre Completo -->
+                        <div class="form-group full-span">
+                            <label for="nombreCompleto">Nombre Completo <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                </span>
+                                <input type="text" id="nombreCompleto" name="Nombre_Completo" class="form-input" placeholder="Ej. Roberto García Mendoza" required autocomplete="name">
+                            </div>
+                            <span class="form-help">Persona responsable de compras o contacto comercial.</span>
+                        </div>
+
+                        <!-- WhatsApp / Teléfono Unificado -->
+                        <div class="form-group full-span">
+                            <label for="telefonoCel">WhatsApp / Teléfono <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                </span>
+                                <input type="tel" id="telefonoCel" name="WhatsApp_Telefono" class="form-input" placeholder="+52 664 000 0000" required autocomplete="tel">
+                            </div>
+                            
+                            <!-- Checkbox para segundo teléfono opcional -->
+                            <label class="checkbox-row" for="chkAltPhone">
+                                <input type="checkbox" id="chkAltPhone">
+                                <span class="checkbox-label">Tengo otro teléfono de contacto</span>
+                            </label>
+                        </div>
+
+                        <!-- Teléfono Alterno (Oculto por defecto) -->
+                        <div class="form-group full-span" id="wrapAltPhone" style="display:none;">
+                            <label for="celularAlt">Teléfono Alterno o Fijo <span class="opt">(Opcional)</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                </span>
+                                <input type="tel" id="celularAlt" name="Telefono_Alterno" class="form-input" placeholder="Ej. (664) 123-4567">
+                            </div>
+                        </div>
+
+                        <!-- Correo Electrónico -->
+                        <div class="form-group full-span">
+                            <label for="correoElectronico">Correo Electrónico <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                </span>
+                                <input type="email" id="correoElectronico" name="Correo_Electronico" class="form-input" placeholder="ventas@tuempresa.com o tu_correo@gmail.com" required autocomplete="email">
+                            </div>
+                            <span class="form-help">Aquí recibirás la confirmación de registro y cotizaciones mayoristas.</span>
+                        </div>
+
+                        <!-- Nombre Comercial / Negocio (Opcional) -->
+                        <div class="form-group full-span">
+                            <label for="nombreNegocio">Nombre de tu Negocio o Taller <span class="opt">(Opcional)</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                                </span>
+                                <input type="text" id="nombreNegocio" name="Nombre_Negocio" class="form-input" placeholder="Ej. Detailing Garage MX, Autolavado El Pro, Refaccionaria">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wizard-buttons-row">
+                        <button type="button" class="btn-step-prev" id="btnPrev2">← Anterior</button>
+                        <button type="button" class="btn-step-next" id="btnNext2">
+                            <span>Continuar a Envío →</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================= PASO 3: DIRECCIÓN DE ENVÍO ================= -->
+                <div class="step-panel" id="stepPanel3">
+                    <div class="form-grid">
+                        <!-- Calle y Número -->
+                        <div class="form-group full-span">
+                            <label for="calleNumero">Calle y Número (Exterior e Interior) <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                </span>
+                                <input type="text" id="calleNumero" name="Calle_y_Numero" class="form-input" placeholder="Ej. Av. Revolución #1450, Local B" required>
+                            </div>
+                        </div>
+
+                        <!-- Colonia -->
+                        <div class="form-group">
+                            <label for="colonia">Colonia / Fraccionamiento <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                </span>
+                                <input type="text" id="colonia" name="Colonia" class="form-input" placeholder="Ej. Zona Centro" required>
+                            </div>
+                        </div>
+
+                        <!-- Código Postal -->
+                        <div class="form-group">
+                            <label for="codigoPostal">Código Postal (C.P.) <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h10"/></svg>
+                                </span>
+                                <input type="text" id="codigoPostal" name="Codigo_Postal" class="form-input font-mono" placeholder="Ej. 22000" maxlength="5" pattern="[0-9]{5}" required>
+                            </div>
+                        </div>
+
+                        <!-- Ciudad / Municipio -->
+                        <div class="form-group">
+                            <label for="ciudad">Ciudad o Municipio <span class="req">*</span></label>
+                            <div class="input-wrap">
+                                <span class="input-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M9 21V3h6v18"/></svg>
+                                </span>
+                                <input type="text" id="ciudad" name="Ciudad_Municipio" class="form-input" placeholder="Ej. Tijuana" required>
+                            </div>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="form-group">
+                            <label for="estado">Estado <span class="req">*</span></label>
+                            <select id="estado" name="Estado" class="form-select no-icon" required>
+                                <option value="" disabled selected>Selecciona tu Estado...</option>
+                                <option value="Aguascalientes">Aguascalientes</option>
+                                <option value="Baja California">Baja California</option>
+                                <option value="Baja California Sur">Baja California Sur</option>
+                                <option value="Campeche">Campeche</option>
+                                <option value="Chiapas">Chiapas</option>
+                                <option value="Chihuahua">Chihuahua</option>
+                                <option value="Ciudad de México">Ciudad de México (CDMX)</option>
+                                <option value="Coahuila">Coahuila</option>
+                                <option value="Colima">Colima</option>
+                                <option value="Durango">Durango</option>
+                                <option value="Estado de México">Estado de México</option>
+                                <option value="Guanajuato">Guanajuato</option>
+                                <option value="Guerrero">Guerrero</option>
+                                <option value="Hidalgo">Hidalgo</option>
+                                <option value="Jalisco">Jalisco</option>
+                                <option value="Michoacán">Michoacán</option>
+                                <option value="Morelos">Morelos</option>
+                                <option value="Nayarit">Nayarit</option>
+                                <option value="Nuevo León">Nuevo León</option>
+                                <option value="Oaxaca">Oaxaca</option>
+                                <option value="Puebla">Puebla</option>
+                                <option value="Querétaro">Querétaro</option>
+                                <option value="Quintana Roo">Quintana Roo</option>
+                                <option value="San Luis Potosí">San Luis Potosí</option>
+                                <option value="Sinaloa">Sinaloa</option>
+                                <option value="Sonora">Sonora</option>
+                                <option value="Tabasco">Tabasco</option>
+                                <option value="Tamaulipas">Tamaulipas</option>
+                                <option value="Tlaxcala">Tlaxcala</option>
+                                <option value="Veracruz">Veracruz</option>
+                                <option value="Yucatán">Yucatán</option>
+                                <option value="Zacatecas">Zacatecas</option>
+                            </select>
+                        </div>
+
+                        <!-- Referencias de entrega -->
+                        <div class="form-group full-span">
+                            <label for="referencias">Referencias de Entrega / Indicaciones Especiales <span class="opt">(Opcional)</span></label>
+                            <textarea id="referencias" name="Referencias_Entrega" class="form-textarea" placeholder="Ej. Entre calle 4ta y 5ta, frente a farmacia, portón negro con letrero de taller..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="wizard-buttons-row">
+                        <button type="button" class="btn-step-prev" id="btnPrev3">← Anterior</button>
+                        <button type="button" class="btn-step-next" id="btnNext3">
+                            <span>Continuar a Fiscal →</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================= PASO 4: DATOS FISCALES ================= -->
+                <div class="step-panel" id="stepPanel4">
+                    
+                    <!-- Pregunta Interactiva: ¿Requieres factura? -->
+                    <div class="factura-toggle-container">
+                        <div class="factura-question">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            <span>¿Requieres factura CFDI 4.0 para tus compras?</span>
+                        </div>
+                        <div class="factura-btn-group">
+                            <button type="button" class="btn-factura-opt" id="btnFacturaNo">
+                                No por el momento
+                            </button>
+                            <button type="button" class="btn-factura-opt" id="btnFacturaSi">
+                                Sí, requiero factura
+                            </button>
+                        </div>
+
+                        <!-- Opción NO seleccionada -->
+                        <div class="factura-no-box" id="facturaNoBox">
+                            ✓ No te preocupes. Puedes registrarte sin CSF y solicitar tus facturas más adelante con tus compras.
+                        </div>
+
+                        <!-- Opción SÍ seleccionada: Despliegue de carga de CSF -->
+                        <div class="factura-fields-box" id="facturaFieldsBox">
+                            <div class="form-group" style="margin-top:10px;">
+                                <label>
+                                    Adjunta tu Constancia de Situación Fiscal (SAT)
+                                    <span class="opt">(PDF o Imagen / Foto)</span>
+                                </label>
+                                
+                                <div class="file-upload-box" id="dropArea">
+                                    <input type="file" id="constanciaFile" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.webp">
+                                    <div class="upload-icon">
+                                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    </div>
+                                    <div class="upload-text">Toca aquí para seleccionar tu archivo o foto</div>
+                                    <div class="upload-hint">Soporta PDF o Foto/Imagen (Máx. 15 MB)</div>
+                                </div>
+
+                                <!-- Badge de archivo seleccionado -->
+                                <div class="file-selected-badge" id="fileBadge">
+                                    <div class="file-info-group">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                        <div>
+                                            <div id="fileNameDisplay" style="font-weight:700; color:var(--cyan);">archivo.pdf</div>
+                                            <div id="fileSizeDisplay" style="font-size:11px; color:var(--muted);">0 KB</div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Quitar archivo">✖ Quitar</button>
+                                </div>
+                                <span class="form-help">Tu constancia nos permite darte de alta de inmediato en nuestro sistema de facturación.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:24px;">
+                        <button type="submit" id="btnSubmit" class="btn-final-submit">
+                            <span>CREAR MI CUENTA MAYORISTA →</span>
+                        </button>
+                        <div class="submit-subline">
+                            Registro gratuito · Sin compromiso de compra
+                        </div>
+                    </div>
+
+                    <div class="wizard-buttons-row" style="margin-top:16px;">
+                        <button type="button" class="btn-step-prev" id="btnPrev4">← Anterior</button>
+                        <div></div>
                     </div>
                 </div>
 
             </form>
         </div>
+
     </main>
 
     <!-- ================= VENTANA MODAL DE CONFIRMACIÓN ================= -->
     <div class="modal-overlay" id="successModal">
         <div class="modal-card">
             <div class="modal-icon-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                 </svg>
             </div>
             
-            <h2 class="modal-title font-raj">¡Gracias por registrarse!</h2>
+            <h2 class="modal-title font-raj">¡Gracias por registrarte!</h2>
             
             <p class="modal-message">
-                En seguida se contactarán con usted para dar seguimiento a su registro.
+                Tu solicitud ha sido recibida con éxito. Nuestro equipo comercial se comunicará contigo vía WhatsApp para brindarte atención personalizada y activar tus condiciones.
             </p>
 
             <!-- Resumen del Registro -->
             <div class="modal-summary">
                 <div class="modal-summary-row">
                     <span class="summary-label">Modalidad:</span>
-                    <span class="summary-val" id="sumModalidad" style="color:var(--blue); font-weight:700;">-</span>
+                    <span class="summary-val" id="sumModalidad" style="color:var(--cyan); font-weight:700;">-</span>
                 </div>
                 <div class="modal-summary-row">
                     <span class="summary-label">Nombre:</span>
                     <span class="summary-val" id="sumNombre">-</span>
                 </div>
                 <div class="modal-summary-row">
-                    <span class="summary-label">Teléfono:</span>
+                    <span class="summary-label">WhatsApp:</span>
                     <span class="summary-val" id="sumTelefono">-</span>
-                </div>
-                <div class="modal-summary-row">
-                    <span class="summary-label">Celular:</span>
-                    <span class="summary-val" id="sumCelular">-</span>
                 </div>
                 <div class="modal-summary-row">
                     <span class="summary-label">Correo:</span>
                     <span class="summary-val" id="sumCorreo">-</span>
                 </div>
                 <div class="modal-summary-row">
-                    <span class="summary-label">Dirección de Envío:</span>
+                    <span class="summary-label">Dirección:</span>
                     <span class="summary-val" id="sumDireccion">-</span>
+                </div>
+                <div class="modal-summary-row" id="sumFacturaRow">
+                    <span class="summary-label">Facturación CFDI:</span>
+                    <span class="summary-val" id="sumFactura">No solicitada</span>
                 </div>
                 <div class="modal-summary-row" id="sumFileRow" style="display:none;">
                     <span class="summary-label">Constancia Fiscal:</span>
@@ -1791,12 +2331,11 @@
 
             <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
                 <button type="button" class="btn-modal-catalog" id="btnModalOpenCatalog">
-                    <span>📖 Abrir Catálogo Vonixx Interactivo</span>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    <span>Abrir Catálogo Vonixx Interactivo</span>
                 </button>
-                <button type="button" class="btn-modal-close" id="btnModalClose" style="background:transparent; border:1.5px solid var(--line-light); color:var(--text);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    <span>Atrás</span>
+                <button type="button" class="btn-modal-close" id="btnModalClose">
+                    <span>Volver a la tienda principal</span>
                 </button>
             </div>
         </div>
@@ -1806,17 +2345,17 @@
     <div class="modal-overlay" id="catalogLockedModal">
         <div class="modal-card" style="max-width:480px;">
             <div class="modal-icon-wrap" style="background:rgba(255,165,2,0.15); border-color:var(--yellow); box-shadow:0 0 25px rgba(255,165,2,0.25);">
-                <span style="font-size:32px;">🔒</span>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--yellow)" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <h2 class="modal-title font-raj" style="font-size:24px;">Acceso Exclusivo a Puntos de Venta</h2>
+            <h2 class="modal-title font-raj" style="font-size:24px;">Catálogo Exclusivo Mayorista</h2>
             <p class="modal-message" style="font-size:14.5px;">
-                El <strong>Catálogo Oficial Vonixx</strong> con precios y líneas profesionales está reservado para clientes registrados. Completa el formulario a continuación para desbloquear el visor interactivo de inmediato.
+                El <strong>Catálogo Oficial Vonixx</strong> con precios y líneas profesionales está disponible después de tu registro. Completa tu solicitud en 2 minutos para desbloquear el visor interactivo.
             </p>
             <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
-                <button type="button" class="btn-modal-catalog" id="btnGoToRegister" style="font-size:14px; padding:12px 20px;">
-                    ✍️ Completar Formulario de Registro
+                <button type="button" class="btn-modal-catalog" id="btnGoToRegister">
+                    ✍️ Completar Registro Gratuito
                 </button>
-                <button type="button" class="btn-nav" id="btnCloseLockedModal" style="justify-content:center; padding:10px;">
+                <button type="button" class="btn-modal-close" id="btnCloseLockedModal">
                     Cerrar
                 </button>
             </div>
@@ -1828,13 +2367,13 @@
         <div class="catalog-modal-container">
             <div class="catalog-modal-header">
                 <div class="catalog-modal-title">
-                    <span style="font-size:22px;">📖</span>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#neonCyanGreen)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                     <div>
-                        <div class="font-raj" style="font-size:17px; font-weight:700; letter-spacing:0.5px; color:var(--text);">
+                        <div class="font-raj" style="font-size:16px; font-weight:700; letter-spacing:0.5px; color:var(--text);">
                             CATÁLOGO OFICIAL <span class="gradient-text">VONIXX MÉXICO</span>
                         </div>
-                        <div style="font-size:12px; color:var(--muted);">
-                            Visor Interactivo Oficial • Exclusivo Puntos de Venta • Solo visualización en línea
+                        <div style="font-size:11.5px; color:var(--muted);">
+                            Visor Interactivo Oficial • Exclusivo Puntos de Venta
                         </div>
                     </div>
                 </div>
@@ -1844,7 +2383,7 @@
                         <span id="txtFullscreen">Pantalla Completa</span>
                     </button>
                     <button type="button" class="btn-cat-ctrl btn-cat-close" id="btnCloseCatalog">
-                        <span>✖ Cerrar Catálogo</span>
+                        <span>✖ Cerrar</span>
                     </button>
                 </div>
             </div>
@@ -1857,12 +2396,13 @@
     <!-- Footer -->
     <footer class="pos-footer">
         <p>© 2026 Reset Supply MX — Distribuidor Oficial de Productos Vonixx en México. Todos los derechos reservados.</p>
-        <p style="margin-top:4px; font-size:11.5px; color:var(--muted);">Contacto: <a href="mailto:ventas@resetsupplymx.com" style="color:var(--green); text-decoration:none;">ventas@resetsupplymx.com</a> | Envíos a todo el país.</p>
+        <p style="margin-top:6px; font-size:12px; color:var(--muted);">Contacto Comercial: <a href="mailto:ventas@resetsupplymx.com" style="color:var(--cyan); text-decoration:none;">ventas@resetsupplymx.com</a> | Envíos a todo el país.</p>
     </footer>
 
-    <!-- Script de Manejo y Envío -->
+    <!-- Scripts de Lógica y Manejo -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Referencias del DOM
             const form = document.getElementById('posClientForm');
             const fileInput = document.getElementById('constanciaFile');
             const fileBadge = document.getElementById('fileBadge');
@@ -1874,7 +2414,221 @@
             const successModal = document.getElementById('successModal');
             const btnModalClose = document.getElementById('btnModalClose');
 
-            // 1. Manejo del input de archivo (Drag & Drop + Click)
+            // 1. Manejo del Wizard de 4 Pasos
+            let currentStep = 1;
+            const totalSteps = 4;
+            const stepTitles = [
+                "Paso 1 de 4 — Elige tu modalidad",
+                "Paso 2 de 4 — Tus datos de contacto",
+                "Paso 3 de 4 — Dirección de envío",
+                "Paso 4 de 4 — Datos fiscales"
+            ];
+            const stepTags = ["MODALIDAD", "CONTACTO", "ENVÍO", "FISCAL"];
+
+            const stepperFill = document.getElementById('stepperFill');
+            const stepCurrentTitle = document.getElementById('stepCurrentTitle');
+            const stepCounterBadge = document.getElementById('stepCounterBadge');
+
+            function updateWizardUI(step) {
+                currentStep = step;
+                // Actualizar títulos
+                stepCurrentTitle.textContent = stepTitles[step - 1];
+                stepCounterBadge.textContent = stepTags[step - 1];
+
+                // Actualizar paneles
+                for (let i = 1; i <= totalSteps; i++) {
+                    const panel = document.getElementById(`stepPanel${i}`);
+                    const node = document.getElementById(`nodeStep${i}`);
+                    if (panel) {
+                        panel.classList.toggle('active', i === step);
+                    }
+                    if (node) {
+                        node.classList.remove('active', 'completed');
+                        if (i === step) {
+                            node.classList.add('active');
+                        } else if (i < step) {
+                            node.classList.add('completed');
+                            node.innerHTML = '✓';
+                        } else {
+                            node.textContent = i;
+                        }
+                    }
+                }
+
+                // Actualizar ancho de la barra
+                const fillPercent = ((step - 1) / (totalSteps - 1)) * 100;
+                stepperFill.style.width = `${fillPercent}%`;
+            }
+
+            function validateStep(step) {
+                if (step === 1) {
+                    return true;
+                }
+                if (step === 2) {
+                    const nombre = document.getElementById('nombreCompleto');
+                    const tel = document.getElementById('telefonoCel');
+                    const email = document.getElementById('correoElectronico');
+
+                    if (!nombre.checkValidity()) {
+                        nombre.reportValidity();
+                        return false;
+                    }
+                    if (!tel.checkValidity()) {
+                        tel.reportValidity();
+                        return false;
+                    }
+                    if (!email.checkValidity()) {
+                        email.reportValidity();
+                        return false;
+                    }
+                    return true;
+                }
+                if (step === 3) {
+                    const calle = document.getElementById('calleNumero');
+                    const col = document.getElementById('colonia');
+                    const cp = document.getElementById('codigoPostal');
+                    const ciudad = document.getElementById('ciudad');
+                    const estado = document.getElementById('estado');
+
+                    if (!calle.checkValidity()) { calle.reportValidity(); return false; }
+                    if (!col.checkValidity()) { col.reportValidity(); return false; }
+                    if (!cp.checkValidity()) { cp.reportValidity(); return false; }
+                    if (!ciudad.checkValidity()) { ciudad.reportValidity(); return false; }
+                    if (!estado.checkValidity()) { estado.reportValidity(); return false; }
+                    return true;
+                }
+                return true;
+            }
+
+            // Botones de Navegación del Wizard
+            document.getElementById('btnNext1').addEventListener('click', () => {
+                if (validateStep(1)) {
+                    updateWizardUI(2);
+                    document.getElementById('nombreCompleto').focus();
+                }
+            });
+            document.getElementById('btnPrev2').addEventListener('click', () => updateWizardUI(1));
+            document.getElementById('btnNext2').addEventListener('click', () => {
+                if (validateStep(2)) {
+                    updateWizardUI(3);
+                    document.getElementById('calleNumero').focus();
+                }
+            });
+            document.getElementById('btnPrev3').addEventListener('click', () => updateWizardUI(2));
+            document.getElementById('btnNext3').addEventListener('click', () => {
+                if (validateStep(3)) {
+                    updateWizardUI(4);
+                }
+            });
+            document.getElementById('btnPrev4').addEventListener('click', () => updateWizardUI(3));
+
+            // 2. Control del Checkbox de Teléfono Alterno
+            const chkAltPhone = document.getElementById('chkAltPhone');
+            const wrapAltPhone = document.getElementById('wrapAltPhone');
+            if (chkAltPhone && wrapAltPhone) {
+                chkAltPhone.addEventListener('change', function () {
+                    wrapAltPhone.style.display = this.checked ? 'block' : 'none';
+                    if (this.checked) {
+                        document.getElementById('celularAlt').focus();
+                    }
+                });
+            }
+
+            // 3. Control de Selección de Modalidad (Punto de Venta vs Partner)
+            const cardModalityPos = document.getElementById('cardModalityPos');
+            const cardModalityPartner = document.getElementById('cardModalityPartner');
+            const modalidadInput = document.getElementById('modalidadInput');
+            const tipoRegistroInput = document.getElementById('tipoRegistroInput');
+            const partnerExtraFields = document.getElementById('partnerExtraFields');
+
+            function setModality(mod) {
+                if (mod === 'partner') {
+                    cardModalityPartner.classList.add('selected');
+                    cardModalityPos.classList.remove('selected');
+                    modalidadInput.value = 'Partner Reset Supply (Tienda en Línea + POS Físico)';
+                    if (tipoRegistroInput) tipoRegistroInput.value = 'Partner Reset Supply (Tienda en Línea + POS Físico)';
+                    partnerExtraFields.style.display = 'block';
+                } else {
+                    cardModalityPos.classList.add('selected');
+                    cardModalityPartner.classList.remove('selected');
+                    modalidadInput.value = 'Punto de Venta Tradicional';
+                    if (tipoRegistroInput) tipoRegistroInput.value = 'Punto de Venta Tradicional';
+                    partnerExtraFields.style.display = 'none';
+                }
+            }
+
+            if (cardModalityPos) cardModalityPos.addEventListener('click', () => setModality('pos'));
+            if (cardModalityPartner) cardModalityPartner.addEventListener('click', () => setModality('partner'));
+
+            // Botones CTAs que seleccionan modalidad y navegan
+            function scrollToForm() {
+                const regEl = document.getElementById('registro');
+                if (regEl) regEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            const btnHeroPos = document.getElementById('btnHeroPos');
+            if (btnHeroPos) {
+                btnHeroPos.addEventListener('click', () => {
+                    setModality('pos');
+                    updateWizardUI(1);
+                    scrollToForm();
+                });
+            }
+
+            const btnHeroPartner = document.getElementById('btnHeroPartner');
+            if (btnHeroPartner) {
+                btnHeroPartner.addEventListener('click', () => {
+                    setModality('partner');
+                    updateWizardUI(1);
+                    scrollToForm();
+                });
+            }
+
+            const btnSelectPartnerHero = document.getElementById('btnSelectPartnerHero');
+            if (btnSelectPartnerHero) {
+                btnSelectPartnerHero.addEventListener('click', () => {
+                    setModality('partner');
+                    updateWizardUI(1);
+                    scrollToForm();
+                });
+            }
+
+            const btnGoToForm = document.getElementById('btnGoToForm');
+            if (btnGoToForm) {
+                btnGoToForm.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    scrollToForm();
+                });
+            }
+
+            // 4. Control de Facturación CFDI en Paso 4
+            const btnFacturaSi = document.getElementById('btnFacturaSi');
+            const btnFacturaNo = document.getElementById('btnFacturaNo');
+            const facturaInput = document.getElementById('facturaInput');
+            const facturaFieldsBox = document.getElementById('facturaFieldsBox');
+            const facturaNoBox = document.getElementById('facturaNoBox');
+
+            // Default: No por el momento
+            btnFacturaNo.classList.add('selected');
+            facturaInput.value = "No";
+
+            btnFacturaSi.addEventListener('click', () => {
+                btnFacturaSi.classList.add('selected');
+                btnFacturaNo.classList.remove('selected');
+                facturaInput.value = "Sí";
+                facturaFieldsBox.style.display = 'block';
+                facturaNoBox.style.display = 'none';
+            });
+
+            btnFacturaNo.addEventListener('click', () => {
+                btnFacturaNo.classList.add('selected');
+                btnFacturaSi.classList.remove('selected');
+                facturaInput.value = "No";
+                facturaFieldsBox.style.display = 'none';
+                facturaNoBox.style.display = 'block';
+            });
+
+            // 5. Manejo del input de archivo de Constancia Fiscal (Drag & Drop + Click)
             fileInput.addEventListener('change', handleFileSelected);
 
             ['dragenter', 'dragover'].forEach(eventName => {
@@ -1923,7 +2677,7 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
 
-            // 2. Elementos del visor de catálogo
+            // 6. Elementos y Lógica del Catálogo Mayorista
             const catalogModal = document.getElementById('catalogModal');
             const catalogIframe = document.getElementById('catalogIframe');
             const btnNavCatalog = document.getElementById('btnNavCatalog');
@@ -1935,7 +2689,6 @@
             const btnCloseLockedModal = document.getElementById('btnCloseLockedModal');
             const btnGoToRegister = document.getElementById('btnGoToRegister');
 
-            // Token protegido para visualización en línea (sin exponer link en HTML plano)
             const catalogSecToken = 'aHR0cHM6Ly9vbmxpbmUuZmxpcGh0bWw1LmNvbS9zY3J0dS9kbnRiLw==';
             let isRegistered = sessionStorage.getItem('posClientRegistered') === 'true';
 
@@ -1944,15 +2697,15 @@
                     const navBadge = document.getElementById('navCatalogLockBadge');
                     if (navBadge) {
                         navBadge.textContent = '🔓 Desbloqueado';
-                        navBadge.style.background = 'rgba(61, 220, 132, 0.2)';
+                        navBadge.style.background = 'rgba(57, 255, 20, 0.2)';
                         navBadge.style.color = 'var(--green)';
                     }
                     const banner = document.getElementById('catalogBanner');
                     if (banner) banner.classList.add('unlocked');
                     const statusBadge = document.getElementById('catalogStatusBadge');
                     if (statusBadge) {
-                        statusBadge.className = 'catalog-status-badge unlocked';
-                        statusBadge.innerHTML = '<span>🔓</span><span>ACCESO DESBLOQUEADO</span>';
+                        statusBadge.className = 'cat-badge unlocked';
+                        statusBadge.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>ACCESO DESBLOQUEADO</span>';
                     }
                     const btnBanner = document.getElementById('btnBannerCatalog');
                     if (btnBanner) {
@@ -1962,7 +2715,6 @@
                 }
             }
 
-            // Inicializar estado del catálogo
             updateCatalogUI();
 
             function openCatalogViewer() {
@@ -1972,7 +2724,6 @@
                     return;
                 }
 
-                // Cargar URL en el iframe solo cuando el cliente está registrado
                 if (!catalogIframe.src || catalogIframe.src.endsWith('about:blank')) {
                     try {
                         catalogIframe.src = atob(catalogSecToken);
@@ -1990,13 +2741,11 @@
                 document.body.style.overflow = 'auto';
             }
 
-            // Eventos del catálogo
             if (btnNavCatalog) {
                 btnNavCatalog.addEventListener('click', function (e) {
                     e.preventDefault();
-                    if (isRegistered) {
-                        openCatalogViewer();
-                    } else {
+                    if (isRegistered) openCatalogViewer();
+                    else {
                         catalogLockedModal.style.display = 'flex';
                         document.body.style.overflow = 'hidden';
                     }
@@ -2006,18 +2755,15 @@
             if (btnBannerCatalog) {
                 btnBannerCatalog.addEventListener('click', function (e) {
                     e.preventDefault();
-                    if (isRegistered) {
-                        openCatalogViewer();
-                    } else {
+                    if (isRegistered) openCatalogViewer();
+                    else {
                         catalogLockedModal.style.display = 'flex';
                         document.body.style.overflow = 'hidden';
                     }
                 });
             }
 
-            if (btnCloseCatalog) {
-                btnCloseCatalog.addEventListener('click', closeCatalogViewer);
-            }
+            if (btnCloseCatalog) btnCloseCatalog.addEventListener('click', closeCatalogViewer);
 
             if (btnToggleFullscreen) {
                 btnToggleFullscreen.addEventListener('click', function() {
@@ -2049,7 +2795,7 @@
                 btnGoToRegister.addEventListener('click', function() {
                     catalogLockedModal.style.display = 'none';
                     document.body.style.overflow = 'auto';
-                    form.scrollIntoView({ behavior: 'smooth' });
+                    scrollToForm();
                 });
             }
 
@@ -2060,54 +2806,14 @@
                 });
             }
 
-            // Control de selección de modalidad (Punto de Venta Tradicional vs Partner Reset Supply)
-            const cardModalityPos = document.getElementById('cardModalityPos');
-            const cardModalityPartner = document.getElementById('cardModalityPartner');
-            const modalidadInput = document.getElementById('modalidadInput');
-            const tipoRegistroInput = document.getElementById('tipoRegistroInput');
-            const partnerExtraFields = document.getElementById('partnerExtraFields');
-            const btnSelectPartner = document.getElementById('btnSelectPartner');
-
-            function setModality(mod) {
-                if (mod === 'partner') {
-                    cardModalityPartner.classList.add('selected');
-                    cardModalityPos.classList.remove('selected');
-                    modalidadInput.value = 'Partner Reset Supply (Tienda en Línea + POS Físico)';
-                    if (tipoRegistroInput) tipoRegistroInput.value = 'Partner Reset Supply (Tienda en Línea + POS Físico)';
-                    partnerExtraFields.style.display = 'block';
-                } else {
-                    cardModalityPos.classList.add('selected');
-                    cardModalityPartner.classList.remove('selected');
-                    modalidadInput.value = 'Punto de Venta Tradicional';
-                    if (tipoRegistroInput) tipoRegistroInput.value = 'Punto de Venta Tradicional';
-                    partnerExtraFields.style.display = 'none';
-                }
-            }
-
-            if (cardModalityPos) {
-                cardModalityPos.addEventListener('click', () => setModality('pos'));
-            }
-            if (cardModalityPartner) {
-                cardModalityPartner.addEventListener('click', () => setModality('partner'));
-            }
-            if (btnSelectPartner) {
-                btnSelectPartner.addEventListener('click', () => {
-                    setModality('partner');
-                    cardModalityPartner.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                });
-            }
-
-            // 3. Envío del Formulario
+            // 7. Envío del Formulario
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
 
-                // Validación básica
-                if (!form.checkValidity()) {
-                    form.reportValidity();
+                if (!validateStep(1) || !validateStep(2) || !validateStep(3)) {
                     return;
                 }
 
-                // Modalidad seleccionada
                 const modalidad = modalidadInput ? modalidadInput.value : 'Punto de Venta Tradicional';
                 const marcaDeseada = document.getElementById('marcaDeseada') ? document.getElementById('marcaDeseada').value.trim() : '';
                 const estadoLocal = document.getElementById('estadoLocalFisico') ? document.getElementById('estadoLocalFisico').value : '';
@@ -2115,10 +2821,9 @@
                     ? `Marca deseada: ${marcaDeseada || 'No especificada'} | Estado local: ${estadoLocal}` 
                     : '';
 
-                // Datos capturados
                 const nombre = document.getElementById('nombreCompleto').value.trim();
                 const tel = document.getElementById('telefonoCel').value.trim();
-                const cel = document.getElementById('celular').value.trim();
+                const altPhoneVal = (chkAltPhone.checked && document.getElementById('celularAlt')) ? document.getElementById('celularAlt').value.trim() : '';
                 const email = document.getElementById('correoElectronico').value.trim();
                 const negocio = document.getElementById('nombreNegocio').value.trim();
                 const calle = document.getElementById('calleNumero').value.trim();
@@ -2127,20 +2832,19 @@
                 const ciudad = document.getElementById('ciudad').value.trim();
                 const estado = document.getElementById('estado').value;
                 const referencias = document.getElementById('referencias').value.trim();
+                const requiereFactura = facturaInput.value;
 
                 const direccionCompleta = `${calle}, Col. ${col}, C.P. ${cp}, ${ciudad}, ${estado}${referencias ? ` (Ref: ${referencias})` : ''}`;
 
-                // Preparar datos para resumen del modal
-                const sumMod = document.getElementById('sumModalidad');
-                if (sumMod) sumMod.textContent = modalidad.includes('Partner') ? '🚀 Partner Reset Supply' : '🏪 Punto de Venta Tradicional';
-
+                // Preparar datos para el modal de éxito
+                document.getElementById('sumModalidad').textContent = modalidad.includes('Partner') ? '🚀 Partner Reset Supply' : '🏪 Punto de Venta Tradicional';
                 document.getElementById('sumNombre').textContent = nombre;
-                document.getElementById('sumTelefono').textContent = tel;
-                document.getElementById('sumCelular').textContent = cel;
+                document.getElementById('sumTelefono').textContent = `${tel}${altPhoneVal ? ` / Alt: ${altPhoneVal}` : ''}`;
                 document.getElementById('sumCorreo').textContent = email;
                 document.getElementById('sumDireccion').textContent = direccionCompleta;
+                document.getElementById('sumFactura').textContent = requiereFactura === 'Sí' ? 'Sí, CFDI 4.0 solicitada' : 'No por el momento';
 
-                const hasFile = fileInput.files && fileInput.files.length > 0;
+                const hasFile = fileInput.files && fileInput.files.length > 0 && requiereFactura === 'Sí';
                 if (hasFile) {
                     document.getElementById('sumFileRow').style.display = 'flex';
                     document.getElementById('sumArchivo').textContent = `${fileInput.files[0].name} (${formatBytes(fileInput.files[0].size)})`;
@@ -2148,7 +2852,7 @@
                     document.getElementById('sumFileRow').style.display = 'none';
                 }
 
-                // Actualizar estado del botón
+                // Estado de carga en el botón
                 btnSubmit.disabled = true;
                 const originalBtnHtml = btnSubmit.innerHTML;
                 btnSubmit.innerHTML = `
@@ -2156,10 +2860,9 @@
                         <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
                         <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
                     </svg>
-                    <span>ENVIANDO REGISTRO...</span>
+                    <span>ENVIANDO TU SOLICITUD...</span>
                 `;
 
-                // Función para leer archivo en base64
                 function readFileAsBase64(file) {
                     return new Promise((resolve, reject) => {
                         const reader = new FileReader();
@@ -2169,7 +2872,6 @@
                     });
                 }
 
-                // Convertir archivo a base64 para subirlo exclusivamente al almacenamiento interno
                 let archivoBase64 = null;
                 let nombreConstancia = null;
                 if (hasFile && fileInput.files[0]) {
@@ -2177,16 +2879,15 @@
                         archivoBase64 = await readFileAsBase64(fileInput.files[0]);
                         nombreConstancia = fileInput.files[0].name;
                     } catch (readErr) {
-                        console.warn('Error leyendo archivo en base64:', readErr);
+                        console.warn('Error leyendo CSF en base64:', readErr);
                     }
                 }
 
-                // Desbloquear acceso a catálogo en la sesión
                 sessionStorage.setItem('posClientRegistered', 'true');
                 isRegistered = true;
                 updateCatalogUI();
 
-                // 1. Guardar cliente y archivo en almacenamiento interno de www.resetsupplymx.com
+                // 1. Guardar cliente y constancia en almacenamiento interno
                 try {
                     await fetch('/api/puntodeventa/register', {
                         method: 'POST',
@@ -2194,12 +2895,13 @@
                         body: JSON.stringify({
                             nombre,
                             telefono: tel,
-                            celular: cel,
+                            celular: altPhoneVal || tel,
                             email,
                             negocio,
                             direccion: direccionCompleta,
                             modalidad: modalidad,
                             detallesPartner: detallesPartner,
+                            requiereFactura: requiereFactura,
                             tieneConstancia: hasFile,
                             nombreConstancia: nombreConstancia,
                             archivoBase64: archivoBase64,
@@ -2207,10 +2909,10 @@
                         })
                     });
                 } catch (e) {
-                    console.warn('Aviso guardado en servidor:', e);
+                    console.warn('Aviso backend interno:', e);
                 }
 
-                // 2. Enviar datos de texto a FormSubmit (SIN el archivo adjunto)
+                // 2. Envío a FormSubmit (sin archivo binario para prevenir problemas de cuota)
                 const formData = new FormData(form);
                 formData.append('Modalidad_Seleccionada', modalidad);
                 if (detallesPartner) {
@@ -2218,20 +2920,18 @@
                 }
                 formData.append('Direccion_Completa_Envio', direccionCompleta);
                 formData.set('_subject', `🚀 Nuevo Registro [${modalidad.includes('Partner') ? 'PARTNER' : 'PUNTO DE VENTA'}]: ${nombre}${negocio ? ` (${negocio})` : ''}`);
-                formData.append('Constancia_Fiscal', hasFile ? `✅ Guardada en almacenamiento interno de Reset Supply MX (${nombreConstancia})` : 'No adjuntada');
-
-                // Eliminar archivo adjunto de FormSubmit para que se conserve solo internamente
+                formData.append('Requiere_Factura', requiereFactura);
+                formData.append('Constancia_Fiscal', hasFile ? `✅ Guardada internamente (${nombreConstancia})` : 'No adjuntada');
                 formData.delete('attachment');
 
                 try {
-                    const response = await fetch('https://formsubmit.co/ajax/ventas@resetsupplymx.com', {
+                    await fetch('https://formsubmit.co/ajax/ventas@resetsupplymx.com', {
                         method: 'POST',
                         body: formData
                     });
-
                     showConfirmationModal();
                 } catch (err) {
-                    console.warn('Envío FormSubmit procesado...', err);
+                    console.warn('FormSubmit procesado:', err);
                     showConfirmationModal();
                 } finally {
                     btnSubmit.disabled = false;
@@ -2247,7 +2947,7 @@
             btnModalClose.addEventListener('click', function () {
                 successModal.style.display = 'none';
                 document.body.style.overflow = 'auto';
-                window.location.href = 'https://www.resetsupplymx.com';
+                window.location.href = '/';
             });
         });
     </script>
