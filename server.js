@@ -413,6 +413,154 @@ app.put('/api/admin/orders/:id', requireAdminAuth, async (req, res) => {
 
 
 
+
+const GIT_REPO_BASE = 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/';
+
+const URL_FILENAME_MAP = {
+  'alumax-4.png': 'Alumax%2020L.png',
+  'alumax.png': 'Alumax%2020L.png',
+  'delet-.png': 'DELET.png',
+  'delet.png': 'DELET.png',
+  'impact-.png': 'STRIKE.png',
+  'impact.png': 'STRIKE.png',
+  'izer-1.png': 'IZER.png',
+  'izer.png': 'IZER.png',
+  'removex-1.png': 'REMOVEX.png',
+  'removex.png': 'REMOVEX.png',
+  'rezet.png': 'V-ECO%20FAST.png',
+  'sintra-fast.png': 'SINTRA%20FAST.png',
+  'sintra-pro.png': 'SINTRA%20FAST.png',
+  '1-6.png': 'BACTRAN%201.5L.png',
+  'bactran.png': 'BACTRAN%201.5L.png',
+  '1-7.png': 'EXTRACTUS%201.5L.png',
+  'extractus.png': 'EXTRACTUS%201.5L.png',
+  '1-8.png': 'SANITIZANTE%201.5L.png',
+  'sanitizante.png': 'SANITIZANTE%201.5L.png',
+  'blend-paste-wax.png': 'BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png',
+  'carnauba-hybrid-wax.png': 'CARNAUBA%20HYBRID%20WAX.png',
+  'native-paste-wax.png': 'NATIVE.png',
+  'blen-spray-.png': 'BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png',
+  'carnauba-tok-final.png': 'CARNAUBA%20HYBRID%20WAX.png',
+  'native-spray-wax.png': 'NATIVE%20FAST.png',
+  'carnauba-plus.png': 'PLUS.png',
+  'citron.png': 'CITRON%201.5L.png',
+  'hydrox-wash.png': 'HYDROX%20WASH.png',
+  'sinergy-paint.png': 'SINERGY%20PAINT.png',
+  'sinergy-wheel.png': 'SINERGY%20SHEEL.png',
+  'hydrox-pro-.png': 'HYDROX%20FAST.png',
+  'hydrox-fast.png': 'HYDROX%20FAST.png',
+  '1-12.png': 'RESTAURAX.png',
+  '1-13.png': 'RESTAURAX.png',
+  '1-11.png': 'V-PLASTIC.png',
+  '1-16.png': 'V-PLASTIC.png',
+  'shiny-5.png': 'SHINY.png',
+  'shiny.png': 'SHINY.png',
+  'revox.png': 'REVOX.png',
+  'rexer.png': 'REXER.png',
+  'glazy.png': 'GLAZY.png',
+  'focus.png': 'FOCUS.png',
+  'opty.png': 'OPTY.png',
+  'v10.png': 'V10.png',
+  'v20.png': 'V20.png',
+  'v30.png': 'V30.png',
+  'v40.png': 'V40.png',
+  'v-cut.png': 'V-CUT.png',
+  'v-polish.png': 'V-POLISH.png',
+  'v-finish.png': 'V-FINISH.png',
+  'hidracouro-hidratante-y-protector-de-piel-3.png': 'HIDRACOURO.png',
+  'hidracouro.png': 'HIDRACOURO.png',
+  'higicouro-limpiador-de-piel-5.png': 'HIGICOURO.png',
+  'higicouro.png': 'HIGICOURO.png',
+  'microfibra.png': 'APLICADOR.png',
+  'pad-de-corte-ligero-amarilla.png': 'PAD%20GRIS.png',
+  'pad-de-lustro-azul-claro.png': 'PAD%20LONA.png',
+  'copia-de-copia-de-rezet.png': 'KIT%20BASICO.png'
+};
+
+function resolveToGitRepoUrl(item) {
+  if (!item) return GIT_REPO_BASE + 'Alumax%2020L.png';
+  let img = typeof item === 'string' ? item.trim() : (item.image || '').trim();
+
+  // Si ya es una URL limpia y correcta de nuestro repo de GitHub, conservarla
+  if (img && img.startsWith(GIT_REPO_BASE)) {
+    return img;
+  }
+
+  // 1. Mapeo directo por nombre de archivo si venía de vonixxmexicooficial o assets
+  if (img) {
+    try {
+      const urlObj = new URL(img.startsWith('http') ? img : 'http://local/' + img);
+      const pathname = urlObj.pathname.toLowerCase();
+      const lastPart = pathname.substring(pathname.lastIndexOf('/') + 1);
+      if (URL_FILENAME_MAP[lastPart]) {
+        return GIT_REPO_BASE + URL_FILENAME_MAP[lastPart];
+      }
+      for (const [k, v] of Object.entries(URL_FILENAME_MAP)) {
+        if (pathname.includes(k)) return GIT_REPO_BASE + v;
+      }
+    } catch (e) {}
+  }
+
+  // 2. Mapeo inteligente por palabras clave de nombre, descripción o código del producto
+  const name = typeof item === 'string' ? item.toLowerCase() : ((item.name || '') + ' ' + (item.description || '') + ' ' + (item.code || item.id || '')).toLowerCase();
+
+  if (name.includes('alumax')) return GIT_REPO_BASE + 'Alumax%2020L.png';
+  if (name.includes('delet')) return GIT_REPO_BASE + 'DELET.png';
+  if (name.includes('strike') || name.includes('impact')) return GIT_REPO_BASE + 'STRIKE.png';
+  if (name.includes('izer')) return GIT_REPO_BASE + 'IZER.png';
+  if (name.includes('removex')) return GIT_REPO_BASE + 'REMOVEX.png';
+  if (name.includes('v-eco') || name.includes('veco') || name.includes('rezet')) return GIT_REPO_BASE + 'V-ECO%20FAST.png';
+  if (name.includes('sintra')) return GIT_REPO_BASE + 'SINTRA%20FAST.png';
+  if (name.includes('bactran')) return GIT_REPO_BASE + 'BACTRAN%201.5L.png';
+  if (name.includes('extractus')) return GIT_REPO_BASE + 'EXTRACTUS%201.5L.png';
+  if (name.includes('sanitizante')) return GIT_REPO_BASE + 'SANITIZANTE%201.5L.png';
+  if (name.includes('carnauba hybrid')) return GIT_REPO_BASE + 'CARNAUBA%20HYBRID%20WAX.png';
+  if (name.includes('blend')) return GIT_REPO_BASE + 'BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png';
+  if (name.includes('native') && (name.includes('spray') || name.includes('fast'))) return GIT_REPO_BASE + 'NATIVE%20FAST.png';
+  if (name.includes('native')) return GIT_REPO_BASE + 'NATIVE.png';
+  if (name.includes('plus')) return GIT_REPO_BASE + 'PLUS.png';
+  if (name.includes('citron')) return GIT_REPO_BASE + 'CITRON%201.5L.png';
+  if (name.includes('v-mol') || name.includes('vmol') || name.includes('v-floc') || name.includes('vfloc') || name.includes('floc')) return GIT_REPO_BASE + 'V-MOL%201.5L.png';
+  if (name.includes('hydrox wash')) return GIT_REPO_BASE + 'HYDROX%20WASH.png';
+  if (name.includes('hydrox')) return GIT_REPO_BASE + 'HYDROX%20FAST.png';
+  if (name.includes('sinergy wheel') || name.includes('sinergy-wheel')) return GIT_REPO_BASE + 'SINERGY%20SHEEL.png';
+  if (name.includes('sinergy')) return GIT_REPO_BASE + 'SINERGY%20PAINT.png';
+  if (name.includes('restaurax')) return GIT_REPO_BASE + 'RESTAURAX.png';
+  if (name.includes('v-plastic') || name.includes('flexus') || name.includes('intense')) return GIT_REPO_BASE + 'V-PLASTIC.png';
+  if (name.includes('shiny')) return GIT_REPO_BASE + 'SHINY.png';
+  if (name.includes('revox')) return GIT_REPO_BASE + 'REVOX.png';
+  if (name.includes('rexer')) return GIT_REPO_BASE + 'REXER.png';
+  if (name.includes('glazy')) return GIT_REPO_BASE + 'GLAZY.png';
+  if (name.includes('focus')) return GIT_REPO_BASE + 'FOCUS.png';
+  if (name.includes('opty')) return GIT_REPO_BASE + 'OPTY.png';
+  if (name.includes('v10')) return GIT_REPO_BASE + 'V10.png';
+  if (name.includes('v20')) return GIT_REPO_BASE + 'V20.png';
+  if (name.includes('v30')) return GIT_REPO_BASE + 'V30.png';
+  if (name.includes('v40')) return GIT_REPO_BASE + 'V40.png';
+  if (name.includes('v-cut') || name.includes('vcut')) return GIT_REPO_BASE + 'V-CUT.png';
+  if (name.includes('v-polish') || name.includes('vpolish')) return GIT_REPO_BASE + 'V-POLISH.png';
+  if (name.includes('v-finish') || name.includes('vfinish')) return GIT_REPO_BASE + 'V-FINISH.png';
+  if (name.includes('hidracouro')) return GIT_REPO_BASE + 'HIDRACOURO.png';
+  if (name.includes('higicouro')) return GIT_REPO_BASE + 'HIGICOURO.png';
+  if (name.includes('makker')) return GIT_REPO_BASE + 'MAKKER%202.0.png';
+  if (name.includes('spell')) return GIT_REPO_BASE + 'SPELL.png';
+  if (name.includes('prizm')) return GIT_REPO_BASE + 'PRIZM.png';
+  if (name.includes('sio2-pro') || name.includes('sio2')) return GIT_REPO_BASE + 'SIO2-PRO.png';
+  if (name.includes('v-paint pro') || name.includes('vpaint pro')) return GIT_REPO_BASE + 'V-PAINT%20PRO.png';
+  if (name.includes('v-paint') || name.includes('vpaint')) return GIT_REPO_BASE + 'V-PAINT.png';
+  if (name.includes('v-light') || name.includes('vlight')) return GIT_REPO_BASE + 'V-LIGHT.png';
+  if (name.includes('v-leather') || name.includes('vleather')) return GIT_REPO_BASE + 'V-LEATHER.png';
+  if (name.includes('corte leve')) return GIT_REPO_BASE + 'CORTE%20LEVE.png';
+  if (name.includes('brocha')) return GIT_REPO_BASE + 'BROCHAS.png';
+  if (name.includes('kit')) return GIT_REPO_BASE + 'KIT%20BASICO.png';
+  if (name.includes('lona')) return GIT_REPO_BASE + 'PAD%20LONA.png';
+  if (name.includes('alfombra') || name.includes('pad')) return GIT_REPO_BASE + 'PAD%20GRIS.png';
+  if (name.includes('microfibra') || name.includes('aplicador')) return GIT_REPO_BASE + 'APLICADOR.png';
+
+  return GIT_REPO_BASE + 'Alumax%2020L.png';
+}
+
+
 // Catálogo Ampliado e Inventario de Productos Vonixx con Variaciones
 let localInventory = [
   { id: "VON-00042", code: "VON-00042", name: "V-MOL 1.5 L", category: "limpieza", udm: "PZ", qty: 2, price: 131.00, pct: 0, newPrice: 131.00, image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-MOL%201.5L.png", description: "LAVADO DESINCRUSTANTE DE ALTA CONCENTRACIÓN", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "1.5 L", price: 131.00, qty: 2 }] },
@@ -501,24 +649,31 @@ app.get('/api/products', async (req, res) => {
       const snapshot = await db.collection('products').get();
       if (!snapshot.empty) {
         let dbProds = [];
+        const batch = db.batch();
+        let batchNeedsCommit = false;
         snapshot.forEach(doc => {
           const item = { id: doc.id, ...doc.data() };
-          // Si el registro de Firestore todavía tiene la URL antigua de vonixxmexicooficial, sustituir por la nueva foto local de localInventory
-          if (!item.image || item.image.includes('vonixxmexicooficial.com') || item.image.includes('/assets/')) {
-            const matchLocal = localInventory.find(lp => lp.id === item.id || lp.code === item.code || lp.name === item.name);
-            if (matchLocal && matchLocal.image) {
-              item.image = matchLocal.image;
-            }
+          const resolvedImg = resolveToGitRepoUrl(item);
+          if (item.image !== resolvedImg) {
+            item.image = resolvedImg;
+            batch.update(doc.ref, { image: resolvedImg });
+            batchNeedsCommit = true;
           }
           dbProds.push(item);
         });
+        if (batchNeedsCommit) {
+          batch.commit().catch(e => console.warn('No se pudo actualizar imágenes en batch Firestore:', e.message));
+        }
         products = dbProds;
       }
     } catch (e) {
       console.warn('⚠️ No se pudo leer productos de Firestore, usando catálogo local:', e.message);
     }
   }
-  const processedProducts = products.map(calculateItemPrices);
+  const processedProducts = products.map(p => {
+    p.image = resolveToGitRepoUrl(p);
+    return calculateItemPrices(p);
+  });
   res.json({ success: true, products: processedProducts });
 });
 
@@ -531,6 +686,7 @@ app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
         console.log('🌱 Sembrando inventario oficial Vonixx en Firestore...');
         const batch = db.batch();
         localInventory.forEach(p => {
+          p.image = resolveToGitRepoUrl(p);
           const ref = db.collection('products').doc(p.id);
           batch.set(ref, calculateItemPrices(p));
         });
@@ -541,13 +697,11 @@ app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
         let batchNeedsCommit = false;
         snapshot.forEach(doc => {
           const item = { id: doc.id, ...doc.data() };
-          if (!item.image || item.image.includes('vonixxmexicooficial.com') || item.image.includes('/assets/')) {
-            const matchLocal = localInventory.find(lp => lp.id === item.id || lp.code === item.code || lp.name === item.name);
-            if (matchLocal && matchLocal.image) {
-              item.image = matchLocal.image;
-              batch.update(doc.ref, { image: matchLocal.image });
-              batchNeedsCommit = true;
-            }
+          const resolvedImg = resolveToGitRepoUrl(item);
+          if (item.image !== resolvedImg) {
+            item.image = resolvedImg;
+            batch.update(doc.ref, { image: resolvedImg });
+            batchNeedsCommit = true;
           }
           dbProds.push(item);
         });
@@ -560,7 +714,10 @@ app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
       console.error('Error al sincronizar Firestore productos:', err);
     }
   }
-  const processed = localInventory.map(calculateItemPrices);
+  const processed = localInventory.map(p => {
+    p.image = resolveToGitRepoUrl(p);
+    return calculateItemPrices(p);
+  });
   res.json({ success: true, products: processed });
 });
 
@@ -578,7 +735,7 @@ app.post('/api/admin/products', requireAdminAuth, async (req, res) => {
     qty: parseInt(qty) || 1,
     udm: udm || 'PZ',
     category: category || 'limpieza',
-    image: image || 'https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png',
+    image: resolveToGitRepoUrl({ image, name }),
     description: description || '',
     sec: sec || 'Línea de Detailing / Limpieza',
     variations: Array.isArray(variations) ? variations : [],
@@ -612,6 +769,7 @@ app.post('/api/admin/products/batch', requireAdminAuth, async (req, res) => {
   }
 
   let updatedList = products.map(p => {
+    p.image = resolveToGitRepoUrl(p);
     if (globalPct !== undefined && globalPct !== null) {
       p.pct = parseFloat(globalPct);
     }
@@ -659,7 +817,7 @@ app.get('/api/admin/vonixx-search', requireAdminAuth, async (req, res) => {
   // Base de datos completa de catálogo Vonixx Oficial para consulta e importación
   const OFFICIAL_VONIXX_CATALOG = [
     { code: "VON-00042", name: "V-MOL 1.5 L", category: "limpieza", price: 131.00, udm: "PZ", image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-MOL%201.5L.png", description: "LAVADO DESINCRUSTANTE DE ALTA CONCENTRACIÓN", variations: [{ name: "1.5 L", price: 131.00 }] },
-    { code: "VON-00026", name: "V FLOC (SHAMPOO PH NEUTRO) 500ML", category: "limpieza", price: 91.00, udm: "PZ", image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png", description: "SHAMPOO AUTOMOTRIZ DE PH NEUTRO CON ALTO PODER LUBRICANTE", variations: [{ name: "500 ML", price: 91.00 }, { name: "1.5 L", price: 230.00 }] },
+    { code: "VON-00026", name: "V FLOC (SHAMPOO PH NEUTRO) 500ML", category: "limpieza", price: 91.00, udm: "PZ", image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/DELET.png", description: "SHAMPOO AUTOMOTRIZ DE PH NEUTRO CON ALTO PODER LUBRICANTE", variations: [{ name: "500 ML", price: 91.00 }, { name: "1.5 L", price: 230.00 }] },
     { code: "VON-00097", name: "HYDROX WASH 500ML", category: "limpieza", price: 269.00, udm: "PZ", image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HYDROX%20WASH.png", description: "SHAMPOO CERÁMICO DE LIMPIEZA Y PROTECCIÓN CON SIO2", variations: [{ name: "500 ML", price: 269.00 }] },
     { code: "VON-00072", name: "ALUMAX EXP 20 L", category: "limpieza", price: 1237.00, udm: "PZ", image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/Alumax%2020L.png", description: "DESINCRUSTANTE ÁCIDO DE USO INDUSTRIAL 20 LITROS", variations: [{ name: "20 L", price: 1237.00 }] },
     { code: "VON-00084", name: "REMOVEX EXP 20L", category: "limpieza", price: 994.00, udm: "PZ", image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/REMOVEX.png", description: "DESENGRASANTE INDUSTRIAL DE CHASIS Y MOTORES 20 LITROS", variations: [{ name: "20 L", price: 994.00 }] },
@@ -704,7 +862,7 @@ let localSiteConfig = {
     badge: "DISTRIBUIDOR AUTORIZADO VONIXX EN MÉXICO",
     title: "PRODUCTOS DE DETAILING AUTOMOTRIZ DE ALTA TECNOLOGÍA",
     subtitle: "Soluciones profesionales para limpieza, restauración y protección cerámico de tu vehículo.",
-    bgImage: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png",
+    bgImage: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/DELET.png",
     ctaText: "Ver Catálogo Completo",
     ctaLink: "#catalogo"
   },
@@ -714,7 +872,7 @@ let localSiteConfig = {
       title: "Línea de Cerámicos SiO2",
       subtitle: "Protección extrema y brillo hidrofóbico duradero",
       tag: "OFERTA DESTACADA",
-      image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINERGY-PAINT.png",
+      image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINERGY%20PAINT.png",
       link: "#ceramicos"
     },
     {
@@ -722,7 +880,7 @@ let localSiteConfig = {
       title: "Limpiadores de Interiores",
       subtitle: "Sintra Fast & Bactericida Bactran con fórmulas exclusivas",
       tag: "MÁS VENDIDOS",
-      image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-FAST.png",
+      image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINTRA%20FAST.png",
       link: "#limpieza"
     }
   ],
