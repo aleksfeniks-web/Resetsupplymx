@@ -967,7 +967,74 @@
             .catalog-panel { height: 550px; }
             .cart-panel { height: auto; }
         }
-    </style>
+    
+/* ==========================================================================
+   ROTATING OUTER GLOW ANIMATION (BRAND COLORS #3ddc84 -> #22b8f0)
+   ========================================================================== */
+@keyframes rotateGlowBorder {
+  0% {
+    box-shadow: 0 0 25px rgba(61, 220, 132, 0.45), 0 0 45px rgba(34, 184, 240, 0.3), inset 0 0 15px rgba(61, 220, 132, 0.1);
+    border-color: rgba(61, 220, 132, 0.65);
+  }
+  25% {
+    box-shadow: 12px 0 30px rgba(34, 184, 240, 0.5), -12px 0 35px rgba(61, 220, 132, 0.45), inset 0 0 15px rgba(34, 184, 240, 0.15);
+    border-color: rgba(34, 184, 240, 0.7);
+  }
+  50% {
+    box-shadow: 0 12px 35px rgba(61, 220, 132, 0.55), 0 -12px 45px rgba(34, 184, 240, 0.5), inset 0 0 20px rgba(61, 220, 132, 0.2);
+    border-color: rgba(61, 220, 132, 0.8);
+  }
+  75% {
+    box-shadow: -12px 0 30px rgba(34, 184, 240, 0.55), 12px 0 35px rgba(61, 220, 132, 0.45), inset 0 0 15px rgba(34, 184, 240, 0.15);
+    border-color: rgba(34, 184, 240, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(61, 220, 132, 0.45), 0 0 45px rgba(34, 184, 240, 0.3), inset 0 0 15px rgba(61, 220, 132, 0.1);
+    border-color: rgba(61, 220, 132, 0.65);
+  }
+}
+
+.cart-modal-content,
+.product-modal-card,
+.modal-content,
+.login-card,
+.auth-card,
+.ticket-modal-card,
+.modal-card,
+.fac-card,
+.modal-glow {
+  position: relative !important;
+  animation: rotateGlowBorder 4s linear infinite !important;
+  border: 1.5px solid rgba(61, 220, 132, 0.6) !important;
+}
+
+@keyframes inputRequiredGlow {
+  0% {
+    border-color: #3ddc84 !important;
+    box-shadow: 0 0 10px rgba(61, 220, 132, 0.6), 0 0 20px rgba(34, 184, 240, 0.35) !important;
+  }
+  50% {
+    border-color: #22b8f0 !important;
+    box-shadow: 0 0 18px rgba(34, 184, 240, 0.75), 0 0 28px rgba(61, 220, 132, 0.5) !important;
+  }
+  100% {
+    border-color: #3ddc84 !important;
+    box-shadow: 0 0 10px rgba(61, 220, 132, 0.6), 0 0 20px rgba(34, 184, 240, 0.35) !important;
+  }
+}
+
+input[required]:focus,
+select[required]:focus,
+textarea[required]:focus,
+.form-input[required]:focus,
+.pos-input[required]:focus,
+.fac-input[required]:focus {
+  outline: none !important;
+  animation: inputRequiredGlow 2.5s ease-in-out infinite !important;
+}
+
+</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
@@ -982,7 +1049,7 @@
 
             <!-- PASO 1: Contraseña de Administrador -->
             <div id="authStep1">
-                <h2 class="auth-title">🔐 <span class="gradient-text">TIENDA FÍSICA / POS</span></h2>
+                <h2 class="auth-title"><i class="fa-solid fa-lock" style="color:var(--green); margin-right:8px;"></i><span class="gradient-text">TIENDA FÍSICA / POS</span></h2>
                 <p class="auth-sub">Ingresa la contraseña de administrador para desbloquear la terminal.</p>
 
                 <form onsubmit="event.preventDefault(); handleAdminAuth();">
@@ -991,13 +1058,13 @@
                         <input type="password" id="authAdminPassInput" class="form-control" placeholder="••••••••••••" autofocus required>
                     </div>
                     <div id="adminErrorMsg" style="color:var(--red); font-size:12.5px; margin-bottom:10px; display:none;"></div>
-                    <button type="submit" class="btn-pos-primary">Verificar Administrador ➜</button>
+                    <button type="submit" class="btn-pos-primary">Verificar Administrador <i class="fa-solid fa-arrow-right" style="margin-left:6px;"></i></button>
                 </form>
             </div>
 
             <!-- PASO 2: Selección de Vendedor & PIN -->
             <div id="authStep2" style="display:none;">
-                <h2 class="auth-title">👤 <span class="gradient-text">ACCESO DE VENDEDOR</span></h2>
+                <h2 class="auth-title"><i class="fa-solid fa-user-tie" style="color:var(--blue); margin-right:8px;"></i><span class="gradient-text">ACCESO DE VENDEDOR</span></h2>
                 <p class="auth-sub">Selecciona tu perfil e ingresa tu PIN de seguridad.</p>
 
                 <form onsubmit="event.preventDefault(); handleSellerPinLogin();">
@@ -1054,11 +1121,11 @@
         <div class="pos-actions">
             <a href="/visor" class="btn-hdr" target="_blank" style="border-color:var(--cyan); color:var(--cyan); font-weight:700;">📱 Visor Cliente (PWA)</a>
             <button class="btn-hdr" onclick="openCashStatsModal()">📊 Corte de Caja</button>
-            <button class="btn-hdr" onclick="openSalesHistoryModal()">📋 Historial</button>
-            <a href="facturacion.html" class="btn-hdr" target="_blank">🧾 Facturación</a>
-            <a href="/clientes/puntodeventa.html" class="btn-hdr" target="_blank">🤝 Punto de Venta</a>
-            <a href="admin.html" class="btn-hdr">⚙️ Admin</a>
-            <button class="btn-hdr btn-hdr-danger" onclick="logoutSession()">🔒 Salir</button>
+            <button class="btn-hdr" onclick="openSalesHistoryModal()"><i class="fa-solid fa-clock-rotate-left" style="margin-right:6px;"></i>Historial</button>
+            <a href="facturacion.html" class="btn-hdr" target="_blank"><i class="fa-solid fa-file-invoice" style="margin-right:6px;"></i>Facturación</a>
+            <a href="/clientes/puntodeventa.html" class="btn-hdr" target="_blank"><i class="fa-solid fa-handshake" style="margin-right:6px;"></i>Punto de Venta</a>
+            <a href="admin.html" class="btn-hdr"><i class="fa-solid fa-gear" style="margin-right:6px;"></i>Admin</a>
+            <button class="btn-hdr btn-hdr-danger" onclick="logoutSession()"><i class="fa-solid fa-right-from-bracket" style="color:var(--red); margin-right:6px;"></i>Salir</button>
         </div>
     </header>
 
@@ -1069,20 +1136,20 @@
         <section class="catalog-panel">
             <div class="catalog-toolbar">
                 <div class="search-box-wrapper">
-                    <span class="search-icon">🔍</span>
+                    <span class="search-icon"><i class="fa-solid fa-magnifying-glass" style="color:var(--blue);"></i></span>
                     <input type="text" id="posSearchInput" class="search-input" placeholder="Buscar por nombre, código VON-XXXXX o escanear código de barras..." autocomplete="off">
-                    <span class="barcode-indicator">⚡ ESCANEO ACTIVO</span>
+                    <span class="barcode-indicator"><i class="fa-solid fa-barcode" style="color:var(--green); margin-right:4px;"></i> ESCANEO ACTIVO</span>
                 </div>
                 <div class="category-pills" id="categoryPillsContainer">
-                    <button class="cat-pill active" onclick="filterCategory('all', this)">🌟 Todos</button>
-                    <button class="cat-pill" onclick="filterCategory('limpieza', this)">🧼 Limpieza & Shampoos</button>
-                    <button class="cat-pill" onclick="filterCategory('ceramicos', this)">🛡️ Cerámicos SiO2</button>
-                    <button class="cat-pill" onclick="filterCategory('cera-pasta', this)">✨ Ceras en Pasta</button>
-                    <button class="cat-pill" onclick="filterCategory('cera-liquida', this)">🧴 Ceras Líquidas</button>
-                    <button class="cat-pill" onclick="filterCategory('llantas', this)">🛞 Llantas & Rines</button>
-                    <button class="cat-pill" onclick="filterCategory('plasticos', this)">🚗 Plásticos & Gomas</button>
+                    <button class="cat-pill active" onclick="filterCategory('all', this)"><i class="fa-solid fa-star" style="color:var(--yellow); margin-right:5px;"></i>Todos</button>
+                    <button class="cat-pill" onclick="filterCategory('limpieza', this)"><i class="fa-solid fa-soap" style="color:var(--blue); margin-right:5px;"></i>Limpieza & Shampoos</button>
+                    <button class="cat-pill" onclick="filterCategory('ceramicos', this)"><i class="fa-solid fa-shield-halved" style="color:var(--green); margin-right:5px;"></i>Cerámicos SiO2</button>
+                    <button class="cat-pill" onclick="filterCategory('cera-pasta', this)"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--yellow); margin-right:5px;"></i>Ceras en Pasta</button>
+                    <button class="cat-pill" onclick="filterCategory('cera-liquida', this)"><i class="fa-solid fa-bottle-droplet" style="color:var(--blue); margin-right:5px;"></i>Ceras Líquidas</button>
+                    <button class="cat-pill" onclick="filterCategory('llantas', this)"><i class="fa-solid fa-circle-notch" style="color:var(--green); margin-right:5px;"></i>Llantas & Rines</button>
+                    <button class="cat-pill" onclick="filterCategory('plasticos', this)"><i class="fa-solid fa-car" style="color:var(--cyan); margin-right:5px;"></i>Plásticos & Gomas</button>
                     <button class="cat-pill" onclick="filterCategory('cristales', this)">🪟 Cristales</button>
-                    <button class="cat-pill" onclick="filterCategory('accesorios', this)">🧽 Accesorios & Pads</button>
+                    <button class="cat-pill" onclick="filterCategory('accesorios', this)"><i class="fa-solid fa-brush" style="color:var(--green); margin-right:5px;"></i>Accesorios & Pads</button>
                 </div>
             </div>
 
@@ -1101,7 +1168,7 @@
                     <span style="font-size:12px; color:var(--muted); font-weight:700;">TICKET ACTUAL</span>
                     <div class="ticket-folio-badge" id="currentTicketFolio">#POS-000000</div>
                 </div>
-                <button class="btn-clear-cart" onclick="clearCart()">🗑️ Limpiar Venta</button>
+                <button class="btn-clear-cart" onclick="clearCart()"><i class="fa-solid fa-trash-can" style="margin-right:4px;"></i>Limpiar Venta</button>
             </div>
 
             <!-- Datos Rápidos del Cliente -->
@@ -1122,7 +1189,7 @@
             <!-- Lista de Artículos -->
             <div class="cart-items-scroll" id="cartItemsContainer">
                 <div class="cart-empty">
-                    <div class="cart-empty-icon">🛒</div>
+                    <div class="cart-empty-icon"><i class="fa-solid fa-cart-shopping" style="color:var(--line); font-size:42px;"></i></div>
                     <p style="font-size:13.5px; font-weight:600;">La venta está vacía</p>
                     <p style="font-size:12px; color:var(--muted-2); margin-top:4px;">Haz clic en un producto o escanéalo para añadirlo.</p>
                 </div>
@@ -1159,19 +1226,19 @@
                 <!-- Métodos de Pago Rápidos -->
                 <div class="payment-methods-grid">
                     <button class="pay-method-btn active" data-method="cash" onclick="selectPaymentMethod('cash')">
-                        <span class="icon">💵</span>
+                        <span class="icon"><i class="fa-solid fa-money-bill-wave" style="color:var(--green);"></i></span>
                         <span>Efectivo</span>
                     </button>
                     <button class="pay-method-btn" data-method="card" onclick="selectPaymentMethod('card')">
-                        <span class="icon">💳</span>
+                        <span class="icon"><i class="fa-solid fa-credit-card" style="color:var(--blue);"></i></span>
                         <span>Tarjeta</span>
                     </button>
                     <button class="pay-method-btn" data-method="spei" onclick="selectPaymentMethod('spei')">
-                        <span class="icon">📲</span>
+                        <span class="icon"><i class="fa-solid fa-mobile-screen-button" style="color:var(--cyan);"></i></span>
                         <span>SPEI</span>
                     </button>
                     <button class="pay-method-btn" data-method="mixed" onclick="selectPaymentMethod('mixed')">
-                        <span class="icon">🔀</span>
+                        <span class="icon"><i class="fa-solid fa-arrows-split-up-and-left" style="color:var(--yellow);"></i></span>
                         <span>Mixto</span>
                     </button>
                 </div>
@@ -1198,7 +1265,7 @@
 
                 <!-- Botón Principal de Cobro -->
                 <button class="btn-checkout-submit" id="btnCheckoutSubmit" onclick="processCheckout()" disabled>
-                    <span>✨ COBRAR Y GENERAR TICKET</span>
+                    <span><i class="fa-solid fa-circle-check" style="margin-right:8px;"></i>COBRAR Y GENERAR TICKET</span>
                 </button>
             </div>
         </section>
@@ -1209,10 +1276,10 @@
         <div class="ticket-modal-card">
             <div class="ticket-modal-header">
                 <div>
-                    <h3 style="font-size:18px;">🧾 Ticket de Venta</h3>
+                    <h3 style="font-size:18px;"><i class="fa-solid fa-receipt" style="color:var(--green); margin-right:8px;"></i>Ticket de Venta</h3>
                     <span id="ticketModalFolio" class="font-mono" style="font-size:12px; color:var(--green);">#POS-000000</span>
                 </div>
-                <button class="btn-clear-cart" onclick="closeTicketModal()">✕ Cerrar</button>
+                <button class="btn-clear-cart" onclick="closeTicketModal()"><i class="fa-solid fa-xmark" style="margin-right:4px;"></i>Cerrar</button>
             </div>
 
             <div class="ticket-modal-body">
@@ -1298,19 +1365,19 @@
             <!-- Acciones del Ticket -->
             <div class="ticket-modal-actions">
                 <button class="btn-ticket-action btn-ticket-whatsapp" id="btnTicketWhatsApp" onclick="sendTicketByWhatsApp()">
-                    <span>📱 Enviar PDF y Ticket por WhatsApp</span>
+                    <span><i class="fa-brands fa-whatsapp" style="color:#25d366; font-size:17px; margin-right:6px;"></i>Enviar PDF y Ticket por WhatsApp</span>
                 </button>
                 <button class="btn-ticket-action" onclick="printThermalTicket()">
-                    <span>🖨️ Imprimir Ticket</span>
+                    <span><i class="fa-solid fa-print" style="margin-right:6px;"></i>Imprimir Ticket</span>
                 </button>
                 <button class="btn-ticket-action" onclick="downloadTicketPDF()">
-                    <span>📥 Descargar PDF</span>
+                    <span><i class="fa-solid fa-file-arrow-down" style="margin-right:6px;"></i>Descargar PDF</span>
                 </button>
                 <button class="btn-ticket-action" id="btnGoToInvoice" onclick="goToInvoiceFromTicket()">
-                    <span>🧾 Solicitar Factura</span>
+                    <span><i class="fa-solid fa-file-invoice" style="margin-right:6px;"></i>Solicitar Factura</span>
                 </button>
                 <button class="btn-ticket-action" style="background:var(--grad); color:var(--void); border-color:transparent;" onclick="startNewSale()">
-                    <span>➕ Siguiente Venta</span>
+                    <span><i class="fa-solid fa-circle-plus" style="margin-right:6px;"></i>Siguiente Venta</span>
                 </button>
             </div>
         </div>
@@ -1320,8 +1387,8 @@
     <div id="cashStatsModal" class="modal-overlay" style="display:none;">
         <div class="ticket-modal-card" style="max-width:520px;">
             <div class="ticket-modal-header">
-                <h3>📊 Corte de Caja del Día</h3>
-                <button class="btn-clear-cart" onclick="closeCashStatsModal()">✕ Cerrar</button>
+                <h3><i class="fa-solid fa-chart-line" style="color:var(--blue); margin-right:8px;"></i>Corte de Caja del Día</h3>
+                <button class="btn-clear-cart" onclick="closeCashStatsModal()"><i class="fa-solid fa-xmark" style="margin-right:4px;"></i>Cerrar</button>
             </div>
             <div style="padding:24px; background:var(--panel-2);">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
@@ -1338,24 +1405,24 @@
                 <div style="background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:20px;">
                     <h4 style="font-size:14px; margin-bottom:12px; color:var(--muted);">Desglose por Método de Pago</h4>
                     <div class="summary-row" style="margin-bottom:8px;">
-                        <span>💵 Efectivo en Caja:</span>
+                        <span><i class="fa-solid fa-money-bill-wave" style="color:var(--green); margin-right:6px;"></i>Efectivo en Caja:</span>
                         <span id="statsCashTotal" class="font-mono" style="color:var(--text); font-weight:700;">$0.00</span>
                     </div>
                     <div class="summary-row" style="margin-bottom:8px;">
-                        <span>💳 Terminal Tarjetas:</span>
+                        <span><i class="fa-solid fa-credit-card" style="color:var(--blue); margin-right:6px;"></i>Terminal Tarjetas:</span>
                         <span id="statsCardTotal" class="font-mono" style="color:var(--text); font-weight:700;">$0.00</span>
                     </div>
                     <div class="summary-row" style="margin-bottom:8px;">
-                        <span>📲 Transferencias SPEI:</span>
+                        <span><i class="fa-solid fa-mobile-screen-button" style="color:var(--cyan); margin-right:6px;"></i>Transferencias SPEI:</span>
                         <span id="statsSpeiTotal" class="font-mono" style="color:var(--text); font-weight:700;">$0.00</span>
                     </div>
                     <div class="summary-row" style="border-top:1px solid var(--line); padding-top:8px;">
-                        <span>📦 Total Artículos Vendidos:</span>
+                        <span><i class="fa-solid fa-box-open" style="color:var(--text); margin-right:6px;"></i>Total Artículos Vendidos:</span>
                         <span id="statsItemsCount" class="font-mono" style="color:var(--green); font-weight:700;">0 pzs</span>
                     </div>
                 </div>
 
-                <button class="btn-pos-primary" onclick="printCashStats()">🖨️ Imprimir Resumen de Corte</button>
+                <button class="btn-pos-primary" onclick="printCashStats()"><i class="fa-solid fa-print" style="margin-right:6px;"></i>Imprimir Resumen de Corte</button>
             </div>
         </div>
     </div>
@@ -1364,8 +1431,8 @@
     <div id="salesHistoryModal" class="modal-overlay" style="display:none;">
         <div class="ticket-modal-card" style="max-width:680px;">
             <div class="ticket-modal-header">
-                <h3>📋 Historial de Ventas POS</h3>
-                <button class="btn-clear-cart" onclick="closeSalesHistoryModal()">✕ Cerrar</button>
+                <h3><i class="fa-solid fa-clock-rotate-left" style="color:var(--green); margin-right:8px;"></i>Historial de Ventas POS</h3>
+                <button class="btn-clear-cart" onclick="closeSalesHistoryModal()"><i class="fa-solid fa-xmark" style="margin-right:4px;"></i>Cerrar</button>
             </div>
             <div style="padding:16px; overflow-y:auto; max-height:65vh;">
                 <table style="width:100%; border-collapse:collapse; text-align:left; font-size:13px;">
@@ -1679,7 +1746,7 @@
             if (filtered.length === 0) {
                 grid.innerHTML = `
                     <div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--muted);">
-                        <span style="font-size:36px; display:block; margin-bottom:10px;">🔍</span>
+                        <span style="font-size:36px; display:block; margin-bottom:10px; color:var(--muted);"><i class="fa-solid fa-magnifying-glass"></i></span>
                         <p style="font-size:16px; font-weight:700;">No se encontraron productos coincidentes.</p>
                         <p style="font-size:13px; color:var(--muted-2); margin-top:4px;">Prueba con otra palabra clave o selecciona otra categoría.</p>
                     </div>
@@ -1827,7 +1894,7 @@
             if (state.cart.length === 0) {
                 container.innerHTML = `
                     <div class="cart-empty">
-                        <div class="cart-empty-icon">🛒</div>
+                        <div class="cart-empty-icon"><i class="fa-solid fa-cart-shopping" style="color:var(--line); font-size:42px;"></i></div>
                         <p style="font-size:13.5px; font-weight:600;">La venta está vacía</p>
                         <p style="font-size:12px; color:var(--muted-2); margin-top:4px;">Haz clic en un producto o escanéalo para añadirlo.</p>
                     </div>
@@ -1849,7 +1916,7 @@
                             <div class="cart-item-name">${item.name}</div>
                             ${item.variation ? `<div class="cart-item-var">Presentación: ${item.variation}</div>` : ''}
                         </div>
-                        <button class="btn-remove-item" onclick="removeFromCart('${item.cartKey}')" title="Eliminar">✕</button>
+                        <button class="btn-remove-item" onclick="removeFromCart('${item.cartKey}')" title="Eliminar"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                     <div class="cart-item-bottom">
                         <div class="qty-control">

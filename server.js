@@ -32,8 +32,63 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   }
 }
 
-// Middleware
+// Middleware de Seguridad para Producción (Headers y Protección de Archivos Sensibles)
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  // Bloquear acceso a archivos sensibles y de código fuente
+  const blockedPatterns = [
+    /\.env/i,
+    /\.git/i,
+    /package(-lock)?\.json/i,
+    /server\.js/i,
+    /serviceaccount.*\.json/i,
+    /\.log$/i,
+    /\.bak$/i,
+    /\.backup$/i
+  ];
+  const reqPath = req.path || '';
+  if (blockedPatterns.some(pat => pat.test(reqPath))) {
+    return res.status(403).json({ error: 'Acceso prohibido por directiva de seguridad.' });
+  }
+  next();
+});
+
+// Middleware CORS
 app.use(cors());
+
+// Limitador de intentos fallidos (Anti Brute-Force) para logins
+const loginAttempts = new Map();
+function checkRateLimit(key, maxAttempts = 5, windowMs = 15 * 60 * 1000) {
+  const now = Date.now();
+  const record = loginAttempts.get(key) || { count: 0, firstAttempt: now, lockUntil: 0 };
+  if (record.lockUntil && record.lockUntil > now) {
+    const remainingMins = Math.ceil((record.lockUntil - now) / 60000);
+    return { blocked: true, message: `Demasiados intentos fallidos. Bloqueado temporalmente por ${remainingMins} minuto(s).` };
+  }
+  return { blocked: false, record };
+}
+function recordFailedAttempt(key, maxAttempts = 5, windowMs = 15 * 60 * 1000, lockTimeMs = 15 * 60 * 1000) {
+  const now = Date.now();
+  const record = loginAttempts.get(key) || { count: 0, firstAttempt: now, lockUntil: 0 };
+  if (now - record.firstAttempt > windowMs) {
+    record.count = 1;
+    record.firstAttempt = now;
+    record.lockUntil = 0;
+  } else {
+    record.count += 1;
+  }
+  if (record.count >= maxAttempts) {
+    record.lockUntil = now + lockTimeMs;
+  }
+  loginAttempts.set(key, record);
+}
+function resetLoginAttempts(key) {
+  loginAttempts.delete(key);
+}
 
 
 // Función auxiliar para guardar pedido en Firestore
@@ -288,14 +343,24 @@ function requireAdminAuth(req, res, next) {
 
 // 1. Login de Administración
 app.post('/api/admin/login', (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+  const rateLimitKey = `admin_login_${clientIp}`;
+
+  const limitCheck = checkRateLimit(rateLimitKey, 5, 15 * 60 * 1000);
+  if (limitCheck.blocked) {
+    return res.status(429).json({ success: false, error: limitCheck.message });
+  }
+
   const { password } = req.body || {};
   let inputPass = (password || '').toString();
   try { inputPass = decodeURIComponent(inputPass); } catch(e) {}
   inputPass = inputPass.replace(/^['"]|['"]$/g, '').trim();
 
   if (inputPass && inputPass === ADMIN_PASSWORD) {
+    resetLoginAttempts(rateLimitKey);
     res.json({ success: true, token: ADMIN_PASSWORD });
   } else {
+    recordFailedAttempt(rateLimitKey, 5, 15 * 60 * 1000, 15 * 60 * 1000);
     res.status(401).json({ success: false, error: 'Contraseña de administración incorrecta.' });
   }
 });
@@ -351,7 +416,7 @@ app.put('/api/admin/orders/:id', requireAdminAuth, async (req, res) => {
 // Catálogo Ampliado e Inventario de Productos Vonixx con Variaciones
 let localInventory = [
   { id: "VON-00042", code: "VON-00042", name: "V-MOL 1.5 L", category: "limpieza", udm: "PZ", qty: 2, price: 131.00, pct: 0, newPrice: 131.00, image: "/assets/productos/V-MOL%201.5L.png", description: "LAVADO DESINCRUSTANTE DE ALTA CONCENTRACIÓN", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "1.5 L", price: 131.00, qty: 2 }] },
-  { id: "VON-00026", code: "VON-00026", name: "V FLOC (SHAMPOO PH NEUTRO) 500ML", category: "limpieza", udm: "PZ", qty: 2, price: 91.00, pct: 0, newPrice: 91.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png", description: "SHAMPOO AUTOMOTRIZ DE PH NEUTRO DE ALTO RENDIMIENTO", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 91.00, qty: 2 }, { id: "v2", name: "1.5 L", price: 230.00, qty: 5 }, { id: "v3", name: "3 L", price: 420.00, qty: 2 }] },
+  { id: "VON-00026", code: "VON-00026", name: "V FLOC (SHAMPOO PH NEUTRO) 500ML", category: "limpieza", udm: "PZ", qty: 2, price: 91.00, pct: 0, newPrice: 91.00, image: "/assets/productos/V-FLOC%20500ML.png", description: "SHAMPOO AUTOMOTRIZ DE PH NEUTRO DE ALTO RENDIMIENTO", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 91.00, qty: 2 }, { id: "v2", name: "1.5 L", price: 230.00, qty: 5 }, { id: "v3", name: "3 L", price: 420.00, qty: 2 }] },
   { id: "VON-00097", code: "VON-00097", name: "HYDROX WASH 500ML", category: "limpieza", udm: "PZ", qty: 2, price: 269.00, pct: 0, newPrice: 269.00, image: "/assets/productos/HYDROX%20WASH.png", description: "SHAMPOO CERÁMICO DE LIMPIEZA Y PROTECCIÓN SiO2", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 269.00, qty: 2 }] },
   { id: "VON-00072", code: "VON-00072", name: "ALUMAX EXP 20 L", category: "limpieza", udm: "PZ", qty: 2, price: 1237.00, pct: 0, newPrice: 1237.00, image: "/assets/productos/Alumax%2020L.png", description: "DESINCRUSTANTE ÁCIDO PARA RINES Y MOTOR PRESENTACIÓN EXP 20L", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "20 L", price: 1237.00, qty: 2 }] },
   { id: "VON-00084", code: "VON-00084", name: "REMOVEX EXP 20L", category: "limpieza", udm: "PZ", qty: 1, price: 994.00, pct: 0, newPrice: 994.00, image: "/assets/productos/REMOVEX.png", description: "DESENGRASANTE Y LIMPIADOR DE CHASIS INDUSTRIAL 20L", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "20 L", price: 994.00, qty: 1 }] },
@@ -369,8 +434,8 @@ let localInventory = [
   { id: "VON-00062", code: "VON-00062", name: "SHINY 500 ML", category: "llantas", udm: "PZ", qty: 2, price: 176.00, pct: 0, newPrice: 176.00, image: "/assets/productos/SHINY.png", description: "ABRILLANTADOR DE LLANTAS DE EFECTO MOJADO INTENSO Y REPELENTE", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "500 ML", price: 176.00, qty: 2 }] },
   { id: "VON-00046", code: "VON-00046", name: "PAD PARA POL DE VIDRIOS TIPO ALFOMBRA 5\"", category: "accesorios", udm: "PZ", qty: 1, price: 219.00, pct: 0, newPrice: 219.00, image: "/assets/productos/PAD%20GRIS.png", description: "PAD DE ALFOMBRA PARA CORTE Y PULIDO PROFUNDO DE CRISTALES 5 PULGADAS", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "5 pulgadas", price: 219.00, qty: 1 }] },
   { id: "VON-00047", code: "VON-00047", name: "PAD PARA POL DE VIDRIOS TIPO LONA 5\"", category: "accesorios", udm: "PZ", qty: 1, price: 219.00, pct: 0, newPrice: 219.00, image: "/assets/productos/PAD%20LONA.png", description: "PAD DE LONA PARA ELIMINACIÓN DE MARCAS DE AGUA EN VIDRIOS 5 PULGADAS", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "5 pulgadas", price: 219.00, qty: 1 }] },
-  { id: "MIC-00001", code: "MIC-00001", name: "MICROFIBRA", category: "accesorios", udm: "PZ", qty: 2, price: 133.00, pct: 0, newPrice: 133.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/MICROFIBRA.png", description: "TOALLA DE MICROFIBRA DE ALTO GRAMAJE 40X40 CM SIN COSTURAS", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "40x40 cm", price: 133.00, qty: 2 }] },
-  { id: "MIC-00002", code: "MIC-00002", name: "MICROFIBRA CHICA", category: "accesorios", udm: "PZ", qty: 2, price: 44.00, pct: 0, newPrice: 44.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/MICROFIBRA.png", description: "MICROFIBRA COMPACTA MULTIUSOS PARA INTERIORES Y DETALLES", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "30x30 cm", price: 44.00, qty: 2 }] },
+  { id: "MIC-00001", code: "MIC-00001", name: "MICROFIBRA", category: "accesorios", udm: "PZ", qty: 2, price: 133.00, pct: 0, newPrice: 133.00, image: "/assets/productos/APLICADOR.png", description: "TOALLA DE MICROFIBRA DE ALTO GRAMAJE 40X40 CM SIN COSTURAS", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "40x40 cm", price: 133.00, qty: 2 }] },
+  { id: "MIC-00002", code: "MIC-00002", name: "MICROFIBRA CHICA", category: "accesorios", udm: "PZ", qty: 2, price: 44.00, pct: 0, newPrice: 44.00, image: "/assets/productos/APLICADOR.png", description: "MICROFIBRA COMPACTA MULTIUSOS PARA INTERIORES Y DETALLES", sec: "Línea de Detailing / Limpieza", variations: [{ id: "v1", name: "30x30 cm", price: 44.00, qty: 2 }] },
 
   { id: "VON-00001", code: "VON-00001", name: "V10 PULIMENTO DE CORTE 500ML", category: "cera-pasta", udm: "PZ", qty: 2, price: 130.00, pct: 0, newPrice: 130.00, image: "/assets/productos/V10.png", description: "PULIMENTO DE CORTE RÁPIDO PARA ELIMINAR RAYONES PROFUNDOS", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 130.00, qty: 2 }] },
   { id: "VON-00002", code: "VON-00002", name: "V20 PULIMENTO DE CORTE MEDIO 500ML", category: "cera-pasta", udm: "PZ", qty: 2, price: 152.00, pct: 0, newPrice: 152.00, image: "/assets/productos/V20.png", description: "COMPUESTO PULIDOR MEDIO PARA ACABADO LISO Y SIN HOLOGRAMAS", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 152.00, qty: 2 }] },
@@ -381,7 +446,7 @@ let localInventory = [
   { id: "VON-00034", code: "VON-00034", name: "OPTY 240 ML", category: "cristales", udm: "PZ", qty: 1, price: 444.00, pct: 0, newPrice: 444.00, image: "/assets/productos/OPTY.png", description: "REPELENTE DE LLUVIA Y SELLADOR DE CRISTALES DE LARGA DURACIÓN", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "240 ML", price: 444.00, qty: 1 }] },
   { id: "VON-00035", code: "VON-00035", name: "GLAZY 500ML", category: "cristales", udm: "PZ", qty: 2, price: 105.00, pct: 0, newPrice: 105.00, image: "/assets/productos/GLAZY.png", description: "LIMPIADOR DE CRISTALES SIN RESIDUOS NI MANCHAS", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 105.00, qty: 2 }] },
   { id: "VON-00086", code: "VON-00086", name: "FOCUS 240 ML", category: "cristales", udm: "PZ", qty: 2, price: 139.00, pct: 0, newPrice: 139.00, image: "/assets/productos/FOCUS.png", description: "DESCONTAMINANTE Y REMOVEDOR DE MARCAS DE AGUA EN VIDRIOS", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "240 ML", price: 139.00, qty: 2 }] },
-  { id: "VON-00007", code: "VON-00007", name: "BLEND ALL IN ONE (3 PASOS EN 1) 500ML", category: "cera-liquida", udm: "PZ", qty: 1, price: 388.00, pct: 0, newPrice: 388.00, image: "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEN-SPRAY-.png", description: "PULIMENTO TODO EN UNO: CORTE, ACABADO Y PROTECCIÓN SiO2 + CARNAÚBA", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 388.00, qty: 1 }] },
+  { id: "VON-00007", code: "VON-00007", name: "BLEND ALL IN ONE (3 PASOS EN 1) 500ML", category: "cera-liquida", udm: "PZ", qty: 1, price: 388.00, pct: 0, newPrice: 388.00, image: "/assets/productos/BLEND%20CERAMIC%20%26%20CARNAUBA%20SPRAY%20WAX.png", description: "PULIMENTO TODO EN UNO: CORTE, ACABADO Y PROTECCIÓN SiO2 + CARNAÚBA", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 388.00, qty: 1 }] },
   { id: "VON-00008", code: "VON-00008", name: "V40 (4 PASOS EN 1) 500ML", category: "cera-liquida", udm: "PZ", qty: 1, price: 190.00, pct: 0, newPrice: 190.00, image: "/assets/productos/V40.png", description: "PULIMENTO Y CERA 4 EN 1: CORTE, REFINADO, BRILLO Y PROTECCIÓN", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 190.00, qty: 1 }] },
   { id: "VON-00036", code: "VON-00036", name: "CARNAUBA HYBRID WAX 240ML", category: "cera-pasta", udm: "PZ", qty: 2, price: 233.00, pct: 0, newPrice: 233.00, image: "/assets/productos/CARNAUBA%20HYBRID%20WAX.png", description: "CERA HÍBRIDA DE CARNAÚBA Y POLÍMEROS SINTÉTICOS EN PASTA", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "240 ML", price: 233.00, qty: 2 }] },
   { id: "VON-00010", code: "VON-00010", name: "BLEND PASTE WAX 100ML", category: "cera-pasta", udm: "PZ", qty: 1, price: 317.00, pct: 0, newPrice: 317.00, image: "/assets/productos/BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png", description: "CERA DE CARNAÚBA Y SiO2 HASTA 7 MESES DE DURABILIDAD", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "100 ML", price: 317.00, qty: 1 }] },
@@ -719,26 +784,45 @@ app.get('/api/pos/sellers', (req, res) => {
 
 // 2. Paso 1 de Seguridad POS: Verificar Contraseña de Admin
 app.post('/api/pos/verify-admin', (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+  const rateLimitKey = `pos_admin_${clientIp}`;
+
+  const limitCheck = checkRateLimit(rateLimitKey, 5, 15 * 60 * 1000);
+  if (limitCheck.blocked) {
+    return res.status(429).json({ success: false, error: limitCheck.message });
+  }
+
   const { adminPassword } = req.body || {};
   let inputPass = (adminPassword || '').toString();
   try { inputPass = decodeURIComponent(inputPass); } catch(e) {}
   inputPass = inputPass.replace(/^['"]|['"]$/g, '').trim();
 
   if (inputPass && inputPass === ADMIN_PASSWORD) {
+    resetLoginAttempts(rateLimitKey);
     return res.json({ success: true, message: 'Acceso de Administrador verificado correctamente.' });
   } else {
+    recordFailedAttempt(rateLimitKey, 5, 15 * 60 * 1000, 15 * 60 * 1000);
     return res.status(401).json({ success: false, error: 'Contraseña de administrador incorrecta.' });
   }
 });
 
 // 2b. Paso 2 de Seguridad POS: Login de Vendedor (PIN default 0808)
 app.post('/api/pos/login', (req, res) => {
+  const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+  const rateLimitKey = `pos_login_${clientIp}`;
+
+  const limitCheck = checkRateLimit(rateLimitKey, 8, 10 * 60 * 1000);
+  if (limitCheck.blocked) {
+    return res.status(429).json({ success: false, error: limitCheck.message });
+  }
+
   const { sellerId, pin, password, sellerName } = req.body || {};
   const cleanPin = (pin || '').toString().trim();
   const cleanPass = (password || '').toString().trim();
 
   // Autenticación por contraseña de administración directa
   if (cleanPass && cleanPass === ADMIN_PASSWORD) {
+    resetLoginAttempts(rateLimitKey);
     const adminSeller = localSellers.find(s => s.role === 'admin') || { id: 'admin', name: 'Administrador', role: 'admin' };
     return res.json({ success: true, seller: adminSeller, token: ADMIN_PASSWORD });
   }
@@ -746,6 +830,7 @@ app.post('/api/pos/login', (req, res) => {
   // Autenticación por PIN de vendedor (Default: 0808 o PIN configurado)
   const seller = localSellers.find(s => (sellerId ? s.id === sellerId : true) && (s.pin === cleanPin || cleanPin === '0808'));
   if (seller) {
+    resetLoginAttempts(rateLimitKey);
     return res.json({
       success: true,
       seller: { id: seller.id, name: sellerName || seller.name, role: seller.role },
@@ -755,6 +840,7 @@ app.post('/api/pos/login', (req, res) => {
 
   // PIN de rescate / default universal 0808
   if (cleanPin === '0808' || cleanPin === '1234' || cleanPin === '0000') {
+    resetLoginAttempts(rateLimitKey);
     const defaultSeller = localSellers.find(s => s.id === sellerId) || localSellers[0];
     return res.json({
       success: true,
@@ -763,6 +849,7 @@ app.post('/api/pos/login', (req, res) => {
     });
   }
 
+  recordFailedAttempt(rateLimitKey, 8, 10 * 60 * 1000, 10 * 60 * 1000);
   res.status(401).json({ success: false, error: 'PIN de vendedor incorrecto.' });
 });
 
@@ -1631,13 +1718,14 @@ app.delete('/api/visor/images/:id', (req, res) => {
     slides = slides.filter(s => s.id !== targetId && s.filename !== targetId);
     saveVisorSlides(slides);
 
-    // Eliminar archivo físico si existe en admin/VISOR
+    // Eliminar archivo físico si existe en admin/VISOR (con sanitización contra directory traversal)
     if (slideToDelete.filename) {
-      const filePath = path.join(VISOR_DIR, slideToDelete.filename);
+      const safeFilename = path.basename(slideToDelete.filename);
+      const filePath = path.join(VISOR_DIR, safeFilename);
       if (fs.existsSync(filePath)) {
         try {
           fs.unlinkSync(filePath);
-          console.log(`🗑️ Archivo físico eliminado de admin/VISOR: ${slideToDelete.filename}`);
+          console.log(`🗑️ Archivo físico eliminado de admin/VISOR: ${safeFilename}`);
         } catch (unlinkErr) {
           console.warn('No se pudo borrar archivo físico:', unlinkErr.message);
         }

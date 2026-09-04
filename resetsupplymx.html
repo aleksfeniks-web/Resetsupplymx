@@ -796,7 +796,74 @@ section{padding:96px 0;}
   .container{padding:0 18px;}
 }
 
+
+/* ==========================================================================
+   ROTATING OUTER GLOW ANIMATION (BRAND COLORS #3ddc84 -> #22b8f0)
+   ========================================================================== */
+@keyframes rotateGlowBorder {
+  0% {
+    box-shadow: 0 0 25px rgba(61, 220, 132, 0.45), 0 0 45px rgba(34, 184, 240, 0.3), inset 0 0 15px rgba(61, 220, 132, 0.1);
+    border-color: rgba(61, 220, 132, 0.65);
+  }
+  25% {
+    box-shadow: 12px 0 30px rgba(34, 184, 240, 0.5), -12px 0 35px rgba(61, 220, 132, 0.45), inset 0 0 15px rgba(34, 184, 240, 0.15);
+    border-color: rgba(34, 184, 240, 0.7);
+  }
+  50% {
+    box-shadow: 0 12px 35px rgba(61, 220, 132, 0.55), 0 -12px 45px rgba(34, 184, 240, 0.5), inset 0 0 20px rgba(61, 220, 132, 0.2);
+    border-color: rgba(61, 220, 132, 0.8);
+  }
+  75% {
+    box-shadow: -12px 0 30px rgba(34, 184, 240, 0.55), 12px 0 35px rgba(61, 220, 132, 0.45), inset 0 0 15px rgba(34, 184, 240, 0.15);
+    border-color: rgba(34, 184, 240, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(61, 220, 132, 0.45), 0 0 45px rgba(34, 184, 240, 0.3), inset 0 0 15px rgba(61, 220, 132, 0.1);
+    border-color: rgba(61, 220, 132, 0.65);
+  }
+}
+
+.cart-modal-content,
+.product-modal-card,
+.modal-content,
+.login-card,
+.auth-card,
+.ticket-modal-card,
+.modal-card,
+.fac-card,
+.modal-glow {
+  position: relative !important;
+  animation: rotateGlowBorder 4s linear infinite !important;
+  border: 1.5px solid rgba(61, 220, 132, 0.6) !important;
+}
+
+@keyframes inputRequiredGlow {
+  0% {
+    border-color: #3ddc84 !important;
+    box-shadow: 0 0 10px rgba(61, 220, 132, 0.6), 0 0 20px rgba(34, 184, 240, 0.35) !important;
+  }
+  50% {
+    border-color: #22b8f0 !important;
+    box-shadow: 0 0 18px rgba(34, 184, 240, 0.75), 0 0 28px rgba(61, 220, 132, 0.5) !important;
+  }
+  100% {
+    border-color: #3ddc84 !important;
+    box-shadow: 0 0 10px rgba(61, 220, 132, 0.6), 0 0 20px rgba(34, 184, 240, 0.35) !important;
+  }
+}
+
+input[required]:focus,
+select[required]:focus,
+textarea[required]:focus,
+.form-input[required]:focus,
+.pos-input[required]:focus,
+.fac-input[required]:focus {
+  outline: none !important;
+  animation: inputRequiredGlow 2.5s ease-in-out infinite !important;
+}
+
 </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
@@ -811,8 +878,8 @@ section{padding:96px 0;}
                 <li><a href="#productos" class="nav-link">Productos</a></li>
                 <li><a href="#nosotros" class="nav-link">Nosotros</a></li>
                 <li><a href="#categorias" class="nav-link">Categorías</a></li>
-                <li><a href="facturacion.html" class="nav-link">🧾 Facturación</a></li>
-                <li><a href="/clientes/puntodeventa.html" class="nav-link">🏪 Punto de Venta</a></li>
+                <li><a href="facturacion.html" class="nav-link"><i class="fa-solid fa-file-invoice" style="color:var(--green); margin-right:6px;"></i>Facturación</a></li>
+                <li><a href="/clientes/puntodeventa.html" class="nav-link"><i class="fa-solid fa-store" style="color:var(--blue); margin-right:6px;"></i>Punto de Venta</a></li>
                 <li><a href="#contacto" class="nav-link">Contacto</a></li>
             </ul>
             <div class="nav-actions">
@@ -1966,7 +2033,7 @@ section{padding:96px 0;}
             <div class="cart-modal-content" style="background:#12171e; border:1px solid #232b34; border-radius:14px; width:92%; max-width:540px; max-height:90vh; display:flex; flex-direction:column; padding:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7); position:relative; color:#f2f5f8; transform:scale(0.95); transition:transform 0.3s ease; box-sizing:border-box;">
                 <button id="closeCartBtn" style="position:absolute; top:16px; right:16px; background:none; border:none; color:#93a0ac; font-size:24px; cursor:pointer; line-height:1;">&times;</button>
                 <h3 style="font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
-                    🛒 Mi Carrito de Compras
+                    <i class="fa-solid fa-cart-shopping" style="color:var(--green); margin-right:8px;"></i>Mi Carrito de Compras
                 </h3>
 
                 <div id="cartItemsList" style="flex:1; overflow-y:auto; margin-bottom:14px; padding-right:4px;">
@@ -1976,13 +2043,13 @@ section{padding:96px 0;}
                 <!-- Sección del Calculador de Envío (Envia.com) -->
                 <div id="cartShippingBox" style="background:#161c24; border:1px solid #232b34; border-radius:10px; padding:12px; margin-bottom:14px;">
                     <div style="font-size:13px; font-weight:700; color:#3ddc84; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between;">
-                        <span>🚚 Opciones de Envío (Envia.com)</span>
+                        <span><i class="fa-solid fa-truck-fast" style="color:var(--blue); margin-right:6px;"></i>Opciones de Envío (Envia.com)</span>
                         <span style="font-size:10.5px; background:rgba(61,220,132,0.15); color:#3ddc84; padding:2px 6px; border-radius:4px; font-weight:600;">32 Estados México</span>
                     </div>
                     <select id="cartShippingSelect" style="width:100%; background:#0a0e13; color:#f2f5f8; border:1px solid #232b34; padding:8px 10px; border-radius:6px; font-size:12.5px; font-family:'Inter',sans-serif; cursor:pointer; outline:none;">
-                        <option value="estandar">🚚 Estándar Envia.com (FedEx/Estafeta 3-5 días) — $150.00 (Gratis > $1,499)</option>
+                        <option value="estandar">📦 Estándar Envia.com (FedEx/Estafeta 3-5 días) — $150.00 (Gratis > $1,499)</option>
                         <option value="expres">⚡ Exprés Envia.com (DHL/FedEx 1-2 días) — $250.00 MXN</option>
-                        <option value="sucursal">🏢 Recoger en Tienda (Reset Supply MX) — GRATIS</option>
+                        <option value="sucursal">🏪 Recoger en Tienda (Reset Supply MX) — GRATIS</option>
                     </select>
                     <div id="freeShippingBanner" style="font-size:11.5px; margin-top:6px; color:#93a0ac; text-align:center; font-weight:500;">
                         <!-- Texto dinámico -->
@@ -2006,10 +2073,10 @@ section{padding:96px 0;}
 
                     <div style="display:flex; flex-direction:column; gap:8px;">
                         <button id="stripeCheckoutBtn" style="background:linear-gradient(90deg, #3ddc84, #22b8f0); color:#0a0e13; border:none; padding:12px; border-radius:8px; font-weight:700; font-size:15px; cursor:pointer; transition:all 0.2s ease; display:flex; align-items:center; justify-content:center; gap:8px;">
-                            💳 Pagar Seguro con Stripe
+                            <i class="fa-solid fa-credit-card" style="margin-right:8px;"></i>Pagar Seguro con Stripe
                         </button>
                         <button id="whatsappCheckoutBtn" style="background:#25d366; color:#fff; border:none; padding:11px; border-radius:8px; font-weight:600; font-size:14.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-                            💬 Cotizar / Pedir con Envío por WhatsApp
+                            <i class="fa-brands fa-whatsapp" style="font-size:18px; margin-right:8px;"></i>Cotizar / Pedir con Envío por WhatsApp
                         </button>
                     </div>
                 </div>
@@ -2039,7 +2106,7 @@ section{padding:96px 0;}
                             </div>
 
                             <div style="background:#161c24; border:1px solid #232b34; border-radius:8px; padding:12px; margin-bottom:14px;">
-                                <span style="font-size:11px; font-weight:700; color:#93a0ac; text-transform:uppercase; display:block; margin-bottom:4px;">📖 DESCRIPCIÓN & BENEFICIOS</span>
+                                <span style="font-size:11px; font-weight:700; color:#93a0ac; text-transform:uppercase; display:block; margin-bottom:4px;"><i class="fa-solid fa-book-open" style="color:var(--blue); margin-right:6px;"></i>DESCRIPCIÓN & BENEFICIOS</span>
                                 <p id="detailModalDescription" style="font-size:12.5px; line-height:1.5; color:#d1d5db; margin:0; max-height:130px; overflow-y:auto; white-space:pre-line;">Descripción del producto...</p>
                             </div>
 
@@ -2112,7 +2179,7 @@ section{padding:96px 0;}
             var sessionId = urlParams.get('session_id');
 
             if (paymentStatus === 'success') {
-                showToast('🎉 ¡Pago completado con éxito mediante Stripe! Gracias por tu compra en Reset Supply MX.', '#3ddc84', '#0a0e13', 8000);
+                showToast('<i class="fa-solid fa-circle-check" style="margin-right:6px;"></i> ¡Pago completado con éxito mediante Stripe! Gracias por tu compra en Reset Supply MX.', '#3ddc84', '#0a0e13', 8000);
                 
                 // Si viene session_id, verificar e ingresar automáticamente a Firestore en caso de que el webhook no haya llegado (ej. localhost)
                 if (sessionId) {
@@ -2128,12 +2195,12 @@ section{padding:96px 0;}
                         });
                 }
             } else if (paymentStatus === 'cancelled') {
-                showToast('⚠️ El pago con Stripe fue cancelado. Si tuviste un problema, contáctanos por WhatsApp.', '#e74c3c', '#ffffff', 8000);
+                showToast('<i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> El pago con Stripe fue cancelado. Si tuviste un problema, contáctanos por WhatsApp.', '#e74c3c', '#ffffff', 8000);
             }
         })();
 
         function showToast(text, bgColor, textColor, duration) {
-            paymentToast.textContent = text;
+            paymentToast.innerHTML = text;
             paymentToast.style.background = bgColor || '#3ddc84';
             paymentToast.style.color = textColor || '#0a0e13';
             paymentToast.style.display = 'block';
@@ -2160,21 +2227,21 @@ section{padding:96px 0;}
                 if (subtotal >= 1499) {
                     cost = 0;
                     label = 'GRATIS (Envia.com)';
-                    bannerText = '🎉 ¡Felicidades! Calificas para <strong style="color:#3ddc84;">ENVÍO ESTÁNDAR GRATIS</strong> vía Envia.com';
+                    bannerText = '<i class="fa-solid fa-gift" style="color:#3ddc84; margin-right:6px;"></i> ¡Felicidades! Calificas para <strong style="color:#3ddc84;">ENVÍO ESTÁNDAR GRATIS</strong> vía Envia.com';
                 } else {
                     cost = 150;
                     label = '$150.00 MXN';
                     var diff = (1499 - subtotal).toFixed(2);
-                    bannerText = '💡 Agrega <strong style="color:#22b8f0;">$' + diff + ' MXN</strong> más para tener <strong>Envío GRATIS</strong>';
+                    bannerText = '<i class="fa-solid fa-lightbulb" style="color:#22b8f0; margin-right:6px;"></i> Agrega <strong style="color:#22b8f0;">$' + diff + ' MXN</strong> más para tener <strong>Envío GRATIS</strong>';
                 }
             } else if (selectedShipping === 'expres') {
                 cost = 250;
                 label = '$250.00 MXN';
-                bannerText = '⚡ Envío Exprés Prioritario (DHL / FedEx 1-2 días hábiles)';
+                bannerText = '<i class="fa-solid fa-bolt" style="color:#3ddc84; margin-right:6px;"></i> Envío Exprés Prioritario (DHL / FedEx 1-2 días hábiles)';
             } else if (selectedShipping === 'sucursal') {
                 cost = 0;
                 label = 'GRATIS (Recoger en Sucursal)';
-                bannerText = '🏢 Recogida en tienda sin costo de envío';
+                bannerText = '<i class="fa-solid fa-store" style="color:#22b8f0; margin-right:6px;"></i> Recogida en tienda sin costo de envío';
             }
 
             return { cost: cost, label: label, bannerText: bannerText };
@@ -2186,7 +2253,7 @@ section{padding:96px 0;}
                 if (cartSubtotalAmount) cartSubtotalAmount.textContent = '$0.00 MXN';
                 if (cartShippingAmount) cartShippingAmount.textContent = '$0.00 MXN';
                 if (cartTotalAmount) cartTotalAmount.textContent = '$0.00 MXN';
-                if (freeShippingBanner) freeShippingBanner.innerHTML = '🚚 Agrega productos para calcular opciones de envío';
+                if (freeShippingBanner) freeShippingBanner.innerHTML = '<i class="fa-solid fa-truck-fast" style="color:#22b8f0; margin-right:6px;"></i> Agrega productos para calcular opciones de envío';
                 stripeCheckoutBtn.disabled = true;
                 stripeCheckoutBtn.style.opacity = '0.5';
                 return;
@@ -2211,7 +2278,7 @@ section{padding:96px 0;}
                         <button onclick="changeQty(${index}, -1)" style="background:#1f2730; border:none; color:#fff; width:24px; height:24px; border-radius:4px; cursor:pointer; font-weight:bold;">-</button>
                         <span style="font-weight:600; font-size:13.5px;">${item.quantity}</span>
                         <button onclick="changeQty(${index}, 1)" style="background:#1f2730; border:none; color:#fff; width:24px; height:24px; border-radius:4px; cursor:pointer; font-weight:bold;">+</button>
-                        <button onclick="removeItem(${index})" style="background:none; border:none; color:#e74c3c; cursor:pointer; margin-left:4px; font-size:14px;">🗑️</button>
+                        <button onclick="removeItem(${index})" style="background:none; border:none; color:#e74c3c; cursor:pointer; margin-left:4px; font-size:14px;" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>
                 `;
@@ -2441,7 +2508,7 @@ section{padding:96px 0;}
                 }
 
                 updateCartBadge();
-                showToast('🎉 Agregadas ' + qty + 'x "' + activeDetailItemName + '" al carrito', '#3ddc84', '#0a0e13', 3000);
+                showToast('<i class="fa-solid fa-circle-check" style="margin-right:6px;"></i> Agregadas ' + qty + 'x "' + activeDetailItemName + '" al carrito', '#3ddc84', '#0a0e13', 3000);
                 
                 productDetailModal.style.opacity = '0';
                 setTimeout(function() { productDetailModal.style.display = 'none'; }, 250);
@@ -2590,13 +2657,13 @@ section{padding:96px 0;}
                 if (data.url) {
                     window.location.href = data.url;
                 } else if (data.error) {
-                    showToast('❌ Error: ' + data.error, '#e74c3c', '#ffffff', 5000);
+                    showToast('<i class="fa-solid fa-circle-xmark" style="margin-right:6px;"></i> Error: ' + data.error, '#e74c3c', '#ffffff', 5000);
                     stripeCheckoutBtn.disabled = false;
-                    stripeCheckoutBtn.textContent = '💳 Pagar Seguro con Stripe';
+                    stripeCheckoutBtn.innerHTML = '<i class="fa-solid fa-credit-card" style="margin-right:8px;"></i>Pagar Seguro con Stripe';
                 }
             } catch (err) {
                 console.error('Error en checkout:', err);
-                showToast('❌ Ocurrió un error al conectar con la pasarela de pago.', '#e74c3c', '#ffffff', 5000);
+                showToast('<i class="fa-solid fa-circle-xmark" style="margin-right:6px;"></i> Ocurrió un error al conectar con la pasarela de pago.', '#e74c3c', '#ffffff', 5000);
                 stripeCheckoutBtn.disabled = false;
                 stripeCheckoutBtn.textContent = '💳 Pagar Seguro con Stripe';
             }

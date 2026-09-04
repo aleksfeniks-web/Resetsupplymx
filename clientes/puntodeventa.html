@@ -1586,7 +1586,74 @@
                 border: none;
             }
         }
-    </style>
+    
+/* ==========================================================================
+   ROTATING OUTER GLOW ANIMATION (BRAND COLORS #3ddc84 -> #22b8f0)
+   ========================================================================== */
+@keyframes rotateGlowBorder {
+  0% {
+    box-shadow: 0 0 25px rgba(61, 220, 132, 0.45), 0 0 45px rgba(34, 184, 240, 0.3), inset 0 0 15px rgba(61, 220, 132, 0.1);
+    border-color: rgba(61, 220, 132, 0.65);
+  }
+  25% {
+    box-shadow: 12px 0 30px rgba(34, 184, 240, 0.5), -12px 0 35px rgba(61, 220, 132, 0.45), inset 0 0 15px rgba(34, 184, 240, 0.15);
+    border-color: rgba(34, 184, 240, 0.7);
+  }
+  50% {
+    box-shadow: 0 12px 35px rgba(61, 220, 132, 0.55), 0 -12px 45px rgba(34, 184, 240, 0.5), inset 0 0 20px rgba(61, 220, 132, 0.2);
+    border-color: rgba(61, 220, 132, 0.8);
+  }
+  75% {
+    box-shadow: -12px 0 30px rgba(34, 184, 240, 0.55), 12px 0 35px rgba(61, 220, 132, 0.45), inset 0 0 15px rgba(34, 184, 240, 0.15);
+    border-color: rgba(34, 184, 240, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(61, 220, 132, 0.45), 0 0 45px rgba(34, 184, 240, 0.3), inset 0 0 15px rgba(61, 220, 132, 0.1);
+    border-color: rgba(61, 220, 132, 0.65);
+  }
+}
+
+.cart-modal-content,
+.product-modal-card,
+.modal-content,
+.login-card,
+.auth-card,
+.ticket-modal-card,
+.modal-card,
+.fac-card,
+.modal-glow {
+  position: relative !important;
+  animation: rotateGlowBorder 4s linear infinite !important;
+  border: 1.5px solid rgba(61, 220, 132, 0.6) !important;
+}
+
+@keyframes inputRequiredGlow {
+  0% {
+    border-color: #3ddc84 !important;
+    box-shadow: 0 0 10px rgba(61, 220, 132, 0.6), 0 0 20px rgba(34, 184, 240, 0.35) !important;
+  }
+  50% {
+    border-color: #22b8f0 !important;
+    box-shadow: 0 0 18px rgba(34, 184, 240, 0.75), 0 0 28px rgba(61, 220, 132, 0.5) !important;
+  }
+  100% {
+    border-color: #3ddc84 !important;
+    box-shadow: 0 0 10px rgba(61, 220, 132, 0.6), 0 0 20px rgba(34, 184, 240, 0.35) !important;
+  }
+}
+
+input[required]:focus,
+select[required]:focus,
+textarea[required]:focus,
+.form-input[required]:focus,
+.pos-input[required]:focus,
+.fac-input[required]:focus {
+  outline: none !important;
+  animation: inputRequiredGlow 2.5s ease-in-out infinite !important;
+}
+
+</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
@@ -1607,7 +1674,7 @@
                 <span id="navCatalogLockBadge" style="font-size:10.5px; background:rgba(255,165,2,0.18); color:var(--yellow); padding:1px 6px; border-radius:8px; margin-left:4px;">🔒 Disponible tras registro</span>
             </button>
             <a href="#seccionPartner" class="btn-nav" style="border-color:rgba(57,255,20,0.4); color:var(--green);">
-                <span>🚀 Partner Reset Supply</span>
+                <span><i class="fa-solid fa-handshake" style="color:var(--green); margin-right:6px;"></i>Partner Reset Supply</span>
             </a>
         </div>
     </header>
@@ -1929,7 +1996,7 @@
             </div>
             <div>
                 <button type="button" class="btn-cat-trigger" id="btnBannerCatalog">
-                    <span id="btnBannerIcon">🔒</span>
+                    <span id="btnBannerIcon"><i class="fa-solid fa-lock" style="color:var(--muted); margin-right:6px;"></i></span>
                     <span id="btnBannerText">Desbloquear Catálogo</span>
                 </button>
             </div>
@@ -2255,7 +2322,7 @@
                                             <div id="fileSizeDisplay" style="font-size:11px; color:var(--muted);">0 KB</div>
                                         </div>
                                     </div>
-                                    <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Quitar archivo">✖ Quitar</button>
+                                    <button type="button" class="btn-remove-file" id="btnRemoveFile" title="Quitar archivo"><i class="fa-solid fa-trash-can" style="margin-right:4px;"></i>Quitar</button>
                                 </div>
                                 <span class="form-help">Tu constancia nos permite darte de alta de inmediato en nuestro sistema de facturación.</span>
                             </div>
@@ -2353,7 +2420,7 @@
             </p>
             <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
                 <button type="button" class="btn-modal-catalog" id="btnGoToRegister">
-                    ✍️ Completar Registro Gratuito
+                    <i class="fa-solid fa-user-check" style="margin-right:6px;"></i> Completar Registro Gratuito
                 </button>
                 <button type="button" class="btn-modal-close" id="btnCloseLockedModal">
                     Cerrar
@@ -2383,7 +2450,7 @@
                         <span id="txtFullscreen">Pantalla Completa</span>
                     </button>
                     <button type="button" class="btn-cat-ctrl btn-cat-close" id="btnCloseCatalog">
-                        <span>✖ Cerrar</span>
+                        <span><i class="fa-solid fa-xmark" style="margin-right:4px;"></i>Cerrar</span>
                     </button>
                 </div>
             </div>
@@ -2696,7 +2763,7 @@
                 if (isRegistered) {
                     const navBadge = document.getElementById('navCatalogLockBadge');
                     if (navBadge) {
-                        navBadge.textContent = '🔓 Desbloqueado';
+                        navBadge.innerHTML = '<i class="fa-solid fa-lock-open" style="color:var(--green); margin-right:4px;"></i> Desbloqueado';
                         navBadge.style.background = 'rgba(57, 255, 20, 0.2)';
                         navBadge.style.color = 'var(--green)';
                     }
@@ -2710,7 +2777,7 @@
                     const btnBanner = document.getElementById('btnBannerCatalog');
                     if (btnBanner) {
                         btnBanner.classList.add('unlocked');
-                        btnBanner.innerHTML = '<span>📖</span><span>Abrir Catálogo Interactivo</span>';
+                        btnBanner.innerHTML = '<span><i class="fa-solid fa-book-open" style="margin-right:6px;"></i></span><span>Abrir Catálogo Interactivo</span>';
                     }
                 }
             }

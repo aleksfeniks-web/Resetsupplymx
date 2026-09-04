@@ -78,14 +78,81 @@
         /* Modals */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); }
         .modal-content { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 26px; width: 100%; max-width: 520px; box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
-    </style>
+    
+/* ==========================================================================
+   ROTATING OUTER GLOW ANIMATION (BRAND COLORS #3ddc84 -> #22b8f0)
+   ========================================================================== */
+@keyframes rotateGlowBorder {
+  0% {
+    box-shadow: 0 0 25px rgba(61, 220, 132, 0.45), 0 0 45px rgba(34, 184, 240, 0.3), inset 0 0 15px rgba(61, 220, 132, 0.1);
+    border-color: rgba(61, 220, 132, 0.65);
+  }
+  25% {
+    box-shadow: 12px 0 30px rgba(34, 184, 240, 0.5), -12px 0 35px rgba(61, 220, 132, 0.45), inset 0 0 15px rgba(34, 184, 240, 0.15);
+    border-color: rgba(34, 184, 240, 0.7);
+  }
+  50% {
+    box-shadow: 0 12px 35px rgba(61, 220, 132, 0.55), 0 -12px 45px rgba(34, 184, 240, 0.5), inset 0 0 20px rgba(61, 220, 132, 0.2);
+    border-color: rgba(61, 220, 132, 0.8);
+  }
+  75% {
+    box-shadow: -12px 0 30px rgba(34, 184, 240, 0.55), 12px 0 35px rgba(61, 220, 132, 0.45), inset 0 0 15px rgba(34, 184, 240, 0.15);
+    border-color: rgba(34, 184, 240, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(61, 220, 132, 0.45), 0 0 45px rgba(34, 184, 240, 0.3), inset 0 0 15px rgba(61, 220, 132, 0.1);
+    border-color: rgba(61, 220, 132, 0.65);
+  }
+}
+
+.cart-modal-content,
+.product-modal-card,
+.modal-content,
+.login-card,
+.auth-card,
+.ticket-modal-card,
+.modal-card,
+.fac-card,
+.modal-glow {
+  position: relative !important;
+  animation: rotateGlowBorder 4s linear infinite !important;
+  border: 1.5px solid rgba(61, 220, 132, 0.6) !important;
+}
+
+@keyframes inputRequiredGlow {
+  0% {
+    border-color: #3ddc84 !important;
+    box-shadow: 0 0 10px rgba(61, 220, 132, 0.6), 0 0 20px rgba(34, 184, 240, 0.35) !important;
+  }
+  50% {
+    border-color: #22b8f0 !important;
+    box-shadow: 0 0 18px rgba(34, 184, 240, 0.75), 0 0 28px rgba(61, 220, 132, 0.5) !important;
+  }
+  100% {
+    border-color: #3ddc84 !important;
+    box-shadow: 0 0 10px rgba(61, 220, 132, 0.6), 0 0 20px rgba(34, 184, 240, 0.35) !important;
+  }
+}
+
+input[required]:focus,
+select[required]:focus,
+textarea[required]:focus,
+.form-input[required]:focus,
+.pos-input[required]:focus,
+.fac-input[required]:focus {
+  outline: none !important;
+  animation: inputRequiredGlow 2.5s ease-in-out infinite !important;
+}
+
+</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
     <!-- Pantalla de Login -->
     <div id="loginScreen">
         <div class="login-card">
-            <div class="login-logo">🛡️ <span class="gradient-text">ADMINISTRACIÓN RESET SUPPLY</span></div>
+            <div class="login-logo"><i class="fa-solid fa-shield-halved" style="color:var(--green); margin-right:8px;"></i><span class="gradient-text">ADMINISTRACIÓN RESET SUPPLY</span></div>
             <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px;">Ingresa la contraseña de administración configurada en Render (ADMIN_PASSWORD).</p>
             <form id="loginForm">
                 <div class="form-group">
@@ -101,14 +168,14 @@
     <!-- Panel de Administración -->
     <header class="admin-header">
         <div class="admin-title">
-            <span>⚙️</span>
+            <span><i class="fa-solid fa-gear" style="color:var(--blue);"></i></span>
             <span>Panel de Administración <strong class="gradient-text">Reset Supply MX</strong></span>
         </div>
         <div style="display:flex; align-items:center;">
             <a href="tienda.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--green); color:var(--green); font-weight:700;">🏪 Terminal POS (Tienda Física)</a>
             <a href="facturacion.html" target="_blank" class="btn-action" style="text-decoration:none;">🧾 Portal Facturación</a>
             <a href="/clientes/puntodeventa.html" target="_blank" class="btn-action" style="text-decoration:none; margin-right:14px; border-color:var(--blue); color:var(--blue);">🤝 Alta Punto de Venta</a>
-            <button class="btn-logout" id="logoutBtn">🔒 Cerrar Sesión</button>
+            <button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket" style="color:var(--red); margin-right:6px;"></i>Cerrar Sesión</button>
         </div>
     </header>
 
@@ -139,12 +206,12 @@
 
         <!-- Pestañas principales -->
         <div class="admin-tabs">
-            <button class="tab-btn active" data-tab="orders">📋 Órdenes y Guías de Rastreo</button>
-            <button class="tab-btn" data-tab="pos-sales">🏪 Ventas Tienda Física (POS)</button>
-            <button class="tab-btn" data-tab="invoices">🧾 Solicitudes de Facturación</button>
-            <button class="tab-btn" data-tab="pos-clients">🤝 Clientes Punto de Venta</button>
-            <button class="tab-btn" data-tab="products">📦 Catálogo de Productos y Precios</button>
-            <button class="tab-btn" data-tab="editor">🎨 Editor Visual de la Página</button>
+            <button class="tab-btn active" data-tab="orders"><i class="fa-solid fa-boxes-packing" style="color:var(--green); margin-right:8px;"></i>Órdenes y Guías de Rastreo</button>
+            <button class="tab-btn" data-tab="pos-sales"><i class="fa-solid fa-cash-register" style="color:var(--blue); margin-right:8px;"></i>Ventas Tienda Física (POS)</button>
+            <button class="tab-btn" data-tab="invoices"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--green); margin-right:8px;"></i>Solicitudes de Facturación</button>
+            <button class="tab-btn" data-tab="pos-clients"><i class="fa-solid fa-users" style="color:var(--blue); margin-right:8px;"></i>Clientes Punto de Venta</button>
+            <button class="tab-btn" data-tab="products"><i class="fa-solid fa-boxes-stacked" style="color:var(--green); margin-right:8px;"></i>Catálogo de Productos y Precios</button>
+            <button class="tab-btn" data-tab="editor"><i class="fa-solid fa-palette" style="color:var(--blue); margin-right:8px;"></i>Editor Visual de la Página</button>
             <button class="tab-btn" data-tab="visor" style="border-color:rgba(0, 212, 255, 0.4); color:var(--blue);">📁 VISOR (Imágenes Pantalla)</button>
         </div>
 
@@ -152,7 +219,7 @@
         <div id="tabOrders" class="tab-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3>Pedidos Registrados (<span id="ordersCount">0</span>)</h3>
-                <button class="btn-action" id="refreshOrdersBtn">🔄 Actualizar Lista</button>
+                <button class="btn-action" id="refreshOrdersBtn"><i class="fa-solid fa-arrows-rotate" style="margin-right:6px;"></i>Actualizar Lista</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -177,11 +244,11 @@
         <div id="tabPosSales" class="tab-content" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
                 <div>
-                    <h3>🏪 Ventas de Mostrador / POS (<span id="posSalesCount">0</span>)</h3>
+                    <h3><i class="fa-solid fa-cash-register" style="color:var(--blue); margin-right:8px;"></i>Ventas de Mostrador / POS (<span id="posSalesCount">0</span>)</h3>
                     <p style="font-size:12.5px; color:var(--muted);">Historial de transacciones generadas en la terminal de punto de venta de la tienda física.</p>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn-action" id="refreshPosBtn" onclick="loadPosSales()">🔄 Actualizar Ventas</button>
+                    <button class="btn-action" id="refreshPosBtn" onclick="loadPosSales()"><i class="fa-solid fa-arrows-rotate" style="margin-right:6px;"></i>Actualizar Ventas</button>
                     <a href="tienda.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--green); color:var(--green); font-weight:700;">➕ Abrir Terminal POS</a>
                 </div>
             </div>
@@ -210,12 +277,12 @@
         <div id="tabInvoices" class="tab-content" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
                 <div>
-                    <h3>🧾 Solicitudes de Facturación CFDI (<span id="invoicesCount">0</span>)</h3>
+                    <h3><i class="fa-solid fa-file-invoice-dollar" style="color:var(--green); margin-right:8px;"></i>Solicitudes de Facturación CFDI (<span id="invoicesCount">0</span>)</h3>
                     <p style="font-size:12.5px; color:var(--muted);">Gestiona los datos fiscales de clientes para timbrado y envío de XML y PDF.</p>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn-action" onclick="exportInvoicesToCSV()">📥 Exportar a Excel (CSV)</button>
-                    <button class="btn-action" onclick="loadInvoices()">🔄 Actualizar Lista</button>
+                    <button class="btn-action" onclick="exportInvoicesToCSV()"><i class="fa-solid fa-file-excel" style="color:var(--green); margin-right:6px;"></i>Exportar a Excel (CSV)</button>
+                    <button class="btn-action" onclick="loadInvoices()"><i class="fa-solid fa-arrows-rotate" style="margin-right:6px;"></i>Actualizar Lista</button>
                     <a href="facturacion.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--blue); color:var(--blue);">➕ Nueva Solicitud</a>
                 </div>
             </div>
@@ -224,9 +291,9 @@
             <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
                 <button class="btn-action active" id="btnFilterInvAll" onclick="filterInvoicesByStatus('all', this)">Todas</button>
                 <button class="btn-action" onclick="filterInvoicesByStatus('pending', this)">⏳ Pendientes</button>
-                <button class="btn-action" onclick="filterInvoicesByStatus('invoiced', this)">✅ Facturadas</button>
-                <button class="btn-action" onclick="filterInvoicesByStatus('sent', this)">✉️ Enviadas</button>
-                <button class="btn-action" onclick="filterInvoicesByStatus('cancelled', this)">❌ Canceladas</button>
+                <button class="btn-action" onclick="filterInvoicesByStatus('invoiced', this)"><i class="fa-solid fa-circle-check" style="color:var(--green); margin-right:6px;"></i>Facturadas</button>
+                <button class="btn-action" onclick="filterInvoicesByStatus('sent', this)"><i class="fa-solid fa-paper-plane" style="color:var(--blue); margin-right:6px;"></i>Enviadas</button>
+                <button class="btn-action" onclick="filterInvoicesByStatus('cancelled', this)"><i class="fa-solid fa-circle-xmark" style="color:var(--red); margin-right:6px;"></i>Canceladas</button>
             </div>
 
             <div class="table-wrapper">
@@ -254,7 +321,7 @@
         <div id="tabPosClients" class="tab-content" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
                 <div>
-                    <h3>🤝 Clientes Registrados Punto de Venta (<span id="posClientsCount">0</span>)</h3>
+                    <h3><i class="fa-solid fa-users" style="color:var(--blue); margin-right:8px;"></i>Clientes Registrados Punto de Venta (<span id="posClientsCount">0</span>)</h3>
                     <p style="font-size:12.5px; color:var(--muted);">Lista de solicitudes y registros para distribución y puntos de venta.</p>
                 </div>
                 <div style="display:flex; gap:10px;">
@@ -290,13 +357,13 @@
         <div id="tabProducts" class="tab-content" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
                 <div>
-                    <h3>📦 Inventario VON — Lista de Precios</h3>
+                    <h3><i class="fa-solid fa-boxes-stacked" style="color:var(--green); margin-right:8px;"></i>Inventario VON — Lista de Precios</h3>
                     <p style="font-size:12.5px; color:var(--muted);">Administra productos, edita todas las columnas en vivo, aplica aumentos/descuentos y gestiona variaciones.</p>
                 </div>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <button class="btn-action" id="openVonixxSearchBtn" style="border-color:var(--blue); color:var(--blue);">🔍 Buscar en Vonixx México</button>
                     <button class="btn-primary" id="newProductBtn" style="width:auto; padding:8px 18px; font-size:13.5px;">➕ Agregar Producto</button>
-                    <button class="btn-primary" id="saveInventoryBatchBtn" style="width:auto; padding:8px 18px; font-size:13.5px; background:var(--green); color:#0a0e13;">💾 Guardar Cambios Inventario</button>
+                    <button class="btn-primary" id="saveInventoryBatchBtn" style="width:auto; padding:8px 18px; font-size:13.5px; background:var(--green); color:#0a0e13;"><i class="fa-solid fa-floppy-disk" style="margin-right:6px;"></i>Guardar Cambios Inventario</button>
                 </div>
             </div>
 
@@ -400,8 +467,8 @@
         <!-- Sección 3: Editor Visual de la Página Web -->
         <div id="tabEditor" class="tab-content" style="display:none;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3>🎨 Editor Visual de la Página (Modificador Web en Tiempo Real)</h3>
-                <button class="btn-primary" id="saveSiteConfigBtn" style="width:auto; padding:10px 24px; font-size:14px;">💾 Guardar Cambios en la Web</button>
+                <h3><i class="fa-solid fa-palette" style="color:var(--blue); margin-right:8px;"></i>Editor Visual de la Página (Modificador Web en Tiempo Real)</h3>
+                <button class="btn-primary" id="saveSiteConfigBtn" style="width:auto; padding:10px 24px; font-size:14px;"><i class="fa-solid fa-floppy-disk" style="margin-right:6px;"></i>Guardar Cambios en la Web</button>
             </div>
 
             <!-- Layout Dividido: Panel de Controles + Vista Previa Live -->
@@ -411,14 +478,14 @@
                     
                     <!-- Bloque 1: Barra de Anuncios -->
                     <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;">
-                        <h4 style="color:var(--green); margin-bottom:14px;">1. 📢 Barra de Anuncios Superior (Top Bar)</h4>
+                        <h4 style="color:var(--green); margin-bottom:14px;"><i class="fa-solid fa-bullhorn" style="color:var(--green); margin-right:6px;"></i>1. Barra de Anuncios Superior (Top Bar)</h4>
                         <div class="form-group" style="display:flex; align-items:center; gap:10px;">
                             <input type="checkbox" id="editBarEnabled" checked style="width:18px; height:18px; cursor:pointer;">
                             <label for="editBarEnabled" style="margin:0; cursor:pointer; font-weight:700; color:var(--text);">Activar Barra de Anuncios Superior</label>
                         </div>
                         <div class="form-group">
                             <label>Texto del Anuncio</label>
-                            <input type="text" id="editBarText" class="form-input" placeholder="ej. 🚚 Envíos gratis en compras mayores a $1,499 MXN">
+                            <input type="text" id="editBarText" class="form-input" placeholder="ej. Envíos gratis en compras mayores a $1,499 MXN">
                         </div>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                             <div class="form-group">
@@ -434,7 +501,7 @@
 
                     <!-- Bloque 2: Hero & Banner Principal -->
                     <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;">
-                        <h4 style="color:var(--blue); margin-bottom:14px;">2. 🚀 Banner Principal (Hero Section)</h4>
+                        <h4 style="color:var(--blue); margin-bottom:14px;"><i class="fa-solid fa-rocket" style="color:var(--blue); margin-right:6px;"></i>2. Banner Principal (Hero Section)</h4>
                         <div class="form-group">
                             <label>Etiqueta / Badge Superior</label>
                             <input type="text" id="editHeroBadge" class="form-input" placeholder="ej. DISTRIBUIDOR AUTORIZADO VONIXX">
@@ -466,8 +533,8 @@
                     <!-- Bloque 3: Banners Promocionales Secundarios -->
                     <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-                            <h4 style="color:var(--yellow);">3. 🏷️ Banners Promocionales</h4>
-                            <button class="btn-action" id="addPromoBannerBtn" style="font-size:12px;">➕ Agregar Banner</button>
+                            <h4 style="color:var(--yellow);"><i class="fa-solid fa-tags" style="color:var(--yellow); margin-right:6px;"></i>3. Banners Promocionales</h4>
+                            <button class="btn-action" id="addPromoBannerBtn" style="font-size:12px;"><i class="fa-solid fa-plus" style="margin-right:6px;"></i>Agregar Banner</button>
                         </div>
                         <div id="promoBannersList" style="display:flex; flex-direction:column; gap:14px;">
                             <!-- Lista dinámica de banners promocionales -->
@@ -476,9 +543,9 @@
 
                     <!-- Bloque 4: Modificación Rápida de Precios de Productos -->
                     <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;">
-                        <h4 style="color:var(--green); margin-bottom:14px;">4. 🏷️ Precios e Imágenes de Productos (Edición Rápida)</h4>
+                        <h4 style="color:var(--green); margin-bottom:14px;"><i class="fa-solid fa-tag" style="color:var(--green); margin-right:6px;"></i>4. Precios e Imágenes de Productos (Edición Rápida)</h4>
                         <p style="font-size:12.5px; color:var(--muted); margin-bottom:12px;">Cambia directamente los precios e imágenes del catálogo en vivo:</p>
-                        <input type="text" id="quickProductSearch" class="form-input" placeholder="🔍 Buscar producto por nombre..." style="margin-bottom:12px;">
+                        <input type="text" id="quickProductSearch" class="form-input" placeholder="Buscar producto por nombre..." style="margin-bottom:12px;">
                         <div style="max-height:260px; overflow-y:auto; border:1px solid var(--line); border-radius:8px;">
                             <table style="width:100%; font-size:12.5px;">
                                 <thead>
@@ -497,7 +564,7 @@
 
                     <!-- Bloque 5: Identidad & Redes -->
                     <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px;">
-                        <h4 style="color:var(--text); margin-bottom:14px;">5. 📞 Contacto e Identidad</h4>
+                        <h4 style="color:var(--text); margin-bottom:14px;"><i class="fa-solid fa-phone" style="color:var(--text); margin-right:6px;"></i>5. Contacto e Identidad</h4>
                         <div class="form-group">
                             <label>Número de WhatsApp para Pedidos (sin espacios ni +)</label>
                             <input type="text" id="editWhatsapp" class="form-input" placeholder="ej. 526634606566">
@@ -513,11 +580,11 @@
                 <!-- Vista Previa Live Iframe -->
                 <div style="flex:1; height:80vh; border:1px solid var(--line); border-radius:12px; background:var(--panel-2); display:flex; flex-direction:column; overflow:hidden; position:sticky; top:20px;">
                     <div style="background:var(--panel); padding:10px 16px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:14px;">📱 Vista Previa en Vivo (Live Preview)</span>
+                        <span style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:14px;"><i class="fa-solid fa-mobile-screen-button" style="color:var(--cyan); margin-right:6px;"></i>Vista Previa en Vivo (Live Preview)</span>
                         <div style="display:flex; gap:8px;">
-                            <button class="btn-action" id="previewDesktopBtn" style="font-size:11px;">💻 Escritorio</button>
-                            <button class="btn-action" id="previewMobileBtn" style="font-size:11px;">📱 Móvil</button>
-                            <button class="btn-action" id="reloadPreviewBtn" style="font-size:11px;">🔄 Recargar</button>
+                            <button class="btn-action" id="previewDesktopBtn" style="font-size:11px;"><i class="fa-solid fa-desktop" style="margin-right:4px;"></i>Escritorio</button>
+                            <button class="btn-action" id="previewMobileBtn" style="font-size:11px;"><i class="fa-solid fa-mobile-screen" style="margin-right:4px;"></i>Móvil</button>
+                            <button class="btn-action" id="reloadPreviewBtn" style="font-size:11px;"><i class="fa-solid fa-arrows-rotate" style="margin-right:4px;"></i>Recargar</button>
                         </div>
                     </div>
                     <div id="iframeWrapper" style="flex:1; width:100%; display:flex; justify-content:center; align-items:center; background:#000; overflow:hidden;">
@@ -532,7 +599,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
                 <div>
                     <h3 style="font-size:22px; display:flex; align-items:center; gap:8px;">
-                        <span>📁</span> Carpeta <span class="gradient-text">VISOR</span> — Pantalla de Cliente
+                        <i class="fa-solid fa-folder-open" style="color:var(--blue); margin-right:8px;"></i> Carpeta <span class="gradient-text">VISOR</span> — Pantalla de Cliente
                     </h3>
                     <p style="font-size:13px; color:var(--muted); margin-top:4px;">
                         Gestiona las imágenes almacenadas en la carpeta <code>admin/VISOR/</code> que rotan en la pantalla de espera del celular en mostrador. Puedes subir nuevas imágenes y eliminar cualquiera de las actuales o futuras.
@@ -547,7 +614,7 @@
             <!-- Caja para Subir Nueva Imagen a VISOR -->
             <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:22px; margin-bottom:26px;">
                 <h4 style="color:var(--green); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
-                    <span>📤</span> Subir Nueva Imagen a la Carpeta VISOR
+                    <i class="fa-solid fa-cloud-arrow-up" style="color:var(--green); margin-right:8px;"></i> Subir Nueva Imagen a la Carpeta VISOR
                 </h4>
                 <form id="uploadVisorForm" onsubmit="event.preventDefault(); handleVisorUpload();">
                     <div style="display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:14px; margin-bottom:14px;">
@@ -569,7 +636,7 @@
                         <input type="text" id="visorDescInput" class="form-input" placeholder="ej. Desincrustante concentrado de alta potencia para rines y motor.">
                     </div>
                     <button type="submit" class="btn-primary" id="btnUploadVisor" style="width:auto; padding:12px 28px;">
-                        ➕ Guardar Imagen en VISOR
+                        <i class="fa-solid fa-circle-plus" style="margin-right:6px;"></i> Guardar Imagen en VISOR
                     </button>
                 </form>
             </div>
@@ -591,7 +658,7 @@
     <!-- Modal Editar Guía de Rastreo -->
     <div id="trackingModal" class="modal" style="display:none;">
         <div class="modal-content">
-            <h3 style="margin-bottom:16px;">🚚 Agregar / Editar Guía de Rastreo</h3>
+            <h3 style="margin-bottom:16px;"><i class="fa-solid fa-truck-fast" style="color:var(--blue); margin-right:8px;"></i> Agregar / Editar Guía de Rastreo</h3>
             <form id="trackingForm">
                 <input type="hidden" id="trackOrderId">
                 <div class="form-group">
@@ -625,7 +692,7 @@
     <!-- Modal Editar / Crear Producto Completo -->
     <div id="productModal" class="modal" style="display:none;">
         <div class="modal-content" style="max-width:620px;">
-            <h3 id="productModalTitle" style="margin-bottom:16px;">📦 Editar Producto de Inventario</h3>
+            <h3 id="productModalTitle" style="margin-bottom:16px;"><i class="fa-solid fa-box-open" style="color:var(--green); margin-right:8px;"></i> Editar Producto de Inventario</h3>
             <form id="productForm">
                 <input type="hidden" id="prodId">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -691,7 +758,7 @@
     <!-- Modal Gestionar Variaciones de Producto -->
     <div id="variationsModal" class="modal" style="display:none;">
         <div class="modal-content" style="max-width:580px;">
-            <h3 style="margin-bottom:6px;">⚙️ Variaciones del Producto</h3>
+            <h3 style="margin-bottom:6px;"><i class="fa-solid fa-sliders" style="color:var(--blue); margin-right:8px;"></i> Variaciones del Producto</h3>
             <p id="varProdName" style="color:var(--muted); font-size:13px; margin-bottom:16px;"></p>
             <div style="margin-bottom:16px;">
                 <h4 style="color:var(--green); margin-bottom:10px; font-size:14px;">Agregar Nueva Variación</h4>
@@ -708,7 +775,7 @@
                         <label style="font-size:11px;">Stock</label>
                         <input type="number" id="newVarQty" class="form-input" placeholder="1" value="1">
                     </div>
-                    <button class="btn-primary" id="addVariationBtn" style="padding:10px 14px; font-size:12px;">➕</button>
+                    <button class="btn-primary" id="addVariationBtn" style="padding:10px 14px; font-size:12px;"><i class="fa-solid fa-plus"></i></button>
                 </div>
             </div>
 
@@ -738,11 +805,11 @@
     <!-- Modal Búsqueda e Importación desde Vonixx México -->
     <div id="vonixxSearchModal" class="modal" style="display:none;">
         <div class="modal-content" style="max-width:700px;">
-            <h3 style="margin-bottom:6px;">🌐 Buscar en Vonixx México (www.vonixxmexicooficial.com)</h3>
+            <h3 style="margin-bottom:6px;"><i class="fa-solid fa-globe" style="color:var(--blue); margin-right:8px;"></i> Buscar en Vonixx México (www.vonixxmexicooficial.com)</h3>
             <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">En caso de no existir un producto en la lista, puedes buscar e importarlo directamente desde el catálogo oficial.</p>
             <div style="display:flex; gap:10px; margin-bottom:16px;">
                 <input type="text" id="vonixxSearchInput" class="form-input" placeholder="Buscar por código, nombre o ingrediente activo (ej. DELET, ALUMAX, SINTRA)..." style="flex:1;">
-                <button class="btn-primary" id="triggerVonixxSearchBtn" style="width:auto; padding:10px 20px;">🔍 Buscar</button>
+                <button class="btn-primary" id="triggerVonixxSearchBtn" style="width:auto; padding:10px 20px;"><i class="fa-solid fa-magnifying-glass" style="margin-right:6px;"></i>Buscar</button>
             </div>
 
             <div style="border:1px solid var(--line); border-radius:8px; max-height:300px; overflow-y:auto; margin-bottom:20px;">
@@ -771,7 +838,7 @@
     <!-- Modal Detalles y Timbrado de Factura -->
     <div id="invoiceDetailModal" class="modal" style="display:none;">
         <div class="modal-content" style="max-width:620px;">
-            <h3 id="invModalTitle" style="margin-bottom:12px;">🧾 Detalle de Solicitud de Factura</h3>
+            <h3 id="invModalTitle" style="margin-bottom:12px;"><i class="fa-solid fa-file-invoice" style="color:var(--green); margin-right:8px;"></i> Detalle de Solicitud de Factura</h3>
             <div id="invModalBody" style="background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:16px; font-size:13px; margin-bottom:16px; line-height:1.6; max-height:280px; overflow-y:auto;"></div>
             
             <form id="invEditForm" onsubmit="event.preventDefault(); saveInvoiceDetails();">
@@ -780,9 +847,9 @@
                     <label>Estado de la Factura</label>
                     <select id="editInvStatus" class="form-input">
                         <option value="pending">⏳ Pendiente de Timbrado</option>
-                        <option value="invoiced">✅ Facturada (Timbrada)</option>
+                        <option value="invoiced">Facturada (Timbrada)</option>
                         <option value="sent">✉️ Factura Enviada al Cliente</option>
-                        <option value="cancelled">❌ Cancelada</option>
+                        <option value="cancelled">Cancelada</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -976,13 +1043,13 @@
                                 ${slide.desc || ''}
                             </div>
                             <div style="font-size:11px; font-family:monospace; color:var(--muted); word-break:break-all; margin-bottom:12px;">
-                                📄 ${slide.filename}
+                                <i class="fa-solid fa-file-image" style="color:var(--blue); margin-right:6px;"></i>${slide.filename}
                             </div>
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; margin-top:6px;">
                             <a href="${slide.url}" target="_blank" style="color:var(--blue); font-size:12px; text-decoration:none; font-weight:600;">🔍 Ver completa</a>
                             <button class="btn-action btn-delete" onclick="deleteVisorImage('${slide.id}', '${(slide.title || slide.filename).replace(/'/g, "\\'")}')" style="padding:6px 12px; font-size:12px;">
-                                🗑️ Eliminar Imagen
+                                <i class="fa-solid fa-trash-can" style="margin-right:6px;"></i> Eliminar Imagen
                             </button>
                         </div>
                     </div>
@@ -1329,7 +1396,7 @@
                         <td>${methodBadge}</td>
                         <td style="font-weight:700; color:var(--green); font-size:15px;">$${(o.total || 0).toFixed(2)}</td>
                         <td>
-                            <a href="tienda.html" target="_blank" class="btn-action" style="font-size:11.5px; text-decoration:none;">🖨️ POS</a>
+                            <a href="tienda.html" target="_blank" class="btn-action" style="font-size:11.5px; text-decoration:none;"><i class="fa-solid fa-print" style="margin-right:4px;"></i>POS</a>
                         </td>
                     </tr>
                     `;
@@ -1705,7 +1772,7 @@
             if (!prod) return;
 
             var productModal = document.getElementById('productModal');
-            document.getElementById('productModalTitle').textContent = '📦 Editar Detalles de ' + prod.name;
+            document.getElementById('productModalTitle').textContent = 'Editar Detalles de ' + prod.name;
             document.getElementById('prodId').value = prod.id || prod.code;
             document.getElementById('prodCode').value = prod.code || prod.id;
             document.getElementById('prodName').value = prod.name || '';
@@ -1813,7 +1880,7 @@
                     <td style="text-align:right; font-weight:700; color:var(--green); font-family:monospace; font-size:12.5px;" id="ns-${idx}">${fmtMXN(newSubtotal)}</td>
                     <td style="text-align:center;">
                         <button class="btn-action" onclick="window.openVariationsModal('${p.id}')" style="font-size:11px; padding:3px 8px;">
-                            ⚙️ ${varCount} var
+                            <i class="fa-solid fa-sliders" style="color:var(--blue); margin-right:4px;"></i>${varCount} var
                         </button>
                     </td>
                     <td style="text-align:center; white-space:nowrap;">
@@ -2003,7 +2070,7 @@
 
         if (newProductBtn) {
             newProductBtn.addEventListener('click', function() {
-                document.getElementById('productModalTitle').textContent = '➕ Agregar Nuevo Producto';
+                document.getElementById('productModalTitle').textContent = 'Agregar Nuevo Producto';
                 document.getElementById('prodId').value = '';
                 document.getElementById('prodCode').value = 'VON-' + Math.floor(10000 + Math.random() * 90000);
                 document.getElementById('prodName').value = '';
@@ -2165,7 +2232,7 @@
                     <td style="text-align:right;">${fmtMXN(v.price)}</td>
                     <td style="text-align:right;">${v.qty || 1}</td>
                     <td style="text-align:center;">
-                        <button class="btn-action btn-delete" onclick="deleteVariationItem(${idx})" style="padding:2px 6px; font-size:11px;">🗑️</button>
+                        <button class="btn-action btn-delete" onclick="deleteVariationItem(${idx})" style="padding:2px 6px; font-size:11px;" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>`;
             });
