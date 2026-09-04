@@ -672,8 +672,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>URL de Imagen</label>
-                    <input type="url" id="prodImage" class="form-input" placeholder="https://..." required>
+                    <label>URL / Ruta de Imagen</label>
+                    <input type="text" id="prodImage" class="form-input" placeholder="/assets/productos/... o https://..." required>
                 </div>
                 <div class="form-group">
                     <label>Descripción Larga / Detalles del Producto</label>
@@ -1534,105 +1534,105 @@
     "name": "ALUMAX – DESINCRUSTANTE ÁCIDO",
     "category": "limpieza",
     "price": 2261,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png"
+    "image": "/assets/productos/Alumax%2020L.png"
   },
   {
     "id": "prod_2",
     "name": "DELET – LIMPIADOR DE PLÁSTICOS, VINILO Y CAUCHO",
     "category": "limpieza",
     "price": 200.00566,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/DELET-.png"
+    "image": "/assets/productos/DELET.png"
   },
   {
     "id": "prod_3",
     "name": "IMPACT – DESENGRASANTE MULTIUSOS",
     "category": "limpieza",
     "price": 225,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IMPACT-.png"
+    "image": "/assets/productos/STRIKE.png"
   },
   {
     "id": "prod_4",
     "name": "IZER – REMOVEDOR DE ÓXIDO",
     "category": "limpieza",
     "price": 212.00422,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/IZER-1.png"
+    "image": "/assets/productos/IZER.png"
   },
   {
     "id": "prod_5",
     "name": "REMOVEX – DESENGRASANTE Y LIMPIADOR DE CHASIS",
     "category": "limpieza",
     "price": 1817,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REMOVEX-1.png"
+    "image": "/assets/productos/REMOVEX.png"
   },
   {
     "id": "prod_6",
     "name": "REZET – ZACS",
     "category": "limpieza",
     "price": 206,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/REZET.png"
+    "image": "/assets/productos/V-ECO%20FAST.png"
   },
   {
     "id": "prod_7",
     "name": "SINTRA FAST – LIMPIADOR DE INTERIORES",
     "category": "limpieza",
     "price": 179,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-FAST.png"
+    "image": "/assets/productos/SINTRA%20FAST.png"
   },
   {
     "id": "prod_8",
     "name": "SINTRA PRO – LIMPIADOR DE INTERIORES",
     "category": "limpieza",
     "price": 246.00531,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/SINTRA-PRO.png"
+    "image": "/assets/productos/SINTRA%20FAST.png"
   },
   {
     "id": "prod_9",
     "name": "BACTRAN – LIMPIADOR BACTERICIDA 7 EN 1",
     "category": "vsc",
     "price": 206.00423,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-6.png"
+    "image": "/assets/productos/BACTRAN%201.5L.png"
   },
   {
     "id": "prod_10",
     "name": "EXTRACTUS – LIMPIADOR ULTRA CONCENTRADO",
     "category": "vsc",
     "price": 195.00407,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-7.png"
+    "image": "/assets/productos/EXTRACTUS%201.5L.png"
   },
   {
     "id": "prod_11",
     "name": "SANITIZANTE – FINALIZADOR 4 EN 1",
     "category": "vsc",
     "price": 216.00449,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-8.png"
+    "image": "/assets/productos/SANITIZANTE%201.5L.png"
   },
   {
     "id": "prod_12",
     "name": "BLEND PASTE WAX – CERA CON SIO2 Y CARNAÚBA",
     "category": "cera-pasta",
     "price": 580,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEND-PASTE-WAX.png"
+    "image": "/assets/productos/BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png"
   },
   {
     "id": "prod_13",
     "name": "CARNAUBA HYBRID WAX",
     "category": "cera-pasta",
     "price": 426,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/CARNAUBA-HYBRID-WAX.png"
+    "image": "/assets/productos/CARNAUBA%20HYBRID%20WAX.png"
   },
   {
     "id": "prod_14",
     "name": "NATIVE PASTE WAX – CARNAÚBA BRASILEÑA 100% PURA",
     "category": "cera-pasta",
     "price": 638,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/NATIVE-PASTE-WAX.png"
+    "image": "/assets/productos/NATIVE.png"
   },
   {
     "id": "prod_15",
     "name": "BLEND SPRAY – CERA LÍQUIDA CON SiO2 & CARNAÚBA",
     "category": "cera-liquida",
     "price": 296,
-    "image": "https://vonixxmexicooficial.com/wp-content/uploads/2026/06/BLEN-SPRAY-.png"
+    "image": "/assets/productos/BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png"
   }
 ];
 
@@ -1667,10 +1667,14 @@
                 var localSaved = localStorage.getItem('resetsupply_inventory');
                 if (localSaved) {
                     var parsed = JSON.parse(localSaved);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
+                    // Si el cache local tiene URLs viejas de vonixxmexicooficial, descartarlo para tomar el nuevo catalogo limpio
+                    var hasOldUrls = Array.isArray(parsed) && parsed.some(function(p) { return p.image && p.image.includes('vonixxmexicooficial.com'); });
+                    if (!hasOldUrls && Array.isArray(parsed) && parsed.length > 0) {
                         currentProductsList = parsed;
                         renderInventoryTable();
                         renderQuickProductsTable(currentProductsList);
+                    } else if (hasOldUrls) {
+                        localStorage.removeItem('resetsupply_inventory');
                     }
                 }
             } catch(e) {}
@@ -1783,7 +1787,7 @@
                 html += `
                 <tr data-idx="${idx}" data-prod-id="${p.id}">
                     <td style="text-align:center;">
-                        <img src="${p.image}" class="row-img-edit" data-id="${p.id}" style="width:36px; height:36px; object-fit:cover; border-radius:6px; background:#161c24; cursor:pointer;" onclick="window.editProduct('${p.id}')" title="Clic para editar detalles">
+                        <img src="${p.image || '/logoresetsupply.png'}" class="row-img-edit" data-id="${p.id}" style="width:36px; height:36px; object-fit:cover; border-radius:6px; background:#161c24; cursor:pointer;" onclick="window.editProduct('${p.id}')" title="Clic para editar detalles" onerror="this.onerror=null; this.src='/logoresetsupply.png';">
                     </td>
                     <td>
                         <input type="text" class="form-input row-code" value="${p.code || p.id}" style="font-family:monospace; font-size:12px; padding:4px 6px;" data-idx="${idx}">
@@ -2008,7 +2012,7 @@
                 document.getElementById('prodPrice').value = '';
                 document.getElementById('prodPct').value = '0';
                 document.getElementById('prodCategory').value = 'limpieza';
-                document.getElementById('prodImage').value = 'https://vonixxmexicooficial.com/wp-content/uploads/2026/06/ALUMAX-4.png';
+                document.getElementById('prodImage').value = '/assets/productos/Alumax%2020L.png';
                 document.getElementById('prodDescription').value = '';
                 var delBtn = document.getElementById('deleteProductFromModalBtn');
                 if (delBtn) delBtn.style.display = 'none';
@@ -2439,7 +2443,7 @@
                 title: 'Nuevo Banner Promocional',
                 subtitle: 'Descripción breve de la promoción',
                 tag: 'NUEVA OFERTA',
-                image: 'https://vonixxmexicooficial.com/wp-content/uploads/2026/06/1-6.png',
+                image: '/assets/productos/BACTRAN%201.5L.png',
                 link: '#catalogo'
             });
             renderPromoBannersList(banners);

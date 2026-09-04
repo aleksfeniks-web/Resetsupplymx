@@ -437,7 +437,15 @@ app.get('/api/products', async (req, res) => {
       if (!snapshot.empty) {
         let dbProds = [];
         snapshot.forEach(doc => {
-          dbProds.push({ id: doc.id, ...doc.data() });
+          const item = { id: doc.id, ...doc.data() };
+          // Si el registro de Firestore todavía tiene la URL antigua de vonixxmexicooficial, sustituir por la nueva foto local de localInventory
+          if (!item.image || item.image.includes('vonixxmexicooficial.com')) {
+            const matchLocal = localInventory.find(lp => lp.id === item.id || lp.code === item.code || lp.name === item.name);
+            if (matchLocal && matchLocal.image) {
+              item.image = matchLocal.image;
+            }
+          }
+          dbProds.push(item);
         });
         products = dbProds;
       }
@@ -464,9 +472,23 @@ app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
         await batch.commit();
       } else {
         let dbProds = [];
+        const batch = db.batch();
+        let batchNeedsCommit = false;
         snapshot.forEach(doc => {
-          dbProds.push({ id: doc.id, ...doc.data() });
+          const item = { id: doc.id, ...doc.data() };
+          if (!item.image || item.image.includes('vonixxmexicooficial.com')) {
+            const matchLocal = localInventory.find(lp => lp.id === item.id || lp.code === item.code || lp.name === item.name);
+            if (matchLocal && matchLocal.image) {
+              item.image = matchLocal.image;
+              batch.update(doc.ref, { image: matchLocal.image });
+              batchNeedsCommit = true;
+            }
+          }
+          dbProds.push(item);
         });
+        if (batchNeedsCommit) {
+          batch.commit().catch(e => console.warn('No se pudo actualizar imágenes en batch Firestore:', e.message));
+        }
         localInventory = dbProds;
       }
     } catch (err) {
