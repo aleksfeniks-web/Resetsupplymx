@@ -728,7 +728,7 @@ app.post('/api/pos/login', (req, res) => {
     });
   }
 
-  res.status(401).json({ success: false, error: 'PIN de vendedor incorrecto (PIN default: 0808).' });
+  res.status(401).json({ success: false, error: 'PIN de vendedor incorrecto.' });
 });
 
 // 3. Crear Venta en Tienda Física (POS)

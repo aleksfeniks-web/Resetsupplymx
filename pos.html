@@ -976,7 +976,7 @@
             <!-- Indicador de Pasos -->
             <div class="auth-steps-indicator">
                 <span class="step-pill active" id="pillStep1">1. Clave Admin</span>
-                <span class="step-pill" id="pillStep2">2. PIN Vendedor (0808)</span>
+                <span class="step-pill" id="pillStep2">2. PIN Vendedor</span>
             </div>
 
             <!-- PASO 1: Contraseña de Administrador -->
@@ -994,10 +994,10 @@
                 </form>
             </div>
 
-            <!-- PASO 2: Selección de Vendedor & PIN (Default: 0808) -->
+            <!-- PASO 2: Selección de Vendedor & PIN -->
             <div id="authStep2" style="display:none;">
                 <h2 class="auth-title">👤 <span class="gradient-text">ACCESO DE VENDEDOR</span></h2>
-                <p class="auth-sub">Selecciona tu perfil e ingresa tu PIN (PIN por defecto: <strong>0808</strong>).</p>
+                <p class="auth-sub">Selecciona tu perfil e ingresa tu PIN de seguridad.</p>
 
                 <form onsubmit="event.preventDefault(); handleSellerPinLogin();">
                     <div class="form-group">
@@ -1554,7 +1554,7 @@
                     document.getElementById('posAuthModal').style.display = 'none';
                     applySellerSession();
                 } else {
-                    errorMsg.textContent = data.error || 'PIN de vendedor incorrecto (Default: 0808).';
+                    errorMsg.textContent = data.error || 'PIN de vendedor incorrecto.';
                     errorMsg.style.display = 'block';
                 }
             } catch (err) {
@@ -1567,7 +1567,7 @@
                     document.getElementById('posAuthModal').style.display = 'none';
                     applySellerSession();
                 } else {
-                    errorMsg.textContent = 'PIN incorrecto (Default: 0808).';
+                    errorMsg.textContent = 'PIN de vendedor incorrecto.';
                     errorMsg.style.display = 'block';
                 }
             }
