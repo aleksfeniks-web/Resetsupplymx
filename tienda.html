@@ -818,35 +818,39 @@
             justify-content: center;
         }
 
-        /* Thermal Ticket Printable Area (58mm/80mm Style) */
+        /* Thermal Ticket Printable Area (Ajustado a rollo térmico de 48mm / 58mm) */
         #thermalTicketContainer {
             background: #ffffff;
             color: #111111;
-            width: 320px;
-            padding: 20px 16px;
+            width: 270px;
+            max-width: 100%;
+            padding: 16px 12px;
             font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 11.5px;
-            line-height: 1.4;
+            font-size: 10.5px;
+            line-height: 1.35;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             border-radius: 4px;
+            margin: 0 auto;
         }
         .tkt-center { text-align: center; }
-        .tkt-logo-text { font-size: 18px; font-weight: 800; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; }
-        .tkt-sub { font-size: 10px; color: #444; margin-bottom: 8px; }
-        .tkt-divider { border-top: 1px dashed #333; margin: 8px 0; }
-        .tkt-row { display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 11px; }
-        .tkt-row.bold { font-weight: 700; font-size: 12px; }
-        .tkt-row.grand-total { font-size: 16px; font-weight: 800; margin: 6px 0; }
-        .tkt-items-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 10.5px; }
-        .tkt-items-table th { border-bottom: 1px dashed #333; padding: 4px 0; text-align: left; }
-        .tkt-items-table td { padding: 4px 0; vertical-align: top; }
+        .tkt-logo-text { font-size: 16px; font-weight: 800; font-family: 'Rajdhani', sans-serif; letter-spacing: 0.8px; }
+        .tkt-sub { font-size: 9.5px; color: #444; margin-bottom: 6px; }
+        .tkt-divider { border-top: 1px dashed #333; margin: 6px 0; }
+        .tkt-row { display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 10px; }
+        .tkt-row.bold { font-weight: 700; font-size: 11px; }
+        .tkt-row.grand-total { font-size: 14.5px; font-weight: 800; margin: 5px 0; }
+        .tkt-items-table { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 9.5px; }
+        .tkt-items-table th { border-bottom: 1px dashed #333; padding: 3px 0; text-align: left; }
+        .tkt-items-table td { padding: 3px 0; vertical-align: top; }
         .tkt-barcode {
-            margin: 12px auto 6px;
-            letter-spacing: 4px;
-            font-size: 16px;
+            margin: 8px auto 4px;
+            letter-spacing: 3px;
+            font-size: 14px;
             font-weight: 700;
         }
-        .tkt-footer-msg { font-size: 9.5px; color: #555; text-align: center; margin-top: 8px; }
+        .tkt-footer-msg { font-size: 8.5px; color: #555; text-align: center; margin-top: 6px; line-height: 1.3; }
+        .tkt-qr-box { margin: 6px auto; text-align: center; }
+        .tkt-qr-img { width: 95px; height: 95px; margin: 3px auto; display: block; }
 
         .ticket-modal-actions {
             padding: 14px 20px;
@@ -885,19 +889,74 @@
         }
         .btn-ticket-whatsapp:hover { background: #1ebc57; color: #fff; box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3); }
 
-        /* Print Specific Styles */
+        /* Print Specific Styles - Formato Exacto Rollo 48mm */
+        @page {
+            size: 48mm auto;
+            margin: 0mm;
+        }
         @media print {
-            body * { visibility: hidden; }
-            #thermalTicketContainer, #thermalTicketContainer * { visibility: visible; }
-            #thermalTicketContainer {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                padding: 10px;
-                box-shadow: none;
+            html, body {
+                width: 48mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #ffffff !important;
             }
+            body * { visibility: hidden !important; }
+            #ticketModal, #ticketModal * {
+                visibility: visible !important;
+            }
+            #ticketModal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 48mm !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: #ffffff !important;
+                display: block !important;
+            }
+            .ticket-modal-card {
+                width: 48mm !important;
+                max-width: 48mm !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                background: #ffffff !important;
+            }
+            .ticket-modal-header, .ticket-modal-actions {
+                display: none !important;
+            }
+            .ticket-modal-body {
+                padding: 0 !important;
+                background: #ffffff !important;
+            }
+            #thermalTicketContainer {
+                position: static !important;
+                width: 48mm !important;
+                max-width: 48mm !important;
+                margin: 0 !important;
+                padding: 1.5mm 1.5mm 3mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+                font-size: 8.5px !important;
+                line-height: 1.25 !important;
+                color: #000000 !important;
+                background: #ffffff !important;
+                box-sizing: border-box !important;
+            }
+            .tkt-logo-text { font-size: 13px !important; }
+            .tkt-sub { font-size: 7.5px !important; margin-bottom: 4px !important; }
+            .tkt-divider { border-top: 1px dashed #000 !important; margin: 4px 0 !important; }
+            .tkt-row { font-size: 8px !important; margin-bottom: 2px !important; }
+            .tkt-row.bold { font-size: 8.5px !important; }
+            .tkt-row.grand-total { font-size: 12px !important; font-weight: 800 !important; margin: 4px 0 !important; }
+            .tkt-items-table { font-size: 8px !important; margin: 4px 0 !important; }
+            .tkt-items-table th, .tkt-items-table td { padding: 2px 0 !important; }
+            .tkt-barcode { font-size: 11px !important; letter-spacing: 2px !important; margin: 5px auto 2px !important; }
+            .tkt-footer-msg { font-size: 7.5px !important; margin-top: 4px !important; }
+            .tkt-qr-img { width: 30mm !important; height: 30mm !important; margin: 3px auto !important; display: block !important; }
         }
 
         /* Responsive Mobile Layout for Tablet POS */
@@ -992,6 +1051,7 @@
         </div>
 
         <div class="pos-actions">
+            <a href="/visor" class="btn-hdr" target="_blank" style="border-color:var(--cyan); color:var(--cyan); font-weight:700;">📱 Visor Cliente (PWA)</a>
             <button class="btn-hdr" onclick="openCashStatsModal()">📊 Corte de Caja</button>
             <button class="btn-hdr" onclick="openSalesHistoryModal()">📋 Historial</button>
             <a href="facturacion.html" class="btn-hdr" target="_blank">🧾 Facturación</a>
@@ -1222,9 +1282,14 @@
 
                     <div class="tkt-center">
                         <div class="tkt-barcode" id="tktBarcodeDisplay">*POS-100000*</div>
+                        <div class="tkt-qr-box">
+                            <div style="font-size:8px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">⭐ WONCARD VIP • ESCANEA PARA PROMOS ⭐</div>
+                            <img id="tktWoncardQrImg" class="tkt-qr-img" src="" alt="QR Woncard" onerror="this.style.display='none'">
+                            <div style="font-size:7px; color:#555;">Acumula puntos y recibe descuentos en WhatsApp</div>
+                        </div>
                         <div class="tkt-footer-msg">¡GRACIAS POR TU COMPRA!</div>
                         <div class="tkt-footer-msg">Conservar este ticket para cualquier cambio o aclaración (máx. 7 días).</div>
-                        <div class="tkt-footer-msg" style="margin-top:6px; font-weight:700;">www.resetsupplymx.com</div>
+                        <div class="tkt-footer-msg" style="margin-top:5px; font-weight:700;">www.resetsupplymx.com</div>
                     </div>
                 </div>
             </div>
@@ -1776,6 +1841,33 @@
             calculateTotals();
         }
 
+        // ==================== SINCRONIZACIÓN EN TIEMPO REAL CON PANTALLA DE CLIENTE (PWA) ====================
+        let customerDisplayBc = null;
+        try {
+            if ('BroadcastChannel' in window) {
+                customerDisplayBc = new BroadcastChannel('pos_customer_display');
+            }
+        } catch (e) {}
+
+        let notifyDebounceTimer = null;
+        function notifyCustomerDisplay(payload) {
+            if (customerDisplayBc) {
+                try { customerDisplayBc.postMessage(payload); } catch(e) {}
+            }
+            try {
+                localStorage.setItem('pos_customer_display_state', JSON.stringify(payload));
+            } catch(e) {}
+
+            if (notifyDebounceTimer) clearTimeout(notifyDebounceTimer);
+            notifyDebounceTimer = setTimeout(() => {
+                fetch('/api/pos/customer-display/state', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(err => {});
+            }, 60);
+        }
+
         // 5. CÁLCULO DE TOTALES & CAMBIO
         function calculateTotals() {
             let subtotal = 0;
@@ -1800,6 +1892,23 @@
             document.getElementById('totalDisplay').textContent = `$${total.toFixed(2)}`;
 
             calculateChange();
+
+            // Notificar al Visor del Cliente en el celular Android
+            const received = parseFloat(document.getElementById('cashReceivedInput').value) || total;
+            const change = Math.max(0, received - total);
+            notifyCustomerDisplay({
+                status: state.cart.length > 0 ? 'scanning' : 'idle',
+                items: state.cart,
+                subtotal: subtotal,
+                discount: discountAmount,
+                discountType: discountType,
+                tax: tax,
+                total: total,
+                paymentMethod: state.paymentMethod,
+                amountPaid: received,
+                change: change,
+                seller: state.seller ? state.seller.name : 'Vendedor Mostrador'
+            });
         }
 
         function selectPaymentMethod(method) {
@@ -1814,6 +1923,8 @@
             } else {
                 cashWrap.style.display = 'none';
             }
+
+            calculateTotals();
         }
 
         function setCashPreset(amount) {
@@ -1844,6 +1955,21 @@
             const change = Math.max(0, received - total);
 
             document.getElementById('changeDisplay').textContent = `$${change.toFixed(2)} MXN`;
+
+            if (state.cart.length > 0) {
+                notifyCustomerDisplay({
+                    status: received > 0 ? 'paying' : 'scanning',
+                    items: state.cart,
+                    subtotal: subtotal,
+                    discount: discountAmount,
+                    tax: total * (0.16 / 1.16),
+                    total: total,
+                    paymentMethod: state.paymentMethod,
+                    amountPaid: received,
+                    change: change,
+                    seller: state.seller ? state.seller.name : 'Vendedor Mostrador'
+                });
+            }
         }
 
         function generateNewFolio() {
@@ -1905,6 +2031,22 @@
                     state.lastCompletedOrder = data.order;
                     showTicketModal(data.order);
                     loadProducts();
+
+                    // Notificar al visor del cliente que la venta finalizó y activar Woncard
+                    notifyCustomerDisplay({
+                        status: 'completed',
+                        items: data.order.items,
+                        subtotal: data.order.subtotal,
+                        discount: data.order.discount,
+                        tax: data.order.tax,
+                        total: data.order.total,
+                        paymentMethod: data.order.paymentMethod,
+                        amountPaid: data.order.amountPaid,
+                        change: data.order.change,
+                        seller: data.order.seller,
+                        folio: data.order.folio,
+                        points: Math.floor(data.order.total / 10)
+                    });
                 } else {
                     alert('Error al registrar venta: ' + (data.error || 'Intenta de nuevo'));
                 }
@@ -1919,6 +2061,21 @@
                 };
                 state.lastCompletedOrder = fallbackOrder;
                 showTicketModal(fallbackOrder);
+
+                notifyCustomerDisplay({
+                    status: 'completed',
+                    items: fallbackOrder.items,
+                    subtotal: fallbackOrder.subtotal,
+                    discount: fallbackOrder.discount,
+                    tax: fallbackOrder.tax,
+                    total: fallbackOrder.total,
+                    paymentMethod: fallbackOrder.paymentMethod,
+                    amountPaid: fallbackOrder.amountPaid,
+                    change: fallbackOrder.change,
+                    seller: fallbackOrder.seller,
+                    folio: fallbackFolio,
+                    points: Math.floor(fallbackOrder.total / 10)
+                });
             }
         }
 
@@ -1970,6 +2127,14 @@
 
             document.getElementById('tktBarcodeDisplay').textContent = `*${order.folio}*`;
 
+            // Generar QR Woncard en el ticket térmico impreso
+            const woncardLink = `${window.location.origin}/woncard.html?folio=${encodeURIComponent(order.folio)}`;
+            const qrImg = document.getElementById('tktWoncardQrImg');
+            if (qrImg) {
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(woncardLink)}`;
+                qrImg.style.display = 'block';
+            }
+
             // Si el cliente indicó que requiere factura, resaltar botón
             const btnFac = document.getElementById('btnGoToInvoice');
             if (order.customer && order.customer.requiresInvoice) {
@@ -1985,6 +2150,14 @@
 
         function closeTicketModal() {
             document.getElementById('ticketModal').style.display = 'none';
+            notifyCustomerDisplay({
+                status: 'idle',
+                items: [],
+                subtotal: 0,
+                discount: 0,
+                tax: 0,
+                total: 0
+            });
         }
 
         function printThermalTicket() {

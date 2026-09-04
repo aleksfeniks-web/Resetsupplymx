@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#07090b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Pantalla de Cliente | Reset Supply MX</title>
+    
+    <link rel="manifest" href="/manifest-visor.json">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- QRCode.js para generación de códigos QR offline/online -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        :root {
+            --void: #06080b;
+            --panel: #0d1219;
+            --panel-2: #131a24;
+            --panel-card: rgba(19, 26, 36, 0.85);
+            --line: rgba(255, 255, 255, 0.08);
+            --line-focus: rgba(0, 212, 255, 0.4);
+            --text: #f4f7fa;
+            --muted: #94a3b8;
+            --muted-2: #64748b;
+            --cyan: #00d4ff;
+            --cyan-glow: rgba(0, 212, 255, 0.35);
+            --green: #39ff14;
+            --green-glow: rgba(57, 255, 20, 0.32);
+            --yellow: #ffb703;
+            --red: #ff3366;
+            --grad-cyan-green: linear-gradient(135deg, #00d4ff, #39ff14);
+            --grad-gold: linear-gradient(135deg, #ffd700, #ff8c00);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--void);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ambient Glow Background */
+        .ambient-bg {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle 350px at 15% 10%, rgba(0, 212, 255, 0.08), transparent),
+                radial-gradient(circle 350px at 85% 90%, rgba(57, 255, 20, 0.06), transparent);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Top Header */
+        header.display-header {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            background: rgba(13, 18, 25, 0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            height: 34px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(0, 212, 255, 0.3));
+        }
+
+        .brand-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 19px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-vonixx {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(57, 255, 20, 0.15));
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            color: var(--cyan);
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 6px;
+            letter-spacing: 0.8px;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--panel-2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            border: 1px solid var(--line);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: pulseDot 2s infinite;
+        }
+
+        .status-dot.disconnected {
+            background: var(--red);
+            box-shadow: 0 0 8px var(--red);
+            animation: none;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        .btn-fullscreen {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-fullscreen:active {
+            transform: scale(0.92);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        /* Container & Views */
+        main.display-main {
+            position: relative;
+            z-index: 5;
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view-section {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .view-section.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* ==================== MODO REPOSO / SCREENSAVER ==================== */
+        #viewScreensaver {
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 20px 16px;
+            background: radial-gradient(circle at center, #0e141d 0%, #06080b 100%);
+        }
+
+        .saver-hero-wrap {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .saver-slide-img-box {
+            width: 100%;
+            max-width: 480px;
+            height: 52vh;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 212, 255, 0.15);
+        }
+
+        .saver-slide-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 6s ease-out, opacity 1s ease;
+        }
+
+        .saver-slide-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 40%, rgba(7, 9, 11, 0.95) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+        }
+
+        .saver-tag {
+            align-self: flex-start;
+            background: var(--cyan);
+            color: #05080c;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .saver-slide-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 24px;
+            line-height: 1.15;
+            color: #ffffff;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .saver-slide-desc {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.35;
+        }
+
+        .saver-indicators {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .saver-indicator {
+            width: 22px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.15);
+            transition: all 0.3s;
+        }
+
+        .saver-indicator.active {
+            background: var(--cyan);
+            width: 38px;
+            box-shadow: 0 0 10px var(--cyan);
+        }
+
+        .saver-welcome-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--panel-card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        .saver-welcome-text h3 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .saver-welcome-text p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .saver-scan-tip {
+            text-align: right;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--cyan);
+        }
+
+        /* Marquee Ticker */
+        .marquee-ticker {
+            width: 100%;
+            background: #0a0e14;
+            border-top: 1px solid var(--line);
+            padding: 8px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            display: flex;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 22s linear infinite;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+        }
+
+        .marquee-content span {
+            color: var(--cyan);
+            margin: 0 14px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        /* ==================== MODO COBRO EN VIVO (LIVE CART) ==================== */
+        #viewLiveCart {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .live-cart-header {
+            padding: 12px 18px;
+            background: rgba(19, 26, 36, 0.6);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .live-cart-header h2 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .items-count-badge {
+            background: rgba(0, 212, 255, 0.15);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 212, 255, 0.35);
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .live-seller-name {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* Items List */
+        .live-items-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .live-item-card {
+            background: var(--panel-card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            animation: itemSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes itemSlideIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .live-item-card.just-added {
+            border-color: var(--cyan);
+            box-shadow: 0 0 16px var(--cyan-glow);
+        }
+
+        .live-item-card.just-added::after {
+            content: "NUEVO";
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: var(--cyan);
+            color: #000;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+
+        .live-item-thumb {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            object-fit: contain;
+            padding: 2px;
+            flex-shrink: 0;
+        }
+
+        .live-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .live-item-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .live-item-sub {
+            font-size: 11.5px;
+            color: var(--muted);
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .live-item-unit-price {
+            color: var(--cyan);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .live-item-right {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .live-item-qty {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .live-item-subtotal {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            color: #ffffff;
+            margin-top: 1px;
+        }
+
+        /* Fixed Bottom Checkout Box */
+        .live-cart-footer {
+            background: rgba(13, 18, 25, 0.96);
+            backdrop-filter: blur(16px);
+            border-top: 2px solid rgba(0, 212, 255, 0.25);
+            padding: 14px 18px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+        }
+
+        .tax-breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .tax-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--line);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--cyan);
+        }
+
+        .live-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 6px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--line);
+        }
+
+        .live-total-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        .live-total-label small {
+            display: block;
+            font-size: 11px;
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .live-total-amount {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 38px;
+            line-height: 1;
+            color: var(--green);
+            text-shadow: 0 0 20px var(--green-glow);
+            letter-spacing: 0.5px;
+        }
+
+        /* Cash Change Banner */
+        .cash-payment-banner {
+            display: none;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: rgba(57, 255, 20, 0.08);
+            border: 1px solid rgba(57, 255, 20, 0.25);
+            border-radius: var(--radius-sm);
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .cash-received-box {
+            color: var(--muted);
+        }
+
+        .cash-change-box {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--green);
+        }
+
+        /* ==================== MODO FINALIZACIÓN & WONCARD VIP ==================== */
+        #viewWoncard {
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+            background: radial-gradient(circle at center, #0f1622 0%, #06080b 100%);
+        }
+
+        .woncard-container {
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: woncardPop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes woncardPop {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .woncard-success-badge {
+            background: linear-gradient(135deg, rgba(57, 255, 20, 0.2), rgba(0, 212, 255, 0.2));
+            border: 1.5px solid var(--green);
+            color: var(--green);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 1px;
+            padding: 5px 16px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 0 15px var(--green-glow);
+            text-transform: uppercase;
+        }
+
+        /* The Digital VIP Card */
+        .woncard-card {
+            width: 100%;
+            background: linear-gradient(145deg, #161f2d, #0b1017);
+            border: 1.5px solid rgba(0, 212, 255, 0.35);
+            border-radius: var(--radius-lg);
+            padding: 22px 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 212, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .woncard-card::before {
+            content: "";
+            position: absolute;
+            top: -40%;
+            right: -30%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .woncard-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--line);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .woncard-logo-text {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+        }
+
+        .woncard-chip {
+            background: linear-gradient(135deg, #e6c875, #b8860b);
+            width: 36px;
+            height: 26px;
+            border-radius: 5px;
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+            border: 1px solid #ffe599;
+        }
+
+        .woncard-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .woncard-meta-item label {
+            display: block;
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .woncard-meta-item span {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            color: #ffffff;
+        }
+
+        .woncard-points-pill {
+            background: rgba(255, 183, 3, 0.15);
+            border: 1px solid rgba(255, 183, 3, 0.4);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .woncard-points-pill span {
+            font-size: 12px;
+            color: #ffb703;
+            font-weight: 700;
+        }
+
+        .woncard-points-val {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        /* QR Code Frame */
+        .woncard-qr-frame {
+            background: #ffffff;
+            border-radius: var(--radius-md);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 220px;
+        }
+
+        #woncardQrContainer {
+            width: 170px;
+            height: 170px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #woncardQrContainer img, #woncardQrContainer canvas {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .woncard-scan-label {
+            color: #111111;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .woncard-cta {
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .woncard-cta h4 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--cyan);
+            margin-bottom: 2px;
+        }
+
+        .woncard-cta p {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        /* Countdown Bar */
+        .woncard-timer-wrap {
+            width: 100%;
+            height: 4px;
+            background: var(--line);
+            border-radius: 2px;
+            margin-top: 14px;
+            overflow: hidden;
+        }
+
+        .woncard-timer-bar {
+            height: 100%;
+            background: var(--cyan);
+            width: 100%;
+            transition: width 1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg"></div>
+
+    <!-- Header Superior -->
+    <header class="display-header">
+        <div class="brand-box">
+            <img src="/logoresetsupply.png" alt="Reset Supply MX" class="brand-logo" onerror="this.src='/favicon.png'">
+            <div class="brand-title">
+                RESET SUPPLY <span class="badge-vonixx">VONIXX</span>
+            </div>
+        </div>
+
+        <div class="header-status">
+            <div class="status-pill">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">En línea</span>
+            </div>
+            <button class="btn-fullscreen" id="btnFullscreen" title="Pantalla Completa">⛶</button>
+        </div>
+    </header>
+
+    <!-- Área Principal con 3 Vistas -->
+    <main class="display-main">
+
+        <!-- ==================== VISTA 1: REPOSO (SCREENSAVER / CATÁLOGO) ==================== -->
+        <section class="view-section active" id="viewScreensaver">
+            <div class="saver-hero-wrap">
+                <div class="saver-slide-img-box">
+                    <img id="saverSlideImg" class="saver-slide-img" src="/assets/hero_products_1786422334033.jpg" alt="Catálogo Vonixx">
+                    <div class="saver-slide-overlay">
+                        <span class="saver-tag" id="saverSlideTag">DISTRIBUIDOR AUTORIZADO</span>
+                        <h2 class="saver-slide-title" id="saverSlideTitle">LÍNEA COMPLETA VONIXX</h2>
+                        <p class="saver-slide-desc" id="saverSlideDesc">Soluciones profesionales en estética automotriz, pulido y protección cerámica.</p>
+                    </div>
+                </div>
+
+                <div class="saver-indicators" id="saverIndicators">
+                    <div class="saver-indicator active"></div>
+                    <div class="saver-indicator"></div>
+                    <div class="saver-indicator"></div>
+                    <div class="saver-indicator"></div>
+                    <div class="saver-indicator"></div>
+                </div>
+
+                <div class="saver-welcome-card">
+                    <div class="saver-welcome-text">
+                        <h3>✨ ¡Bienvenido a Mostrador!</h3>
+                        <p>Tus productos se verán aquí en tiempo real al ser escaneados.</p>
+                    </div>
+                    <div class="saver-scan-tip">
+                        WONCARD VIP<br>
+                        <span style="font-size: 11px; color: var(--green);">Acumula Puntos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticker Marquesina -->
+            <div class="marquee-ticker">
+                <div class="marquee-content">
+                    🔥 <span>DISTRIBUIDOR OFICIAL VONIXX EN MÉXICO</span> • 🛡️ <span>PROTECCIÓN CERÁMICA & DETAILING PROFESIONAL</span> • 💳 <span>PAGOS CON TARJETA, TRANSFERENCIA Y EFECTIVO</span> • 🧾 <span>FACTURACIÓN ELECTRÓNICA INMEDIATA</span> • 🎁 <span>ACUMULA PUNTOS WONCARD EN CADA COMPRA</span> • 💬 <span>WHATSAPP DE ATENCIÓN: 663 460 6566</span> •
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VISTA 2: COBRO EN VIVO (LIVE CART) ==================== -->
+        <section class="view-section" id="viewLiveCart">
+            <div class="live-cart-header">
+                <h2>
+                    🛒 Tu Carrito en Mostrador
+                    <span class="items-count-badge" id="liveItemsBadge">0 productos</span>
+                </h2>
+                <span class="live-seller-name" id="liveSellerDisplay">Atendido por: Vendedor</span>
+            </div>
+
+            <div class="live-items-scroll" id="liveItemsContainer">
+                <!-- Se inyectan dinámicamente las tarjetas de productos -->
+            </div>
+
+            <div class="live-cart-footer">
+                <div class="tax-breakdown-row">
+                    <span>Subtotal: <strong id="liveSubtotalText">$0.00</strong></span>
+                    <span id="liveDiscountRow" style="display: none; color: var(--yellow);">Descuento: <strong id="liveDiscountText">-$0.00</strong></span>
+                    <span><span class="tax-tag">IVA 16% INCLUIDO</span> <strong id="liveTaxText">$0.00</strong></span>
+                </div>
+
+                <div class="live-total-row">
+                    <div class="live-total-label">
+                        TOTAL A PAGAR
+                        <small id="livePaymentMethodText">Método: EFECTIVO</small>
+                    </div>
+                    <div class="live-total-amount" id="liveTotalText">$0.00</div>
+                </div>
+
+                <!-- Banner si se está cobrando en efectivo -->
+                <div class="cash-payment-banner" id="cashPaymentBanner">
+                    <div class="cash-received-box">
+                        Efectivo Recibido: <strong id="cashReceivedText" style="color:#fff;">$0.00</strong>
+                    </div>
+                    <div class="cash-change-box">
+                        Su Cambio: <strong id="cashChangeText">$0.00</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VISTA 3: FINALIZACIÓN & WONCARD VIP ==================== -->
+        <section class="view-section" id="viewWoncard">
+            <div class="woncard-container">
+                <div class="woncard-success-badge">
+                    🎉 ¡Compra Finalizada con Éxito!
+                </div>
+
+                <div class="woncard-card">
+                    <div class="woncard-top">
+                        <div class="woncard-logo-text">
+                            WONCARD <span style="color:var(--cyan);">VIP</span>
+                        </div>
+                        <div class="woncard-chip"></div>
+                    </div>
+
+                    <div class="woncard-meta-grid">
+                        <div class="woncard-meta-item">
+                            <label>Folio de Venta</label>
+                            <span id="woncardFolioText">#POS-000000</span>
+                        </div>
+                        <div class="woncard-meta-item" style="text-align: right;">
+                            <label>Total Pagado (con IVA)</label>
+                            <span id="woncardTotalText" style="color: var(--green);">$0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="woncard-points-pill">
+                        <span>⭐ Puntos Ganados en esta Compra</span>
+                        <div class="woncard-points-val" id="woncardPointsText">+0 PTS</div>
+                    </div>
+
+                    <!-- Código QR Dinámico -->
+                    <div class="woncard-qr-frame">
+                        <div id="woncardQrContainer"></div>
+                        <div class="woncard-scan-label">ESCANEA CON TU CÁMARA</div>
+                    </div>
+
+                    <div class="woncard-cta">
+                        <h4>📱 Guarda tu Ticket y Recibe Promociones</h4>
+                        <p>Escanea el código QR para consultar tu ticket digital y recibir cupones de descuento exclusivos en WhatsApp.</p>
+                    </div>
+
+                    <div class="woncard-timer-wrap">
+                        <div class="woncard-timer-bar" id="woncardTimerBar"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SCRIPT PRINCIPAL DEL VISOR PWA -->
+    <script>
+        // Registrar Service Worker para PWA en Android
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw-visor.js')
+                    .then(function(reg) {
+                        console.log('📱 Service Worker registrado correctamente:', reg.scope);
+                    })
+                    .catch(function(err) {
+                        console.warn('⚠️ No se pudo registrar SW:', err);
+                    });
+            });
+        }
+
+        // ==================== CATÁLOGO PARA SCREENSAVER ====================
+        const CATALOG_SLIDES = [
+            {
+                img: '/assets/hero_products_1786422334033.jpg',
+                tag: 'DISTRIBUIDOR AUTORIZADO',
+                title: 'LÍNEA COMPLETA VONIXX',
+                desc: 'Todo para estética automotriz profesional, lavado y sellado de alta gama.'
+            },
+            {
+                img: '/assets/car_detailing_1786422343111.jpg',
+                tag: 'ACABADO PROFESIONAL',
+                title: 'BRILLO Y PROTECCIÓN CERÁMICA',
+                desc: 'Repelencia extrema, profundidad de color y protección contra rayos UV.'
+            },
+            {
+                img: '/assets/product_alumax_1786422408768.jpg',
+                tag: 'LIMPIEZA PESADA',
+                title: 'ALUMAX VONIXX',
+                desc: 'Desincrustante ácido concentrado para rines, motores y chasis de aluminio.'
+            },
+            {
+                img: '/assets/product_cera_1786422436985.jpg',
+                tag: 'CARNAÚBA PURA',
+                title: 'CERA NATIVE VONIXX',
+                desc: 'Cera de carnaúba brasileña premium para un reflejo cálido incomparable.'
+            },
+            {
+                img: '/assets/product_plasticos_1786422427894.jpg',
+                tag: 'RESTAURACIÓN',
+                title: 'RESTAURAX & PLÁSTICOS',
+                desc: 'Devuelve el tono original a molduras y plásticos exteriores con protección duradera.'
+            },
+            {
+                img: '/assets/product_vsc_1786422417603.jpg',
+                tag: 'CERAMIC COATING',
+                title: 'RECUBRIMIENTOS CERÁMICOS',
+                desc: 'Nanotecnología avanzada para máxima resistencia química y repelencia hidrofóbica.'
+            }
+        ];
+
+        let currentSlideIdx = 0;
+        let slideTimer = null;
+
+        function initScreensaver() {
+            const indicatorsContainer = document.getElementById('saverIndicators');
+            indicatorsContainer.innerHTML = '';
+            CATALOG_SLIDES.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'saver-indicator' + (i === 0 ? ' active' : '');
+                indicatorsContainer.appendChild(dot);
+            });
+
+            startSlideTimer();
+        }
+
+        function showNextSlide() {
+            currentSlideIdx = (currentSlideIdx + 1) % CATALOG_SLIDES.length;
+            const slide = CATALOG_SLIDES[currentSlideIdx];
+
+            const imgEl = document.getElementById('saverSlideImg');
+            imgEl.style.opacity = '0';
+            setTimeout(() => {
+                imgEl.src = slide.img;
+                document.getElementById('saverSlideTag').textContent = slide.tag;
+                document.getElementById('saverSlideTitle').textContent = slide.title;
+                document.getElementById('saverSlideDesc').textContent = slide.desc;
+                imgEl.style.opacity = '1';
+
+                const dots = document.querySelectorAll('.saver-indicator');
+                dots.forEach((d, i) => d.classList.toggle('active', i === currentSlideIdx));
+            }, 300);
+        }
+
+        function startSlideTimer() {
+            if (slideTimer) clearInterval(slideTimer);
+            slideTimer = setInterval(showNextSlide, 6500);
+        }
+
+        function stopSlideTimer() {
+            if (slideTimer) {
+                clearInterval(slideTimer);
+                slideTimer = null;
+            }
+        }
+
+        // ==================== CONTROL DE VISTAS ====================
+        let currentView = 'screensaver'; // 'screensaver' | 'live' | 'woncard'
+        let woncardTimeout = null;
+        let woncardCountdownInterval = null;
+
+        function setView(viewName) {
+            if (currentView === viewName) return;
+            currentView = viewName;
+
+            document.getElementById('viewScreensaver').classList.toggle('active', viewName === 'screensaver');
+            document.getElementById('viewLiveCart').classList.toggle('active', viewName === 'live');
+            document.getElementById('viewWoncard').classList.toggle('active', viewName === 'woncard');
+
+            if (viewName === 'screensaver') {
+                startSlideTimer();
+            } else {
+                stopSlideTimer();
+            }
+
+            if (viewName !== 'woncard' && woncardTimeout) {
+                clearTimeout(woncardTimeout);
+                woncardTimeout = null;
+            }
+        }
+
+        // ==================== RENDER DEL CARRITO EN VIVO ====================
+        let lastRenderedItemsLength = 0;
+
+        function renderLiveCart(state) {
+            const items = state.items || [];
+            const container = document.getElementById('liveItemsContainer');
+            
+            document.getElementById('liveItemsBadge').textContent = `${items.length} ${items.length === 1 ? 'producto' : 'productos'}`;
+            document.getElementById('liveSellerDisplay').textContent = state.seller ? `Atendido por: ${state.seller}` : 'Atención en Mostrador';
+
+            container.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const card = document.createElement('div');
+                const isLatest = index === items.length - 1 && items.length > lastRenderedItemsLength;
+                card.className = 'live-item-card' + (isLatest ? ' just-added' : '');
+
+                const fallbackImg = '/favicon.png';
+                const imgSrc = item.image || fallbackImg;
+                const pName = item.variation ? `${item.name} (${item.variation})` : item.name;
+
+                card.innerHTML = `
+                    <img src="${imgSrc}" class="live-item-thumb" alt="${item.name}" onerror="this.src='${fallbackImg}'">
+                    <div class="live-item-info">
+                        <div class="live-item-title">${pName}</div>
+                        <div class="live-item-sub">
+                            <span>P.U. (con IVA):</span>
+                            <span class="live-item-unit-price">$${item.price.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})} MXN</span>
+                        </div>
+                    </div>
+                    <div class="live-item-right">
+                        <div class="live-item-qty">x${item.quantity}</div>
+                        <div class="live-item-subtotal">$${(item.price * item.quantity).toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            lastRenderedItemsLength = items.length;
+
+            // Scroll automático al último producto agregado
+            container.scrollTop = container.scrollHeight;
+
+            // Desglose de totales
+            document.getElementById('liveSubtotalText').textContent = `$${state.subtotal.toFixed(2)}`;
+            
+            if (state.discount > 0) {
+                document.getElementById('liveDiscountRow').style.display = 'inline';
+                document.getElementById('liveDiscountText').textContent = `-$${state.discount.toFixed(2)}`;
+            } else {
+                document.getElementById('liveDiscountRow').style.display = 'none';
+            }
+
+            document.getElementById('liveTaxText').textContent = `$${state.tax.toFixed(2)}`;
+            document.getElementById('liveTotalText').textContent = `$${state.total.toFixed(2)} MXN`;
+
+            const methodLabels = {
+                cash: 'EFECTIVO',
+                card: 'TARJETA DE DÉBITO/CRÉDITO',
+                spei: 'TRANSFERENCIA SPEI',
+                mixed: 'PAGO MIXTO'
+            };
+            document.getElementById('livePaymentMethodText').textContent = `Método: ${methodLabels[state.paymentMethod] || 'EFECTIVO'}`;
+
+            // Banner de efectivo y cambio
+            const cashBanner = document.getElementById('cashPaymentBanner');
+            if (state.paymentMethod === 'cash' && (state.amountPaid > 0 || state.change > 0)) {
+                cashBanner.style.display = 'flex';
+                document.getElementById('cashReceivedText').textContent = `$${(state.amountPaid || state.total).toFixed(2)}`;
+                document.getElementById('cashChangeText').textContent = `$${(state.change || 0).toFixed(2)}`;
+            } else {
+                cashBanner.style.display = 'none';
+            }
+        }
+
+        // ==================== RENDER DE LA WONCARD & QR ====================
+        let currentQr = null;
+
+        function renderWoncard(state) {
+            const folio = state.folio || 'POS-000000';
+            const total = state.total || 0;
+            const points = state.points !== undefined ? state.points : Math.floor(total / 10);
+
+            document.getElementById('woncardFolioText').textContent = `#${folio}`;
+            document.getElementById('woncardTotalText').textContent = `$${total.toFixed(2)} MXN`;
+            document.getElementById('woncardPointsText').textContent = `+${points} PTS`;
+
+            // URL a donde apunta el QR: la página woncard.html con el folio
+            const domain = window.location.origin;
+            const woncardUrl = `${domain}/woncard.html?folio=${encodeURIComponent(folio)}`;
+
+            // Generar Código QR
+            const qrContainer = document.getElementById('woncardQrContainer');
+            qrContainer.innerHTML = '';
+
+            try {
+                if (typeof QRCode !== 'undefined') {
+                    currentQr = new QRCode(qrContainer, {
+                        text: woncardUrl,
+                        width: 165,
+                        height: 165,
+                        colorDark: "#06080b",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                } else {
+                    // Fallback mediante API de QR por imagen
+                    qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=165x165&data=${encodeURIComponent(woncardUrl)}" alt="QR Woncard" style="width:165px; height:165px;">`;
+                }
+            } catch (e) {
+                console.warn('Error generando QR:', e);
+                qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=165x165&data=${encodeURIComponent(woncardUrl)}" alt="QR Woncard" style="width:165px; height:165px;">`;
+            }
+
+            // Animación de barra de tiempo de 25 segundos antes de volver al screensaver
+            const totalSeconds = 25;
+            let secondsLeft = totalSeconds;
+            const timerBar = document.getElementById('woncardTimerBar');
+            timerBar.style.width = '100%';
+
+            if (woncardCountdownInterval) clearInterval(woncardCountdownInterval);
+            woncardCountdownInterval = setInterval(() => {
+                secondsLeft -= 1;
+                const pct = Math.max(0, (secondsLeft / totalSeconds) * 100);
+                timerBar.style.width = `${pct}%`;
+                if (secondsLeft <= 0) {
+                    clearInterval(woncardCountdownInterval);
+                }
+            }, 1000);
+
+            if (woncardTimeout) clearTimeout(woncardTimeout);
+            woncardTimeout = setTimeout(() => {
+                setView('screensaver');
+            }, totalSeconds * 1000);
+        }
+
+        // ==================== GESTIÓN DE ESTADO DESDE EL SERVIDOR / POS ====================
+        function handleIncomingState(state) {
+            if (!state) return;
+
+            if (state.status === 'completed' && state.folio) {
+                renderWoncard(state);
+                setView('woncard');
+            } else if (state.items && state.items.length > 0) {
+                renderLiveCart(state);
+                setView('live');
+            } else {
+                setView('screensaver');
+            }
+        }
+
+        // Conexión Server-Sent Events (SSE) para sincronización con cero latencia
+        let sseSource = null;
+
+        function connectSSE() {
+            if (sseSource) {
+                sseSource.close();
+            }
+
+            sseSource = new EventSource('/api/pos/customer-display/stream');
+
+            sseSource.onopen = function() {
+                document.getElementById('statusDot').classList.remove('disconnected');
+                document.getElementById('statusText').textContent = 'Conectado';
+            };
+
+            sseSource.onmessage = function(event) {
+                try {
+                    const state = JSON.parse(event.data);
+                    handleIncomingState(state);
+                } catch (err) {
+                    console.warn('Error parseando evento SSE:', err);
+                }
+            };
+
+            sseSource.onerror = function() {
+                document.getElementById('statusDot').classList.add('disconnected');
+                document.getElementById('statusText').textContent = 'Reconectando...';
+                sseSource.close();
+                setTimeout(connectSSE, 3500);
+            };
+        }
+
+        // Soporte para BroadcastChannel (si se ejecuta en la misma máquina o ventana)
+        if ('BroadcastChannel' in window) {
+            const bc = new BroadcastChannel('pos_customer_display');
+            bc.onmessage = function(ev) {
+                if (ev.data) {
+                    handleIncomingState(ev.data);
+                }
+            };
+        }
+
+        // Polling de respaldo en caso de que SSE no esté soportado
+        function fetchInitialState() {
+            fetch('/api/pos/customer-display/state')
+                .then(res => res.json())
+                .then(state => {
+                    handleIncomingState(state);
+                })
+                .catch(err => {
+                    console.warn('Error en fetch inicial:', err);
+                });
+        }
+
+        // Botón de Pantalla Completa para modo quiosco en Android
+        document.getElementById('btnFullscreen').addEventListener('click', function() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.warn('Error al activar fullscreen:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Inicialización
+        window.addEventListener('DOMContentLoaded', () => {
+            initScreensaver();
+            fetchInitialState();
+            connectSSE();
+        });
+    </script>
+</body>
+</html>

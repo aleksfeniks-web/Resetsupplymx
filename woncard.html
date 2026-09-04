@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#07090b">
+    <title>Woncard VIP | Reset Supply MX</title>
+    
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --void: #06080b;
+            --panel: #0d1219;
+            --panel-2: #131a24;
+            --line: rgba(255, 255, 255, 0.08);
+            --line-focus: rgba(0, 212, 255, 0.45);
+            --text: #f4f7fa;
+            --muted: #94a3b8;
+            --muted-2: #64748b;
+            --cyan: #00d4ff;
+            --cyan-glow: rgba(0, 212, 255, 0.3);
+            --green: #39ff14;
+            --green-glow: rgba(57, 255, 20, 0.28);
+            --yellow: #ffb703;
+            --gold: #ffd700;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 22px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--void);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 14px 40px;
+            background-image: 
+                radial-gradient(circle 350px at 50% -10%, rgba(0, 212, 255, 0.12), transparent),
+                radial-gradient(circle 350px at 50% 100%, rgba(57, 255, 20, 0.08), transparent);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 460px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Header */
+        header.won-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 4px;
+        }
+
+        .won-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .won-logo {
+            height: 32px;
+            width: auto;
+            filter: drop-shadow(0 2px 8px rgba(0,212,255,0.3));
+        }
+
+        .won-brand-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .won-badge {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(57, 255, 20, 0.15));
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            color: var(--cyan);
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.8px;
+        }
+
+        /* The Woncard Card (Digital Wallet Card) */
+        .woncard-hero-card {
+            background: linear-gradient(145deg, #151d29, #0a0e14);
+            border: 1.5px solid rgba(0, 212, 255, 0.35);
+            border-radius: var(--radius-lg);
+            padding: 22px 20px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 212, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .woncard-hero-card::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.18) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .card-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .card-name-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 22px;
+            letter-spacing: 0.8px;
+            color: #ffffff;
+        }
+
+        .card-chip {
+            background: linear-gradient(135deg, #e6c875, #b8860b);
+            width: 38px;
+            height: 28px;
+            border-radius: 5px;
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+            border: 1px solid #ffe599;
+        }
+
+        .card-number-row {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--cyan);
+            margin-bottom: 16px;
+        }
+
+        .card-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--line);
+        }
+
+        .card-stat-box label {
+            display: block;
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-stat-box span {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 19px;
+            color: #ffffff;
+        }
+
+        .card-stat-box.points span {
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Order Details Section */
+        .details-card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 18px 16px;
+        }
+
+        .section-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #ffffff;
+        }
+
+        .order-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .order-item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-qty-name {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            max-width: 72%;
+        }
+
+        .item-qty-tag {
+            background: var(--panel-2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--cyan);
+        }
+
+        .item-name-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-price-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .order-totals-box {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            border-top: 1px dashed var(--line);
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .totals-row.grand-total {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--green);
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid var(--line);
+        }
+
+        /* Registration & Promos Form */
+        .promos-card {
+            background: var(--panel);
+            border: 1.5px solid rgba(57, 255, 20, 0.3);
+            border-radius: var(--radius-md);
+            padding: 20px 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .promos-badge {
+            display: inline-block;
+            background: rgba(57, 255, 20, 0.15);
+            border: 1px solid var(--green);
+            color: var(--green);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 11px;
+            letter-spacing: 0.8px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .promos-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 19px;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .promos-desc {
+            font-size: 12.5px;
+            color: var(--muted);
+            line-height: 1.4;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #090d13;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            font-size: 14px;
+            color: #ffffff;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 12px var(--cyan-glow);
+        }
+
+        .phone-input-wrap {
+            display: flex;
+            gap: 8px;
+        }
+
+        .phone-prefix {
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 12px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+        }
+
+        .opt-in-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 14px 0 16px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.35;
+        }
+
+        .opt-in-box input[type="checkbox"] {
+            margin-top: 2px;
+            accent-color: var(--green);
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+        }
+
+        .btn-submit-woncard {
+            width: 100%;
+            background: linear-gradient(135deg, #00d4ff, #39ff14);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 0.8px;
+            color: #06080b;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 212, 255, 0.25);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit-woncard:active {
+            transform: scale(0.98);
+        }
+
+        /* Success State */
+        .woncard-registered-box {
+            display: none;
+            background: rgba(57, 255, 20, 0.08);
+            border: 1.5px solid var(--green);
+            border-radius: var(--radius-md);
+            padding: 20px 16px;
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reg-success-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .reg-success-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--green);
+            margin-bottom: 4px;
+        }
+
+        .reg-success-desc {
+            font-size: 12.5px;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .btn-whatsapp-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            background: #25d366;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 13px;
+            border-radius: var(--radius-sm);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 18px rgba(37, 211, 102, 0.3);
+            margin-bottom: 8px;
+        }
+
+        /* Footer */
+        footer.won-footer {
+            text-align: center;
+            font-size: 11.5px;
+            color: var(--muted-2);
+            margin-top: 14px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="won-header">
+            <div class="won-brand">
+                <img src="/logoresetsupply.png" alt="Reset Supply MX" class="won-logo" onerror="this.src='/favicon.png'">
+                <span class="won-brand-name">RESET SUPPLY <span style="color:var(--cyan);">MX</span></span>
+            </div>
+            <div class="won-badge">VONIXX MÉXICO</div>
+        </header>
+
+        <!-- Tarjeta Woncard Digital -->
+        <div class="woncard-hero-card">
+            <div class="card-top-row">
+                <div class="card-name-label">
+                    WONCARD <span style="color:var(--cyan);">VIP</span>
+                </div>
+                <div class="card-chip"></div>
+            </div>
+
+            <div class="card-number-row" id="displayCardNumber">
+                WON-••••••
+            </div>
+
+            <div class="card-stats-grid">
+                <div class="card-stat-box">
+                    <label>Total Compra</label>
+                    <span id="displayTotalPaid">$0.00</span>
+                </div>
+                <div class="card-stat-box points">
+                    <label>Puntos Ganados</label>
+                    <span id="displayPointsEarned">+0 PTS</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen de Compra -->
+        <div class="details-card">
+            <div class="section-title">
+                <span>🧾 Ticket Digital</span>
+                <span id="displayFolio" style="color: var(--cyan); font-family: 'JetBrains Mono', monospace; font-size: 13px;">#POS-••••••</span>
+            </div>
+
+            <div class="order-items-list" id="displayItemsList">
+                <div style="text-align:center; color:var(--muted); font-size:12px; padding:10px;">Cargando tu compra...</div>
+            </div>
+
+            <div class="order-totals-box">
+                <div class="totals-row">
+                    <span>Subtotal:</span>
+                    <strong id="displaySubtotal">$0.00</strong>
+                </div>
+                <div class="totals-row">
+                    <span>IVA 16% (Incluido):</span>
+                    <strong id="displayTax">$0.00</strong>
+                </div>
+                <div class="totals-row grand-total">
+                    <span>TOTAL PAGADO:</span>
+                    <span id="displayGrandTotal">$0.00 MXN</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Registro & Promociones por WhatsApp -->
+        <div class="promos-card" id="formPromosCard">
+            <span class="promos-badge">BENEFICIOS EXCLUSIVOS</span>
+            <h3 class="promos-title">🎁 Activa tu Tarjeta y Recibe Promociones</h3>
+            <p class="promos-desc">Registra tu número para guardar tu ticket digital, acumular puntos y recibir cupones y ofertas especiales de Vonixx en tu WhatsApp.</p>
+
+            <form id="woncardForm" onsubmit="event.preventDefault(); submitWoncard();">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="custNameInput" class="form-control" placeholder="Ej. Carlos Mendoza" required>
+                </div>
+
+                <div class="form-group">
+                    <label>WhatsApp (para promociones y ticket)</label>
+                    <div class="phone-input-wrap">
+                        <span class="phone-prefix">🇲🇽 +52</span>
+                        <input type="tel" id="custPhoneInput" class="form-control font-mono" placeholder="663 123 4567" maxlength="14" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Correo Electrónico (Opcional)</label>
+                    <input type="email" id="custEmailInput" class="form-control" placeholder="carlos@ejemplo.com">
+                </div>
+
+                <div class="opt-in-box">
+                    <input type="checkbox" id="promosCheck" checked required>
+                    <label for="promosCheck">Acepto recibir promociones exclusivas, cupones de descuento y novedades de productos Vonixx vía WhatsApp.</label>
+                </div>
+
+                <button type="submit" class="btn-submit-woncard" id="btnSubmitWoncard">
+                    ⭐ Guardar mi Compra y Activar Beneficios
+                </button>
+            </form>
+        </div>
+
+        <!-- Estado de Éxito al Registrar -->
+        <div class="woncard-registered-box" id="successBox">
+            <div class="reg-success-icon">🎉</div>
+            <h3 class="reg-success-title">¡Membresía Woncard Activada!</h3>
+            <p class="reg-success-desc">Tu compra ha sido vinculada a tu cuenta y tus puntos ya están acreditados. Te enviaremos tus promociones a WhatsApp.</p>
+
+            <a href="#" target="_blank" class="btn-whatsapp-action" id="btnWhatsappLink">
+                💬 Abrir en WhatsApp y Confirmar Ticket
+            </a>
+
+            <div style="font-size:12px; color:var(--muted); margin-top:10px;">
+                Folio guardado: <strong id="savedFolioText" style="color:#fff;">#POS-••••••</strong>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="won-footer">
+            Reset Supply MX • Distribuidor Autorizado Vonixx en México<br>
+            Atención a Clientes: WhatsApp +52 663 460 6566
+        </footer>
+    </div>
+
+    <script>
+        // Obtener folio de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const folioParam = urlParams.get('folio') || '';
+        let currentOrderData = null;
+
+        async function loadOrder() {
+            if (!folioParam) {
+                document.getElementById('displayItemsList').innerHTML = '<div style="color:var(--yellow); text-align:center; font-size:13px;">No se especificó un folio de venta.</div>';
+                return;
+            }
+
+            document.getElementById('displayFolio').textContent = `#${folioParam}`;
+
+            try {
+                const res = await fetch(`/api/woncard/order/${encodeURIComponent(folioParam)}`);
+                const data = await res.json();
+
+                if (data.success && data.order) {
+                    currentOrderData = data.order;
+                    renderOrder(data.order);
+                } else {
+                    document.getElementById('displayItemsList').innerHTML = `<div style="color:var(--red); text-align:center; font-size:13px;">${data.error || 'No se pudo cargar la información de la orden.'}</div>`;
+                }
+            } catch (err) {
+                console.error('Error cargando orden:', err);
+                document.getElementById('displayItemsList').innerHTML = '<div style="color:var(--red); text-align:center; font-size:13px;">Error de conexión con el servidor.</div>';
+            }
+        }
+
+        function renderOrder(order) {
+            document.getElementById('displayTotalPaid').textContent = `$${order.total.toFixed(2)} MXN`;
+            document.getElementById('displayGrandTotal').textContent = `$${order.total.toFixed(2)} MXN`;
+            document.getElementById('displaySubtotal').textContent = `$${order.subtotal.toFixed(2)}`;
+            document.getElementById('displayTax').textContent = `$${order.tax.toFixed(2)}`;
+
+            const points = order.points || Math.floor(order.total / 10);
+            document.getElementById('displayPointsEarned').textContent = `+${points} PTS`;
+
+            // Render items
+            const container = document.getElementById('displayItemsList');
+            container.innerHTML = '';
+
+            if (order.items && order.items.length > 0) {
+                order.items.forEach(it => {
+                    const row = document.createElement('div');
+                    row.className = 'order-item-row';
+                    const pName = it.variation ? `${it.name} (${it.variation})` : it.name;
+                    row.innerHTML = `
+                        <div class="item-qty-name">
+                            <span class="item-qty-tag">${it.quantity}x</span>
+                            <span class="item-name-text">${pName}</span>
+                        </div>
+                        <div class="item-price-text">$${(it.price * it.quantity).toFixed(2)}</div>
+                    `;
+                    container.appendChild(row);
+                });
+            } else {
+                container.innerHTML = '<div style="color:var(--muted); font-size:12px;">Detalle de compra resumido.</div>';
+            }
+
+            // Si la orden ya traía cliente registrado, autollenar
+            if (order.customer && order.customer.name && order.customer.name !== 'Público en General') {
+                document.getElementById('custNameInput').value = order.customer.name;
+                if (order.customer.phone) {
+                    document.getElementById('custPhoneInput').value = order.customer.phone;
+                }
+                if (order.customer.email) {
+                    document.getElementById('custEmailInput').value = order.customer.email;
+                }
+            }
+        }
+
+        async function submitWoncard() {
+            const name = document.getElementById('custNameInput').value.trim();
+            const phone = document.getElementById('custPhoneInput').value.trim();
+            const email = document.getElementById('custEmailInput').value.trim();
+            const optIn = document.getElementById('promosCheck').checked;
+            const btn = document.getElementById('btnSubmitWoncard');
+
+            btn.disabled = true;
+            btn.textContent = 'Activando Membresía...';
+
+            try {
+                const res = await fetch('/api/woncard/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        folio: folioParam,
+                        name: name,
+                        whatsapp: phone,
+                        email: email,
+                        optInPromos: optIn
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    const cardCode = data.woncardId || 'WON-100800';
+                    document.getElementById('displayCardNumber').textContent = cardCode;
+
+                    // Ocultar formulario y mostrar estado de éxito
+                    document.getElementById('formPromosCard').style.display = 'none';
+                    document.getElementById('successBox').style.display = 'block';
+                    document.getElementById('savedFolioText').textContent = `#${folioParam} (${cardCode})`;
+
+                    // Configurar botón directo de WhatsApp
+                    const waMsg = encodeURIComponent(`Hola Reset Supply MX! 👋 Acabo de activar mi Woncard (${cardCode}) con mi compra folio #${folioParam}. Deseo confirmar mi registro para recibir mi ticket y futuras promociones.`);
+                    document.getElementById('btnWhatsappLink').href = `https://wa.me/526634606566?text=${waMsg}`;
+
+                    // Guardar en localStorage para recordar al cliente en este dispositivo
+                    localStorage.setItem('rs_woncard_profile', JSON.stringify({
+                        cardCode: cardCode,
+                        name: name,
+                        phone: phone,
+                        lastFolio: folioParam
+                    }));
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo registrar la Woncard'));
+                    btn.disabled = false;
+                    btn.textContent = '⭐ Guardar mi Compra y Activar Beneficios';
+                }
+            } catch (err) {
+                console.error('Error enviando registro Woncard:', err);
+                alert('Ocurrió un error al conectar con el servidor.');
+                btn.disabled = false;
+                btn.textContent = '⭐ Guardar mi Compra y Activar Beneficios';
+            }
+        }
+
+        // Recuperar si ya tenía membresía previa en este navegador
+        window.addEventListener('DOMContentLoaded', () => {
+            loadOrder();
+            const cached = localStorage.getItem('rs_woncard_profile');
+            if (cached) {
+                try {
+                    const prof = JSON.parse(cached);
+                    if (prof.cardCode) {
+                        document.getElementById('displayCardNumber').textContent = prof.cardCode;
+                    }
+                    if (prof.name && !document.getElementById('custNameInput').value) {
+                        document.getElementById('custNameInput').value = prof.name;
+                    }
+                    if (prof.phone && !document.getElementById('custPhoneInput').value) {
+                        document.getElementById('custPhoneInput').value = prof.phone;
+                    }
+                } catch(e) {}
+            }
+        });
+    </script>
+</body>
+</html>

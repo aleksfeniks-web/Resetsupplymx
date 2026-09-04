@@ -1,0 +1,30 @@
+{
+  "name": "Reset Supply - Pantalla Cliente POS",
+  "short_name": "Visor Cliente",
+  "description": "Segunda pantalla y visor de compras para mostrador en tienda física Vonixx - Reset Supply MX",
+  "start_url": "/visor",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07090b",
+  "theme_color": "#00d4ff",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logoresetsupply.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

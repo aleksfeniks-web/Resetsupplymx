@@ -217,6 +217,25 @@ app.get('/clientes/puntodeventa', (req, res) => {
   res.sendFile(path.join(__dirname, 'clientes', 'puntodeventa.html'));
 });
 
+// Pantalla de Cliente POS (Customer Facing Display - PWA)
+app.get('/visor', (req, res) => {
+  res.sendFile(path.join(__dirname, 'visor-cliente.html'));
+});
+app.get('/visor-cliente.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'visor-cliente.html'));
+});
+app.get('/display', (req, res) => {
+  res.sendFile(path.join(__dirname, 'visor-cliente.html'));
+});
+
+// Woncard Digital para Clientes (Ticket Móvil & Fidelización con QR)
+app.get('/woncard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'woncard.html'));
+});
+app.get('/woncard.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'woncard.html'));
+});
+
 // Archivos estáticos (HTML, CSS, imágenes, etc.)
 app.use(express.static(__dirname));
 
@@ -1150,6 +1169,253 @@ app.get('/api/admin/pos-clients', requireAdminAuth, async (req, res) => {
     }
   }
   res.json({ success: true, clients: localPosClients });
+});
+
+// ==================== PANTALLA DE CLIENTE POS & WONCARD DIGITAL ====================
+let currentCustomerDisplayState = {
+  status: 'idle', // 'idle' | 'scanning' | 'paying' | 'completed'
+  items: [],
+  subtotal: 0,
+  discount: 0,
+  discountType: 'fixed',
+  tax: 0,
+  total: 0,
+  paymentMethod: 'cash',
+  amountPaid: 0,
+  change: 0,
+  seller: 'Vendedor Mostrador',
+  folio: null,
+  points: 0,
+  updatedAt: new Date().toISOString()
+};
+let displaySSEClients = [];
+let localWoncardCustomers = [];
+
+// 1. Endpoint para actualizar el estado del visor del cliente desde la terminal POS
+app.post('/api/pos/customer-display/state', (req, res) => {
+  const data = req.body || {};
+  const status = data.status || (data.items && data.items.length > 0 ? 'scanning' : 'idle');
+  const items = Array.isArray(data.items) ? data.items : [];
+  const subtotal = parseFloat(data.subtotal) || 0;
+  const discount = parseFloat(data.discount) || 0;
+  const tax = parseFloat(data.tax) || (subtotal * (0.16 / 1.16));
+  const total = parseFloat(data.total) || Math.max(0, subtotal - discount);
+  const points = data.points !== undefined ? parseInt(data.points) : Math.floor(total / 10);
+
+  currentCustomerDisplayState = {
+    status: status,
+    items: items.map(it => ({
+      name: it.name || 'Producto',
+      variation: it.variation || '',
+      price: parseFloat(it.price) || 0,
+      quantity: parseInt(it.quantity) || 1,
+      image: it.image || '',
+      subtotal: (parseFloat(it.price) || 0) * (parseInt(it.quantity) || 1)
+    })),
+    subtotal: subtotal,
+    discount: discount,
+    discountType: data.discountType || 'fixed',
+    tax: tax,
+    total: total,
+    paymentMethod: data.paymentMethod || 'cash',
+    amountPaid: parseFloat(data.amountPaid) || total,
+    change: parseFloat(data.change) || 0,
+    seller: data.seller || 'Vendedor Mostrador',
+    folio: data.folio || null,
+    points: points,
+    updatedAt: new Date().toISOString()
+  };
+
+  // Notificar a todos los clientes SSE conectados en tiempo real
+  const payload = `data: ${JSON.stringify(currentCustomerDisplayState)}\n\n`;
+  displaySSEClients.forEach(client => {
+    try {
+      client.res.write(payload);
+    } catch (err) {
+      console.warn('Error al emitir a cliente SSE:', err.message);
+    }
+  });
+
+  res.json({ success: true, state: currentCustomerDisplayState });
+});
+
+// 2. Obtener estado actual del visor (Polling fallback)
+app.get('/api/pos/customer-display/state', (req, res) => {
+  res.json(currentCustomerDisplayState);
+});
+
+// 3. Stream en tiempo real vía Server-Sent Events (SSE) para Celular Android
+app.get('/api/pos/customer-display/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  if (res.flushHeaders) res.flushHeaders();
+
+  const clientId = Date.now() + Math.random().toString(36).substr(2, 9);
+  const newClient = { id: clientId, res };
+  displaySSEClients.push(newClient);
+
+  // Enviar estado inicial inmediato
+  res.write(`data: ${JSON.stringify(currentCustomerDisplayState)}\n\n`);
+
+  // Heartbeat / ping cada 20 segundos para evitar desconexiones móviles
+  const pingInterval = setInterval(() => {
+    try {
+      res.write(': keepalive\n\n');
+    } catch (e) {
+      clearInterval(pingInterval);
+    }
+  }, 20000);
+
+  req.on('close', () => {
+    clearInterval(pingInterval);
+    displaySSEClients = displaySSEClients.filter(c => c.id !== clientId);
+  });
+});
+
+// 4. Obtener datos de la orden para la Woncard mediante Folio
+app.get('/api/woncard/order/:folio', async (req, res) => {
+  const folio = (req.params.folio || '').trim().toUpperCase();
+  if (!folio) {
+    return res.status(400).json({ error: 'Folio requerido' });
+  }
+
+  // Buscar en memoria
+  let found = localPosOrders.find(o => (o.folio && o.folio.toUpperCase() === folio) || (o.id && o.id.toUpperCase() === folio));
+
+  // Buscar en Firestore si está conectado
+  if (!found && db) {
+    try {
+      const doc = await db.collection('pos_orders').doc(folio).get();
+      if (doc.exists) {
+        found = { id: doc.id, ...doc.data() };
+      }
+    } catch (err) {
+      console.warn('⚠️ Error consultando orden para Woncard en Firestore:', err.message);
+    }
+  }
+
+  if (!found) {
+    // Si la orden aún no se ha sincronizado, devolver un objeto estimado a partir del visor
+    if (currentCustomerDisplayState.folio && currentCustomerDisplayState.folio.toUpperCase() === folio) {
+      found = {
+        folio: currentCustomerDisplayState.folio,
+        items: currentCustomerDisplayState.items,
+        total: currentCustomerDisplayState.total,
+        tax: currentCustomerDisplayState.tax,
+        subtotal: currentCustomerDisplayState.subtotal,
+        paymentMethod: currentCustomerDisplayState.paymentMethod,
+        createdAt: currentCustomerDisplayState.updatedAt,
+        seller: currentCustomerDisplayState.seller
+      };
+    } else {
+      return res.status(404).json({ error: 'Orden no encontrada. Verifica el folio.' });
+    }
+  }
+
+  const points = Math.floor((found.total || 0) / 10);
+  res.json({
+    success: true,
+    order: {
+      folio: found.folio || found.id,
+      items: found.items || [],
+      total: found.total || 0,
+      tax: found.tax || 0,
+      subtotal: found.subtotal || 0,
+      discount: found.discount || 0,
+      paymentMethod: found.paymentMethod || 'cash',
+      createdAt: found.createdAt || new Date().toISOString(),
+      seller: found.seller || 'Reset Supply MX',
+      customer: found.customer || null,
+      points: points
+    }
+  });
+});
+
+// 5. Registrar Cliente Woncard / Opt-in de Promociones por WhatsApp
+app.post('/api/woncard/register', async (req, res) => {
+  const { folio, name, whatsapp, email, optInPromos } = req.body || {};
+
+  if (!whatsapp || !whatsapp.trim()) {
+    return res.status(400).json({ error: 'El número de WhatsApp es requerido.' });
+  }
+
+  const cleanPhone = whatsapp.trim().replace(/\D/g, '');
+  const cleanName = (name || 'Cliente Vonixx').trim();
+  const cardCode = `WON-${Math.floor(100000 + Math.random() * 900000)}`;
+  const nowStr = new Date().toISOString();
+
+  const customerRecord = {
+    woncardId: cardCode,
+    name: cleanName,
+    whatsapp: cleanPhone,
+    email: (email || '').trim().toLowerCase(),
+    optInPromos: optInPromos !== false,
+    firstOrderFolio: folio || null,
+    registeredAt: nowStr,
+    channel: 'PWA-CustomerDisplay'
+  };
+
+  // Guardar en memoria
+  const existingIdx = localWoncardCustomers.findIndex(c => c.whatsapp === cleanPhone);
+  if (existingIdx >= 0) {
+    localWoncardCustomers[existingIdx] = {
+      ...localWoncardCustomers[existingIdx],
+      name: cleanName,
+      optInPromos: customerRecord.optInPromos,
+      lastOrderFolio: folio || localWoncardCustomers[existingIdx].lastOrderFolio,
+      updatedAt: nowStr
+    };
+  } else {
+    localWoncardCustomers.unshift(customerRecord);
+  }
+
+  // Guardar en Firestore si está disponible
+  if (db) {
+    try {
+      await db.collection('woncard_customers').doc(cleanPhone).set(customerRecord, { merge: true });
+      console.log(`💳 Woncard registrada en Firestore para ${cleanName} (${cleanPhone})`);
+
+      // Si hay folio, actualizar cliente en la orden POS
+      if (folio) {
+        await db.collection('pos_orders').doc(folio).set({
+          customer: {
+            name: cleanName,
+            phone: cleanPhone,
+            email: customerRecord.email,
+            woncardId: cardCode
+          }
+        }, { merge: true });
+      }
+    } catch (err) {
+      console.warn('⚠️ Error guardando Woncard en Firestore:', err.message);
+    }
+  }
+
+  res.json({
+    success: true,
+    woncardId: cardCode,
+    customer: customerRecord,
+    message: '¡Felicidades! Tu Woncard ha sido activada con éxito.'
+  });
+});
+
+// 6. Listar clientes suscritos a promociones Woncard (para envíos de WhatsApp)
+app.get('/api/woncard/customers', async (req, res) => {
+  if (db) {
+    try {
+      const snap = await db.collection('woncard_customers').orderBy('registeredAt', 'desc').limit(500).get();
+      if (!snap.empty) {
+        const list = [];
+        snap.forEach(doc => list.push(doc.data()));
+        localWoncardCustomers = list;
+      }
+    } catch (e) {
+      console.warn('⚠️ Error obteniendo clientes Woncard de Firestore:', e.message);
+    }
+  }
+  res.json({ success: true, customers: localWoncardCustomers });
 });
 
 app.listen(PORT, () => {
