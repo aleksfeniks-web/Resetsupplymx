@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>Tienda Física — Punto de Venta (POS) | Reset Supply MX</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
@@ -1628,6 +1629,29 @@
             if (priceElem) priceElem.textContent = `$${parseFloat(price).toFixed(2)}`;
         }
 
+        function getProductFallbackImage(p) {
+            if (!p) return '/logoresetsupply.png';
+            const cat = (p.category || '').toLowerCase();
+            const name = (p.name || '').toLowerCase();
+            if (name.includes('tok final') || cat === 'cera-liquida') return '/tokfinal.webp';
+            if (cat === 'limpieza' || name.includes('alumax') || name.includes('v-mol') || name.includes('floc') || name.includes('removex') || name.includes('izer') || name.includes('strike')) {
+                return '/admin/VISOR/product_alumax_1786422408768.jpg';
+            }
+            if (cat === 'cera-pasta' || name.includes('cera') || name.includes('native') || name.includes('blend') || name.includes('pulimento') || name.includes('v10') || name.includes('v20') || name.includes('v30') || name.includes('makker')) {
+                return '/admin/VISOR/product_cera_1786422436985.jpg';
+            }
+            if (cat === 'plasticos' || cat === 'llantas' || name.includes('delet') || name.includes('restaurax') || name.includes('revox') || name.includes('shiny') || name.includes('rexer')) {
+                return '/admin/VISOR/product_plasticos_1786422427894.jpg';
+            }
+            if (cat === 'ceramicos' || cat === 'vsc' || name.includes('vsc') || name.includes('hydrox') || name.includes('spell') || name.includes('bactran') || name.includes('extractus')) {
+                return '/admin/VISOR/product_vsc_1786422417603.jpg';
+            }
+            if (cat === 'cristales' || name.includes('glazy') || name.includes('opty') || name.includes('focus')) {
+                return '/admin/VISOR/hero_products_1786422334033.jpg';
+            }
+            return '/logoresetsupply.png';
+        }
+
         function renderProducts() {
             const grid = document.getElementById('posProductsGrid');
             grid.innerHTML = '';
@@ -1699,12 +1723,15 @@
                     `;
                 }
 
+                const fallbackImg = getProductFallbackImage(p);
+                const initialImg = p.image || fallbackImg;
+
                 card.innerHTML = `
                     <span class="prod-category-tag">${catTag}</span>
                     <span class="prod-stock-tag ${stockClass}">${stockText}</span>
                     
                     <div class="prod-img-wrap" onclick="addProductToCart('${p.id}')">
-                        <img src="${p.image || 'tokfinal.webp'}" alt="${p.name}" class="prod-img" loading="lazy" onerror="this.src='tokfinal.webp'">
+                        <img src="${initialImg}" alt="${p.name}" class="prod-img" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${fallbackImg}';">
                     </div>
 
                     <div class="prod-code-line">${p.code || p.id}</div>
@@ -1735,6 +1762,8 @@
             const cartKey = `${product.id}_${varName || 'std'}`;
             const existing = state.cart.find(it => it.cartKey === cartKey);
 
+            const prodImg = product.image || getProductFallbackImage(product);
+
             if (existing) {
                 existing.quantity += 1;
             } else {
@@ -1746,7 +1775,7 @@
                     variation: varName,
                     price: price,
                     quantity: 1,
-                    image: product.image
+                    image: prodImg
                 });
             }
 
