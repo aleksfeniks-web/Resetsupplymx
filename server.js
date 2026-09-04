@@ -236,6 +236,10 @@ app.get('/woncard.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'woncard.html'));
 });
 
+// Servir estáticamente la carpeta admin/VISOR para imágenes de la pantalla de cliente
+app.use('/admin/VISOR', express.static(path.join(__dirname, 'admin', 'VISOR')));
+app.use('/admin/visor', express.static(path.join(__dirname, 'admin', 'VISOR')));
+
 // Archivos estáticos (HTML, CSS, imágenes, etc.)
 app.use(express.static(__dirname));
 
@@ -1416,6 +1420,201 @@ app.get('/api/woncard/customers', async (req, res) => {
     }
   }
   res.json({ success: true, customers: localWoncardCustomers });
+});
+
+// 7. Gestión de Imágenes de la carpeta admin/VISOR para la Pantalla de Cliente
+const VISOR_DIR = path.join(__dirname, 'admin', 'VISOR');
+const VISOR_SLIDES_FILE = path.join(VISOR_DIR, 'slides.json');
+
+// Asegurar existencia del directorio
+if (!fs.existsSync(VISOR_DIR)) {
+  fs.mkdirSync(VISOR_DIR, { recursive: true });
+}
+
+const initialDefaultSlides = [
+  {
+    id: "slide-1",
+    filename: "hero_products_1786422334033.jpg",
+    url: "/admin/VISOR/hero_products_1786422334033.jpg",
+    tag: "DISTRIBUIDOR AUTORIZADO",
+    title: "LÍNEA COMPLETA VONIXX",
+    desc: "Todo para estética automotriz profesional, lavado y sellado de alta gama.",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "slide-2",
+    filename: "car_detailing_1786422343111.jpg",
+    url: "/admin/VISOR/car_detailing_1786422343111.jpg",
+    tag: "ACABADO PROFESIONAL",
+    title: "BRILLO Y PROTECCIÓN CERÁMICA",
+    desc: "Repelencia extrema, profundidad de color y protección contra rayos UV.",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "slide-3",
+    filename: "product_alumax_1786422408768.jpg",
+    url: "/admin/VISOR/product_alumax_1786422408768.jpg",
+    tag: "LIMPIEZA PESADA",
+    title: "ALUMAX VONIXX",
+    desc: "Desincrustante ácido concentrado para rines, motores y chasis de aluminio.",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "slide-4",
+    filename: "product_cera_1786422436985.jpg",
+    url: "/admin/VISOR/product_cera_1786422436985.jpg",
+    tag: "CARNAÚBA PURA",
+    title: "CERA NATIVE VONIXX",
+    desc: "Cera de carnaúba brasileña premium para un reflejo cálido incomparable.",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "slide-5",
+    filename: "product_plasticos_1786422427894.jpg",
+    url: "/admin/VISOR/product_plasticos_1786422427894.jpg",
+    tag: "RESTAURACIÓN",
+    title: "RESTAURAX & PLÁSTICOS",
+    desc: "Devuelve el tono original a molduras y plásticos exteriores con protección duradera.",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "slide-6",
+    filename: "product_vsc_1786422417603.jpg",
+    url: "/admin/VISOR/product_vsc_1786422417603.jpg",
+    tag: "CERAMIC COATING",
+    title: "RECUBRIMIENTOS CERÁMICOS",
+    desc: "Nanotecnología avanzada para máxima resistencia química y repelencia hidrofóbica.",
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "slide-7",
+    filename: "logoresetsupply.png",
+    url: "/admin/VISOR/logoresetsupply.png",
+    tag: "RESET SUPPLY MX",
+    title: "PASIÓN POR EL DETAILING",
+    desc: "Tu aliado comercial en productos automotrices de clase mundial.",
+    createdAt: new Date().toISOString()
+  }
+];
+
+function getVisorSlides() {
+  try {
+    if (fs.existsSync(VISOR_SLIDES_FILE)) {
+      const raw = fs.readFileSync(VISOR_SLIDES_FILE, 'utf8');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {
+    console.warn('Error leyendo slides.json:', e.message);
+  }
+  try {
+    fs.writeFileSync(VISOR_SLIDES_FILE, JSON.stringify(initialDefaultSlides, null, 2), 'utf8');
+  } catch(e) {}
+  return initialDefaultSlides;
+}
+
+function saveVisorSlides(slides) {
+  try {
+    fs.writeFileSync(VISOR_SLIDES_FILE, JSON.stringify(slides, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error guardando slides.json:', e);
+  }
+}
+
+function broadcastSlidesUpdate(slides) {
+  const payload = `data: ${JSON.stringify({ type: 'slides_updated', slides })}\n\n`;
+  displaySSEClients.forEach(client => {
+    try { client.res.write(payload); } catch(e) {}
+  });
+}
+
+// Obtener lista de imágenes activas en admin/VISOR
+app.get('/api/visor/images', (req, res) => {
+  res.json({ success: true, slides: getVisorSlides() });
+});
+
+// Subir nueva imagen a admin/VISOR
+app.post('/api/visor/images', (req, res) => {
+  try {
+    const { filename, data, title, tag, desc } = req.body || {};
+    if (!data) {
+      return res.status(400).json({ error: 'Datos de imagen requeridos (formato base64).' });
+    }
+
+    let base64Data = data;
+    let ext = 'jpg';
+    if (data.includes(';base64,')) {
+      const parts = data.split(';base64,');
+      const mime = parts[0].replace('data:', '');
+      ext = mime.split('/')[1] || 'jpg';
+      if (ext === 'jpeg') ext = 'jpg';
+      base64Data = parts[1];
+    }
+
+    const safeBaseName = (filename || 'imagen').replace(/[^a-zA-Z0-9_\-\.]/g, '_').replace(/\.[^/.]+$/, '');
+    const finalFilename = `visor_${Date.now()}_${safeBaseName}.${ext}`;
+    const filePath = path.join(VISOR_DIR, finalFilename);
+
+    const buffer = Buffer.from(base64Data, 'base64');
+    fs.writeFileSync(filePath, buffer);
+
+    const slides = getVisorSlides();
+    const newSlide = {
+      id: `slide-${Date.now()}`,
+      filename: finalFilename,
+      url: `/admin/VISOR/${finalFilename}`,
+      title: (title || 'CATÁLOGO PROFESIONAL').trim(),
+      tag: (tag || 'NUEVA PROMOCIÓN').trim().toUpperCase(),
+      desc: (desc || 'Disponible en tienda física y tienda online.').trim(),
+      createdAt: new Date().toISOString()
+    };
+
+    slides.unshift(newSlide);
+    saveVisorSlides(slides);
+    broadcastSlidesUpdate(slides);
+
+    console.log(`📸 Nueva imagen guardada en admin/VISOR: ${finalFilename}`);
+    res.json({ success: true, slide: newSlide, slides });
+  } catch (err) {
+    console.error('Error al subir imagen a VISOR:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Eliminar imagen de admin/VISOR (permite eliminar las actuales y futuras)
+app.delete('/api/visor/images/:id', (req, res) => {
+  try {
+    const targetId = req.params.id;
+    let slides = getVisorSlides();
+
+    const slideToDelete = slides.find(s => s.id === targetId || s.filename === targetId);
+    if (!slideToDelete) {
+      return res.status(404).json({ error: 'Imagen no encontrada.' });
+    }
+
+    // Filtrar y actualizar slides.json
+    slides = slides.filter(s => s.id !== targetId && s.filename !== targetId);
+    saveVisorSlides(slides);
+
+    // Eliminar archivo físico si existe en admin/VISOR
+    if (slideToDelete.filename) {
+      const filePath = path.join(VISOR_DIR, slideToDelete.filename);
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath);
+          console.log(`🗑️ Archivo físico eliminado de admin/VISOR: ${slideToDelete.filename}`);
+        } catch (unlinkErr) {
+          console.warn('No se pudo borrar archivo físico:', unlinkErr.message);
+        }
+      }
+    }
+
+    broadcastSlidesUpdate(slides);
+    res.json({ success: true, message: 'Imagen eliminada correctamente del visor.', slides });
+  } catch (err) {
+    console.error('Error al eliminar imagen de VISOR:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.listen(PORT, () => {

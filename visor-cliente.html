@@ -988,57 +988,97 @@
             });
         }
 
-        // ==================== CATÁLOGO PARA SCREENSAVER ====================
-        const CATALOG_SLIDES = [
+        // ==================== CATÁLOGO PARA SCREENSAVER (admin/VISOR) ====================
+        let CATALOG_SLIDES = [
             {
-                img: '/assets/hero_products_1786422334033.jpg',
+                img: '/admin/VISOR/hero_products_1786422334033.jpg',
                 tag: 'DISTRIBUIDOR AUTORIZADO',
                 title: 'LÍNEA COMPLETA VONIXX',
                 desc: 'Todo para estética automotriz profesional, lavado y sellado de alta gama.'
             },
             {
-                img: '/assets/car_detailing_1786422343111.jpg',
+                img: '/admin/VISOR/car_detailing_1786422343111.jpg',
                 tag: 'ACABADO PROFESIONAL',
                 title: 'BRILLO Y PROTECCIÓN CERÁMICA',
                 desc: 'Repelencia extrema, profundidad de color y protección contra rayos UV.'
             },
             {
-                img: '/assets/product_alumax_1786422408768.jpg',
+                img: '/admin/VISOR/product_alumax_1786422408768.jpg',
                 tag: 'LIMPIEZA PESADA',
                 title: 'ALUMAX VONIXX',
                 desc: 'Desincrustante ácido concentrado para rines, motores y chasis de aluminio.'
             },
             {
-                img: '/assets/product_cera_1786422436985.jpg',
+                img: '/admin/VISOR/product_cera_1786422436985.jpg',
                 tag: 'CARNAÚBA PURA',
                 title: 'CERA NATIVE VONIXX',
                 desc: 'Cera de carnaúba brasileña premium para un reflejo cálido incomparable.'
             },
             {
-                img: '/assets/product_plasticos_1786422427894.jpg',
+                img: '/admin/VISOR/product_plasticos_1786422427894.jpg',
                 tag: 'RESTAURACIÓN',
                 title: 'RESTAURAX & PLÁSTICOS',
                 desc: 'Devuelve el tono original a molduras y plásticos exteriores con protección duradera.'
             },
             {
-                img: '/assets/product_vsc_1786422417603.jpg',
+                img: '/admin/VISOR/product_vsc_1786422417603.jpg',
                 tag: 'CERAMIC COATING',
                 title: 'RECUBRIMIENTOS CERÁMICOS',
                 desc: 'Nanotecnología avanzada para máxima resistencia química y repelencia hidrofóbica.'
+            },
+            {
+                img: '/admin/VISOR/logoresetsupply.png',
+                tag: 'RESET SUPPLY MX',
+                title: 'PASIÓN POR EL DETAILING',
+                desc: 'Tu aliado comercial en productos automotrices de clase mundial.'
             }
         ];
 
         let currentSlideIdx = 0;
         let slideTimer = null;
 
+        function updateCatalogSlidesFromApi(slides) {
+            if (!Array.isArray(slides) || slides.length === 0) return;
+            CATALOG_SLIDES = slides.map(s => ({
+                img: s.url,
+                tag: s.tag || 'VONIXX MÉXICO',
+                title: s.title || 'CATÁLOGO PROFESIONAL',
+                desc: s.desc || 'Soluciones de detailing automotriz.'
+            }));
+            currentSlideIdx = 0;
+            initScreensaver();
+        }
+
+        async function fetchVisorSlides() {
+            try {
+                const res = await fetch('/api/visor/images');
+                const data = await res.json();
+                if (data.success && Array.isArray(data.slides) && data.slides.length > 0) {
+                    updateCatalogSlidesFromApi(data.slides);
+                }
+            } catch (err) {
+                console.warn('Usando catálogo local:', err);
+            }
+        }
+
         function initScreensaver() {
+            if (CATALOG_SLIDES.length === 0) return;
             const indicatorsContainer = document.getElementById('saverIndicators');
             indicatorsContainer.innerHTML = '';
             CATALOG_SLIDES.forEach((_, i) => {
                 const dot = document.createElement('div');
-                dot.className = 'saver-indicator' + (i === 0 ? ' active' : '');
+                dot.className = 'saver-indicator' + (i === currentSlideIdx ? ' active' : '');
                 indicatorsContainer.appendChild(dot);
             });
+
+            // Actualizar primer slide inmediatamente
+            const slide = CATALOG_SLIDES[currentSlideIdx] || CATALOG_SLIDES[0];
+            if (slide) {
+                document.getElementById('saverSlideImg').src = slide.img;
+                document.getElementById('saverSlideTag').textContent = slide.tag;
+                document.getElementById('saverSlideTitle').textContent = slide.title;
+                document.getElementById('saverSlideDesc').textContent = slide.desc;
+            }
 
             startSlideTimer();
         }
@@ -1266,8 +1306,12 @@
 
             sseSource.onmessage = function(event) {
                 try {
-                    const state = JSON.parse(event.data);
-                    handleIncomingState(state);
+                    const data = JSON.parse(event.data);
+                    if (data && data.type === 'slides_updated' && Array.isArray(data.slides)) {
+                        updateCatalogSlidesFromApi(data.slides);
+                        return;
+                    }
+                    handleIncomingState(data);
                 } catch (err) {
                     console.warn('Error parseando evento SSE:', err);
                 }
@@ -1286,6 +1330,10 @@
             const bc = new BroadcastChannel('pos_customer_display');
             bc.onmessage = function(ev) {
                 if (ev.data) {
+                    if (ev.data.type === 'slides_updated' && Array.isArray(ev.data.slides)) {
+                        updateCatalogSlidesFromApi(ev.data.slides);
+                        return;
+                    }
                     handleIncomingState(ev.data);
                 }
             };
@@ -1317,6 +1365,7 @@
         // Inicialización
         window.addEventListener('DOMContentLoaded', () => {
             initScreensaver();
+            fetchVisorSlides();
             fetchInitialState();
             connectSSE();
         });

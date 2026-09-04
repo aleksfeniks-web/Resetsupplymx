@@ -145,6 +145,7 @@
             <button class="tab-btn" data-tab="pos-clients">🤝 Clientes Punto de Venta</button>
             <button class="tab-btn" data-tab="products">📦 Catálogo de Productos y Precios</button>
             <button class="tab-btn" data-tab="editor">🎨 Editor Visual de la Página</button>
+            <button class="tab-btn" data-tab="visor" style="border-color:rgba(0, 212, 255, 0.4); color:var(--blue);">📁 VISOR (Imágenes Pantalla)</button>
         </div>
 
         <!-- Sección 1: Órdenes y Guías -->
@@ -525,6 +526,66 @@
                 </div>
             </div>
         </div>
+
+        <!-- Sección 7: Carpeta VISOR (Pantalla de Cliente) -->
+        <div id="tabVisor" class="tab-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+                <div>
+                    <h3 style="font-size:22px; display:flex; align-items:center; gap:8px;">
+                        <span>📁</span> Carpeta <span class="gradient-text">VISOR</span> — Pantalla de Cliente
+                    </h3>
+                    <p style="font-size:13px; color:var(--muted); margin-top:4px;">
+                        Gestiona las imágenes almacenadas en la carpeta <code>admin/VISOR/</code> que rotan en la pantalla de espera del celular en mostrador. Puedes subir nuevas imágenes y eliminar cualquiera de las actuales o futuras.
+                    </p>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <a href="/visor" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--blue); color:var(--blue); font-weight:700;">📱 Abrir Visor en Vivo</a>
+                    <button class="btn-action" onclick="loadVisorImages()">🔄 Actualizar Galería</button>
+                </div>
+            </div>
+
+            <!-- Caja para Subir Nueva Imagen a VISOR -->
+            <div style="background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:22px; margin-bottom:26px;">
+                <h4 style="color:var(--green); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                    <span>📤</span> Subir Nueva Imagen a la Carpeta VISOR
+                </h4>
+                <form id="uploadVisorForm" onsubmit="event.preventDefault(); handleVisorUpload();">
+                    <div style="display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:14px; margin-bottom:14px;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Seleccionar Archivo (JPG, PNG, WEBP)</label>
+                            <input type="file" id="visorFileInput" class="form-input" accept="image/*" required style="padding:8px 12px; cursor:pointer;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Título del Banner (Opcional)</label>
+                            <input type="text" id="visorTitleInput" class="form-input" placeholder="ej. Alumax Vonixx">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Etiqueta / Tag (Opcional)</label>
+                            <input type="text" id="visorTagInput" class="form-input" placeholder="ej. LIMPIEZA PESADA">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:16px;">
+                        <label>Descripción / Subtítulo Corto (Opcional)</label>
+                        <input type="text" id="visorDescInput" class="form-input" placeholder="ej. Desincrustante concentrado de alta potencia para rines y motor.">
+                    </div>
+                    <button type="submit" class="btn-primary" id="btnUploadVisor" style="width:auto; padding:12px 28px;">
+                        ➕ Guardar Imagen en VISOR
+                    </button>
+                </form>
+            </div>
+
+            <!-- Cuadrícula de Imágenes en admin/VISOR -->
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                    <h4>Imágenes Activas en VISOR (<span id="visorImagesCount">0</span>)</h4>
+                    <span style="font-size:12px; color:var(--muted);">Carpeta en servidor: <code>admin/VISOR/</code></span>
+                </div>
+
+                <div id="visorGridContainer" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:18px;">
+                    <div style="text-align:center; color:var(--muted); padding:40px; grid-column:1/-1;">Cargando imágenes de VISOR...</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Editar Guía de Rastreo -->
@@ -822,6 +883,7 @@
         var livePreviewFrame = document.getElementById('livePreviewFrame');
         var tabEditor = document.getElementById('tabEditor');
         var tabPosClients = document.getElementById('tabPosClients');
+        var tabVisor = document.getElementById('tabVisor');
 
         // Tabs
         tabs.forEach(function(tab) {
@@ -836,6 +898,7 @@
                 tabPosClients.style.display = 'none';
                 tabProducts.style.display = 'none';
                 tabEditor.style.display = 'none';
+                if (tabVisor) tabVisor.style.display = 'none';
 
                 if (target === 'orders') {
                     tabOrders.style.display = 'block';
@@ -855,9 +918,160 @@
                 } else if (target === 'editor') {
                     tabEditor.style.display = 'block';
                     loadSiteConfigForEditor();
+                } else if (target === 'visor') {
+                    tabVisor.style.display = 'block';
+                    loadVisorImages();
                 }
             });
         });
+
+        // ==================== GESTIÓN DE CARPETA admin/VISOR ====================
+        var currentVisorSlides = [];
+
+        async function loadVisorImages() {
+            var container = document.getElementById('visorGridContainer');
+            container.innerHTML = '<div style="text-align:center; color:var(--muted); padding:30px; grid-column:1/-1;">Cargando imágenes de VISOR...</div>';
+            try {
+                var res = await fetch('/api/visor/images');
+                var data = await res.json();
+                if (data.success && Array.isArray(data.slides)) {
+                    currentVisorSlides = data.slides;
+                    renderVisorGrid(currentVisorSlides);
+                    document.getElementById('visorImagesCount').textContent = currentVisorSlides.length;
+                } else {
+                    container.innerHTML = '<div style="text-align:center; color:var(--red); padding:30px; grid-column:1/-1;">No se pudieron cargar las imágenes de VISOR.</div>';
+                }
+            } catch (err) {
+                console.error('Error cargando imágenes de VISOR:', err);
+                container.innerHTML = '<div style="text-align:center; color:var(--red); padding:30px; grid-column:1/-1;">Error de conexión con el servidor.</div>';
+            }
+        }
+
+        function renderVisorGrid(slides) {
+            var container = document.getElementById('visorGridContainer');
+            container.innerHTML = '';
+
+            if (slides.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:var(--muted); padding:40px; grid-column:1/-1; background:var(--panel); border:1px dashed var(--line); border-radius:12px;">No hay imágenes en la carpeta admin/VISOR. Sube una nueva imagen con el formulario de arriba.</div>';
+                return;
+            }
+
+            slides.forEach(function(slide) {
+                var card = document.createElement('div');
+                card.style.cssText = 'background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 6px 18px rgba(0,0,0,0.4);';
+
+                card.innerHTML = `
+                    <div style="width:100%; height:180px; position:relative; background:#000; overflow:hidden;">
+                        <img src="${slide.url}" alt="${slide.title || 'Visor'}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='/favicon.png'">
+                        <span style="position:absolute; top:8px; left:8px; background:var(--blue); color:#000; font-family:'Rajdhani',sans-serif; font-weight:800; font-size:10.5px; padding:2px 8px; border-radius:4px; letter-spacing:0.5px; text-transform:uppercase;">
+                            ${slide.tag || 'VONIXX'}
+                        </span>
+                    </div>
+                    <div style="padding:14px; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                            <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:16px; color:#fff; margin-bottom:4px;">
+                                ${slide.title || 'Sin Título'}
+                            </div>
+                            <div style="font-size:12px; color:var(--muted); margin-bottom:8px; line-height:1.35;">
+                                ${slide.desc || ''}
+                            </div>
+                            <div style="font-size:11px; font-family:monospace; color:var(--muted); word-break:break-all; margin-bottom:12px;">
+                                📄 ${slide.filename}
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:10px; margin-top:6px;">
+                            <a href="${slide.url}" target="_blank" style="color:var(--blue); font-size:12px; text-decoration:none; font-weight:600;">🔍 Ver completa</a>
+                            <button class="btn-action btn-delete" onclick="deleteVisorImage('${slide.id}', '${(slide.title || slide.filename).replace(/'/g, "\\'")}')" style="padding:6px 12px; font-size:12px;">
+                                🗑️ Eliminar Imagen
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function handleVisorUpload() {
+            var fileInput = document.getElementById('visorFileInput');
+            var titleInput = document.getElementById('visorTitleInput');
+            var tagInput = document.getElementById('visorTagInput');
+            var descInput = document.getElementById('visorDescInput');
+            var btn = document.getElementById('btnUploadVisor');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Por favor selecciona una imagen para subir.');
+                return;
+            }
+
+            var file = fileInput.files[0];
+            btn.disabled = true;
+            btn.textContent = '⏳ Subiendo y guardando en VISOR...';
+
+            var reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    var base64Data = e.target.result;
+                    var res = await fetch('/api/visor/images', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + adminToken
+                        },
+                        body: JSON.stringify({
+                            filename: file.name,
+                            data: base64Data,
+                            title: titleInput.value.trim() || file.name,
+                            tag: tagInput.value.trim() || 'VONIXX',
+                            desc: descInput.value.trim() || ''
+                        })
+                    });
+
+                    var data = await res.json();
+                    if (data.success) {
+                        fileInput.value = '';
+                        titleInput.value = '';
+                        tagInput.value = '';
+                        descInput.value = '';
+                        alert('✅ ¡Imagen guardada exitosamente en la carpeta admin/VISOR!');
+                        loadVisorImages();
+                    } else {
+                        alert('❌ Error al subir: ' + (data.error || 'Error desconocido'));
+                    }
+                } catch (err) {
+                    console.error('Error en upload:', err);
+                    alert('Ocurrió un error al subir la imagen al servidor.');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = '➕ Guardar Imagen en VISOR';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function deleteVisorImage(id, title) {
+            if (!confirm(`¿Estás seguro de eliminar la imagen "${title}" de la carpeta VISOR?\n\nEsta imagen ya no aparecerá en la pantalla de espera de los clientes.`)) {
+                return;
+            }
+
+            try {
+                var res = await fetch('/api/visor/images/' + encodeURIComponent(id), {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + adminToken
+                    }
+                });
+                var data = await res.json();
+                if (data.success) {
+                    alert('🗑️ Imagen eliminada correctamente de VISOR.');
+                    loadVisorImages();
+                } else {
+                    alert('❌ Error al eliminar: ' + (data.error || 'Error desconocido'));
+                }
+            } catch (err) {
+                console.error('Error al eliminar imagen de VISOR:', err);
+                alert('No se pudo conectar con el servidor para eliminar la imagen.');
+            }
+        }
 
         // Cargar Clientes Punto de Venta
         async function loadPosClients() {

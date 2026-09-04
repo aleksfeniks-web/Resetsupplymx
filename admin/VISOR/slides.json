@@ -1,0 +1,65 @@
+[
+  {
+    "id": "slide-1",
+    "filename": "hero_products_1786422334033.jpg",
+    "url": "/admin/VISOR/hero_products_1786422334033.jpg",
+    "tag": "DISTRIBUIDOR AUTORIZADO",
+    "title": "LÍNEA COMPLETA VONIXX",
+    "desc": "Todo para estética automotriz profesional, lavado y sellado de alta gama.",
+    "createdAt": "2026-09-04T20:31:04.560Z"
+  },
+  {
+    "id": "slide-2",
+    "filename": "car_detailing_1786422343111.jpg",
+    "url": "/admin/VISOR/car_detailing_1786422343111.jpg",
+    "tag": "ACABADO PROFESIONAL",
+    "title": "BRILLO Y PROTECCIÓN CERÁMICA",
+    "desc": "Repelencia extrema, profundidad de color y protección contra rayos UV.",
+    "createdAt": "2026-09-04T20:31:04.560Z"
+  },
+  {
+    "id": "slide-3",
+    "filename": "product_alumax_1786422408768.jpg",
+    "url": "/admin/VISOR/product_alumax_1786422408768.jpg",
+    "tag": "LIMPIEZA PESADA",
+    "title": "ALUMAX VONIXX",
+    "desc": "Desincrustante ácido concentrado para rines, motores y chasis de aluminio.",
+    "createdAt": "2026-09-04T20:31:04.560Z"
+  },
+  {
+    "id": "slide-4",
+    "filename": "product_cera_1786422436985.jpg",
+    "url": "/admin/VISOR/product_cera_1786422436985.jpg",
+    "tag": "CARNAÚBA PURA",
+    "title": "CERA NATIVE VONIXX",
+    "desc": "Cera de carnaúba brasileña premium para un reflejo cálido incomparable.",
+    "createdAt": "2026-09-04T20:31:04.560Z"
+  },
+  {
+    "id": "slide-5",
+    "filename": "product_plasticos_1786422427894.jpg",
+    "url": "/admin/VISOR/product_plasticos_1786422427894.jpg",
+    "tag": "RESTAURACIÓN",
+    "title": "RESTAURAX & PLÁSTICOS",
+    "desc": "Devuelve el tono original a molduras y plásticos exteriores con protección duradera.",
+    "createdAt": "2026-09-04T20:31:04.560Z"
+  },
+  {
+    "id": "slide-6",
+    "filename": "product_vsc_1786422417603.jpg",
+    "url": "/admin/VISOR/product_vsc_1786422417603.jpg",
+    "tag": "CERAMIC COATING",
+    "title": "RECUBRIMIENTOS CERÁMICOS",
+    "desc": "Nanotecnología avanzada para máxima resistencia química y repelencia hidrofóbica.",
+    "createdAt": "2026-09-04T20:31:04.560Z"
+  },
+  {
+    "id": "slide-7",
+    "filename": "logoresetsupply.png",
+    "url": "/admin/VISOR/logoresetsupply.png",
+    "tag": "RESET SUPPLY MX",
+    "title": "PASIÓN POR EL DETAILING",
+    "desc": "Tu aliado comercial en productos automotrices de clase mundial.",
+    "createdAt": "2026-09-04T20:31:04.560Z"
+  }
+]
