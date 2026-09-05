@@ -3124,8 +3124,38 @@ function resolveToGitRepoUrl(item) {
             }
         }
 
-        // 2. Firmas cromáticas e iconografía de productos Vonixx
-        // Calibradas para cámara selfie/frontal y luz de mostrador POS
+        // 2. Mapeo Oficial de Códigos de Barras EAN-13 de Vonixx en México
+        const VONIXX_BARCODES = {
+            '7898511030578': 'VON-00028', // SINTRA FAST
+            '7898511029887': 'VON-00028', // SINTRA FAST 500ML
+            '7898511029894': 'VON-00028', // SINTRA PRO 1L
+            '7898511030371': 'VON-00028', // SINTRA 500ML
+            '7898628040010': 'VON-00028', // SINTRA FAST
+            '7898511030319': 'VON-00063', // SPELL 500ML
+            '7898628040317': 'VON-00063', // SPELL
+            '7898511027159': 'VON-00010', // V-MOL 1.5L
+            '7898511029986': 'VON-00010', // V-MOL 500ML
+            '7898511027166': 'VON-00011', // V-FLOC 1.5L
+            '7898511029993': 'VON-00011', // V-FLOC 500ML
+            '7898511028750': 'VON-00001', // ALUMAX 1.5L
+            '7898511030012': 'VON-00012', // DELET 500ML
+            '7898511030005': 'VON-00008', // CITRON 1.5L
+            '7898511028743': 'VON-00003', // REMOVEX 1.5L
+            '7898511030029': 'VON-00026', // BACTRAN 1.5L
+            '7898511030036': 'VON-00027', // EXTRACTUS 1.5L
+            '7898511027203': 'VON-00018', // PRIZM 500ML
+            '7898511027180': 'VON-00014', // RESTAURAX 500ML
+            '7898511028767': 'VON-00013', // SHINY 500ML
+            '7898511027197': 'VON-00017', // TOK FINAL 500ML
+            '7898511028880': 'VON-00004', // BLEND
+            '7898511028897': 'VON-00005', // NATIVE
+            '7898511029948': 'VON-00019', // V10
+            '7898511029955': 'VON-00020', // V20
+            '7898511029962': 'VON-00021'  // V30
+        };
+
+        // 3. Firmas cromáticas e iconografía de productos Vonixx
+        // Calibradas con discriminación estricta de canales para evitar confusiones (Sintra vs Spell)
         const VONIXX_VISUAL_RULES = [
             { keywords: ['v-mol', 'v mol', 'mol'], targetHue: [260, 315], minSat: 0.28, minRatio: 0.18, name: 'V-MOL' },
             { keywords: ['v-floc', 'v floc', 'floc'], targetHue: [180, 222], minSat: 0.28, minRatio: 0.18, name: 'V-FLOC' },
@@ -3135,8 +3165,10 @@ function resolveToGitRepoUrl(item) {
             { keywords: ['bactran'], targetHue: [115, 160], minSat: 0.26, minRatio: 0.18, name: 'BACTRAN' },
             { keywords: ['extractus'], targetHue: [210, 245], minSat: 0.28, minRatio: 0.18, name: 'EXTRACTUS' },
             { keywords: ['prizm'], targetHue: [340, 16], minSat: 0.28, minRatio: 0.18, name: 'PRIZM' },
-            { keywords: ['spell'], targetHue: [160, 195], minSat: 0.28, minRatio: 0.18, name: 'SPELL' },
-            { keywords: ['sintra'], targetHue: [195, 235], minSat: 0.26, minRatio: 0.18, name: 'SINTRA' },
+            // SPELL: Es sellador cian/turquesa brillante. Requiere verde alto similar a azul (G >= B - 12).
+            { keywords: ['spell'], targetHue: [162, 185], minSat: 0.30, minRatio: 0.20, channelCheck: (r, g, b) => g >= (b - 12) && b < (g + 20), name: 'SPELL' },
+            // SINTRA: Limpiador multiusos con etiqueta azul cobalto/violeta. Azul claramente superior a verde (B > G + 6).
+            { keywords: ['sintra'], targetHue: [195, 275], minSat: 0.20, minRatio: 0.14, channelCheck: (r, g, b) => b > (g + 6), name: 'SINTRA' },
             { keywords: ['delet'], targetHue: [85, 135], minSat: 0.26, minRatio: 0.18, name: 'DELET' },
             { keywords: ['strike'], targetHue: [38, 62], minSat: 0.30, minRatio: 0.18, name: 'STRIKE' },
             { keywords: ['izer'], targetHue: [270, 325], minSat: 0.28, minRatio: 0.18, name: 'IZER' },
@@ -3145,7 +3177,7 @@ function resolveToGitRepoUrl(item) {
             { keywords: ['v30'], targetHue: [200, 232], minSat: 0.35, minRatio: 0.20, name: 'V30' }
         ];
 
-        // 3. Inicializar y Abrir Escáner Selfie
+        // 4. Inicializar y Abrir Escáner Selfie
         async function openSelfieScanner() {
             const modal = document.getElementById('selfieScannerModal');
             const video = document.getElementById('selfieVideo');
@@ -3160,6 +3192,7 @@ function resolveToGitRepoUrl(item) {
             scannerState.currentPendingProduct = null;
             scannerState.currentPendingQty = 1;
             scannerState.consecutiveHits = {};
+            scannerState.lastCandidates = [];
             if (targetBox) {
                 targetBox.classList.remove('locked');
                 targetBox.classList.remove('matched');
@@ -3193,7 +3226,7 @@ function resolveToGitRepoUrl(item) {
                 video.srcObject = stream;
                 await video.play();
 
-                statusText.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>Centra el producto Vonixx o código de barras en la retícula</span>';
+                statusText.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>Centra el producto Vonixx o su código de barras</span>';
 
                 startScannerLoop();
 
@@ -3203,12 +3236,13 @@ function resolveToGitRepoUrl(item) {
             }
         }
 
-        // 4. Finalizar Escaneo (Cerrar ventana y apagar cámara)
+        // 5. Finalizar Escaneo (Cerrar ventana y apagar cámara)
         function closeSelfieScanner() {
             scannerState.active = false;
             scannerState.isAwaitingDecision = false;
             scannerState.currentPendingProduct = null;
             scannerState.consecutiveHits = {};
+            scannerState.lastCandidates = [];
 
             if (scannerState.animationId) {
                 cancelAnimationFrame(scannerState.animationId);
@@ -3231,16 +3265,16 @@ function resolveToGitRepoUrl(item) {
             }
         }
 
-        // 5. Alternar cámara Frontal (Selfie) / Trasera
+        // 6. Alternar cámara Frontal (Selfie) / Trasera
         function toggleCameraFacing() {
             scannerState.facingMode = scannerState.facingMode === 'user' ? 'environment' : 'user';
             openSelfieScanner();
         }
 
-        // 6. Bucle de procesamiento visual fluido y responsivo
+        // 7. Bucle de procesamiento visual fluido y responsivo
         function startScannerLoop() {
             let lastFrameTime = 0;
-            const targetIntervalMs = 300; // Cadencia balanceada para respuesta rápida en 600ms
+            const targetIntervalMs = 300;
 
             function loop(timestamp) {
                 if (!scannerState.active) return;
@@ -3256,7 +3290,7 @@ function resolveToGitRepoUrl(item) {
             scannerState.animationId = requestAnimationFrame(loop);
         }
 
-        // 7. Conversión RGB a HSV
+        // 8. Conversión RGB a HSV
         function rgbToHsv(r, g, b) {
             r /= 255; g /= 255; b /= 255;
             const max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -3276,7 +3310,7 @@ function resolveToGitRepoUrl(item) {
             return { h: h * 360, s: s, v: v };
         }
 
-        // 8. Análisis de fotograma y correspondencia de producto
+        // 9. Análisis de fotograma y correspondencia de producto de alta precisión
         async function analyzeCurrentFrame() {
             if (scannerState.isProcessingFrame || scannerState.isAwaitingDecision) return;
 
@@ -3285,7 +3319,7 @@ function resolveToGitRepoUrl(item) {
 
             scannerState.isProcessingFrame = true;
             try {
-                // A) Detección nativa por BarcodeDetector si el navegador lo soporta y se muestra el código de barras
+                // A) DETECCIÓN DE CÓDIGO DE BARRAS NATIVO (100% certero)
                 if ('BarcodeDetector' in window && !scannerState._barcodeDetector) {
                     try {
                         scannerState._barcodeDetector = new BarcodeDetector({
@@ -3301,11 +3335,12 @@ function resolveToGitRepoUrl(item) {
                         if (barcodes && barcodes.length > 0) {
                             const raw = barcodes[0].rawValue ? barcodes[0].rawValue.trim() : '';
                             if (raw) {
+                                const targetCode = VONIXX_BARCODES[raw] || raw;
                                 const matched = (state.products || []).find(p => 
-                                    (p.code && p.code.toLowerCase() === raw.toLowerCase()) ||
+                                    (p.code && p.code.toLowerCase() === targetCode.toLowerCase()) ||
+                                    (p.id && p.id.toLowerCase() === targetCode.toLowerCase()) ||
                                     (p.barcode && p.barcode.trim() === raw) ||
-                                    (p.id && p.id.toLowerCase() === raw.toLowerCase()) ||
-                                    (Array.isArray(p.variations) && p.variations.some(v => (v.code && v.code.toLowerCase() === raw.toLowerCase()) || (v.barcode && v.barcode.trim() === raw)))
+                                    (Array.isArray(p.variations) && p.variations.some(v => (v.code && v.code.toLowerCase() === targetCode.toLowerCase()) || (v.barcode && v.barcode.trim() === raw)))
                                 );
                                 if (matched) {
                                     onProductVisuallyRecognized(matched);
@@ -3316,14 +3351,42 @@ function resolveToGitRepoUrl(item) {
                     } catch (bcErr) {}
                 }
 
-                // B) Reconocimiento cromático y visual del envase Vonixx
+                // B) OCR EN VIVO DE LA ETIQUETA (si el navegador soporta TextDetector)
+                if ('TextDetector' in window && !scannerState._textDetector) {
+                    try { scannerState._textDetector = new TextDetector(); } catch(e) { scannerState._textDetector = null; }
+                }
+                if (scannerState._textDetector) {
+                    try {
+                        const detectedTexts = await scannerState._textDetector.detect(video);
+                        if (detectedTexts && detectedTexts.length > 0) {
+                            const fullStr = detectedTexts.map(t => t.rawValue).join(' ').toLowerCase();
+                            if (fullStr.includes('sintra')) {
+                                const sintraProd = (state.products || []).find(p => (p.name || '').toLowerCase().includes('sintra'));
+                                if (sintraProd) { onProductVisuallyRecognized(sintraProd); return; }
+                            } else if (fullStr.includes('spell')) {
+                                const spellProd = (state.products || []).find(p => (p.name || '').toLowerCase().includes('spell'));
+                                if (spellProd) { onProductVisuallyRecognized(spellProd); return; }
+                            } else if (fullStr.includes('mol') || fullStr.includes('v-mol')) {
+                                const molProd = (state.products || []).find(p => (p.name || '').toLowerCase().includes('v-mol') || (p.name || '').toLowerCase().includes('mol'));
+                                if (molProd) { onProductVisuallyRecognized(molProd); return; }
+                            } else if (fullStr.includes('alumax')) {
+                                const aluProd = (state.products || []).find(p => (p.name || '').toLowerCase().includes('alumax'));
+                                if (aluProd) { onProductVisuallyRecognized(aluProd); return; }
+                            } else if (fullStr.includes('delet')) {
+                                const deletProd = (state.products || []).find(p => (p.name || '').toLowerCase().includes('delet'));
+                                if (deletProd) { onProductVisuallyRecognized(deletProd); return; }
+                            }
+                        }
+                    } catch(tErr) {}
+                }
+
+                // C) RECONOCIMIENTO CROMÁTICO CON DISCRIMINACIÓN FÍSICA RGB
                 const canvas = document.getElementById('scannerCanvas');
                 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
                 const vw = video.videoWidth || 640;
                 const vh = video.videoHeight || 480;
 
-                // Enfocar en la zona de retícula ampliada (72% del lado menor)
                 const cropSize = Math.min(vw, vh) * 0.72;
                 const sx = (vw - cropSize) / 2;
                 const sy = (vh - cropSize) / 2;
@@ -3341,6 +3404,10 @@ function resolveToGitRepoUrl(item) {
                 let validPixels = 0;
                 let saturatedPixels = 0;
                 let skinTonePixels = 0;
+                let sumSatHue = 0;
+                let blueDominantPixels = 0;
+                let cyanDominantPixels = 0;
+                let whiteBottlePixels = 0;
                 let colorHistogram = new Array(12).fill(0);
 
                 for (let i = 0; i < data.length; i += 4) {
@@ -3350,24 +3417,31 @@ function resolveToGitRepoUrl(item) {
 
                     const hsv = rgbToHsv(r, g, b);
 
-                    // Detección de tonos de piel humana / rostros
+                    // Tono piel
                     if (hsv.h >= 10 && hsv.h <= 45 && hsv.s >= 0.18 && hsv.s <= 0.65 && r > g && g > b) {
                         skinTonePixels++;
                     }
 
-                    // Píxeles con saturación y luminosidad de productos Vonixx
-                    if (hsv.s >= 0.25 && hsv.v >= 0.18 && hsv.v <= 0.98) {
+                    // Píxeles del cuerpo blanco de la botella de Sintra Fast
+                    if (hsv.s < 0.22 && hsv.v > 0.68) {
+                        whiteBottlePixels++;
+                    }
+
+                    // Píxeles de color saturado
+                    if (hsv.s >= 0.22 && hsv.v >= 0.18 && hsv.v <= 0.98) {
                         saturatedPixels++;
+                        sumSatHue += hsv.h;
                         const bin = Math.floor(hsv.h / 30) % 12;
                         colorHistogram[bin]++;
+
+                        if (b > g + 12) blueDominantPixels++;
+                        if (Math.abs(g - b) <= 22 && g > r + 15 && b > r + 15) cyanDominantPixels++;
                     }
                 }
 
                 const skinRatio = validPixels > 0 ? (skinTonePixels / validPixels) : 0;
                 const saturationRatio = validPixels > 0 ? (saturatedPixels / validPixels) : 0;
 
-                // En cámara selfie, el usuario sostiene el bote con la mano y su torso/cara puede estar en segundo plano.
-                // Solo descartar si el tono de piel domina ampliamente (>55%) Y NO hay saturación viva del producto.
                 if (skinRatio > 0.55 && saturationRatio < 0.16) {
                     updateScannerCandidates([]);
                     scannerState.consecutiveHits = {};
@@ -3378,8 +3452,7 @@ function resolveToGitRepoUrl(item) {
                     return;
                 }
 
-                // Si no hay suficiente presencia de color vivo, abortar silenciosamente
-                if (saturationRatio < 0.14) {
+                if (saturationRatio < 0.12 && (whiteBottlePixels / validPixels) < 0.35) {
                     updateScannerCandidates([]);
                     scannerState.consecutiveHits = {};
                     return;
@@ -3390,6 +3463,8 @@ function resolveToGitRepoUrl(item) {
                 const avgB = totalB / validPixels;
                 const avgHsv = rgbToHsv(avgR, avgG, avgB);
 
+                const continuousHue = saturatedPixels > 0 ? (sumSatHue / saturatedPixels) : avgHsv.h;
+
                 let maxBinCount = 0;
                 let dominantBin = -1;
                 for (let b = 0; b < 12; b++) {
@@ -3398,11 +3473,12 @@ function resolveToGitRepoUrl(item) {
                         dominantBin = b;
                     }
                 }
-
-                const dominantHue = dominantBin >= 0 ? (dominantBin * 30 + 15) : avgHsv.h;
                 const dominantRatio = validPixels > 0 ? (maxBinCount / validPixels) : 0;
 
-                // Comparar contra catálogo de productos
+                const isBlueDominant = (blueDominantPixels > cyanDominantPixels * 1.3) || (avgB > avgG + 12);
+                const isCyanDominant = (cyanDominantPixels >= blueDominantPixels) && (avgG >= avgB - 12);
+                const isWhiteBottleSintra = (whiteBottlePixels / validPixels) >= 0.28 && (blueDominantPixels > 0 || avgB >= avgG);
+
                 const scores = [];
                 const products = state.products || [];
 
@@ -3415,35 +3491,68 @@ function resolveToGitRepoUrl(item) {
                         const matchesKeyword = rule.keywords.some(k => pName.includes(k) || pCode.includes(k));
                         if (!matchesKeyword) continue;
 
+                        if (rule.channelCheck && !rule.channelCheck(avgR, avgG, avgB)) {
+                            continue;
+                        }
+
+                        // Caso especial SINTRA FAST
+                        if (rule.name === 'SINTRA' && (isBlueDominant || isWhiteBottleSintra)) {
+                            matchScore = 0.92 + (dominantRatio * 0.08);
+                            break;
+                        }
+
+                        // Caso especial SPELL
+                        if (rule.name === 'SPELL' && !isCyanDominant) {
+                            continue;
+                        }
+
                         if (rule.targetHue) {
                             const [minH, maxH] = rule.targetHue;
                             const inHue = (minH <= maxH)
-                                ? (dominantHue >= minH && dominantHue <= maxH)
-                                : (dominantHue >= minH || dominantHue <= maxH);
+                                ? (continuousHue >= minH && continuousHue <= maxH)
+                                : (continuousHue >= minH || continuousHue <= maxH);
 
-                            if (inHue && dominantRatio >= (rule.minRatio || 0.18) && avgHsv.s >= (rule.minSat || 0.28)) {
-                                matchScore = 0.85 + (dominantRatio * 0.15);
+                            if (inHue && dominantRatio >= (rule.minRatio || 0.16) && avgHsv.s >= (rule.minSat || 0.25)) {
+                                matchScore = 0.86 + (dominantRatio * 0.14);
                             }
                         }
                     }
 
-                    if (matchScore > 0.50) {
+                    if (matchScore > 0.48) {
                         scores.push({ product: p, score: matchScore });
                     }
                 });
 
+                // Desempate inteligente y resolución de colisión (Sintra vs Spell)
+                if (scores.length >= 2) {
+                    const p1 = (scores[0].product.name || '').toLowerCase();
+                    const p2 = (scores[1].product.name || '').toLowerCase();
+
+                    if ((p1.includes('spell') && p2.includes('sintra')) || (p1.includes('sintra') && p2.includes('spell'))) {
+                        if (isBlueDominant || isWhiteBottleSintra) {
+                            const sintraItem = p1.includes('sintra') ? scores[0] : scores[1];
+                            const otherItem = p1.includes('sintra') ? scores[1] : scores[0];
+                            sintraItem.score = 0.96;
+                            otherItem.score = 0.55;
+                        } else if (isCyanDominant) {
+                            const spellItem = p1.includes('spell') ? scores[0] : scores[1];
+                            const otherItem = p1.includes('spell') ? scores[1] : scores[0];
+                            spellItem.score = 0.96;
+                            otherItem.score = 0.55;
+                        }
+                    }
+                }
+
                 scores.sort((a, b) => b.score - a.score);
+                scannerState.lastCandidates = scores.slice(0, 4);
                 updateScannerCandidates(scores.slice(0, 3));
 
-                // Sensibilidad optimizada: confirmación rápida y amigable
                 if (scores.length > 0) {
                     const top = scores[0];
-                    if (top.score >= 0.88) {
-                        // Coincidencia muy nítida inmediata
+                    if (top.score >= 0.90) {
                         onProductVisuallyRecognized(top.product);
                         scannerState.consecutiveHits = {};
                     } else if (top.score >= 0.80) {
-                        // 2 tomas seguidas a 300ms = 600ms estable
                         const pid = top.product.id;
                         scannerState.consecutiveHits[pid] = (scannerState.consecutiveHits[pid] || 0) + 1;
                         if (scannerState.consecutiveHits[pid] >= 2) {
@@ -3464,7 +3573,7 @@ function resolveToGitRepoUrl(item) {
             }
         }
 
-        // 9. Actualizar chips de sugerencias rápidas
+        // 10. Actualizar chips de sugerencias rápidas en vivo
         function updateScannerCandidates(topCandidates) {
             const section = document.getElementById('scannerCandidatesSection');
             const row = document.getElementById('scannerCandidatesRow');
@@ -3480,8 +3589,8 @@ function resolveToGitRepoUrl(item) {
                 const p = c.product;
                 const price = p.newPrice || p.price;
                 return `
-                    <button type="button" class="scanner-candidate-chip" onclick="onProductVisuallyRecognized(state.products.find(x => x.id === '${p.id}'))" title="Toca para seleccionar este producto">
-                        <span>${p.name.substring(0, 16)}</span>
+                    <button type="button" class="scanner-candidate-chip" onclick="onProductVisuallyRecognized(state.products.find(x => x.id === '${p.id}'))" title="Toca para seleccionar ${p.name}">
+                        <span>${p.name.substring(0, 18)}</span>
                         <span style="color:var(--green); font-family:JetBrains Mono;">$${parseFloat(price).toFixed(0)}</span>
                         <i class="fa-solid fa-check" style="font-size:8px; color:var(--blue);"></i>
                     </button>
@@ -3489,38 +3598,35 @@ function resolveToGitRepoUrl(item) {
             }).join('');
         }
 
-        // 10. Acción al reconocer visualmente el producto: Muestra tarjeta y solicita número de piezas
+        // 11. Acción al reconocer producto: Muestra tarjeta y selector de piezas
         function onProductVisuallyRecognized(product) {
             if (!product) return;
 
-            // Congelar el bucle de la cámara para que el vendedor decida cuántas piezas registrar
             scannerState.isAwaitingDecision = true;
             scannerState.currentPendingProduct = product;
             scannerState.currentPendingQty = 1;
             scannerState.lastDetectedId = product.id;
             scannerState.consecutiveHits = {};
 
-            // 1. Sonido bip moderno
             playModernScannerBip();
 
-            // 2. Efectos visuales en HUD (marcado y bloqueo)
             const targetBox = document.getElementById('scannerTargetBox');
             if (targetBox) {
                 targetBox.classList.add('matched');
                 targetBox.classList.add('locked');
             }
 
-            // Ocultar sugerencias para dar espacio al selector de piezas
             const section = document.getElementById('scannerCandidatesSection');
             if (section) section.style.display = 'none';
 
-            // 3. Mostrar tarjeta con datos del producto detectado
+            // Cargar datos en la tarjeta
             const detectedCard = document.getElementById('scannerDetectedCard');
             const imgElem = document.getElementById('detectedProductImg');
             const nameElem = document.getElementById('detectedProductName');
             const priceElem = document.getElementById('detectedProductPrice');
             const qtyInput = document.getElementById('scannerQtyInput');
             const statusText = document.getElementById('scannerStatusText');
+            const switchChips = document.getElementById('scannerAlternativeChips');
 
             const prodImg = product.image || getProductFallbackImage(product);
             const prodPrice = product.newPrice || product.price;
@@ -3529,17 +3635,65 @@ function resolveToGitRepoUrl(item) {
             if (nameElem) nameElem.textContent = product.name;
             if (priceElem) priceElem.textContent = `$${parseFloat(prodPrice).toFixed(2)} MXN`;
             if (qtyInput) qtyInput.value = 1;
+            if (switchChips) {
+                switchChips.style.display = 'none';
+                renderAlternativeSwitchChips(product.id);
+            }
 
             if (detectedCard) {
                 detectedCard.style.display = 'flex';
             }
 
             if (statusText) {
-                statusText.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">¡Detectado! Indica las piezas y elige opción</span>`;
+                statusText.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">¡Detectado: ${product.name.substring(0, 20)}!</span>`;
             }
         }
 
-        // 11. Cambiar piezas en el selector del escáner
+        // 12. Menú de cambio rápido de producto si el cajero necesita corregir
+        function toggleAlternativeCandidates() {
+            const container = document.getElementById('scannerAlternativeChips');
+            if (!container) return;
+            if (container.style.display === 'none' || !container.style.display) {
+                container.style.display = 'flex';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        function renderAlternativeSwitchChips(currentId) {
+            const container = document.getElementById('scannerAlternativeChips');
+            if (!container) return;
+
+            let prods = [];
+            if (scannerState.lastCandidates && scannerState.lastCandidates.length > 0) {
+                prods = scannerState.lastCandidates.map(c => c.product).filter(p => p.id !== currentId);
+            }
+            if (prods.length === 0) {
+                const priorityNames = ['sintra', 'spell', 'mol', 'floc', 'alumax', 'delet'];
+                prods = (state.products || []).filter(p => {
+                    const n = (p.name || '').toLowerCase();
+                    return p.id !== currentId && priorityNames.some(k => n.includes(k));
+                }).slice(0, 4);
+            }
+
+            container.innerHTML = prods.map(p => {
+                const price = p.newPrice || p.price;
+                return `
+                    <button type="button" class="scanner-candidate-chip" onclick="selectAlternativeProduct('${p.id}')" style="background:var(--panel-2); border-color:var(--blue); font-size:10.5px;">
+                        <span>${p.name.substring(0, 18)}</span>
+                        <span style="color:var(--green);">$${parseFloat(price).toFixed(0)}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectAlternativeProduct(prodId) {
+            const prod = (state.products || []).find(p => p.id === prodId);
+            if (!prod) return;
+            onProductVisuallyRecognized(prod);
+        }
+
+        // 13. Cambiar piezas en el selector del escáner
         function stepScannerQty(delta) {
             const qtyInput = document.getElementById('scannerQtyInput');
             if (!qtyInput) return;
@@ -3669,6 +3823,15 @@ function resolveToGitRepoUrl(item) {
                         <div class="scanner-detected-name" id="detectedProductName">V-MOL 1.5 L</div>
                         <div class="scanner-detected-price" id="detectedProductPrice">$131.00 MXN</div>
                     </div>
+                </div>
+
+                <!-- Botón de cambio rápido en caso de querer otra opción (ej. Sintra vs Spell) -->
+                <div style="display:flex; flex-direction:column; gap:4px; padding:0 2px;">
+                    <button type="button" class="btn-switch-detected" onclick="toggleAlternativeCandidates()" style="background:none; border:none; color:var(--blue); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; padding:2px 0; text-align:left;">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>¿No es este producto? Toca para cambiar</span>
+                    </button>
+                    <div id="scannerAlternativeChips" style="display:none; flex-wrap:wrap; gap:5px; margin-top:2px;"></div>
                 </div>
 
                 <!-- Selector interactivo de piezas -->
