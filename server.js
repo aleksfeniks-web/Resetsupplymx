@@ -1819,10 +1819,296 @@ function broadcastSlidesUpdate(slides) {
   });
 }
 
+// ==================== INVENTORY AGENT (inventory-agent) ====================
+// Responsabilidades:
+// - Consultar inventario.
+// - Identificar productos con bajo stock.
+// - Calcular rotación.
+// - Detectar productos sin movimiento.
+// - Predecir riesgo de agotarse.
+// - Sugerir cantidades de recompra.
+// - Identificar exceso de inventario.
+// - Analizar días de inventario disponible.
+// - Comparar inventario contra ventas.
+// Conceptos clave: current_stock, minimum_stock, sales_velocity, days_of_inventory, reorder_point, recommended_order.
+// Regla: NUNCA realizar una orden automáticamente. Solo generar recomendación hasta que el usuario autorice.
+
+let lastInventoryReorderPlan = null;
+let authorizedPurchaseOrders = [];
+
+function runInventoryAgentAnalysis(products, posOrders, webOrders, query, mode) {
+  const q = (query || '').toLowerCase().trim();
+
+  // 1. Mapeo de ventas históricas por producto
+  const allOrders = [...posOrders, ...webOrders];
+  const productSalesMap = {};
+  let earliestOrderDate = Date.now();
+  let latestOrderDate = 0;
+
+  allOrders.forEach(o => {
+    const t = new Date(o.createdAt || o.date || Date.now()).getTime();
+    if (!isNaN(t)) {
+      if (t < earliestOrderDate) earliestOrderDate = t;
+      if (t > latestOrderDate) latestOrderDate = t;
+    }
+    if (Array.isArray(o.items)) {
+      o.items.forEach(it => {
+        const pid = it.id || it.code || '';
+        const normName = (it.name || it.description || '').toLowerCase().trim();
+        const qty = parseInt(it.quantity || it.qty || 1) || 1;
+        if (pid) productSalesMap[pid] = (productSalesMap[pid] || 0) + qty;
+        if (normName) productSalesMap[normName] = (productSalesMap[normName] || 0) + qty;
+      });
+    }
+  });
+
+  const periodDays = Math.max(7, Math.min(30, Math.round((latestOrderDate - earliestOrderDate) / (1000 * 60 * 60 * 24)))) || 14;
+
+  // 2. Análisis métrico por producto
+  const analyzedProducts = products.map(p => {
+    const current_stock = parseInt(p.qty !== undefined ? p.qty : p.stock) || 0;
+    const normName = (p.name || '').toLowerCase().trim();
+    const soldUnits = productSalesMap[p.id] || productSalesMap[p.code] || productSalesMap[normName] || 0;
+
+    // sales_velocity (unidades vendidas por día)
+    let sales_velocity = Number((soldUnits / periodDays).toFixed(2));
+    if (sales_velocity === 0 && (normName.includes('sintra') || normName.includes('v-mol') || normName.includes('shiny') || normName.includes('delet') || normName.includes('blend'))) {
+      sales_velocity = 0.75; // estimación base para productos clave de alta demanda
+    }
+
+    // minimum_stock (buffer de seguridad para absorber demoras del proveedor)
+    const minimum_stock = Math.max(3, Math.ceil(sales_velocity * 4));
+
+    // reorder_point: (sales_velocity * 3 días de entrega proveedor) + minimum_stock
+    const reorder_point = Math.ceil((sales_velocity * 3) + minimum_stock);
+
+    // days_of_inventory (días antes de agotar stock al ritmo actual)
+    let days_of_inventory = sales_velocity > 0 ? Number((current_stock / sales_velocity).toFixed(1)) : (current_stock > 0 ? 999 : 0);
+
+    // recommended_order (unidades para cubrir 21 días de demanda proyectada)
+    let recommended_order = 0;
+    if (current_stock <= reorder_point) {
+      const needed = Math.ceil((21 * sales_velocity) + minimum_stock - current_stock);
+      recommended_order = Math.max(6, Math.ceil(needed / 6) * 6); // empacar en cajas de 6
+    }
+
+    // Clasificación de estado
+    let status = 'OPTIMO';
+    if (current_stock === 0) {
+      status = 'AGOTADO';
+    } else if (days_of_inventory <= 3) {
+      status = 'RIESGO_CRITICO';
+    } else if (current_stock <= reorder_point) {
+      status = 'BAJO_PUNTO_REORDEN';
+    } else if (sales_velocity === 0 && current_stock >= 5) {
+      status = 'SIN_MOVIMIENTO';
+    } else if (days_of_inventory > 60 && current_stock >= 10) {
+      status = 'EXCESO_INVENTARIO';
+    }
+
+    const unitPrice = parseFloat(p.newPrice || p.price) || 0;
+    const costEstimate = Math.round(unitPrice * 0.62); // ~62% costo mayorista Vonixx Oficial
+
+    return {
+      id: p.id,
+      code: p.code || p.id,
+      name: p.name,
+      current_stock,
+      minimum_stock,
+      sales_velocity,
+      days_of_inventory,
+      reorder_point,
+      recommended_order,
+      status,
+      unitPrice,
+      costEstimate
+    };
+  });
+
+  // Filtrados clave
+  const outOfStock = analyzedProducts.filter(p => p.status === 'AGOTADO');
+  const criticalRisk = analyzedProducts.filter(p => p.status === 'RIESGO_CRITICO');
+  const reorderList = analyzedProducts.filter(p => p.recommended_order > 0).sort((a, b) => a.days_of_inventory - b.days_of_inventory);
+  const slowMoving = analyzedProducts.filter(p => p.status === 'SIN_MOVIMIENTO' || p.status === 'EXCESO_INVENTARIO');
+  const lowStock = analyzedProducts.filter(p => p.current_stock <= p.minimum_stock);
+
+  // Presupuesto estimado de la recomendación de compra
+  const totalUnitsRecommended = reorderList.reduce((sum, p) => sum + p.recommended_order, 0);
+  const totalBudgetEstimated = reorderList.reduce((sum, p) => sum + (p.recommended_order * p.costEstimate), 0);
+
+  lastInventoryReorderPlan = {
+    timestamp: new Date().toISOString(),
+    totalUnits: totalUnitsRecommended,
+    estimatedCost: totalBudgetEstimated,
+    items: reorderList.map(p => ({
+      name: p.name,
+      current_stock: p.current_stock,
+      minimum_stock: p.minimum_stock,
+      reorder_point: p.reorder_point,
+      recommended_order: p.recommended_order,
+      cost: p.recommended_order * p.costEstimate
+    }))
+  };
+
+  let response = '';
+  let voiceSummary = '';
+
+  // Detección de intenciones
+  const isAuthorize = q.includes('autoriz') || q.includes('/authorize') || q.includes('aprobar compra');
+  const isReorder = q.includes('/reorder') || q.includes('recompra') || q.includes('comprar') || q.includes('reabastecer') || q.includes('reorder_point');
+  const isRisk = q.includes('riesgo') || q.includes('agotar') || q.includes('/stock-risk') || q.includes('días de inventario') || q.includes('days_of_inventory');
+  const isSlow = q.includes('lento') || q.includes('sin movimiento') || q.includes('/slow-moving') || q.includes('exceso') || q.includes('estancado');
+  const isVelocity = q.includes('velocidad') || q.includes('rotacion') || q.includes('sales_velocity');
+  const isLowStock = q.includes('bajo stock') || q.includes('minimum_stock') || q.includes('critico');
+
+  if (isAuthorize) {
+    const authId = 'PO-' + Date.now().toString().slice(-6);
+    const authRecord = {
+      orderId: authId,
+      authorizedAt: new Date().toISOString(),
+      totalUnits: totalUnitsRecommended,
+      estimatedCost: totalBudgetEstimated,
+      items: lastInventoryReorderPlan.items
+    };
+    authorizedPurchaseOrders.push(authRecord);
+
+    response = `INVENTORY AGENT — AUTORIZACIÓN DE COMPRA REGISTRADA ✅
+Folio: ${authId}
+Fecha: ${new Date().toLocaleString('es-MX')}
+
+ORDEN DE COMPRA APROBADA POR EL ADMINISTRADOR:
+${lastInventoryReorderPlan.items.length > 0
+  ? lastInventoryReorderPlan.items.map(p => `• ${p.name}: +${p.recommended_order} pz (Costo est. $${p.cost.toLocaleString('es-MX')} MXN)`).join('\n')
+  : '• No había productos con recompra pendiente en este ciclo.'}
+
+RESUMEN FINANCIERO:
+• Total de unidades autorizadas: ${totalUnitsRecommended} pz
+• Inversión estimada en proveedor: $${totalBudgetEstimated.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+
+ESTADO DE EJECUCIÓN:
+La orden ha sido autorizada manualmente. Puedes exportar esta lista o compartirla directamente con tu distribuidor Vonixx México Oficial para su surtido.`;
+
+    voiceSummary = `Orden de compra folio ${authId} autorizada exitosamente. Total de ${totalUnitsRecommended} piezas con inversión estimada de ${Math.round(totalBudgetEstimated)} pesos.`;
+
+  } else if (isReorder) {
+    response = `INVENTORY AGENT — PLAN DE RECOMPRA Y REABASTECIMIENTO (/reorder)
+
+RECOMENDACIÓN DE PEDIDO AL PROVEEDOR (Cobertura proyectada: 21 días):
+${reorderList.length > 0
+  ? reorderList.map(p => 
+`• ${p.name}:
+  - current_stock: ${p.current_stock} pz | minimum_stock: ${p.minimum_stock} pz
+  - sales_velocity: ${p.sales_velocity} pz/día | days_of_inventory: ${p.days_of_inventory} días
+  - reorder_point: ${p.reorder_point} pz
+  👉 recommended_order: +${p.recommended_order} pz (Costo aprox: $${(p.recommended_order * p.costEstimate).toLocaleString('es-MX')} MXN)`
+    ).join('\n\n')
+  : '✅ Todos los productos se encuentran por encima de su reorder_point. No se requiere resurtido inmediato.'}
+
+PRESUPUESTO ESTIMADO DE COMPRA:
+$${totalBudgetEstimated.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN para adquirir ${totalUnitsRecommended} unidades.
+
+🔒 POLÍTICA DE SEGURIDAD OPERATIVA:
+inventory-agent NUNCA realiza una orden automáticamente. Esta es SOLAMENTE una recomendación analítica calculada.
+Para aprobarla, responde "Autorizar compra" o presiona el botón inferior.`;
+
+    voiceSummary = `Plan de recompra generado por Inventory Agent. Se recomienda pedir ${totalUnitsRecommended} piezas con presupuesto de ${Math.round(totalBudgetEstimated)} pesos. Esperando tu autorización para proceder.`;
+
+  } else if (isRisk) {
+    response = `INVENTORY AGENT — PREDICCIÓN DE RIESGO DE AGOTAMIENTO (/stock-risk)
+
+PRODUCTOS EN RIESGO CRÍTICO DE ROTURA DE STOCK:
+${outOfStock.length > 0 ? `🚨 AGOTADOS (0 días de inventario):\n` + outOfStock.map(p => `• ${p.name}: current_stock = 0 pz | recommended_order = +${p.recommended_order || 12} pz`).join('\n') + '\n\n' : ''}${criticalRisk.length > 0 ? `⚠️ RIESGO ALTO (Menos de 3 días de cobertura):\n` + criticalRisk.map(p => `• ${p.name}: current_stock: ${p.current_stock} pz | sales_velocity: ${p.sales_velocity} pz/día | days_of_inventory: ${p.days_of_inventory} días | reorder_point: ${p.reorder_point} pz`).join('\n') : '• Ningún producto activo presenta riesgo de agotarse en las próximas 72 horas.'}
+
+DIAGNÓSTICO PREVENTIVO:
+Los productos mencionados requieren atención prioritaria para evitar perder ventas en mostrador y tienda web durante el fin de semana.
+
+🔒 RECOMENDACIÓN:
+No se emitirá orden automática al proveedor hasta contar con la autorización manual del usuario.`;
+
+    voiceSummary = `Predicción de agotamiento de stock. ${outOfStock.length} productos agotados y ${criticalRisk.length} con menos de 3 días de inventario disponible.`;
+
+  } else if (isSlow) {
+    response = `INVENTORY AGENT — PRODUCTOS SIN MOVIMIENTO Y EXCESO DE INVENTARIO (/slow-moving)
+
+CAPITAL INMOVILIZADO DETECTADO:
+${slowMoving.length > 0
+  ? slowMoving.map(p => `• ${p.name}:
+  - current_stock: ${p.current_stock} pz
+  - sales_velocity: ${p.sales_velocity} pz/día (Rotación baja/nula)
+  - days_of_inventory: ${p.days_of_inventory > 300 ? '> 90 días' : p.days_of_inventory + ' días'}
+  - Capital congelado estimado: $${(p.current_stock * p.unitPrice).toLocaleString('es-MX')} MXN`).join('\n\n')
+  : '• No se detectaron excesos graves de inventario. El stock mantiene rotación saludable.'}
+
+ESTRATEGIAS RECOMENDADAS PARA RECUPERAR CAPITAL:
+1. Crear paquetes de liquidación o promoción cruzada en caja POS con descuento del 15%.
+2. Añadir regalo de muestra o microfibra por la compra de estos ítems.
+3. No pedir nuevas unidades de estos SKUs en el próximo ciclo de compras.`;
+
+    voiceSummary = `Detecté ${slowMoving.length} productos con exceso de inventario o baja rotación. Recomiendo armar promociones en punto de venta para liberar capital de trabajo.`;
+
+  } else if (isVelocity) {
+    response = `INVENTORY AGENT — ROTACIÓN Y VELOCIDAD DE VENTAS (sales_velocity)
+
+MÉTRICAS DE ROTACIÓN (Unidades vendidas por día):
+${analyzedProducts.filter(p => p.sales_velocity > 0).sort((a, b) => b.sales_velocity - a.sales_velocity).slice(0, 8).map(p => 
+`• ${p.name}:
+  - sales_velocity: ${p.sales_velocity} pz/día
+  - current_stock: ${p.current_stock} pz
+  - days_of_inventory: ${p.days_of_inventory} días
+  - reorder_point: ${p.reorder_point} pz`
+).join('\n\n')}
+
+CONCLUSIÓN DE ROTACIÓN:
+Los productos con mayor sales_velocity son los generadores de flujo de efectivo diario en Reset Supply. Mantener su stock por encima del minimum_stock es crítico.`;
+
+    voiceSummary = `Análisis de velocidad de venta y rotación completado. Los productos líderes mantienen rotación estable superior a medio producto por día.`;
+
+  } else {
+    // Auditoría Integral de Inventario (por defecto)
+    response = `INVENTORY AGENT — AUDITORÍA GENERAL DE INVENTARIO (/inventory)
+
+ESTADO GENERAL DEL ALMACÉN:
+• Total de SKUs en catálogo: ${products.length} productos
+• Productos con bajo stock (current_stock <= minimum_stock): ${lowStock.length} SKUs
+• Productos que alcanzaron reorder_point: ${reorderList.length} SKUs
+• Productos sin movimiento reciente: ${slowMoving.length} SKUs
+
+DESGLOSE TÉCNICO DE ITEMS PRIORITARIOS:
+${(reorderList.slice(0, 5).concat(lowStock.slice(0, 3))).filter((v, i, a) => a.findIndex(t => t.id === v.id) === i).slice(0, 5).map(p => 
+`• ${p.name}:
+  - current_stock: ${p.current_stock} pz | minimum_stock: ${p.minimum_stock} pz
+  - sales_velocity: ${p.sales_velocity} pz/día | days_of_inventory: ${p.days_of_inventory} días
+  - reorder_point: ${p.reorder_point} pz
+  - recommended_order: ${p.recommended_order > 0 ? `+${p.recommended_order} pz` : '0 pz (Estable)'}`
+).join('\n\n')}
+
+PLAN DE RECOMPRA ESTIMADO:
+• Inversión calculada: $${totalBudgetEstimated.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN (${totalUnitsRecommended} unidades)
+
+🔒 GARANTÍA DE CONTROL HUMANO:
+inventory-agent NUNCA realiza una orden automáticamente. Toda compra requiere tu autorización expresa antes de proceder.`;
+
+    voiceSummary = `Auditoría de inventario por Inventory Agent. ${lowStock.length} productos están en nivel de stock mínimo. El plan de recompra sugiere ${totalUnitsRecommended} piezas y espera tu autorización.`;
+  }
+
+  return {
+    response,
+    voiceSummary,
+    metrics: {
+      totalProducts: products.length,
+      lowStockCount: lowStock.length,
+      reorderCount: reorderList.length,
+      slowMovingCount: slowMoving.length,
+      recommendedBudget: totalBudgetEstimated,
+      recommendedUnits: totalUnitsRecommended
+    }
+  };
+}
+
 // ==================== AGENTE RESET MANAGER (DIRECTOR GENERAL VIRTUAL) ====================
 app.post('/api/admin/agent/chat', requireAdminAuth, async (req, res) => {
   try {
-    const { query, clientContext } = req.body || {};
+    const { query, clientContext, mode, agent } = req.body || {};
     const q = (query || '').trim().toLowerCase();
 
     // 1. Recopilar datos reales de inventario, ventas POS, pedidos web y clientes
@@ -1864,6 +2150,28 @@ app.post('/api/admin/agent/chat', requireAdminAuth, async (req, res) => {
       } catch (e) {
         console.warn('⚠️ Error sincronizando datos para Reset Manager:', e.message);
       }
+    }
+
+    // Routing directo a INVENTORY AGENT si fue invocado específicamente o por sus comandos
+    const isDirectInventoryAgent = agent === 'inventory-agent' || 
+                                   q.startsWith('/inventory') || 
+                                   q.startsWith('/reorder') || 
+                                   q.startsWith('/stock-risk') || 
+                                   q.startsWith('/slow-moving') || 
+                                   q.startsWith('/velocity') || 
+                                   q.startsWith('/authorize-reorder') || 
+                                   q.includes('@inventory-agent');
+
+    if (isDirectInventoryAgent) {
+      const invResult = runInventoryAgentAnalysis(products, posOrders, webOrders, q, mode);
+      return res.json({
+        success: true,
+        agent: 'inventory-agent',
+        role: 'Especialista en Stock, Rotación y Reabastecimiento',
+        response: invResult.response,
+        voiceSummary: invResult.voiceSummary,
+        metrics: invResult.metrics
+      });
     }
 
     // 2. Cálculos financieros y de inventario de HOY
@@ -1952,20 +2260,14 @@ app.post('/api/admin/agent/chat', requireAdminAuth, async (req, res) => {
     }
 
     if (isBuyQuery) {
-      formattedResponse = `RESET MANAGER — SUGERENCIA DE REORDEN & COMPRAS (/reorder)
+      const invAnalysis = runInventoryAgentAnalysis(products, posOrders, webOrders, '/reorder', mode);
+      formattedResponse = `RESET MANAGER — COORDINACIÓN CON INVENTORY AGENT (/reorder)
 
-PRODUCTOS CON COMPRA INMEDIATA SUGERIDA:
-${criticalStock.length > 0
-  ? criticalStock.slice(0, 6).map(p => `• ${p.name}: Quedan ${p.qty !== undefined ? p.qty : p.stock} pz | Pedir al proveedor: +12 pz`).join('\n')
-  : '• Catálogo con stock estable. Recomendado pedir buffer de Sintra Fast y V-Mol 1.5L.'}
+Consulté a nuestro especialista en inventarios (inventory-agent) para calcular la reposición preventiva:
 
-PRESUPUESTO ESTIMADO DE RESURTIDO:
-$3,850.00 MXN para cubrir 15 días de demanda proyectada.
+` + invAnalysis.response;
 
-ACCIÓN RECOMENDADA:
-Levantar orden de compra directa a Vonixx México Oficial para evitar rotura de stock durante el fin de semana.`;
-
-      voiceSummary = `Te sugiero comprar resurtido de ${criticalStock.length > 0 ? criticalStock[0].name : 'Sintra Fast y V-Mol'}. Tu stock actual requiere reposición preventiva.`;
+      voiceSummary = `Reset Manager consultó a Inventory Agent. ` + invAnalysis.voiceSummary;
 
     } else if (isAttentionQuery) {
       formattedResponse = `RESET MANAGER — FOCOS DE ATENCIÓN PRIORITARIA HOY
@@ -2040,23 +2342,14 @@ Mantener el inventario de cerámicos SiO2 con stock de respaldo de mínimo 8 pie
       voiceSummary = `Reporte semanal listo. La tendencia de ventas muestra un crecimiento positivo de catorce por ciento con Sintra Fast y V-Mol a la cabeza.`;
 
     } else if (isInventoryQuery && !isSummaryQuery) {
-      formattedResponse = `RESET SUPPLY — REPORTE DE INVENTARIO CRÍTICO
+      const invAnalysis = runInventoryAgentAnalysis(products, posOrders, webOrders, '/inventory', mode);
+      formattedResponse = `RESET MANAGER — COORDINACIÓN CON INVENTORY AGENT (/inventory)
 
-ALERTA DE DESABASTO:
-${criticalStock.length > 0 
-  ? criticalStock.slice(0, 5).map(p => `• ${p.name}: ${p.qty !== undefined ? p.qty : p.stock} unidad(es)`).join('\n')
-  : '• No hay productos en nivel crítico (< 3 unidades).'}
+Consulté a nuestro INVENTORY AGENT para la auditoría de stock, rotación y días de inventario:
 
-TOTAL PRODUCTOS EN CATÁLOGO:
-${products.length} productos registrados.
+` + invAnalysis.response;
 
-OPORTUNIDAD:
-Reabastecer con distribuidor oficial Vonixx los productos de alta rotación antes del fin de semana.
-
-RECOMENDACIÓN:
-Generar orden de compra preventiva para ${criticalStock.slice(0, 2).map(p => p.name).join(' y ') || 'productos de lavado'}.`;
-
-      voiceSummary = `Reporte de inventario. ${criticalStock.length} productos están en nivel crítico. Te recomiendo reabastecer los de mayor rotación hoy mismo.`;
+      voiceSummary = `Reset Manager consultó a Inventory Agent. ` + invAnalysis.voiceSummary;
 
     } else if (isSalesQuery && !isSummaryQuery) {
       formattedResponse = `RESET SUPPLY — ESTADO FINANCIERO Y VENTAS

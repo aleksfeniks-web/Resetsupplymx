@@ -168,6 +168,115 @@ textarea[required]:focus,
     background: linear-gradient(90deg, transparent 0%, rgba(0, 210, 255, 0.6) 30%, rgba(61, 220, 132, 0.4) 70%, transparent 100%);
 }
 
+/* Barra Selectora de Agentes (Multi-Agent System) */
+.rm-agent-selector-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    align-items: center;
+    flex-wrap: wrap;
+}
+.rm-agent-selector-label {
+    font-size: 11px;
+    color: #556b82;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-right: 4px;
+}
+.rm-agent-tab {
+    background: #091320;
+    border: 1px solid #1a2b3d;
+    border-radius: 12px;
+    padding: 7px 16px;
+    color: #8598ab;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    font-family: inherit;
+}
+.rm-agent-tab:hover {
+    background: #0f1d2e;
+    border-color: #00a2ff;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+.rm-agent-tab.active {
+    background: rgba(0, 162, 255, 0.14);
+    border-color: #00d2ff;
+    color: #00d2ff;
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.25);
+}
+.rm-agent-tab.active.inv-theme {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: #f59e0b;
+    color: #f59e0b;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
+}
+.rm-agent-badge {
+    font-size: 9.5px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.rm-agent-badge.ceo {
+    background: rgba(0, 210, 255, 0.15);
+    color: #00d2ff;
+    border: 1px solid rgba(0, 210, 255, 0.35);
+}
+.rm-agent-badge.inv {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.rm-btn-authorize {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    color: #ffffff;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 12px;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    transition: all 0.2s;
+    outline: none;
+}
+.rm-btn-authorize:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+.rm-tech-metric {
+    display: inline-block;
+    background: rgba(0, 210, 255, 0.08);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    color: #00d2ff;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+}
+.rm-tech-metric.inv {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.25);
+    color: #f59e0b;
+}
+
 .rm-layout {
     display: flex;
     gap: 32px;
@@ -660,37 +769,52 @@ textarea[required]:focus,
     </header>
 
     <div class="admin-container">
-        <!-- RESET MANAGER — WIDGET EJECUTIVO / DIRECTOR GENERAL VIRTUAL -->
+        <!-- WIDGET EJECUTIVO MULTI-AGENTE (RESET MANAGER & INVENTORY AGENT) -->
         <div class="reset-manager-widget" id="resetManagerWidget">
+            <!-- Barra Selectora de Agentes -->
+            <div class="rm-agent-selector-bar">
+                <span class="rm-agent-selector-label"><i class="fa-solid fa-microchip" style="color:#00d2ff; margin-right:4px;"></i> Red de Agentes:</span>
+                <button type="button" class="rm-agent-tab active" id="agentTabResetManager" onclick="setActiveAgent('reset-manager')">
+                    <i class="fa-solid fa-crown" style="color:#00d2ff;"></i>
+                    <span>Reset Manager</span>
+                    <span class="rm-agent-badge ceo">Director General</span>
+                </button>
+                <button type="button" class="rm-agent-tab" id="agentTabInventoryAgent" onclick="setActiveAgent('inventory-agent')">
+                    <i class="fa-solid fa-boxes-stacked" style="color:#f59e0b;"></i>
+                    <span>Inventory Agent</span>
+                    <span class="rm-agent-badge inv">Stock & Reorden</span>
+                </button>
+            </div>
+
             <div class="rm-layout">
                 <!-- Columna Izquierda: Avatar, Nombre, Cita y Modos -->
                 <div class="rm-left-col">
                     <div>
                         <div class="rm-profile-header">
-                            <div class="rm-avatar-wrap">
+                            <div class="rm-avatar-wrap" id="rmAvatarWrap">
                                 <!-- Corona Cian / Neón -->
-                                <svg class="rm-crown-svg" viewBox="0 0 24 24">
+                                <svg class="rm-crown-svg" id="rmCrownSvg" viewBox="0 0 24 24">
                                     <path fill="#00D2FF" d="M5 19h14a1 1 0 001-1v-1a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1zm14.5-8.5l-3.3 2.6-3.7-6.2-3.7 6.2-3.3-2.6L4 15h16l-.5-4.5z"/>
                                 </svg>
-                                <img src="assets/reset_manager_avatar.jpg" alt="Reset Manager Avatar" class="rm-avatar-img" onerror="this.src='media_1788567693028.jpg'">
+                                <img src="assets/reset_manager_avatar.jpg" alt="Agent Avatar" class="rm-avatar-img" id="rmAvatarImg" onerror="this.src='media_1788567693028.jpg'">
                             </div>
                             <div class="rm-profile-meta">
-                                <div class="rm-name">Reset Manager</div>
-                                <div class="rm-status">
-                                    <span class="rm-status-dot"></span>
-                                    <span>En línea</span>
+                                <div class="rm-name" id="rmAgentName">Reset Manager</div>
+                                <div class="rm-status" id="rmAgentStatus">
+                                    <span class="rm-status-dot" id="rmStatusDot"></span>
+                                    <span id="rmAgentStatusText">En línea • Director General</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="rm-quote">
-                            &ldquo;Tu negocio, más claro,<br>más simple, más fuerte.&rdquo;
-                            <span>&mdash; Reset Manager</span>
+                        <div class="rm-quote" id="rmAgentQuote">
+                            <span id="rmQuoteText">&ldquo;Tu negocio, más claro,<br>más simple, más fuerte.&rdquo;</span>
+                            <span id="rmQuoteAuthor">&mdash; Reset Manager</span>
                         </div>
                     </div>
 
                     <!-- Botones de Modo -->
-                    <div class="rm-mode-pills">
+                    <div class="rm-mode-pills" id="rmModePillsContainer">
                         <button type="button" class="rm-mode-pill active" data-mode="estrategico" onclick="setAiMode('estrategico')">Estratégico</button>
                         <button type="button" class="rm-mode-pill" data-mode="analitico" onclick="setAiMode('analitico')">Analítico</button>
                         <button type="button" class="rm-mode-pill" data-mode="accionable" onclick="setAiMode('accionable')">Accionable</button>
@@ -701,15 +825,15 @@ textarea[required]:focus,
                 <div class="rm-right-col">
                     <!-- Globo de Saludo -->
                     <div class="rm-bubble">
-                        <div class="rm-bubble-title">
+                        <div class="rm-bubble-title" id="rmBubbleTitle">
                             <span class="sparkle">*</span>
-                            <span>¿En qué puedo ayudarte hoy?</span>
+                            <span id="rmBubbleTitleText">¿En qué puedo ayudarte hoy?</span>
                         </div>
-                        <p class="rm-bubble-text">Puedo analizar tu negocio, consultar a otros agentes y darte recomendaciones.</p>
+                        <p class="rm-bubble-text" id="rmBubbleSubText">Puedo analizar tu negocio, consultar a otros agentes y darte recomendaciones.</p>
                     </div>
 
                     <!-- Chips de Preguntas Frecuentes -->
-                    <div class="rm-chips-grid">
+                    <div class="rm-chips-grid" id="rmChipsGridContainer">
                         <button type="button" class="rm-chip" onclick="sendAiQuickQuery('¿Cómo estuvo hoy?')">¿Cómo estuvo hoy?</button>
                         <button type="button" class="rm-chip" onclick="sendAiQuickQuery('Muéstrame el inventario crítico')">Muéstrame el inventario crítico</button>
                         <button type="button" class="rm-chip" onclick="sendAiQuickQuery('¿Qué productos debo comprar?')">¿Qué productos debo comprar?</button>
@@ -738,7 +862,7 @@ textarea[required]:focus,
                     </div>
 
                     <!-- Pie con Comandos Sugeridos -->
-                    <div class="rm-commands-hint">
+                    <div class="rm-commands-hint" id="rmCommandsHintContainer">
                         <span>También puedes usar comandos:</span>
                         <button type="button" class="rm-cmd-btn" onclick="sendAiQuickQuery('/daily-close')">/daily-close</button>
                         <button type="button" class="rm-cmd-btn" onclick="sendAiQuickQuery('/weekly-review')">/weekly-review</button>
@@ -4616,6 +4740,172 @@ function resolveToGitRepoUrl(item) {
         var aiSpeechRecognition = null;
         var isAiListening = false;
         var currentAiMode = 'estrategico';
+        var currentActiveAgent = 'reset-manager';
+
+        // Registro Oficial de Agentes
+        var agentRegistry = {
+            'reset-manager': {
+                name: 'Reset Manager',
+                status: 'En línea • Director General',
+                avatar: 'assets/reset_manager_avatar.jpg',
+                hasCrown: true,
+                quote: '“Tu negocio, más claro,<br>más simple, más fuerte.”',
+                author: '— Reset Manager',
+                theme: 'ceo',
+                modes: [
+                    { id: 'estrategico', label: 'Estratégico' },
+                    { id: 'analitico', label: 'Analítico' },
+                    { id: 'accionable', label: 'Accionable' }
+                ],
+                bubbleTitle: '¿En qué puedo ayudarte hoy?',
+                bubbleSub: 'Puedo analizar tu negocio, consultar a otros agentes y darte recomendaciones.',
+                placeholder: 'Hazme una pregunta o escribe un comando... (ej. /daily-close)',
+                chips: [
+                    '¿Cómo estuvo hoy?',
+                    'Muéstrame el inventario crítico',
+                    '¿Qué productos debo comprar?',
+                    'Crea una promoción',
+                    '¿Qué necesita mi atención hoy?',
+                    'Compara tiendas',
+                    'Analiza mis clientes',
+                    'Reporte semanal'
+                ],
+                commands: [
+                    { cmd: '/daily-close', label: '/daily-close' },
+                    { cmd: '/weekly-review', label: '/weekly-review' },
+                    { cmd: '/reorder', label: '/reorder' },
+                    { cmd: '/promo', label: '/promo' },
+                    { cmd: '/inventory-audit', label: '/inventory-audit' },
+                    { cmd: '/manager-brief', label: '/manager-brief' }
+                ]
+            },
+            'inventory-agent': {
+                name: 'Inventory Agent',
+                status: 'En línea • Especialista en Stock & Reorden',
+                avatar: 'assets/reset_manager_avatar.jpg',
+                hasCrown: false,
+                quote: '“Inventario saludable, rotación continua y cero desabastos.”',
+                author: '— Inventory Agent',
+                theme: 'inv',
+                modes: [
+                    { id: 'bajo-stock', label: 'Bajo Stock' },
+                    { id: 'rotacion', label: 'Rotación & Días' },
+                    { id: 'recompra', label: 'Plan Recompra' },
+                    { id: 'exceso', label: 'Exceso / Lento' }
+                ],
+                bubbleTitle: '¿Qué necesitas revisar de tu inventario?',
+                bubbleSub: 'Analizo current_stock, minimum_stock, sales_velocity, days_of_inventory y reorder_point para sugerirte compras sin pedidos automáticos.',
+                placeholder: 'Consulta stock, rotación o escribe un comando... (ej. /reorder)',
+                chips: [
+                    'Auditoría de inventario (/inventory)',
+                    'Productos bajo stock mínimo',
+                    'Calcular rotación y sales_velocity',
+                    'Días de inventario (days_of_inventory)',
+                    'Sugerir recompra (reorder_point)',
+                    'Predecir riesgo de agotarse',
+                    'Detectar productos sin movimiento',
+                    'Identificar exceso de inventario'
+                ],
+                commands: [
+                    { cmd: '/inventory', label: '/inventory' },
+                    { cmd: '/reorder', label: '/reorder' },
+                    { cmd: '/stock-risk', label: '/stock-risk' },
+                    { cmd: '/slow-moving', label: '/slow-moving' },
+                    { cmd: '/velocity', label: '/velocity' },
+                    { cmd: '/authorize-reorder', label: '/authorize-reorder' }
+                ]
+            }
+        };
+
+        function setActiveAgent(agentId) {
+            currentActiveAgent = agentId;
+            var cfg = agentRegistry[agentId] || agentRegistry['reset-manager'];
+
+            // Actualizar pestañas superiores
+            var tabRm = document.getElementById('agentTabResetManager');
+            var tabInv = document.getElementById('agentTabInventoryAgent');
+            if (tabRm) tabRm.classList.toggle('active', agentId === 'reset-manager');
+            if (tabInv) {
+                tabInv.classList.toggle('active', agentId === 'inventory-agent');
+                tabInv.classList.toggle('inv-theme', agentId === 'inventory-agent');
+            }
+
+            // Nombre y estatus
+            var nameEl = document.getElementById('rmAgentName');
+            if (nameEl) nameEl.textContent = cfg.name;
+            var statusEl = document.getElementById('rmAgentStatusText');
+            if (statusEl) statusEl.textContent = cfg.status;
+
+            // Corona
+            var crownEl = document.getElementById('rmCrownSvg');
+            if (crownEl) crownEl.style.display = cfg.hasCrown ? 'block' : 'none';
+
+            // Cita
+            var quoteTextEl = document.getElementById('rmQuoteText');
+            if (quoteTextEl) quoteTextEl.innerHTML = cfg.quote;
+            var quoteAuthorEl = document.getElementById('rmQuoteAuthor');
+            if (quoteAuthorEl) quoteAuthorEl.textContent = cfg.author;
+
+            // Modos / Pills
+            var pillsContainer = document.getElementById('rmModePillsContainer');
+            if (pillsContainer) {
+                pillsContainer.innerHTML = '';
+                cfg.modes.forEach(function(m, idx) {
+                    var btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'rm-mode-pill' + (idx === 0 ? ' active' : '');
+                    btn.setAttribute('data-mode', m.id);
+                    btn.textContent = m.label;
+                    btn.onclick = function() { setAiMode(m.id); };
+                    pillsContainer.appendChild(btn);
+                });
+                currentAiMode = cfg.modes[0].id;
+            }
+
+            // Globo de saludo
+            var bubbleTitleEl = document.getElementById('rmBubbleTitleText');
+            if (bubbleTitleEl) bubbleTitleEl.textContent = cfg.bubbleTitle;
+            var bubbleSubEl = document.getElementById('rmBubbleSubText');
+            if (bubbleSubEl) bubbleSubEl.textContent = cfg.bubbleSub;
+
+            // Chips
+            var chipsContainer = document.getElementById('rmChipsGridContainer');
+            if (chipsContainer) {
+                chipsContainer.innerHTML = '';
+                cfg.chips.forEach(function(chipText) {
+                    var btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'rm-chip';
+                    btn.textContent = chipText;
+                    btn.onclick = function() { sendAiQuickQuery(chipText); };
+                    chipsContainer.appendChild(btn);
+                });
+            }
+
+            // Input placeholder
+            var inputEl = document.getElementById('aiTextInput');
+            if (inputEl) inputEl.placeholder = cfg.placeholder;
+
+            // Comandos
+            var cmdContainer = document.getElementById('rmCommandsHintContainer');
+            if (cmdContainer) {
+                cmdContainer.innerHTML = '<span>' + (agentId === 'inventory-agent' ? 'Comandos de inventario:' : 'También puedes usar comandos:') + '</span> ';
+                cfg.commands.forEach(function(c) {
+                    var btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'rm-cmd-btn';
+                    btn.textContent = c.label;
+                    btn.onclick = function() { sendAiQuickQuery(c.cmd); };
+                    cmdContainer.appendChild(btn);
+                });
+            }
+
+            // Badge del Drawer
+            var drawerBadge = document.getElementById('rmDrawerModeBadge');
+            if (drawerBadge) {
+                drawerBadge.textContent = cfg.modes[0].label;
+            }
+        }
 
         function setAiMode(mode) {
             currentAiMode = mode;
@@ -4625,12 +4915,9 @@ function resolveToGitRepoUrl(item) {
             });
             var badge = document.getElementById('rmDrawerModeBadge');
             if (badge) {
-                var labels = {
-                    'estrategico': 'Estratégico',
-                    'analitico': 'Analítico',
-                    'accionable': 'Accionable'
-                };
-                badge.textContent = labels[mode] || mode;
+                var cfg = agentRegistry[currentActiveAgent] || agentRegistry['reset-manager'];
+                var found = cfg.modes.find(function(m) { return m.id === mode; });
+                badge.textContent = found ? found.label : mode;
             }
         }
 
@@ -4682,7 +4969,6 @@ function resolveToGitRepoUrl(item) {
                 stopVoiceRecognition();
             } else {
                 try {
-                    // Detener síntesis si está hablando
                     if (aiSpeechSynthesis && aiSpeechSynthesis.speaking) {
                         aiSpeechSynthesis.cancel();
                     }
@@ -4766,7 +5052,7 @@ function resolveToGitRepoUrl(item) {
             if (msgs.length > 0) {
                 var lastMsg = msgs[msgs.length - 1].innerText;
                 navigator.clipboard.writeText(lastMsg).then(function() {
-                    alert('📋 Respuesta de Reset Manager copiada al portapapeles');
+                    alert('📋 Respuesta copiada al portapapeles');
                 }).catch(function() {
                     alert('No se pudo copiar automáticamente.');
                 });
@@ -4791,12 +5077,28 @@ function resolveToGitRepoUrl(item) {
             } else {
                 var formatted = escapeHtml(text)
                     .replace(/(RESET SUPPLY — [^\n]+)/g, '<strong>$1</strong>')
+                    .replace(/(INVENTORY AGENT — [^\n]+)/g, '<strong style="color:#f59e0b;">$1</strong>')
+                    .replace(/(RESET MANAGER — [^\n]+)/g, '<strong style="color:#00d2ff;">$1</strong>')
                     .replace(/(ALERTA[S]?:?)/g, '<span class="alert-text">$1</span>')
                     .replace(/(OPORTUNIDAD[ES]?:?)/g, '<span class="opp-text">$1</span>')
                     .replace(/(RECOMENDACI[ÓO]N[ES]?:?)/g, '<span class="rec-text">$1</span>')
-                    .replace(/(Ventas:?|Utilidad bruta estimada:?|Tickets:?|Ticket promedio:?|Productos más vendidos:?|TOTAL PRODUCTOS EN CATÁLOGO:?|ACCIONES PRIORITARIAS:?)/g, '<strong>$1</strong>');
+                    .replace(/(current_stock)/g, '<span class="rm-tech-metric inv">$1</span>')
+                    .replace(/(minimum_stock)/g, '<span class="rm-tech-metric inv">$1</span>')
+                    .replace(/(sales_velocity)/g, '<span class="rm-tech-metric inv">$1</span>')
+                    .replace(/(days_of_inventory)/g, '<span class="rm-tech-metric inv">$1</span>')
+                    .replace(/(reorder_point)/g, '<span class="rm-tech-metric inv">$1</span>')
+                    .replace(/(recommended_order)/g, '<span class="rm-tech-metric inv" style="background:rgba(16,185,129,0.15); border-color:#10b981; color:#10b981;">$1</span>')
+                    .replace(/(🔒 POLÍTICA DE SEGURIDAD OPERATIVA:?[^\n]*)/g, '<div style="background:rgba(239,68,68,0.1); border-left:3px solid #ef4444; padding:6px 10px; margin:8px 0; border-radius:4px; font-size:11.5px; color:#fca5a5;">$1</div>')
+                    .replace(/(🔒 GARANTÍA DE CONTROL HUMANO:?[^\n]*)/g, '<div style="background:rgba(16,185,129,0.1); border-left:3px solid #10b981; padding:6px 10px; margin:8px 0; border-radius:4px; font-size:11.5px; color:#6ee7b7;">$1</div>')
+                    .replace(/(Ventas:?|Utilidad bruta estimada:?|Tickets:?|Ticket promedio:?|Productos más vendidos:?|TOTAL PRODUCTOS EN CATÁLOGO:?|ACCIONES PRIORITARIAS:?|ESTADO GENERAL DEL ALMACÉN:?|RECOMENDACIÓN DE PEDIDO AL PROVEEDOR[^\n]*|PRODUCTOS EN RIESGO CRÍTICO[^\n]*|CAPITAL INMOVILIZADO DETECTADO:?|MÉTRICAS DE ROTACIÓN[^\n]*|ORDEN DE COMPRA APROBADA[^\n]*)/g, '<strong>$1</strong>');
 
-                msgDiv.innerHTML = '<div class="rm-bubble-agent">' + formatted + '</div><span class="rm-msg-time">' + timeStr + '</span>';
+                // Si la respuesta incluye recommended_order y no está ya autorizada, agregar botón interactivo de autorización
+                var authorizeBtnHtml = '';
+                if (text.includes('recommended_order') && !text.includes('AUTORIZACIÓN DE COMPRA REGISTRADA')) {
+                    authorizeBtnHtml = '<div style="margin-top:14px;"><button type="button" class="rm-btn-authorize" onclick="sendAiQuickQuery(\'/authorize-reorder\')"><i class="fa-solid fa-circle-check"></i> Autorizar Recomendación de Compra al Proveedor</button></div>';
+                }
+
+                msgDiv.innerHTML = '<div class="rm-bubble-agent">' + formatted + authorizeBtnHtml + '</div><span class="rm-msg-time">' + timeStr + '</span>';
             }
 
             chatBody.appendChild(msgDiv);
@@ -4836,7 +5138,9 @@ function resolveToGitRepoUrl(item) {
             var thinkingDiv = document.createElement('div');
             thinkingDiv.id = thinkingId;
             thinkingDiv.className = 'rm-msg agent';
-            thinkingDiv.innerHTML = '<div class="rm-bubble-agent" style="color:var(--muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right:8px; color:#00d2ff;"></i> Reset Manager está analizando métricas de Reset Supply...</div>';
+            var agentLabel = currentActiveAgent === 'inventory-agent' ? 'Inventory Agent' : 'Reset Manager';
+            var colorTheme = currentActiveAgent === 'inventory-agent' ? '#f59e0b' : '#00d2ff';
+            thinkingDiv.innerHTML = '<div class="rm-bubble-agent" style="color:var(--muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right:8px; color:' + colorTheme + ';"></i> ' + agentLabel + ' está analizando datos de Reset Supply...</div>';
             chatBody.appendChild(thinkingDiv);
             chatBody.scrollTop = chatBody.scrollHeight;
 
@@ -4850,6 +5154,7 @@ function resolveToGitRepoUrl(item) {
                     body: JSON.stringify({
                         query: query,
                         mode: currentAiMode,
+                        agent: currentActiveAgent,
                         clientContext: {
                             products: currentProductsList,
                             posOrders: currentPosOrdersList,
@@ -4872,20 +5177,40 @@ function resolveToGitRepoUrl(item) {
                 }
 
             } catch (err) {
-                console.error('Error al consultar Reset Manager:', err);
+                console.error('Error al consultar agente:', err);
                 var thinkingEl = document.getElementById(thinkingId);
                 if (thinkingEl) thinkingEl.remove();
                 generateLocalAiSummary(query);
             }
         }
 
-        // Generador de contingencia local de Reset Manager
+        // Generador de contingencia local
         function generateLocalAiSummary(query) {
             var prods = currentProductsList || [];
             var critical = prods.filter(function(p) {
                 var q = parseInt(p.qty !== undefined ? p.qty : p.stock);
                 return !isNaN(q) && q <= 3;
             });
+
+            if (currentActiveAgent === 'inventory-agent' || (query && (query.includes('inventario') || query.includes('/inventory') || query.includes('/reorder')))) {
+                var reorderItems = critical.slice(0, 5).map(function(p) {
+                    var stock = parseInt(p.qty !== undefined ? p.qty : p.stock) || 0;
+                    return '• ' + p.name + ':\n  - current_stock: ' + stock + ' pz | minimum_stock: 4 pz\n  - sales_velocity: 0.8 pz/día | days_of_inventory: ' + (stock / 0.8).toFixed(1) + ' días\n  - reorder_point: 6 pz\n  👉 recommended_order: +12 pz';
+                });
+
+                var localInv =
+`INVENTORY AGENT — AUDITORÍA DE INVENTARIO (/inventory)
+
+MÉTRICAS DE STOCK Y REORDEN:
+` + (reorderItems.join('\n\n') || '• Inventario en nivel óptimo.') + `
+
+🔒 POLÍTICA DE SEGURIDAD OPERATIVA:
+inventory-agent NUNCA realiza una orden automáticamente. Esta es SOLAMENTE una recomendación analítica hasta que autorices la compra.`;
+
+                appendChatMessage('agent', localInv);
+                speakAiResponse('Auditoría de inventario por Inventory Agent. Se detectaron productos en punto de reorden y se requiere tu autorización para comprar.');
+                return;
+            }
 
             var alertTxt = critical.length > 0
                 ? (critical[0].name + ' tiene solamente ' + (critical[0].qty !== undefined ? critical[0].qty : critical[0].stock) + ' unidades.')
