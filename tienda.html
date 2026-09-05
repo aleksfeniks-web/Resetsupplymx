@@ -343,7 +343,7 @@
         #selfieScannerModal {
             position: fixed;
             inset: 0;
-            background: rgba(8, 12, 16, 0.85);
+            background: rgba(8, 12, 16, 0.88);
             backdrop-filter: blur(8px);
             z-index: 99999;
             display: none;
@@ -359,20 +359,22 @@
             border: 1px solid var(--line-light);
             border-radius: var(--radius-lg);
             width: 100%;
-            max-width: min(92vw, 380px);
-            max-height: 95vh;
+            max-width: min(94vw, 360px);
+            max-height: 96vh;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(61, 220, 132, 0.15);
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            scrollbar-width: thin;
         }
         @keyframes popIn {
             from { transform: scale(0.92); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
         .scanner-header {
-            padding: 8px 12px;
+            padding: 7px 12px;
             background: var(--panel-2);
             border-bottom: 1px solid var(--line);
             display: flex;
@@ -422,13 +424,13 @@
             background: var(--panel-3);
             border: 1px solid var(--line);
             color: var(--muted);
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 5px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -437,17 +439,18 @@
             border-color: var(--blue);
         }
 
-        /* Viewport de Cámara & Retícula HUD adaptado a pantalla de 7" */
+        /* Viewport de Cámara & Retícula HUD adaptado a tablet 7" */
         .scanner-viewport {
             position: relative;
             width: 100%;
-            height: clamp(160px, 30vh, 220px);
+            height: clamp(140px, 26vh, 185px);
             background: #000;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            transition: all 0.2s ease;
         }
         .scanner-viewport video {
             width: 100%;
@@ -470,35 +473,35 @@
         }
         .scanner-target-box {
             position: relative;
-            width: clamp(130px, 24vh, 170px);
-            height: clamp(130px, 24vh, 170px);
+            width: clamp(110px, 20vh, 140px);
+            height: clamp(110px, 20vh, 140px);
             border: 1px dashed rgba(61, 220, 132, 0.45);
-            border-radius: 12px;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.48);
+            border-radius: 10px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.52);
             transition: all 0.3s;
         }
         .scanner-target-box.matched {
             border-color: var(--green);
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.48), 0 0 25px rgba(61, 220, 132, 0.85);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.52), 0 0 25px rgba(61, 220, 132, 0.85);
             animation: matchFlash 0.5s ease-out;
         }
         .scanner-target-box.locked {
             border-color: var(--blue);
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.48), 0 0 15px rgba(34, 184, 240, 0.4);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.52), 0 0 15px rgba(34, 184, 240, 0.4);
         }
 
         /* Esquinas HUD */
         .hud-corner {
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             border-color: var(--green);
             border-style: solid;
         }
-        .hud-corner.tl { top: -2px; left: -2px; border-width: 3px 0 0 3px; border-top-left-radius: 6px; }
-        .hud-corner.tr { top: -2px; right: -2px; border-width: 3px 3px 0 0; border-top-right-radius: 6px; }
-        .hud-corner.bl { bottom: -2px; left: -2px; border-width: 0 0 3px 3px; border-bottom-left-radius: 6px; }
-        .hud-corner.br { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; border-bottom-right-radius: 6px; }
+        .hud-corner.tl { top: -2px; left: -2px; border-width: 3px 0 0 3px; border-top-left-radius: 5px; }
+        .hud-corner.tr { top: -2px; right: -2px; border-width: 3px 3px 0 0; border-top-right-radius: 5px; }
+        .hud-corner.bl { bottom: -2px; left: -2px; border-width: 0 0 3px 3px; border-bottom-left-radius: 5px; }
+        .hud-corner.br { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; border-bottom-right-radius: 5px; }
 
         /* Láser Animado */
         .hud-laser {
@@ -523,8 +526,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             pointer-events: none;
             opacity: 0.4;
         }
@@ -533,30 +536,31 @@
             position: absolute;
             background: var(--green);
         }
-        .hud-crosshair::before { top: 7px; left: 0; right: 0; height: 2px; }
-        .hud-crosshair::after { left: 7px; top: 0; bottom: 0; width: 2px; }
+        .hud-crosshair::before { top: 6px; left: 0; right: 0; height: 2px; }
+        .hud-crosshair::after { left: 6px; top: 0; bottom: 0; width: 2px; }
 
-        /* Banner de Confirmación de Detección */
+        /* Panel de Producto Detectado & Selección de Piezas */
         .scanner-detected-card {
-            position: absolute;
-            bottom: 8px;
-            left: 8px;
-            right: 8px;
-            background: rgba(18, 23, 30, 0.96);
+            background: rgba(18, 23, 30, 0.98);
             border: 1px solid var(--green);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7), 0 0 15px rgba(61, 220, 132, 0.35);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.65), 0 0 16px rgba(61, 220, 132, 0.25);
             border-radius: 8px;
-            padding: 8px;
+            padding: 8px 10px;
             display: none;
+            flex-direction: column;
+            gap: 7px;
+            animation: slideUpFade 0.22s ease;
+            margin: 6px 10px 0 10px;
+            flex-shrink: 0;
+        }
+        .scanner-detected-header {
+            display: flex;
             align-items: center;
             gap: 8px;
-            animation: slideUpFade 0.25s ease;
-            pointer-events: auto;
-            z-index: 5;
         }
         .scanner-detected-img {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 6px;
             background: #fff;
             object-fit: contain;
@@ -568,7 +572,7 @@
             min-width: 0;
         }
         .scanner-detected-tag {
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: 700;
             color: var(--green);
             text-transform: uppercase;
@@ -589,25 +593,139 @@
             color: var(--blue);
         }
 
+        /* Selector de piezas en el escáner */
+        .scanner-qty-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--void);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 4px 8px;
+            gap: 8px;
+        }
+        .scanner-qty-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .scanner-qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .scanner-qty-btn {
+            background: var(--panel-3);
+            border: 1px solid var(--line-light);
+            color: var(--text);
+            width: 28px;
+            height: 28px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .scanner-qty-btn:hover {
+            border-color: var(--green);
+            color: var(--green);
+            background: rgba(61, 220, 132, 0.12);
+        }
+        .scanner-qty-input {
+            width: 44px;
+            height: 28px;
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+        }
+        .scanner-qty-input:focus {
+            border-color: var(--green);
+        }
+
+        /* Botones Continuar y Finalizar en Modal */
+        .scanner-action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        .btn-scanner-continue {
+            flex: 1;
+            background: linear-gradient(90deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
+            transition: all 0.2s;
+        }
+        .btn-scanner-continue:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+        .btn-scanner-finish {
+            flex: 1;
+            background: linear-gradient(90deg, #ff4757, #e84118);
+            color: #fff;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            box-shadow: 0 3px 10px rgba(255, 71, 87, 0.35);
+            transition: all 0.2s;
+        }
+        .btn-scanner-finish:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
         /* Footer del Escáner */
         .scanner-footer {
-            padding: 10px 12px;
+            padding: 8px 10px;
             background: var(--panel-2);
             border-top: 1px solid var(--line);
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             flex-shrink: 0;
         }
         .scanner-status-text {
-            font-size: 11px;
+            font-size: 10.5px;
             color: var(--muted);
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 5px;
-            min-height: 18px;
+            min-height: 16px;
         }
         .scanner-status-text i {
             color: var(--blue);
@@ -620,21 +738,20 @@
             background: linear-gradient(90deg, #ff4757, #ff6b81);
             color: #fff;
             border: none;
-            padding: 10px 16px;
-            border-radius: 7px;
+            padding: 8px 12px;
+            border-radius: 6px;
             font-family: 'Rajdhani', sans-serif;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.6px;
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 3px 12px rgba(255, 71, 87, 0.35);
+            box-shadow: 0 3px 10px rgba(255, 71, 87, 0.35);
         }
         .btn-finish-scan:hover {
             transform: translateY(-1px);
-            box-shadow: 0 5px 16px rgba(255, 71, 87, 0.5);
-            background: linear-gradient(90deg, #ff3344, #ff5268);
+            box-shadow: 0 5px 14px rgba(255, 71, 87, 0.5);
         }
         .scanner-candidates-row {
             display: flex;
@@ -648,9 +765,9 @@
             background: var(--panel-3);
             border: 1px solid var(--line-light);
             color: var(--text);
-            padding: 3px 8px;
+            padding: 2px 7px;
             border-radius: 5px;
-            font-size: 10.5px;
+            font-size: 10px;
             font-weight: 600;
             white-space: nowrap;
             cursor: pointer;
@@ -664,15 +781,22 @@
             background: rgba(61, 220, 132, 0.15);
         }
 
-        /* Reglas especiales para pantallas de 7 pulgadas en modo horizontal (<= 600px de alto) */
+        /* Reglas especiales para pantallas de 7 pulgadas (altura reducida <= 600px) */
         @media (max-height: 600px) {
-            .scanner-header { padding: 5px 10px; }
-            .scanner-title { font-size: 12px; }
-            .scanner-viewport { height: 155px; }
-            .scanner-target-box { width: 115px; height: 115px; }
-            .scanner-footer { padding: 6px 10px; gap: 5px; }
-            .btn-finish-scan { padding: 7px 12px; font-size: 12px; }
-            .scanner-status-text { font-size: 10px; min-height: 14px; }
+            .selfie-scanner-window { max-height: 98vh; max-width: 350px; }
+            .scanner-header { padding: 4px 8px; }
+            .scanner-title { font-size: 11.5px; }
+            .scanner-viewport { height: 130px; }
+            .scanner-target-box { width: 95px; height: 95px; }
+            .scanner-footer { padding: 5px 8px; gap: 4px; }
+            .btn-finish-scan { padding: 6px 10px; font-size: 11px; }
+            .scanner-status-text { font-size: 9.5px; min-height: 12px; }
+            .scanner-detected-card { margin: 4px 6px 0 6px; padding: 6px 8px; }
+            .scanner-detected-img { width: 30px; height: 30px; }
+            .scanner-detected-name { font-size: 11px; }
+            .scanner-qty-btn { width: 24px; height: 24px; font-size: 12px; }
+            .scanner-qty-input { width: 36px; height: 24px; font-size: 12px; }
+            .btn-scanner-continue, .btn-scanner-finish { padding: 6px 8px; font-size: 11px; }
         }
 
         /* Category Selector Bar */
@@ -2365,10 +2489,11 @@ function resolveToGitRepoUrl(item) {
         }
 
         // 4. CARRITO DE VENTA / CAJA
-        function addProductToCart(prodId) {
+        function addProductToCart(prodId, qtyToAdd = 1) {
             const product = state.products.find(p => p.id === prodId || p.code === prodId);
             if (!product) return;
 
+            const qty = Math.max(1, parseInt(qtyToAdd) || 1);
             let selectedVar = state.selectedVariations[prodId];
             let price = selectedVar ? parseFloat(selectedVar.price) : (parseFloat(product.newPrice || product.price) || 0);
             let varName = selectedVar ? selectedVar.name : (Array.isArray(product.variations) && product.variations.length > 0 ? product.variations[0].name : null);
@@ -2379,7 +2504,7 @@ function resolveToGitRepoUrl(item) {
             const prodImg = product.image || getProductFallbackImage(product);
 
             if (existing) {
-                existing.quantity += 1;
+                existing.quantity += qty;
             } else {
                 state.cart.push({
                     cartKey: cartKey,
@@ -2388,7 +2513,7 @@ function resolveToGitRepoUrl(item) {
                     name: product.name,
                     variation: varName,
                     price: price,
-                    quantity: 1,
+                    quantity: qty,
                     image: prodImg
                 });
             }
@@ -2956,9 +3081,11 @@ function resolveToGitRepoUrl(item) {
             animationId: null,
             lastDetectedId: null,
             lastDetectedTime: 0,
-            lockUntil: 0, // Pausa obligatoria tras detectar un producto
             consecutiveHits: {},
-            isProcessingFrame: false
+            isProcessingFrame: false,
+            isAwaitingDecision: false, // Pausa la cámara mientras el cajero confirma piezas
+            currentPendingProduct: null, // Producto que está en la tarjeta de confirmación
+            currentPendingQty: 1
         };
 
         // 1. Sonido bip moderno sintetizado con Web Audio API
@@ -2997,19 +3124,20 @@ function resolveToGitRepoUrl(item) {
         }
 
         // 2. Firmas cromáticas e iconografía de productos Vonixx
+        // Requerimientos cromáticos estrictos para descartar caras humanas (tono piel / pelo / ropa común)
         const VONIXX_VISUAL_RULES = [
-            { keywords: ['v-mol', 'v mol', 'mol'], targetHue: [265, 312], minSat: 0.30, minRatio: 0.22, name: 'V-MOL' },
-            { keywords: ['v-floc', 'v floc', 'floc'], targetHue: [188, 218], minSat: 0.35, minRatio: 0.24, name: 'V-FLOC' },
-            { keywords: ['citron'], targetHue: [65, 92], minSat: 0.35, minRatio: 0.25, name: 'CITRON' },
-            { keywords: ['alumax'], targetHue: [330, 355], minSat: 0.35, minRatio: 0.24, name: 'ALUMAX' },
-            { keywords: ['removex'], targetHue: [35, 52], minSat: 0.38, minRatio: 0.24, name: 'REMOVEX' },
-            { keywords: ['bactran'], targetHue: [122, 158], minSat: 0.32, minRatio: 0.22, name: 'BACTRAN' },
-            { keywords: ['extractus'], targetHue: [215, 240], minSat: 0.38, minRatio: 0.25, name: 'EXTRACTUS' },
-            { keywords: ['prizm'], targetHue: [342, 14], minSat: 0.35, minRatio: 0.22, name: 'PRIZM' },
-            { keywords: ['spell'], targetHue: [168, 192], minSat: 0.35, minRatio: 0.24, name: 'SPELL' },
-            { keywords: ['v10'], targetHue: [348, 12], minSat: 0.45, minRatio: 0.28, name: 'V10' },
-            { keywords: ['v20'], targetHue: [20, 36], minSat: 0.45, minRatio: 0.28, name: 'V20' },
-            { keywords: ['v30'], targetHue: [205, 230], minSat: 0.45, minRatio: 0.28, name: 'V30' }
+            { keywords: ['v-mol', 'v mol', 'mol'], targetHue: [265, 312], minSat: 0.35, minRatio: 0.25, name: 'V-MOL' },
+            { keywords: ['v-floc', 'v floc', 'floc'], targetHue: [188, 218], minSat: 0.38, minRatio: 0.25, name: 'V-FLOC' },
+            { keywords: ['citron'], targetHue: [65, 92], minSat: 0.38, minRatio: 0.26, name: 'CITRON' },
+            { keywords: ['alumax'], targetHue: [330, 355], minSat: 0.38, minRatio: 0.26, name: 'ALUMAX' },
+            { keywords: ['removex'], targetHue: [35, 52], minSat: 0.42, minRatio: 0.26, name: 'REMOVEX' },
+            { keywords: ['bactran'], targetHue: [122, 158], minSat: 0.35, minRatio: 0.24, name: 'BACTRAN' },
+            { keywords: ['extractus'], targetHue: [215, 240], minSat: 0.40, minRatio: 0.26, name: 'EXTRACTUS' },
+            { keywords: ['prizm'], targetHue: [342, 14], minSat: 0.38, minRatio: 0.24, name: 'PRIZM' },
+            { keywords: ['spell'], targetHue: [168, 192], minSat: 0.38, minRatio: 0.25, name: 'SPELL' },
+            { keywords: ['v10'], targetHue: [348, 12], minSat: 0.48, minRatio: 0.30, name: 'V10' },
+            { keywords: ['v20'], targetHue: [20, 36], minSat: 0.48, minRatio: 0.30, name: 'V20' },
+            { keywords: ['v30'], targetHue: [205, 230], minSat: 0.48, minRatio: 0.30, name: 'V30' }
         ];
 
         // 3. Inicializar y Abrir Escáner Selfie
@@ -3019,12 +3147,19 @@ function resolveToGitRepoUrl(item) {
             const statusText = document.getElementById('scannerStatusText');
             const viewport = document.getElementById('scannerViewport');
             const targetBox = document.getElementById('scannerTargetBox');
+            const detectedCard = document.getElementById('scannerDetectedCard');
 
             modal.classList.add('active');
             scannerState.active = true;
-            scannerState.lockUntil = 0;
+            scannerState.isAwaitingDecision = false;
+            scannerState.currentPendingProduct = null;
+            scannerState.currentPendingQty = 1;
             scannerState.consecutiveHits = {};
-            if (targetBox) targetBox.classList.remove('locked');
+            if (targetBox) {
+                targetBox.classList.remove('locked');
+                targetBox.classList.remove('matched');
+            }
+            if (detectedCard) detectedCard.style.display = 'none';
 
             if (scannerState.facingMode === 'user') {
                 viewport.classList.remove('rear-camera');
@@ -3032,7 +3167,7 @@ function resolveToGitRepoUrl(item) {
                 viewport.classList.add('rear-camera');
             }
 
-            statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Iniciando cámara selfie...</span>';
+            statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Iniciando cámara...</span>';
 
             try {
                 if (scannerState.stream) {
@@ -3066,7 +3201,8 @@ function resolveToGitRepoUrl(item) {
         // 4. Finalizar Escaneo (Cerrar ventana y apagar cámara)
         function closeSelfieScanner() {
             scannerState.active = false;
-            scannerState.lockUntil = 0;
+            scannerState.isAwaitingDecision = false;
+            scannerState.currentPendingProduct = null;
             scannerState.consecutiveHits = {};
 
             if (scannerState.animationId) {
@@ -3096,15 +3232,15 @@ function resolveToGitRepoUrl(item) {
             openSelfieScanner();
         }
 
-        // 6. Bucle de procesamiento visual en tiempo real
+        // 6. Bucle de procesamiento visual con cadencia moderada (2.5 fps = 400ms por toma)
         function startScannerLoop() {
             let lastFrameTime = 0;
-            const targetFPS = 6;
+            const targetIntervalMs = 400; // Da más tiempo entre capturas para no saturar ni tomar selfies continuas
 
             function loop(timestamp) {
                 if (!scannerState.active) return;
 
-                if (timestamp - lastFrameTime >= (1000 / targetFPS)) {
+                if (!scannerState.isAwaitingDecision && (timestamp - lastFrameTime >= targetIntervalMs)) {
                     lastFrameTime = timestamp;
                     analyzeCurrentFrame();
                 }
@@ -3137,28 +3273,7 @@ function resolveToGitRepoUrl(item) {
 
         // 8. Análisis de fotograma y correspondencia de producto
         async function analyzeCurrentFrame() {
-            if (scannerState.isProcessingFrame) return;
-
-            // Bloqueo / Pausa de 3.5 segundos tras escanear un producto
-            const now = Date.now();
-            if (scannerState.lockUntil && now < scannerState.lockUntil) {
-                const remaining = Math.max(1, Math.ceil((scannerState.lockUntil - now) / 1000));
-                const statusText = document.getElementById('scannerStatusText');
-                if (statusText) {
-                    statusText.innerHTML = `<i class="fa-solid fa-hourglass-half" style="color:var(--yellow);"></i><span style="color:var(--yellow);">Pausa tras escaneo (${remaining}s) — Retira el envase...</span>`;
-                }
-                return;
-            } else if (scannerState.lockUntil && now >= scannerState.lockUntil) {
-                // Desbloquear para el siguiente envase
-                scannerState.lockUntil = 0;
-                scannerState.consecutiveHits = {};
-                const targetBox = document.getElementById('scannerTargetBox');
-                if (targetBox) targetBox.classList.remove('locked');
-                const statusText = document.getElementById('scannerStatusText');
-                if (statusText) {
-                    statusText.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles" style="color:var(--green);"></i><span>🟢 Listo: Presenta el siguiente envase</span>';
-                }
-            }
+            if (scannerState.isProcessingFrame || scannerState.isAwaitingDecision) return;
 
             const video = document.getElementById('selfieVideo');
             if (!video || video.readyState < 2) return;
@@ -3171,7 +3286,8 @@ function resolveToGitRepoUrl(item) {
                 const vw = video.videoWidth || 640;
                 const vh = video.videoHeight || 480;
 
-                const cropSize = Math.min(vw, vh) * 0.50;
+                // Enfocar en la zona central (retícula)
+                const cropSize = Math.min(vw, vh) * 0.46;
                 const sx = (vw - cropSize) / 2;
                 const sy = (vh - cropSize) / 2;
 
@@ -3187,6 +3303,7 @@ function resolveToGitRepoUrl(item) {
                 let totalR = 0, totalG = 0, totalB = 0;
                 let validPixels = 0;
                 let saturatedPixels = 0;
+                let skinTonePixels = 0;
                 let colorHistogram = new Array(12).fill(0);
 
                 for (let i = 0; i < data.length; i += 4) {
@@ -3195,17 +3312,35 @@ function resolveToGitRepoUrl(item) {
                     validPixels++;
 
                     const hsv = rgbToHsv(r, g, b);
-                    // Solo considerar píxeles con saturación y luminosidad representativas
-                    if (hsv.s >= 0.28 && hsv.v >= 0.18 && hsv.v <= 0.95) {
+
+                    // Detección de tonos de piel humana / rostros (H: 10°-45°, S: 0.18-0.65, V: 0.35-0.92, R > G > B)
+                    if (hsv.h >= 10 && hsv.h <= 45 && hsv.s >= 0.18 && hsv.s <= 0.65 && r > g && g > b) {
+                        skinTonePixels++;
+                    }
+
+                    // Píxeles con saturación y luminosidad de productos
+                    if (hsv.s >= 0.32 && hsv.v >= 0.20 && hsv.v <= 0.95) {
                         saturatedPixels++;
                         const bin = Math.floor(hsv.h / 30) % 12;
                         colorHistogram[bin]++;
                     }
                 }
 
-                // Si no hay suficiente presencia de color representativo (fondo gris/piel/pared blanca), abortar
+                // Si más del 30% de los píxeles coinciden con tono de piel/rostro, descartar inmediatamente
+                const skinRatio = validPixels > 0 ? (skinTonePixels / validPixels) : 0;
+                if (skinRatio > 0.30) {
+                    updateScannerCandidates([]);
+                    scannerState.consecutiveHits = {};
+                    const statusText = document.getElementById('scannerStatusText');
+                    if (statusText) {
+                        statusText.innerHTML = '<i class="fa-solid fa-eye" style="color:var(--yellow);"></i><span>Enfoca la botella Vonixx, no personas</span>';
+                    }
+                    return;
+                }
+
+                // Si no hay suficiente presencia de color Vonixx saturado (fondo neutro/pared), abortar
                 const saturationRatio = validPixels > 0 ? (saturatedPixels / validPixels) : 0;
-                if (saturationRatio < 0.20) {
+                if (saturationRatio < 0.22) {
                     updateScannerCandidates([]);
                     scannerState.consecutiveHits = {};
                     return;
@@ -3247,13 +3382,13 @@ function resolveToGitRepoUrl(item) {
                                 ? (dominantHue >= minH && dominantHue <= maxH)
                                 : (dominantHue >= minH || dominantHue <= maxH);
 
-                            if (inHue && dominantRatio >= (rule.minRatio || 0.22) && avgHsv.s >= (rule.minSat || 0.30)) {
-                                matchScore = 0.82 + (dominantRatio * 0.18);
+                            if (inHue && dominantRatio >= (rule.minRatio || 0.25) && avgHsv.s >= (rule.minSat || 0.35)) {
+                                matchScore = 0.84 + (dominantRatio * 0.16);
                             }
                         }
                     }
 
-                    if (matchScore > 0.50) {
+                    if (matchScore > 0.55) {
                         scores.push({ product: p, score: matchScore });
                     }
                 });
@@ -3261,12 +3396,12 @@ function resolveToGitRepoUrl(item) {
                 scores.sort((a, b) => b.score - a.score);
                 updateScannerCandidates(scores.slice(0, 3));
 
-                // Requiere puntuación alta (>= 0.84) y 4 cuadros estables seguidos (~0.7s)
-                if (scores.length > 0 && scores[0].score >= 0.84) {
+                // Requiere alta confianza (>= 0.85) y 3 tomas estables seguidas
+                if (scores.length > 0 && scores[0].score >= 0.85) {
                     const best = scores[0].product;
                     scannerState.consecutiveHits[best.id] = (scannerState.consecutiveHits[best.id] || 0) + 1;
 
-                    if (scannerState.consecutiveHits[best.id] >= 4) {
+                    if (scannerState.consecutiveHits[best.id] >= 3) {
                         onProductVisuallyRecognized(best);
                         scannerState.consecutiveHits = {};
                     }
@@ -3287,7 +3422,7 @@ function resolveToGitRepoUrl(item) {
             const row = document.getElementById('scannerCandidatesRow');
             if (!section || !row) return;
 
-            if (topCandidates.length === 0) {
+            if (topCandidates.length === 0 || scannerState.isAwaitingDecision) {
                 section.style.display = 'none';
                 return;
             }
@@ -3297,44 +3432,46 @@ function resolveToGitRepoUrl(item) {
                 const p = c.product;
                 const price = p.newPrice || p.price;
                 return `
-                    <button type="button" class="scanner-candidate-chip" onclick="onProductVisuallyRecognized(state.products.find(x => x.id === '${p.id}'))" title="Toca para agregar al ticket">
+                    <button type="button" class="scanner-candidate-chip" onclick="onProductVisuallyRecognized(state.products.find(x => x.id === '${p.id}'))" title="Toca para seleccionar este producto">
                         <span>${p.name.substring(0, 16)}</span>
                         <span style="color:var(--green); font-family:JetBrains Mono;">$${parseFloat(price).toFixed(0)}</span>
-                        <i class="fa-solid fa-plus" style="font-size:8px; color:var(--blue);"></i>
+                        <i class="fa-solid fa-check" style="font-size:8px; color:var(--blue);"></i>
                     </button>
                 `;
             }).join('');
         }
 
-        // 10. Acción al reconocer visualmente el producto
+        // 10. Acción al reconocer visualmente el producto: Muestra tarjeta y solicita número de piezas
         function onProductVisuallyRecognized(product) {
             if (!product) return;
-            const now = Date.now();
 
-            // Bloquear el escáner durante 3.5 segundos para evitar lecturas consecutivas
+            // Congelar el bucle de la cámara para que el vendedor decida cuántas piezas registrar
+            scannerState.isAwaitingDecision = true;
+            scannerState.currentPendingProduct = product;
+            scannerState.currentPendingQty = 1;
             scannerState.lastDetectedId = product.id;
-            scannerState.lastDetectedTime = now;
-            scannerState.lockUntil = now + 3500;
             scannerState.consecutiveHits = {};
 
             // 1. Sonido bip moderno
             playModernScannerBip();
 
-            // 2. Pasar al carrito de compras
-            addProductToCart(product.id);
-
-            // 3. Efectos visuales en HUD
+            // 2. Efectos visuales en HUD (marcado y bloqueo)
             const targetBox = document.getElementById('scannerTargetBox');
             if (targetBox) {
                 targetBox.classList.add('matched');
                 targetBox.classList.add('locked');
-                setTimeout(() => targetBox.classList.remove('matched'), 600);
             }
 
+            // Ocultar sugerencias para dar espacio al selector de piezas
+            const section = document.getElementById('scannerCandidatesSection');
+            if (section) section.style.display = 'none';
+
+            // 3. Mostrar tarjeta con datos del producto detectado
             const detectedCard = document.getElementById('scannerDetectedCard');
             const imgElem = document.getElementById('detectedProductImg');
             const nameElem = document.getElementById('detectedProductName');
             const priceElem = document.getElementById('detectedProductPrice');
+            const qtyInput = document.getElementById('scannerQtyInput');
             const statusText = document.getElementById('scannerStatusText');
 
             const prodImg = product.image || getProductFallbackImage(product);
@@ -3343,17 +3480,63 @@ function resolveToGitRepoUrl(item) {
             if (imgElem) imgElem.src = prodImg;
             if (nameElem) nameElem.textContent = product.name;
             if (priceElem) priceElem.textContent = `$${parseFloat(prodPrice).toFixed(2)} MXN`;
+            if (qtyInput) qtyInput.value = 1;
 
             if (detectedCard) {
                 detectedCard.style.display = 'flex';
-                clearTimeout(scannerState._cardTimer);
-                scannerState._cardTimer = setTimeout(() => {
-                    if (detectedCard) detectedCard.style.display = 'none';
-                }, 3200);
             }
 
             if (statusText) {
-                statusText.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">¡${product.name.substring(0, 20)} agregado! (Pausa 3s)</span>`;
+                statusText.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">¡Detectado! Indica las piezas y elige opción</span>`;
+            }
+        }
+
+        // 11. Cambiar piezas en el selector del escáner
+        function stepScannerQty(delta) {
+            const qtyInput = document.getElementById('scannerQtyInput');
+            if (!qtyInput) return;
+            let current = parseInt(qtyInput.value) || 1;
+            current = Math.max(1, Math.min(999, current + delta));
+            qtyInput.value = current;
+            scannerState.currentPendingQty = current;
+        }
+
+        // 12. Confirmar producto detectado: Agregar al carrito con las piezas indicadas
+        // continua = true: sigue escaneando en la misma ventana
+        // continua = false: finaliza el escaneo y cierra la ventana
+        function confirmScanProduct(continueScanning) {
+            const product = scannerState.currentPendingProduct;
+            const qtyInput = document.getElementById('scannerQtyInput');
+            const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+
+            if (product) {
+                addProductToCart(product.id, qty);
+                playModernScannerBip();
+            }
+
+            // Ocultar tarjeta de confirmación
+            const detectedCard = document.getElementById('scannerDetectedCard');
+            if (detectedCard) detectedCard.style.display = 'none';
+
+            const targetBox = document.getElementById('scannerTargetBox');
+            if (targetBox) {
+                targetBox.classList.remove('matched');
+                targetBox.classList.remove('locked');
+            }
+
+            if (!continueScanning) {
+                // Finalizar escaneo
+                closeSelfieScanner();
+            } else {
+                // Continuar escaneando otro producto sucesivamente
+                scannerState.isAwaitingDecision = false;
+                scannerState.currentPendingProduct = null;
+                scannerState.consecutiveHits = {};
+
+                const statusText = document.getElementById('scannerStatusText');
+                if (statusText) {
+                    statusText.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles" style="color:var(--green);"></i><span>🟢 Listo: Coloca el siguiente envase</span>';
+                }
             }
         }
 
@@ -3398,7 +3581,7 @@ function resolveToGitRepoUrl(item) {
             <div class="scanner-header">
                 <div class="scanner-title">
                     <i class="fa-solid fa-camera-retro" style="color:var(--green);"></i>
-                    <span>ESCÁNER VISUAL SELFIE</span>
+                    <span>ESCÁNER VISUAL POS</span>
                     <span class="scanner-live-badge"><span class="scanner-live-dot"></span> EN VIVO</span>
                 </div>
                 <div class="scanner-header-tools">
@@ -3427,15 +3610,39 @@ function resolveToGitRepoUrl(item) {
                         <div class="hud-crosshair"></div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Tarjeta de Producto Detectado -->
-                <div class="scanner-detected-card" id="scannerDetectedCard">
+            <!-- Tarjeta de Producto Detectado & Selección de Piezas -->
+            <div class="scanner-detected-card" id="scannerDetectedCard">
+                <div class="scanner-detected-header">
                     <img id="detectedProductImg" src="/favicon.png" alt="Producto" class="scanner-detected-img" onerror="this.src='/favicon.png'">
                     <div class="scanner-detected-info">
-                        <div class="scanner-detected-tag" id="detectedProductTag">✅ +1 AGREGADO AL TICKET</div>
+                        <div class="scanner-detected-tag" id="detectedProductTag">✨ PRODUCTO DETECTADO</div>
                         <div class="scanner-detected-name" id="detectedProductName">V-MOL 1.5 L</div>
                         <div class="scanner-detected-price" id="detectedProductPrice">$131.00 MXN</div>
                     </div>
+                </div>
+
+                <!-- Selector interactivo de piezas -->
+                <div class="scanner-qty-row">
+                    <span class="scanner-qty-label"><i class="fa-solid fa-boxes-stacked" style="color:var(--blue); margin-right:4px;"></i>Piezas a vender:</span>
+                    <div class="scanner-qty-controls">
+                        <button type="button" class="scanner-qty-btn" onclick="stepScannerQty(-1)">-</button>
+                        <input type="number" id="scannerQtyInput" class="scanner-qty-input" value="1" min="1" max="999">
+                        <button type="button" class="scanner-qty-btn" onclick="stepScannerQty(1)">+</button>
+                    </div>
+                </div>
+
+                <!-- Acciones: Continuar escaneando o Finalizar -->
+                <div class="scanner-action-buttons">
+                    <button type="button" class="btn-scanner-continue" onclick="confirmScanProduct(true)">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <span>Agregar y Continuar</span>
+                    </button>
+                    <button type="button" class="btn-scanner-finish" onclick="confirmScanProduct(false)">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>Agregar y Finalizar</span>
+                    </button>
                 </div>
             </div>
 
@@ -3448,18 +3655,18 @@ function resolveToGitRepoUrl(item) {
 
                 <!-- Coincidencias sugeridas en vivo -->
                 <div id="scannerCandidatesSection" style="display:none; flex-direction:column; gap:4px;">
-                    <span style="font-size:10.5px; color:var(--muted); font-weight:700;">SUGERENCIAS VISUALES (Toca para agregar):</span>
+                    <span style="font-size:10px; color:var(--muted); font-weight:700;">SUGERENCIAS VISUALES (Toca si es tu producto):</span>
                     <div class="scanner-candidates-row" id="scannerCandidatesRow"></div>
                 </div>
 
-                <!-- Botón destacado para Finalizar Escaneo -->
+                <!-- Botón de salida directa -->
                 <button type="button" class="btn-finish-scan" onclick="closeSelfieScanner()">
-                    <i class="fa-solid fa-circle-check"></i>
+                    <i class="fa-solid fa-xmark"></i>
                     <span>Finalizar Escaneo</span>
                 </button>
 
-                <div style="text-align:center; font-size:10.5px; color:var(--muted-2);">
-                    <span>🧠 Reconocimiento por imagen & diseño de botella (Sin código de barras)</span>
+                <div style="text-align:center; font-size:10px; color:var(--muted-2);">
+                    <span>🧠 Reconocimiento visual por tonos y envase Vonixx</span>
                 </div>
             </div>
         </div>
