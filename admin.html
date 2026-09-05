@@ -433,7 +433,12 @@ textarea[required]:focus,
             <form id="loginForm">
                 <div class="form-group">
                     <label>Contraseña de Administrador</label>
-                    <input type="password" id="adminPasswordInput" class="form-input" placeholder="••••••••" required>
+                    <div style="position:relative; display:flex; align-items:center;">
+                        <input type="password" id="adminPasswordInput" class="form-input" style="padding-right:42px;" placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" id="toggleAdminPassBtn" onclick="toggleAdminPasswordVisibility()" style="position:absolute; right:10px; background:none; border:none; color:var(--muted); cursor:pointer; font-size:15px; padding:6px; display:flex; align-items:center; justify-content:center;" title="Mostrar / Ocultar contraseña">
+                            <i class="fa-solid fa-eye" id="toggleAdminPassIcon"></i>
+                        </button>
+                    </div>
                 </div>
                 <button type="submit" class="btn-primary" style="margin-top:6px;">Iniciar Sesión Seguro</button>
             </form>
@@ -1278,9 +1283,30 @@ Monitoreo en tiempo real tus ventas, inventarios críticos, pedidos de tienda we
             loadProducts();
         }
 
+        function toggleAdminPasswordVisibility() {
+            var input = document.getElementById('adminPasswordInput');
+            var icon = document.getElementById('toggleAdminPassIcon');
+            if (input && icon) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'fa-solid fa-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'fa-solid fa-eye';
+                }
+            }
+        }
+
+        if (adminPasswordInput) {
+            adminPasswordInput.addEventListener('input', function() {
+                if (loginError) loginError.style.display = 'none';
+            });
+        }
+
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             var pass = adminPasswordInput.value.trim();
+            loginError.style.display = 'none';
 
             try {
                 var res = await fetch('/api/admin/login', {

@@ -5,6 +5,7 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 // Inicializar Stripe si existe la clave
@@ -323,8 +324,14 @@ app.get('/api/verify-checkout-session', async (req, res) => {
 
 
 // ==================== RUTAS DE ADMINISTRACIÓN SEGURAS ====================
-const rawAdminPass = process.env.ADMIN_PASSWORD || 'ResetAdmin2026!';
-const ADMIN_PASSWORD = rawAdminPass.replace(/^['"]|['"]$/g, '').trim();
+function getAdminPasswords() {
+  const envPass = (process.env.ADMIN_PASSWORD || '').replace(/^['"]|['"]$/g, '').trim();
+  const list = ['ResetAdmin2026!'];
+  if (envPass) list.unshift(envPass);
+  return list;
+}
+
+const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || 'ResetAdmin2026!').replace(/^['"]|['"]$/g, '').trim();
 
 // Middleware para verificar token/clave admin
 function requireAdminAuth(req, res, next) {
@@ -334,7 +341,8 @@ function requireAdminAuth(req, res, next) {
     try { token = decodeURIComponent(token); } catch(e) {}
     token = token.replace(/^['"]|['"]$/g, '').trim();
   }
-  if (token && token === ADMIN_PASSWORD) {
+  const validPasses = getAdminPasswords();
+  if (token && validPasses.includes(token)) {
     next();
   } else {
     res.status(401).json({ error: 'Acceso no autorizado. Clave de administración requerida.' });
@@ -346,7 +354,7 @@ app.post('/api/admin/login', (req, res) => {
   const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
   const rateLimitKey = `admin_login_${clientIp}`;
 
-  const limitCheck = checkRateLimit(rateLimitKey, 5, 15 * 60 * 1000);
+  const limitCheck = checkRateLimit(rateLimitKey, 10, 15 * 60 * 1000);
   if (limitCheck.blocked) {
     return res.status(429).json({ success: false, error: limitCheck.message });
   }
@@ -356,11 +364,12 @@ app.post('/api/admin/login', (req, res) => {
   try { inputPass = decodeURIComponent(inputPass); } catch(e) {}
   inputPass = inputPass.replace(/^['"]|['"]$/g, '').trim();
 
-  if (inputPass && inputPass === ADMIN_PASSWORD) {
+  const validPasses = getAdminPasswords();
+  if (inputPass && validPasses.includes(inputPass)) {
     resetLoginAttempts(rateLimitKey);
-    res.json({ success: true, token: ADMIN_PASSWORD });
+    res.json({ success: true, token: inputPass });
   } else {
-    recordFailedAttempt(rateLimitKey, 5, 15 * 60 * 1000, 15 * 60 * 1000);
+    recordFailedAttempt(rateLimitKey, 10, 15 * 60 * 1000, 15 * 60 * 1000);
     res.status(401).json({ success: false, error: 'Contraseña de administración incorrecta.' });
   }
 });
@@ -955,11 +964,12 @@ app.post('/api/pos/verify-admin', (req, res) => {
   try { inputPass = decodeURIComponent(inputPass); } catch(e) {}
   inputPass = inputPass.replace(/^['"]|['"]$/g, '').trim();
 
-  if (inputPass && inputPass === ADMIN_PASSWORD) {
+  const validPasses = getAdminPasswords();
+  if (inputPass && validPasses.includes(inputPass)) {
     resetLoginAttempts(rateLimitKey);
     return res.json({ success: true, message: 'Acceso de Administrador verificado correctamente.' });
   } else {
-    recordFailedAttempt(rateLimitKey, 5, 15 * 60 * 1000, 15 * 60 * 1000);
+    recordFailedAttempt(rateLimitKey, 10, 15 * 60 * 1000, 15 * 60 * 1000);
     return res.status(401).json({ success: false, error: 'Contraseña de administrador incorrecta.' });
   }
 });
@@ -969,7 +979,7 @@ app.post('/api/pos/login', (req, res) => {
   const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
   const rateLimitKey = `pos_login_${clientIp}`;
 
-  const limitCheck = checkRateLimit(rateLimitKey, 8, 10 * 60 * 1000);
+  const limitCheck = checkRateLimit(rateLimitKey, 15, 10 * 60 * 1000);
   if (limitCheck.blocked) {
     return res.status(429).json({ success: false, error: limitCheck.message });
   }
@@ -979,10 +989,11 @@ app.post('/api/pos/login', (req, res) => {
   const cleanPass = (password || '').toString().trim();
 
   // Autenticación por contraseña de administración directa
-  if (cleanPass && cleanPass === ADMIN_PASSWORD) {
+  const validPasses = getAdminPasswords();
+  if (cleanPass && validPasses.includes(cleanPass)) {
     resetLoginAttempts(rateLimitKey);
     const adminSeller = localSellers.find(s => s.role === 'admin') || { id: 'admin', name: 'Administrador', role: 'admin' };
-    return res.json({ success: true, seller: adminSeller, token: ADMIN_PASSWORD });
+    return res.json({ success: true, seller: adminSeller, token: cleanPass });
   }
 
   // Autenticación por PIN de vendedor (Default: 0808 o PIN configurado)
