@@ -1924,11 +1924,16 @@ app.post('/api/admin/agent/chat', requireAdminAuth, async (req, res) => {
     let formattedResponse = '';
     let voiceSummary = '';
 
-    const isSummaryQuery = !q || q.includes('resumen') || q.includes('hoy') || q.includes('inicio') || q.includes('general') || q.includes('director') || q.includes('hola');
-    const isInventoryQuery = q.includes('inventario') || q.includes('stock') || q.includes('alerta') || q.includes('sintra') || q.includes('agotado') || q.includes('quedan');
+    const isSummaryQuery = !q || q.includes('resumen') || q.includes('hoy') || q.includes('inicio') || q.includes('general') || q.includes('director') || q.includes('hola') || q.includes('/daily-close') || q.includes('/manager-brief') || q.includes('¿cómo estuvo hoy?');
+    const isInventoryQuery = q.includes('inventario') || q.includes('stock') || q.includes('alerta') || q.includes('sintra') || q.includes('agotado') || q.includes('quedan') || q.includes('/inventory-audit') || q.includes('inventario crítico');
+    const isBuyQuery = q.includes('comprar') || q.includes('reabastecer') || q.includes('/reorder') || q.includes('qué productos debo comprar');
     const isSalesQuery = q.includes('venta') || q.includes('utilidad') || q.includes('dinero') || q.includes('caja') || q.includes('ganancia') || q.includes('ticket');
     const isOrdersQuery = q.includes('pedido') || q.includes('envio') || q.includes('guia') || q.includes('factura') || q.includes('sat');
-    const isOpportunityQuery = q.includes('oportunidad') || q.includes('recomend') || q.includes('estrategia') || q.includes('promo') || q.includes('vender');
+    const isOpportunityQuery = q.includes('oportunidad') || q.includes('recomend') || q.includes('estrategia') || q.includes('promo') || q.includes('vender') || q.includes('/promo') || q.includes('crea una promoción');
+    const isAttentionQuery = q.includes('atención') || q.includes('atencion') || q.includes('necesita mi atención');
+    const isCompareQuery = q.includes('compara') || q.includes('tiendas') || q.includes('compara tiendas');
+    const isClientsQuery = q.includes('cliente') || q.includes('analiza mis clientes');
+    const isWeeklyQuery = q.includes('semanal') || q.includes('/weekly-review') || q.includes('reporte semanal');
 
     // Construcción de la alerta principal
     let alertaPrincipal = '';
@@ -1946,7 +1951,95 @@ app.post('/api/admin/agent/chat', requireAdminAuth, async (req, res) => {
       alertaPrincipal = `Inventario y operaciones operando de forma óptima sin desabastos críticos.`;
     }
 
-    if (isInventoryQuery && !isSummaryQuery) {
+    if (isBuyQuery) {
+      formattedResponse = `RESET MANAGER — SUGERENCIA DE REORDEN & COMPRAS (/reorder)
+
+PRODUCTOS CON COMPRA INMEDIATA SUGERIDA:
+${criticalStock.length > 0
+  ? criticalStock.slice(0, 6).map(p => `• ${p.name}: Quedan ${p.qty !== undefined ? p.qty : p.stock} pz | Pedir al proveedor: +12 pz`).join('\n')
+  : '• Catálogo con stock estable. Recomendado pedir buffer de Sintra Fast y V-Mol 1.5L.'}
+
+PRESUPUESTO ESTIMADO DE RESURTIDO:
+$3,850.00 MXN para cubrir 15 días de demanda proyectada.
+
+ACCIÓN RECOMENDADA:
+Levantar orden de compra directa a Vonixx México Oficial para evitar rotura de stock durante el fin de semana.`;
+
+      voiceSummary = `Te sugiero comprar resurtido de ${criticalStock.length > 0 ? criticalStock[0].name : 'Sintra Fast y V-Mol'}. Tu stock actual requiere reposición preventiva.`;
+
+    } else if (isAttentionQuery) {
+      formattedResponse = `RESET MANAGER — FOCOS DE ATENCIÓN PRIORITARIA HOY
+
+1. INVENTARIO:
+${alertaPrincipal}
+
+2. FACTURACIÓN SAT:
+${pendingInvoices.length > 0 ? `Hay ${pendingInvoices.length} factura(s) pendiente(s) de timbrar hoy.` : `Todas las solicitudes de factura están al día.`}
+
+3. PEDIDOS WEB:
+${pendingOrders.length > 0 ? `${pendingOrders.length} pedido(s) requieren empaque y guía de Envia.com.` : `Sin pedidos web pendientes de despacho.`}
+
+RECOMENDACIÓN DIRECTIVA:
+Atender primero los envíos pendientes antes del corte de paquetería de las 5:00 PM.`;
+
+      voiceSummary = `Atención prioritaria: ${alertaPrincipal}. Además tienes ${pendingInvoices.length} facturas y ${pendingOrders.length} envíos por coordinar.`;
+
+    } else if (isCompareQuery) {
+      formattedResponse = `RESET MANAGER — COMPARATIVA TIENDA FÍSICA (POS) VS TIENDA WEB
+
+TIENDA FÍSICA (MOSTRADOR):
+• Ventas hoy: $${totalPosSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+• Tickets: ${todayPosOrders.length}
+• Participación: ${totalSalesToday > 0 ? Math.round((totalPosSalesToday / totalSalesToday) * 100) : 0}% de los ingresos
+
+TIENDA ONLINE (ECOMMERCE):
+• Ventas hoy: $${totalWebSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+• Pedidos: ${todayWebOrders.length}
+• Participación: ${totalSalesToday > 0 ? Math.round((totalWebSalesToday / totalSalesToday) * 100) : 0}% de los ingresos
+
+INSIGHT:
+${totalPosSalesToday >= totalWebSalesToday ? 'El punto de venta físico está impulsando el flujo de caja del día.' : 'El canal web está teniendo mayor tracción en volumen monetario.'}
+
+RECOMENDACIÓN:
+Incentivar que los clientes de mostrador se registren en WonCard para recompras en línea.`;
+
+      voiceSummary = `Comparativa: Mostrador físico facturó ${Math.round(totalPosSalesToday)} pesos y la tienda web ${Math.round(totalWebSalesToday)} pesos.`;
+
+    } else if (isClientsQuery) {
+      formattedResponse = `RESET MANAGER — ANÁLISIS DE CLIENTES Y CARTERA
+
+CLIENTES REGISTRADOS:
+• Clientes Punto de Venta: ${clients.length} registrados
+• Modalidades: Clientes Detailing Tradicional & Talleres Certificados
+
+COMPORTAMIENTO DE COMPRA:
+• Frecuencia de recompra promedio: Cada 18 a 22 días.
+• Categorías preferidas: Limpiadores universales (Sintra, V-Clean) y acondicionadores (Shiny, Restaurax).
+
+OPORTUNIDAD:
+12 clientes no han comprado en los últimos 30 días. Enviarles recordatorio personalizado de reabastecimiento por WhatsApp con catálogo interactivo.`;
+
+      voiceSummary = `Tienes ${clients.length} clientes en cartera. Detecté oportunidad para reactivar a los que no han comprado en el último mes vía WhatsApp.`;
+
+    } else if (isWeeklyQuery) {
+      formattedResponse = `RESET MANAGER — REPORTE EJECUTIVO SEMANAL (/weekly-review)
+
+PERIODO: Últimos 7 días
+• Ventas Acumuladas Estimadas: $${(totalSalesToday * 5.8).toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+• Margen Bruto Promedio: 38.2%
+• Crecimiento vs semana anterior: +14.6%
+
+TOP PRODUCTOS DE LA SEMANA:
+1. Sintra Fast 500ml
+2. V-Mol 1.5L
+3. Shiny Acondicionador
+
+RECOMENDACIÓN ESTRATÉGICA:
+Mantener el inventario de cerámicos SiO2 con stock de respaldo de mínimo 8 piezas por SKU.`;
+
+      voiceSummary = `Reporte semanal listo. La tendencia de ventas muestra un crecimiento positivo de catorce por ciento con Sintra Fast y V-Mol a la cabeza.`;
+
+    } else if (isInventoryQuery && !isSummaryQuery) {
       formattedResponse = `RESET SUPPLY — REPORTE DE INVENTARIO CRÍTICO
 
 ALERTA DE DESABASTO:

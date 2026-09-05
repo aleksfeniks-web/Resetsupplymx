@@ -142,283 +142,482 @@ textarea[required]:focus,
 .fac-input[required]:focus {
   outline: none !important;
   animation: inputRequiredGlow 2.5s ease-in-out infinite !important;
-/* ==========================================================================
-   AGENTE RESET MANAGER — FLOATING LAUNCHER & AI MODAL
-   ========================================================================== */
-.ai-chat-launcher {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: #0f172a;
-    border: 2px solid rgba(61, 220, 132, 0.4);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(61, 220, 132, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 9999;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    outline: none;
-}
-.ai-chat-launcher:hover {
-    transform: scale(1.08) translateY(-2px);
-    border-color: var(--green);
-    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(61, 220, 132, 0.55), 0 0 35px rgba(34, 184, 240, 0.4);
-}
-.ai-chat-launcher .launcher-badge {
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    width: 14px;
-    height: 14px;
-    background: var(--green);
-    border: 2px solid #0f172a;
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--green);
-    animation: pulseBadge 2s infinite;
-}
-@keyframes pulseBadge {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.25); opacity: 0.75; }
 }
 
-/* Modal / Drawer del Agente */
-.ai-agent-panel {
-    position: fixed;
-    bottom: 96px;
-    right: 24px;
-    width: 440px;
-    max-width: calc(100vw - 32px);
-    height: 620px;
-    max-height: calc(100vh - 120px);
-    background: var(--panel);
-    border: 1.5px solid var(--line);
-    border-radius: 18px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
-    display: none;
-    flex-direction: column;
+/* ==========================================================================
+   RESET MANAGER — EXECUTIVE DASHBOARD BANNER & AI AGENT
+   ========================================================================== */
+.reset-manager-widget {
+    background: radial-gradient(ellipse at 85% 15%, rgba(0, 162, 255, 0.1) 0%, rgba(7, 13, 22, 0.98) 65%), #060b12;
+    border: 1.5px solid rgba(0, 162, 255, 0.38);
+    border-radius: 20px;
+    padding: 22px 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 140, 255, 0.15);
+    position: relative;
     overflow: hidden;
-    z-index: 9998;
-    backdrop-filter: blur(12px);
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
-.ai-agent-panel.glow-active {
-    animation: rotateGlowBorder 4s linear infinite;
+.reset-manager-widget::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 210, 255, 0.6) 30%, rgba(61, 220, 132, 0.4) 70%, transparent 100%);
 }
-.ai-agent-header {
-    background: var(--panel-2);
-    border-bottom: 1px solid var(--line);
-    padding: 16px 20px;
+
+.rm-layout {
     display: flex;
-    align-items: center;
+    gap: 32px;
+    align-items: flex-start;
+}
+@media (max-width: 980px) {
+    .rm-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+/* Columna Izquierda: Perfil, Cita y Modos */
+.rm-left-col {
+    width: 270px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
 }
-.ai-agent-title {
-    font-size: 16px;
-    font-weight: 700;
+@media (max-width: 980px) {
+    .rm-left-col {
+        width: 100%;
+    }
+}
+
+.rm-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.rm-avatar-wrap {
+    position: relative;
+    width: 68px;
+    height: 68px;
+    flex-shrink: 0;
+}
+.rm-crown-svg {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 22px;
+    height: 16px;
+    filter: drop-shadow(0 0 6px #00d2ff);
+    z-index: 2;
+}
+.rm-avatar-img {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid rgba(0, 210, 255, 0.5);
+    box-shadow: 0 0 16px rgba(0, 210, 255, 0.35);
+    background: #09131f;
+    display: block;
+}
+.rm-profile-meta {
+    display: flex;
+    flex-direction: column;
+}
+.rm-name {
     font-family: 'Rajdhani', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
     letter-spacing: 0.5px;
+    line-height: 1.1;
+}
+.rm-status {
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-.ai-agent-subtitle {
-    font-size: 11.5px;
-    color: var(--muted);
-    font-weight: 500;
-    margin-top: 2px;
-}
-.ai-agent-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.ai-btn-icon {
-    background: transparent;
-    border: 1px solid var(--line);
-    color: var(--muted);
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.ai-btn-icon:hover {
-    border-color: var(--green);
-    color: var(--green);
-    background: rgba(61, 220, 132, 0.1);
-}
-.ai-btn-icon.active {
-    border-color: var(--green);
-    color: var(--green);
-    background: rgba(61, 220, 132, 0.15);
-}
-
-/* Historial de Mensajes */
-.ai-chat-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    background: radial-gradient(circle at top right, rgba(34, 184, 240, 0.04), transparent 60%),
-                radial-gradient(circle at bottom left, rgba(61, 220, 132, 0.04), transparent 60%);
-}
-.ai-chat-msg {
-    display: flex;
-    flex-direction: column;
-    max-width: 92%;
-    animation: fadeInMsg 0.25s ease-out;
-}
-@keyframes fadeInMsg {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.ai-chat-msg.user {
-    align-self: flex-end;
-}
-.ai-chat-msg.agent {
-    align-self: flex-start;
-}
-.ai-bubble-user {
-    background: linear-gradient(135deg, rgba(61, 220, 132, 0.2), rgba(34, 184, 240, 0.2));
-    border: 1px solid rgba(61, 220, 132, 0.4);
-    color: var(--text);
-    padding: 10px 14px;
-    border-radius: 14px 14px 2px 14px;
-    font-size: 13.5px;
-    line-height: 1.45;
-    word-break: break-word;
-}
-.ai-bubble-agent {
-    background: var(--panel-2);
-    border: 1px solid var(--line);
-    color: var(--text);
-    padding: 14px 16px;
-    border-radius: 14px 14px 14px 2px;
-    font-size: 13px;
-    line-height: 1.5;
-    white-space: pre-wrap;
-    word-break: break-word;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-}
-.ai-bubble-agent strong {
-    color: var(--green);
-}
-.ai-msg-time {
-    font-size: 10.5px;
-    color: var(--muted);
+    gap: 6px;
+    font-size: 12px;
+    color: #8da0b3;
     margin-top: 4px;
-    align-self: flex-end;
+    font-weight: 500;
+}
+.rm-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #00e676;
+    box-shadow: 0 0 8px #00e676;
 }
 
-/* Sugerencias Rápidas / Pills */
-.ai-quick-pills {
+.rm-quote {
+    font-size: 12px;
+    color: #7b8e9f;
+    margin-top: 14px;
+    line-height: 1.45;
+    font-style: italic;
+}
+.rm-quote span {
+    display: block;
+    font-style: normal;
+    font-size: 11.5px;
+    color: #556778;
+    margin-top: 3px;
+}
+
+.rm-mode-pills {
     display: flex;
     gap: 6px;
-    overflow-x: auto;
-    padding: 8px 16px;
-    border-top: 1px solid var(--line);
-    background: rgba(18, 23, 30, 0.7);
-    white-space: nowrap;
-    scrollbar-width: none;
+    margin-top: 18px;
 }
-.ai-quick-pills::-webkit-scrollbar { display: none; }
-.ai-pill-btn {
-    background: var(--panel-2);
-    border: 1px solid var(--line);
-    color: var(--muted);
+.rm-mode-pill {
+    background: #0b1522;
+    border: 1px solid #1a2b3d;
+    border-radius: 16px;
     padding: 5px 12px;
-    border-radius: 14px;
-    font-size: 11.5px;
-    font-weight: 600;
+    font-size: 11px;
+    color: #8598aa;
     cursor: pointer;
     transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
+    font-weight: 500;
+    outline: none;
 }
-.ai-pill-btn:hover {
-    border-color: var(--green);
-    color: var(--green);
-    background: rgba(61, 220, 132, 0.08);
+.rm-mode-pill:hover {
+    border-color: #00a2ff;
+    color: #ffffff;
+}
+.rm-mode-pill.active {
+    background: rgba(0, 162, 255, 0.16);
+    border-color: #00a2ff;
+    color: #00d2ff;
+    box-shadow: 0 0 10px rgba(0, 162, 255, 0.3);
+    font-weight: 600;
 }
 
-/* Barra de Entrada */
-.ai-input-bar {
-    padding: 12px 16px;
-    background: var(--panel-2);
-    border-top: 1px solid var(--line);
+/* Columna Derecha: Saludo, Chips, Input y Comandos */
+.rm-right-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.rm-bubble {
+    background: rgba(11, 20, 31, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+}
+.rm-bubble-title {
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 600;
     display: flex;
     align-items: center;
+    gap: 6px;
+}
+.rm-bubble-title .sparkle {
+    color: #00d2ff;
+    font-weight: 700;
+}
+.rm-bubble-text {
+    margin: 3px 0 0 0;
+    color: #7b8ea0;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.rm-chips-grid {
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
+    margin-bottom: 12px;
 }
-.ai-text-input {
-    flex: 1;
-    background: var(--void);
-    border: 1px solid var(--line);
-    color: var(--text);
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 13px;
+.rm-chip {
+    background: #0c1724;
+    border: 1px solid #182a3c;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 11.5px;
+    color: #92a6b8;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-weight: 500;
     outline: none;
-    transition: border-color 0.2s;
+    font-family: inherit;
 }
-.ai-text-input:focus {
-    border-color: var(--green);
+.rm-chip:hover {
+    background: #112235;
+    border-color: #00a2ff;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 162, 255, 0.25);
+    transform: translateY(-1px);
 }
-.ai-btn-voice {
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    color: var(--blue);
+
+/* Barra de Entrada y Watermark */
+.rm-input-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.rm-input-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #060e18;
+    border: 1px solid #192b3d;
+    border-radius: 12px;
+    padding: 3px 6px 3px 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.rm-input-wrapper:focus-within {
+    border-color: #0099ff;
+    box-shadow: 0 0 14px rgba(0, 153, 255, 0.35);
+}
+.rm-btn-voice {
+    background: transparent;
+    border: none;
+    color: #556c82;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    font-size: 14px;
     transition: all 0.2s;
-    position: relative;
+    outline: none;
 }
-.ai-btn-voice:hover {
-    border-color: var(--blue);
-    background: rgba(34, 184, 240, 0.15);
+.rm-btn-voice:hover {
+    color: #00d2ff;
 }
-.ai-btn-voice.listening {
-    background: rgba(231, 76, 60, 0.2);
-    border-color: var(--red);
-    color: var(--red);
+.rm-btn-voice.listening {
+    color: #ff4757;
     animation: voicePulse 1.2s infinite;
 }
 @keyframes voicePulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.6); }
-    50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(231, 76, 60, 0); }
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(255, 71, 87, 0.8)); }
+    50% { transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.9)); }
 }
-.ai-btn-send {
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
-    background: var(--grad);
+.rm-text-input {
+    flex: 1;
+    background: transparent;
     border: none;
-    color: var(--void);
+    outline: none;
+    color: #e1e7ed;
+    font-size: 12.5px;
+    padding: 8px 8px;
+    font-family: inherit;
+}
+.rm-text-input::placeholder {
+    color: #4a5c70;
+}
+.rm-btn-send {
+    background: #0091ff;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    color: #ffffff;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
     font-size: 13px;
-    font-weight: 700;
-    transition: opacity 0.2s;
+    box-shadow: 0 0 10px rgba(0, 145, 255, 0.45);
+    transition: all 0.2s;
+    outline: none;
 }
-.ai-btn-send:hover {
-    opacity: 0.9;
+.rm-btn-send:hover {
+    background: #00a2ff;
+    transform: scale(1.05);
+}
+
+.rm-watermark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.15;
+    font-size: 7.5px;
+    letter-spacing: 2.2px;
+    color: #1a324a;
+    font-weight: 800;
+    text-transform: uppercase;
+    user-select: none;
+    padding-right: 4px;
+    flex-shrink: 0;
+}
+
+.rm-commands-hint {
+    font-size: 11px;
+    color: #516578;
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+.rm-cmd-btn {
+    background: none;
+    border: none;
+    color: #637d97;
+    cursor: pointer;
+    padding: 0 3px;
+    font-family: monospace;
+    font-size: 11px;
+    transition: color 0.2s;
+    text-decoration: underline;
+    text-decoration-color: rgba(99, 125, 151, 0.4);
+    outline: none;
+}
+.rm-cmd-btn:hover {
+    color: #00d2ff;
+    text-decoration-color: #00d2ff;
+}
+
+/* Gaveta Desplegable de Respuestas */
+.rm-response-drawer {
+    display: none;
+    margin-top: 18px;
+    border-top: 1px solid #162638;
+    padding-top: 16px;
+    animation: drawerFade 0.3s ease-out;
+}
+@keyframes drawerFade {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.rm-drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.rm-drawer-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #00d2ff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 0.5px;
+}
+.rm-drawer-badge {
+    font-size: 9.5px;
+    background: rgba(0, 162, 255, 0.15);
+    color: #00d2ff;
+    border: 1px solid rgba(0, 162, 255, 0.3);
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.rm-drawer-actions {
+    display: flex;
+    gap: 6px;
+}
+.rm-drawer-btn {
+    background: #0c1724;
+    border: 1px solid #1a2b3d;
+    color: #7d90a2;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+.rm-drawer-btn:hover {
+    color: #ffffff;
+    border-color: #00a2ff;
+}
+.rm-drawer-btn.active {
+    color: #00e676;
+    border-color: #00e676;
+}
+
+.rm-chat-feed {
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 6px;
+}
+.rm-chat-feed::-webkit-scrollbar {
+    width: 5px;
+}
+.rm-chat-feed::-webkit-scrollbar-thumb {
+    background: #182b3d;
+    border-radius: 4px;
+}
+
+.rm-msg {
+    display: flex;
+    flex-direction: column;
+    animation: fadeInMsg 0.25s ease-out;
+}
+.rm-msg.user {
+    align-self: flex-end;
+    max-width: 85%;
+}
+.rm-msg.agent {
+    align-self: flex-start;
+    max-width: 100%;
+    width: 100%;
+}
+.rm-bubble-user {
+    background: linear-gradient(135deg, rgba(0, 162, 255, 0.2), rgba(61, 220, 132, 0.15));
+    border: 1px solid rgba(0, 162, 255, 0.4);
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 14px 14px 2px 14px;
+    font-size: 12.5px;
+    line-height: 1.4;
+}
+.rm-bubble-agent {
+    background: #08111c;
+    border: 1px solid #17273a;
+    color: #dbe4ed;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+.rm-bubble-agent strong {
+    color: #00e676;
+}
+.rm-bubble-agent .alert-text {
+    color: #ff5252;
+    font-weight: 700;
+}
+.rm-bubble-agent .opp-text {
+    color: #ffd166;
+    font-weight: 700;
+}
+.rm-bubble-agent .rec-text {
+    color: #00d2ff;
+    font-weight: 700;
+}
+.rm-msg-time {
+    font-size: 10px;
+    color: #556778;
+    margin-top: 3px;
+    align-self: flex-end;
 }
 </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -461,6 +660,125 @@ textarea[required]:focus,
     </header>
 
     <div class="admin-container">
+        <!-- RESET MANAGER — WIDGET EJECUTIVO / DIRECTOR GENERAL VIRTUAL -->
+        <div class="reset-manager-widget" id="resetManagerWidget">
+            <div class="rm-layout">
+                <!-- Columna Izquierda: Avatar, Nombre, Cita y Modos -->
+                <div class="rm-left-col">
+                    <div>
+                        <div class="rm-profile-header">
+                            <div class="rm-avatar-wrap">
+                                <!-- Corona Cian / Neón -->
+                                <svg class="rm-crown-svg" viewBox="0 0 24 24">
+                                    <path fill="#00D2FF" d="M5 19h14a1 1 0 001-1v-1a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1zm14.5-8.5l-3.3 2.6-3.7-6.2-3.7 6.2-3.3-2.6L4 15h16l-.5-4.5z"/>
+                                </svg>
+                                <img src="assets/reset_manager_avatar.jpg" alt="Reset Manager Avatar" class="rm-avatar-img" onerror="this.src='media_1788567693028.jpg'">
+                            </div>
+                            <div class="rm-profile-meta">
+                                <div class="rm-name">Reset Manager</div>
+                                <div class="rm-status">
+                                    <span class="rm-status-dot"></span>
+                                    <span>En línea</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rm-quote">
+                            &ldquo;Tu negocio, más claro,<br>más simple, más fuerte.&rdquo;
+                            <span>&mdash; Reset Manager</span>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Modo -->
+                    <div class="rm-mode-pills">
+                        <button type="button" class="rm-mode-pill active" data-mode="estrategico" onclick="setAiMode('estrategico')">Estratégico</button>
+                        <button type="button" class="rm-mode-pill" data-mode="analitico" onclick="setAiMode('analitico')">Analítico</button>
+                        <button type="button" class="rm-mode-pill" data-mode="accionable" onclick="setAiMode('accionable')">Accionable</button>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Saludo, Chips, Input y Comandos -->
+                <div class="rm-right-col">
+                    <!-- Globo de Saludo -->
+                    <div class="rm-bubble">
+                        <div class="rm-bubble-title">
+                            <span class="sparkle">*</span>
+                            <span>¿En qué puedo ayudarte hoy?</span>
+                        </div>
+                        <p class="rm-bubble-text">Puedo analizar tu negocio, consultar a otros agentes y darte recomendaciones.</p>
+                    </div>
+
+                    <!-- Chips de Preguntas Frecuentes -->
+                    <div class="rm-chips-grid">
+                        <button type="button" class="rm-chip" onclick="sendAiQuickQuery('¿Cómo estuvo hoy?')">¿Cómo estuvo hoy?</button>
+                        <button type="button" class="rm-chip" onclick="sendAiQuickQuery('Muéstrame el inventario crítico')">Muéstrame el inventario crítico</button>
+                        <button type="button" class="rm-chip" onclick="sendAiQuickQuery('¿Qué productos debo comprar?')">¿Qué productos debo comprar?</button>
+                        <button type="button" class="rm-chip" onclick="sendAiQuickQuery('Crea una promoción')">Crea una promoción</button>
+                        <button type="button" class="rm-chip" onclick="sendAiQuickQuery('¿Qué necesita mi atención hoy?')">¿Qué necesita mi atención hoy?</button>
+                        <button type="button" class="rm-chip" onclick="sendAiQuickQuery('Compara tiendas')">Compara tiendas</button>
+                        <button type="button" class="rm-chip" onclick="sendAiQuickQuery('Analiza mis clientes')">Analiza mis clientes</button>
+                        <button type="button" class="rm-chip" onclick="sendAiQuickQuery('Reporte semanal')">Reporte semanal</button>
+                    </div>
+
+                    <!-- Barra de Entrada y Watermark -->
+                    <div class="rm-input-row">
+                        <form class="rm-input-wrapper" id="rmInputForm" onsubmit="event.preventDefault(); submitAiMessage();">
+                            <button type="button" id="aiMicBtn" class="rm-btn-voice" title="Comando de voz (Presiona y habla)" onclick="toggleVoiceRecognition()">
+                                <i class="fa-solid fa-microphone"></i>
+                            </button>
+                            <input type="text" id="aiTextInput" class="rm-text-input" placeholder="Hazme una pregunta o escribe un comando... (ej. /daily-close)" autocomplete="off">
+                            <button type="submit" class="rm-btn-send" title="Enviar consulta">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </form>
+                        <div class="rm-watermark">
+                            <span>DRIVEN</span>
+                            <span>BY DETAIL</span>
+                        </div>
+                    </div>
+
+                    <!-- Pie con Comandos Sugeridos -->
+                    <div class="rm-commands-hint">
+                        <span>También puedes usar comandos:</span>
+                        <button type="button" class="rm-cmd-btn" onclick="sendAiQuickQuery('/daily-close')">/daily-close</button>
+                        <button type="button" class="rm-cmd-btn" onclick="sendAiQuickQuery('/weekly-review')">/weekly-review</button>
+                        <button type="button" class="rm-cmd-btn" onclick="sendAiQuickQuery('/reorder')">/reorder</button>
+                        <button type="button" class="rm-cmd-btn" onclick="sendAiQuickQuery('/promo')">/promo</button>
+                        <button type="button" class="rm-cmd-btn" onclick="sendAiQuickQuery('/inventory-audit')">/inventory-audit</button>
+                        <button type="button" class="rm-cmd-btn" onclick="sendAiQuickQuery('/manager-brief')">/manager-brief</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gaveta de Respuestas Desplegable -->
+            <div class="rm-response-drawer" id="rmResponseDrawer">
+                <div class="rm-drawer-header">
+                    <div class="rm-drawer-title">
+                        <i class="fa-solid fa-robot"></i>
+                        <span>Respuesta de Reset Manager</span>
+                        <span class="rm-drawer-badge" id="rmDrawerModeBadge">Estratégico</span>
+                    </div>
+                    <div class="rm-drawer-actions">
+                        <button type="button" class="rm-drawer-btn active" id="aiVoiceToggleBtn" title="Lectura por voz activada" onclick="toggleVoiceSpeech()">
+                            <i class="fa-solid fa-volume-high" id="aiVoiceIcon"></i>
+                            <span id="aiVoiceBtnText">Voz</span>
+                        </button>
+                        <button type="button" class="rm-drawer-btn" title="Copiar respuesta" onclick="copyLastAiResponse()">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>Copiar</span>
+                        </button>
+                        <button type="button" class="rm-drawer-btn" title="Minimizar respuesta" onclick="closeAiDrawer()">
+                            <i class="fa-solid fa-chevron-up"></i>
+                            <span>Ocultar</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="rm-chat-feed" id="aiChatBody">
+                    <!-- Respuestas de Reset Manager -->
+                </div>
+            </div>
+        </div>
+
         <!-- Tarjetas de Métricas -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -1150,101 +1468,6 @@ textarea[required]:focus,
                 </div>
             </form>
         </div>
-    </div>
-
-    <!-- BOTÓN FLOTANTE AGENTE RESET MANAGER (DIRECTOR GENERAL VIRTUAL) -->
-    <button id="aiLauncherBtn" class="ai-chat-launcher" title="RESET MANAGER — Director General Virtual" onclick="toggleAiAgentModal()">
-        <span class="launcher-badge"></span>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="34" height="34">
-            <defs>
-                <linearGradient id="ai-blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#00D2FF" />
-                    <stop offset="100%" stop-color="#0047AB" />
-                </linearGradient>
-            </defs>
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" fill="url(#ai-blue-grad)" />
-            <path d="M9.5 7.5L8.3 10.2 5.5 11.5l2.8 1.3 1.2 2.7 1.3-2.7 2.7-1.3-2.7-1.3z" fill="#FFFFFF" />
-            <path d="M16 11l-.6 1.4-1.4.6 1.4.6.6 1.4.6-1.4 1.4-.6-1.4-.6z" fill="#FF8C00" />
-        </svg>
-    </button>
-
-    <!-- VENTANA / DRAWER DEL AGENTE RESET MANAGER -->
-    <div id="aiAgentPanel" class="ai-agent-panel glow-active">
-        <div class="ai-agent-header">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:38px; height:38px; border-radius:50%; background:#0f172a; border:1.5px solid var(--green); display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px rgba(61,220,132,0.4);">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22">
-                        <defs>
-                            <linearGradient id="ai-header-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#00D2FF" />
-                                <stop offset="100%" stop-color="#0047AB" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" fill="url(#ai-header-grad)" />
-                        <path d="M9.5 7.5L8.3 10.2 5.5 11.5l2.8 1.3 1.2 2.7 1.3-2.7 2.7-1.3-2.7-1.3z" fill="#FFFFFF" />
-                        <path d="M16 11l-.6 1.4-1.4.6 1.4.6.6 1.4.6-1.4 1.4-.6-1.4-.6z" fill="#FF8C00" />
-                    </svg>
-                </div>
-                <div>
-                    <div class="ai-agent-title">
-                        <span>RESET MANAGER</span>
-                        <span style="font-size:10px; background:rgba(61,220,132,0.2); color:var(--green); border:1px solid var(--green); padding:1px 6px; border-radius:10px; font-weight:700;">IA ACTIVA</span>
-                    </div>
-                    <div class="ai-agent-subtitle">Director general virtual de Reset Supply MX</div>
-                </div>
-            </div>
-            <div class="ai-agent-controls">
-                <button type="button" class="ai-btn-icon" id="aiVoiceToggleBtn" title="Activar/Desactivar lectura por voz" onclick="toggleVoiceSpeech()">
-                    <i class="fa-solid fa-volume-high" id="aiVoiceIcon"></i>
-                </button>
-                <button type="button" class="ai-btn-icon" title="Cerrar chat" onclick="toggleAiAgentModal()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Cuerpo de Mensajes -->
-        <div class="ai-chat-body" id="aiChatBody">
-            <!-- Mensaje Inicial de Bienvenida -->
-            <div class="ai-chat-msg agent">
-                <div class="ai-bubble-agent">👋 <strong>Hola. Soy RESET MANAGER</strong>, tu director general virtual en Reset Supply.
-
-Monitoreo en tiempo real tus ventas, inventarios críticos, pedidos de tienda web y operaciones en mostrador.
-
-¿Qué deseas revisar hoy? Puedes preguntarme o usar los accesos directos de abajo:</div>
-                <span class="ai-msg-time">Ahora</span>
-            </div>
-        </div>
-
-        <!-- Acciones Rápidas / Pills -->
-        <div class="ai-quick-pills">
-            <button type="button" class="ai-pill-btn" onclick="sendAiQuickQuery('Resumen de hoy')">
-                <i class="fa-solid fa-chart-line" style="color:var(--green);"></i> Resumen de Hoy
-            </button>
-            <button type="button" class="ai-pill-btn" onclick="sendAiQuickQuery('Alertas de inventario crítico')">
-                <i class="fa-solid fa-triangle-exclamation" style="color:var(--yellow);"></i> Inventario Crítico
-            </button>
-            <button type="button" class="ai-pill-btn" onclick="sendAiQuickQuery('Estado financiero y ventas')">
-                <i class="fa-solid fa-sack-dollar" style="color:var(--blue);"></i> Ventas y Utilidad
-            </button>
-            <button type="button" class="ai-pill-btn" onclick="sendAiQuickQuery('Oportunidades de venta cruzada')">
-                <i class="fa-solid fa-lightbulb" style="color:var(--green);"></i> Oportunidades
-            </button>
-            <button type="button" class="ai-pill-btn" onclick="sendAiQuickQuery('Pedidos y facturas pendientes')">
-                <i class="fa-solid fa-truck-fast" style="color:var(--blue);"></i> Pedidos & SAT
-            </button>
-        </div>
-
-        <!-- Barra de Entrada con Voz -->
-        <form class="ai-input-bar" id="aiInputForm" onsubmit="event.preventDefault(); submitAiMessage();">
-            <input type="text" id="aiTextInput" class="ai-text-input" placeholder="Pregunta a Reset Manager o usa tu voz..." autocomplete="off">
-            <button type="button" id="aiMicBtn" class="ai-btn-voice" title="Comando de voz (Presiona y habla)" onclick="toggleVoiceRecognition()">
-                <i class="fa-solid fa-microphone"></i>
-            </button>
-            <button type="submit" class="ai-btn-send" title="Enviar consulta">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </form>
     </div>
 
     <script>
@@ -4392,6 +4615,24 @@ function resolveToGitRepoUrl(item) {
         var aiSpeechSynthesis = window.speechSynthesis || null;
         var aiSpeechRecognition = null;
         var isAiListening = false;
+        var currentAiMode = 'estrategico';
+
+        function setAiMode(mode) {
+            currentAiMode = mode;
+            var pills = document.querySelectorAll('.rm-mode-pill');
+            pills.forEach(function(pill) {
+                pill.classList.toggle('active', pill.getAttribute('data-mode') === mode);
+            });
+            var badge = document.getElementById('rmDrawerModeBadge');
+            if (badge) {
+                var labels = {
+                    'estrategico': 'Estratégico',
+                    'analitico': 'Analítico',
+                    'accionable': 'Accionable'
+                };
+                badge.textContent = labels[mode] || mode;
+            }
+        }
 
         // Inicialización de Reconocimiento de Voz (Web Speech API)
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -4465,15 +4706,18 @@ function resolveToGitRepoUrl(item) {
             aiSpeechEnabled = !aiSpeechEnabled;
             var icon = document.getElementById('aiVoiceIcon');
             var btn = document.getElementById('aiVoiceToggleBtn');
+            var text = document.getElementById('aiVoiceBtnText');
             if (icon && btn) {
                 if (aiSpeechEnabled) {
                     icon.className = 'fa-solid fa-volume-high';
                     btn.classList.add('active');
                     btn.title = 'Lectura por voz activada';
+                    if (text) text.textContent = 'Voz';
                 } else {
                     icon.className = 'fa-solid fa-volume-xmark';
                     btn.classList.remove('active');
                     btn.title = 'Lectura por voz desactivada';
+                    if (text) text.textContent = 'Silenciado';
                     if (aiSpeechSynthesis && aiSpeechSynthesis.speaking) {
                         aiSpeechSynthesis.cancel();
                     }
@@ -4499,7 +4743,6 @@ function resolveToGitRepoUrl(item) {
                 utterance.rate = 1.05;
                 utterance.pitch = 1.0;
 
-                // Seleccionar voz en español si está disponible
                 var voices = aiSpeechSynthesis.getVoices();
                 var esVoice = voices.find(function(v) { return v.lang && v.lang.startsWith('es'); });
                 if (esVoice) utterance.voice = esVoice;
@@ -4510,20 +4753,23 @@ function resolveToGitRepoUrl(item) {
             }
         }
 
-        function toggleAiAgentModal() {
-            var panel = document.getElementById('aiAgentPanel');
-            if (!panel) return;
-            var isHidden = window.getComputedStyle(panel).display === 'none';
-            if (isHidden) {
-                panel.style.display = 'flex';
-                var textInput = document.getElementById('aiTextInput');
-                if (textInput) textInput.focus();
-            } else {
-                panel.style.display = 'none';
-                stopVoiceRecognition();
-                if (aiSpeechSynthesis && aiSpeechSynthesis.speaking) {
-                    aiSpeechSynthesis.cancel();
-                }
+        function closeAiDrawer() {
+            var drawer = document.getElementById('rmResponseDrawer');
+            if (drawer) drawer.style.display = 'none';
+            if (aiSpeechSynthesis && aiSpeechSynthesis.speaking) {
+                aiSpeechSynthesis.cancel();
+            }
+        }
+
+        function copyLastAiResponse() {
+            var msgs = document.querySelectorAll('.rm-bubble-agent');
+            if (msgs.length > 0) {
+                var lastMsg = msgs[msgs.length - 1].innerText;
+                navigator.clipboard.writeText(lastMsg).then(function() {
+                    alert('📋 Respuesta de Reset Manager copiada al portapapeles');
+                }).catch(function() {
+                    alert('No se pudo copiar automáticamente.');
+                });
             }
         }
 
@@ -4531,19 +4777,26 @@ function resolveToGitRepoUrl(item) {
             var chatBody = document.getElementById('aiChatBody');
             if (!chatBody) return;
 
+            var drawer = document.getElementById('rmResponseDrawer');
+            if (drawer && drawer.style.display !== 'block') {
+                drawer.style.display = 'block';
+            }
+
             var timeStr = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
             var msgDiv = document.createElement('div');
-            msgDiv.className = 'ai-chat-msg ' + (sender === 'user' ? 'user' : 'agent');
+            msgDiv.className = 'rm-msg ' + (sender === 'user' ? 'user' : 'agent');
 
             if (sender === 'user') {
-                msgDiv.innerHTML = '<div class="ai-bubble-user">' + escapeHtml(text) + '</div><span class="ai-msg-time">' + timeStr + '</span>';
+                msgDiv.innerHTML = '<div class="rm-bubble-user">' + escapeHtml(text) + '</div><span class="rm-msg-time">' + timeStr + '</span>';
             } else {
-                // Formatear negritas en encabezados
                 var formatted = escapeHtml(text)
                     .replace(/(RESET SUPPLY — [^\n]+)/g, '<strong>$1</strong>')
-                    .replace(/(Ventas:?|Utilidad bruta estimada:?|Tickets:?|Ticket promedio:?|Productos más vendidos:?|ALERTA:?|OPORTUNIDAD:?|RECOMENDACIÓN:?|TOTAL PRODUCTOS EN CATÁLOGO:?|ACCIONES PRIORITARIAS:?)/g, '<strong>$1</strong>');
+                    .replace(/(ALERTA[S]?:?)/g, '<span class="alert-text">$1</span>')
+                    .replace(/(OPORTUNIDAD[ES]?:?)/g, '<span class="opp-text">$1</span>')
+                    .replace(/(RECOMENDACI[ÓO]N[ES]?:?)/g, '<span class="rec-text">$1</span>')
+                    .replace(/(Ventas:?|Utilidad bruta estimada:?|Tickets:?|Ticket promedio:?|Productos más vendidos:?|TOTAL PRODUCTOS EN CATÁLOGO:?|ACCIONES PRIORITARIAS:?)/g, '<strong>$1</strong>');
 
-                msgDiv.innerHTML = '<div class="ai-bubble-agent">' + formatted + '</div><span class="ai-msg-time">' + timeStr + '</span>';
+                msgDiv.innerHTML = '<div class="rm-bubble-agent">' + formatted + '</div><span class="rm-msg-time">' + timeStr + '</span>';
             }
 
             chatBody.appendChild(msgDiv);
@@ -4569,22 +4822,25 @@ function resolveToGitRepoUrl(item) {
             var query = (explicitText || (inputEl ? inputEl.value : '')).trim();
             if (!query) return;
 
-            // Mostrar mensaje del usuario en la conversación
+            // Abrir gaveta
+            var drawer = document.getElementById('rmResponseDrawer');
+            if (drawer) drawer.style.display = 'block';
+
+            // Mostrar mensaje del usuario
             appendChatMessage('user', query);
             if (inputEl) inputEl.value = '';
 
-            // Mensaje de estado "pensando"
+            // Mensaje de estado "analizando"
             var chatBody = document.getElementById('aiChatBody');
             var thinkingId = 'thinking_' + Date.now();
             var thinkingDiv = document.createElement('div');
             thinkingDiv.id = thinkingId;
-            thinkingDiv.className = 'ai-chat-msg agent';
-            thinkingDiv.innerHTML = '<div class="ai-bubble-agent" style="color:var(--muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right:6px; color:var(--green);"></i> Analizando métricas de Reset Supply...</div>';
+            thinkingDiv.className = 'rm-msg agent';
+            thinkingDiv.innerHTML = '<div class="rm-bubble-agent" style="color:var(--muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right:8px; color:#00d2ff;"></i> Reset Manager está analizando métricas de Reset Supply...</div>';
             chatBody.appendChild(thinkingDiv);
             chatBody.scrollTop = chatBody.scrollHeight;
 
             try {
-                // Enviar consulta junto al contexto completo actual
                 var res = await fetch('/api/admin/agent/chat', {
                     method: 'POST',
                     headers: {
@@ -4593,6 +4849,7 @@ function resolveToGitRepoUrl(item) {
                     },
                     body: JSON.stringify({
                         query: query,
+                        mode: currentAiMode,
                         clientContext: {
                             products: currentProductsList,
                             posOrders: currentPosOrdersList,
@@ -4609,10 +4866,8 @@ function resolveToGitRepoUrl(item) {
                 var data = await res.json();
                 if (data.success && data.response) {
                     appendChatMessage('agent', data.response);
-                    // Lectura por comando de voz
                     speakAiResponse(data.voiceSummary || data.response);
                 } else {
-                    // Generador local de respaldo si el token no está activo
                     generateLocalAiSummary(query);
                 }
 
@@ -4620,7 +4875,6 @@ function resolveToGitRepoUrl(item) {
                 console.error('Error al consultar Reset Manager:', err);
                 var thinkingEl = document.getElementById(thinkingId);
                 if (thinkingEl) thinkingEl.remove();
-                // Generador local de respaldo en caso de desconexión momentánea
                 generateLocalAiSummary(query);
             }
         }
