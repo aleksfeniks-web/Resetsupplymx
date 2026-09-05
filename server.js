@@ -292,6 +292,17 @@ app.get('/woncard.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'woncard.html'));
 });
 
+// PWA Tienda Física (POS) para Tablet
+app.get('/sw-pos.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=UTF-8');
+  res.setHeader('Service-Worker-Allowed', '/');
+  res.sendFile(path.join(__dirname, 'sw-pos.js'));
+});
+app.get('/manifest-pos.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/manifest+json; charset=UTF-8');
+  res.sendFile(path.join(__dirname, 'manifest-pos.json'));
+});
+
 // Servir estáticamente la carpeta admin/VISOR para imágenes de la pantalla de cliente
 app.use('/admin/VISOR', express.static(path.join(__dirname, 'admin', 'VISOR')));
 app.use('/admin/visor', express.static(path.join(__dirname, 'admin', 'VISOR')));

@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <title>Tienda Física — Punto de Venta (POS) | Reset Supply MX</title>
+    <meta name="theme-color" content="#0a0e13">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Reset POS">
+    <link rel="manifest" href="/manifest-pos.json">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="favicon.png">
@@ -12,8 +18,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Librería html2pdf para generación de PDF del Ticket -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Tesseract OCR para reconocimiento óptico de etiquetas Vonixx -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
 
     <style>
         :root {
@@ -281,6 +293,364 @@
             padding: 3px 8px;
             border-radius: 4px;
             border: 1px solid var(--line);
+        }
+        .search-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .search-bar-row .search-box-wrapper {
+            flex: 1;
+        }
+        .btn-selfie-scan {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(61, 220, 132, 0.15), rgba(34, 184, 240, 0.15));
+            border: 1px solid var(--green);
+            color: var(--text);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 15px rgba(61, 220, 132, 0.15);
+            flex-shrink: 0;
+        }
+        .btn-selfie-scan:hover {
+            background: linear-gradient(135deg, rgba(61, 220, 132, 0.3), rgba(34, 184, 240, 0.3));
+            border-color: var(--blue);
+            box-shadow: 0 0 20px rgba(34, 184, 240, 0.35);
+            transform: translateY(-1px);
+        }
+        .btn-selfie-scan i {
+            color: var(--green);
+            font-size: 15px;
+            animation: pulseCamera 2s infinite;
+        }
+        @keyframes pulseCamera {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.85; color: var(--blue); }
+        }
+
+        /* ==================== MODAL ESCÁNER CÁMARA SELFIE ==================== */
+        #selfieScannerModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(8, 12, 16, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        #selfieScannerModal.active {
+            display: flex;
+        }
+        .selfie-scanner-window {
+            background: var(--panel);
+            border: 1px solid var(--line-light);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(61, 220, 132, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .scanner-header {
+            padding: 12px 16px;
+            background: var(--panel-2);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .scanner-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+        }
+        .scanner-live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(61, 220, 132, 0.15);
+            border: 1px solid var(--green);
+            color: var(--green);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        .scanner-live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: blinkLive 1.2s infinite;
+        }
+        @keyframes blinkLive {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+        .scanner-header-tools {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .scanner-tool-btn {
+            background: var(--panel-3);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .scanner-tool-btn:hover {
+            color: var(--text);
+            border-color: var(--blue);
+        }
+
+        /* Viewport de Cámara & Retícula HUD */
+        .scanner-viewport {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background: #000;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scanner-viewport video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+        .scanner-viewport.rear-camera video {
+            transform: none;
+        }
+
+        /* HUD Overlay */
+        .scanner-hud-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scanner-target-box {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            border: 1px dashed rgba(61, 220, 132, 0.45);
+            border-radius: 14px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+            transition: all 0.3s;
+        }
+        .scanner-target-box.matched {
+            border-color: var(--green);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45), 0 0 30px rgba(61, 220, 132, 0.85);
+            animation: matchFlash 0.5s ease-out;
+        }
+
+        /* Esquinas HUD */
+        .hud-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--green);
+            border-style: solid;
+        }
+        .hud-corner.tl { top: -2px; left: -2px; border-width: 3px 0 0 3px; border-top-left-radius: 8px; }
+        .hud-corner.tr { top: -2px; right: -2px; border-width: 3px 3px 0 0; border-top-right-radius: 8px; }
+        .hud-corner.bl { bottom: -2px; left: -2px; border-width: 0 0 3px 3px; border-bottom-left-radius: 8px; }
+        .hud-corner.br { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; border-bottom-right-radius: 8px; }
+
+        /* Láser Animado */
+        .hud-laser {
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3ddc84, #22b8f0, #3ddc84, transparent);
+            box-shadow: 0 0 14px #3ddc84, 0 0 8px #22b8f0;
+            top: 8px;
+            animation: laserScanSweep 2.2s ease-in-out infinite alternate;
+        }
+        @keyframes laserScanSweep {
+            0% { top: 8px; opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { top: calc(100% - 12px); opacity: 0.9; }
+        }
+
+        /* Cruz central */
+        .hud-crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        .hud-crosshair::before, .hud-crosshair::after {
+            content: '';
+            position: absolute;
+            background: var(--green);
+        }
+        .hud-crosshair::before { top: 9px; left: 0; right: 0; height: 2px; }
+        .hud-crosshair::after { left: 9px; top: 0; bottom: 0; width: 2px; }
+
+        /* Banner de Confirmación de Detección */
+        .scanner-detected-card {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            background: rgba(18, 23, 30, 0.95);
+            border: 1px solid var(--green);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7), 0 0 20px rgba(61, 220, 132, 0.35);
+            border-radius: 8px;
+            padding: 10px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: slideUpFade 0.3s ease;
+            pointer-events: auto;
+        }
+        .scanner-detected-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 6px;
+            background: #fff;
+            object-fit: contain;
+            padding: 2px;
+            flex-shrink: 0;
+        }
+        .scanner-detected-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .scanner-detected-tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--green);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .scanner-detected-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .scanner-detected-price {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--blue);
+        }
+
+        /* Footer del Escáner */
+        .scanner-footer {
+            padding: 12px 16px 16px 16px;
+            background: var(--panel-2);
+            border-top: 1px solid var(--line);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .scanner-status-text {
+            font-size: 12px;
+            color: var(--muted);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .scanner-status-text i {
+            color: var(--blue);
+        }
+        .btn-finish-scan {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(90deg, #ff4757, #ff6b81);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.35);
+        }
+        .btn-finish-scan:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.5);
+            background: linear-gradient(90deg, #ff3344, #ff5268);
+        }
+        .scanner-candidates-row {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            scrollbar-width: none;
+        }
+        .scanner-candidates-row::-webkit-scrollbar { display: none; }
+        .scanner-candidate-chip {
+            background: var(--panel-3);
+            border: 1px solid var(--line-light);
+            color: var(--text);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .scanner-candidate-chip:hover {
+            border-color: var(--green);
+            background: rgba(61, 220, 132, 0.15);
         }
 
         /* Category Selector Bar */
@@ -1052,6 +1422,7 @@
         </div>
 
         <div class="pos-actions">
+            <button id="btnInstallPosApp" class="btn-hdr" style="display:none; border-color:var(--green); color:var(--green); font-weight:700;" onclick="promptInstallPosApp()"><i class="fa-solid fa-tablet-screen-button" style="margin-right:6px;"></i>Instalar POS</button>
             <a href="/visor" class="btn-hdr" target="_blank" style="border-color:var(--cyan); color:var(--cyan); font-weight:700;">📱 Visor Cliente (PWA)</a>
             <button class="btn-hdr" onclick="openCashStatsModal()">📊 Corte de Caja</button>
             <button class="btn-hdr" onclick="openSalesHistoryModal()">📋 Historial</button>
@@ -1068,10 +1439,16 @@
         <!-- ===== PANEL IZQUIERDO: VISUAL GRID CATALOG ===== -->
         <section class="catalog-panel">
             <div class="catalog-toolbar">
-                <div class="search-box-wrapper">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="posSearchInput" class="search-input" placeholder="Buscar por nombre, código VON-XXXXX o escanear código de barras..." autocomplete="off">
-                    <span class="barcode-indicator">⚡ ESCANEO ACTIVO</span>
+                <div class="search-bar-row">
+                    <div class="search-box-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="posSearchInput" class="search-input" placeholder="Buscar por nombre, código VON-XXXXX o escanear código de barras..." autocomplete="off">
+                        <span class="barcode-indicator">⚡ ESCANEO ACTIVO</span>
+                    </div>
+                    <button type="button" id="btnSelfieScanner" class="btn-selfie-scan" onclick="openSelfieScanner()" title="Escanear producto con cámara selfie">
+                        <i class="fa-solid fa-camera-rotate"></i>
+                        <span>Cámara Selfie</span>
+                    </button>
                 </div>
                 <div class="category-pills" id="categoryPillsContainer">
                     <button class="cat-pill active" onclick="filterCategory('all', this)">🌟 Todos</button>
@@ -2332,6 +2709,504 @@
                 }
             } catch (e) {}
         }
+
+        // ==================== ESCÁNER VISUAL SELFIE & PWA ====================
+
+        const scannerState = {
+            active: false,
+            stream: null,
+            facingMode: 'user', // Cámara frontal / selfie por defecto
+            animationId: null,
+            lastDetectedId: null,
+            lastDetectedTime: 0,
+            consecutiveHits: {},
+            isProcessingFrame: false
+        };
+
+        // 1. Sonido bip moderno sintetizado con Web Audio API
+        function playModernScannerBip() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                if (!window._scannerAudioCtx) {
+                    window._scannerAudioCtx = new AudioContext();
+                }
+                const ctx = window._scannerAudioCtx;
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                // Bip futurista, limpio y moderno (frecuencia ascendente rápida 1350Hz -> 2050Hz)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1350, now);
+                osc.frequency.exponentialRampToValueAtTime(2050, now + 0.07);
+
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.32, now + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.16);
+            } catch (err) {
+                console.warn('Audio bip warning:', err);
+            }
+        }
+
+        // 2. Firmas cromáticas e iconografía de productos Vonixx
+        const VONIXX_VISUAL_RULES = [
+            { keywords: ['v-mol', 'v mol', 'mol'], targetHue: [260, 315], minSat: 0.25, name: 'V-MOL' },
+            { keywords: ['v-floc', 'v floc', 'floc'], targetHue: [185, 220], minSat: 0.35, name: 'V-FLOC' },
+            { keywords: ['citron'], targetHue: [60, 95], minSat: 0.35, name: 'CITRON' },
+            { keywords: ['alumax'], targetHue: [325, 355], minSat: 0.35, name: 'ALUMAX' },
+            { keywords: ['removex'], targetHue: [30, 55], minSat: 0.35, name: 'REMOVEX' },
+            { keywords: ['delet'], isDark: true, maxBrightness: 0.32, maxSat: 0.25, name: 'DELET' },
+            { keywords: ['restaurax'], isDark: true, targetHue: [170, 205], name: 'RESTAURAX' },
+            { keywords: ['revox'], isDark: true, targetHue: [15, 45], name: 'REVOX' },
+            { keywords: ['shiny'], isDark: true, targetHue: [195, 230], name: 'SHINY' },
+            { keywords: ['sintra'], isLight: true, minBrightness: 0.65, maxSat: 0.35, name: 'SINTRA' },
+            { keywords: ['bactran'], targetHue: [120, 160], minSat: 0.30, name: 'BACTRAN' },
+            { keywords: ['extractus'], targetHue: [210, 245], minSat: 0.40, name: 'EXTRACTUS' },
+            { keywords: ['prizm'], targetHue: [340, 20], minSat: 0.25, name: 'PRIZM' },
+            { keywords: ['glazy', 'opty', 'focus'], targetHue: [190, 225], isTranslucent: true, name: 'GLAZY/OPTY' },
+            { keywords: ['blend'], targetHue: [25, 45], isDark: true, name: 'BLEND' },
+            { keywords: ['native'], targetHue: [40, 55], isDark: true, name: 'NATIVE' },
+            { keywords: ['v10'], targetHue: [345, 15], minSat: 0.45, name: 'V10' },
+            { keywords: ['v20'], targetHue: [20, 38], minSat: 0.45, name: 'V20' },
+            { keywords: ['v30'], targetHue: [205, 235], minSat: 0.45, name: 'V30' },
+            { keywords: ['spell'], targetHue: [165, 195], minSat: 0.35, name: 'SPELL' },
+            { keywords: ['hydrox'], targetHue: [195, 230], name: 'HYDROX' },
+            { keywords: ['microfibra'], targetHue: [45, 220], name: 'MICROFIBRA' }
+        ];
+
+        // 3. Inicializar y Abrir Escáner Selfie
+        async function openSelfieScanner() {
+            const modal = document.getElementById('selfieScannerModal');
+            const video = document.getElementById('selfieVideo');
+            const statusText = document.getElementById('scannerStatusText');
+            const viewport = document.getElementById('scannerViewport');
+
+            modal.classList.add('active');
+            scannerState.active = true;
+            scannerState.consecutiveHits = {};
+
+            if (scannerState.facingMode === 'user') {
+                viewport.classList.remove('rear-camera');
+            } else {
+                viewport.classList.add('rear-camera');
+            }
+
+            statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Iniciando cámara selfie...</span>';
+
+            try {
+                if (scannerState.stream) {
+                    scannerState.stream.getTracks().forEach(t => t.stop());
+                }
+
+                const constraints = {
+                    video: {
+                        facingMode: scannerState.facingMode,
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    },
+                    audio: false
+                };
+
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                scannerState.stream = stream;
+                video.srcObject = stream;
+                await video.play();
+
+                statusText.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>Enfoca el envase Vonixx en la retícula</span>';
+
+                startScannerLoop();
+
+            } catch (err) {
+                console.error('Error accediendo a cámara:', err);
+                statusText.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:var(--red);"></i><span style="color:var(--red);">No se pudo acceder a la cámara. Permite los permisos.</span>';
+            }
+        }
+
+        // 4. Finalizar Escaneo (Cerrar ventana y apagar cámara)
+        function closeSelfieScanner() {
+            scannerState.active = false;
+            if (scannerState.animationId) {
+                cancelAnimationFrame(scannerState.animationId);
+                scannerState.animationId = null;
+            }
+            if (scannerState.stream) {
+                scannerState.stream.getTracks().forEach(t => t.stop());
+                scannerState.stream = null;
+            }
+            const modal = document.getElementById('selfieScannerModal');
+            if (modal) modal.classList.remove('active');
+
+            const detectedCard = document.getElementById('scannerDetectedCard');
+            if (detectedCard) detectedCard.style.display = 'none';
+
+            const targetBox = document.getElementById('scannerTargetBox');
+            if (targetBox) targetBox.classList.remove('matched');
+        }
+
+        // 5. Alternar cámara Frontal (Selfie) / Trasera
+        function toggleCameraFacing() {
+            scannerState.facingMode = scannerState.facingMode === 'user' ? 'environment' : 'user';
+            openSelfieScanner();
+        }
+
+        // 6. Bucle de procesamiento visual en tiempo real
+        function startScannerLoop() {
+            let lastFrameTime = 0;
+            const targetFPS = 6;
+
+            function loop(timestamp) {
+                if (!scannerState.active) return;
+
+                if (timestamp - lastFrameTime >= (1000 / targetFPS)) {
+                    lastFrameTime = timestamp;
+                    analyzeCurrentFrame();
+                }
+
+                scannerState.animationId = requestAnimationFrame(loop);
+            }
+
+            scannerState.animationId = requestAnimationFrame(loop);
+        }
+
+        // 7. Conversión RGB a HSV
+        function rgbToHsv(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, v = max;
+            const d = max - min;
+            s = max === 0 ? 0 : d / max;
+            if (max === min) {
+                h = 0;
+            } else {
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return { h: h * 360, s: s, v: v };
+        }
+
+        // 8. Análisis de fotograma y correspondencia de producto
+        async function analyzeCurrentFrame() {
+            if (scannerState.isProcessingFrame) return;
+            const video = document.getElementById('selfieVideo');
+            if (!video || video.readyState < 2) return;
+
+            scannerState.isProcessingFrame = true;
+            try {
+                const canvas = document.getElementById('scannerCanvas');
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+                const vw = video.videoWidth || 640;
+                const vh = video.videoHeight || 480;
+
+                const cropSize = Math.min(vw, vh) * 0.55;
+                const sx = (vw - cropSize) / 2;
+                const sy = (vh - cropSize) / 2;
+
+                const sampleW = 48;
+                const sampleH = 48;
+                canvas.width = sampleW;
+                canvas.height = sampleH;
+
+                ctx.drawImage(video, sx, sy, cropSize, cropSize, 0, 0, sampleW, sampleH);
+                const imgData = ctx.getImageData(0, 0, sampleW, sampleH);
+                const data = imgData.data;
+
+                let totalR = 0, totalG = 0, totalB = 0;
+                let validPixels = 0;
+                let colorHistogram = new Array(12).fill(0);
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i], g = data[i+1], b = data[i+2];
+                    totalR += r; totalG += g; totalB += b;
+                    validPixels++;
+
+                    const hsv = rgbToHsv(r, g, b);
+                    if (hsv.s > 0.18 && hsv.v > 0.15) {
+                        const bin = Math.floor(hsv.h / 30) % 12;
+                        colorHistogram[bin]++;
+                    }
+                }
+
+                const avgR = totalR / validPixels;
+                const avgG = totalG / validPixels;
+                const avgB = totalB / validPixels;
+                const avgHsv = rgbToHsv(avgR, avgG, avgB);
+
+                let maxBinCount = 0;
+                let dominantBin = -1;
+                for (let b = 0; b < 12; b++) {
+                    if (colorHistogram[b] > maxBinCount) {
+                        maxBinCount = colorHistogram[b];
+                        dominantBin = b;
+                    }
+                }
+                const dominantHue = dominantBin >= 0 ? (dominantBin * 30 + 15) : avgHsv.h;
+                const dominantRatio = validPixels > 0 ? (maxBinCount / validPixels) : 0;
+
+                // Comparar contra catálogo de productos
+                const scores = [];
+                const products = state.products || [];
+
+                products.forEach(p => {
+                    const pName = (p.name || '').toLowerCase();
+                    const pCode = (p.code || '').toLowerCase();
+                    let matchScore = 0;
+
+                    for (const rule of VONIXX_VISUAL_RULES) {
+                        const matchesKeyword = rule.keywords.some(k => pName.includes(k) || pCode.includes(k));
+                        if (!matchesKeyword) continue;
+
+                        let ruleScore = 0;
+
+                        if (rule.isDark) {
+                            if (avgHsv.v < (rule.maxBrightness || 0.40)) {
+                                ruleScore += 0.70;
+                                if (avgHsv.s < 0.35) ruleScore += 0.20;
+                            }
+                        } else if (rule.isLight) {
+                            if (avgHsv.v > (rule.minBrightness || 0.60) && avgHsv.s < (rule.maxSat || 0.45)) {
+                                ruleScore += 0.85;
+                            }
+                        } else if (rule.targetHue) {
+                            const [minH, maxH] = rule.targetHue;
+                            const inHue = (minH <= maxH)
+                                ? (dominantHue >= minH && dominantHue <= maxH)
+                                : (dominantHue >= minH || dominantHue <= maxH);
+
+                            if (inHue && (avgHsv.s >= (rule.minSat || 0.20) || dominantRatio > 0.20)) {
+                                ruleScore += 0.78 + (dominantRatio * 0.20);
+                            }
+                        }
+
+                        if (ruleScore > matchScore) {
+                            matchScore = ruleScore;
+                        }
+                    }
+
+                    if (matchScore > 0.40) {
+                        scores.push({ product: p, score: matchScore });
+                    }
+                });
+
+                scores.sort((a, b) => b.score - a.score);
+                updateScannerCandidates(scores.slice(0, 3));
+
+                if (scores.length > 0 && scores[0].score >= 0.74) {
+                    const best = scores[0].product;
+                    scannerState.consecutiveHits[best.id] = (scannerState.consecutiveHits[best.id] || 0) + 1;
+
+                    if (scannerState.consecutiveHits[best.id] >= 2) {
+                        onProductVisuallyRecognized(best);
+                        scannerState.consecutiveHits[best.id] = 0;
+                    }
+                } else {
+                    scannerState.consecutiveHits = {};
+                }
+
+            } catch (err) {
+                console.warn('Frame analysis error:', err);
+            } finally {
+                scannerState.isProcessingFrame = false;
+            }
+        }
+
+        // 9. Actualizar chips de sugerencias rápidas
+        function updateScannerCandidates(topCandidates) {
+            const section = document.getElementById('scannerCandidatesSection');
+            const row = document.getElementById('scannerCandidatesRow');
+            if (!section || !row) return;
+
+            if (topCandidates.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'flex';
+            row.innerHTML = topCandidates.map(c => {
+                const p = c.product;
+                const price = p.newPrice || p.price;
+                return `
+                    <button type="button" class="scanner-candidate-chip" onclick="onProductVisuallyRecognized(state.products.find(x => x.id === '${p.id}'))" title="Toca para agregar al ticket">
+                        <span>${p.name.substring(0, 18)}</span>
+                        <span style="color:var(--green); font-family:JetBrains Mono;">$${parseFloat(price).toFixed(0)}</span>
+                        <i class="fa-solid fa-plus" style="font-size:9px; color:var(--blue);"></i>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        // 10. Acción al reconocer visualmente el producto
+        function onProductVisuallyRecognized(product) {
+            if (!product) return;
+            const now = Date.now();
+
+            // Cooldown de 2.5 segundos para evitar múltiples lecturas del mismo bote
+            if (scannerState.lastDetectedId === product.id && (now - scannerState.lastDetectedTime) < 2500) {
+                return;
+            }
+
+            scannerState.lastDetectedId = product.id;
+            scannerState.lastDetectedTime = now;
+
+            // 1. Sonido bip moderno
+            playModernScannerBip();
+
+            // 2. Pasar al carrito de compras
+            addProductToCart(product.id);
+
+            // 3. Efectos visuales en HUD
+            const targetBox = document.getElementById('scannerTargetBox');
+            if (targetBox) {
+                targetBox.classList.add('matched');
+                setTimeout(() => targetBox.classList.remove('matched'), 600);
+            }
+
+            const detectedCard = document.getElementById('scannerDetectedCard');
+            const imgElem = document.getElementById('detectedProductImg');
+            const nameElem = document.getElementById('detectedProductName');
+            const priceElem = document.getElementById('detectedProductPrice');
+            const statusText = document.getElementById('scannerStatusText');
+
+            const prodImg = product.image || getProductFallbackImage(product);
+            const prodPrice = product.newPrice || product.price;
+
+            if (imgElem) imgElem.src = prodImg;
+            if (nameElem) nameElem.textContent = product.name;
+            if (priceElem) priceElem.textContent = `$${parseFloat(prodPrice).toFixed(2)} MXN`;
+
+            if (detectedCard) {
+                detectedCard.style.display = 'flex';
+                clearTimeout(scannerState._cardTimer);
+                scannerState._cardTimer = setTimeout(() => {
+                    if (detectedCard) detectedCard.style.display = 'none';
+                }, 3000);
+            }
+
+            if (statusText) {
+                statusText.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">¡${product.name.substring(0, 22)} agregado al ticket!</span>`;
+            }
+        }
+
+        // 11. PWA — Instalación en Tablet y Registro de Service Worker
+        let deferredPosPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPosPrompt = e;
+            const btnInstall = document.getElementById('btnInstallPosApp');
+            if (btnInstall) btnInstall.style.display = 'inline-flex';
+        });
+
+        function promptInstallPosApp() {
+            if (deferredPosPrompt) {
+                deferredPosPrompt.prompt();
+                deferredPosPrompt.userChoice.then((choice) => {
+                    if (choice.outcome === 'accepted') {
+                        console.log('✅ POS PWA instalado en tablet');
+                    }
+                    deferredPosPrompt = null;
+                    const btnInstall = document.getElementById('btnInstallPosApp');
+                    if (btnInstall) btnInstall.style.display = 'none';
+                });
+            } else {
+                alert('📱 INSTALACIÓN EN TABLET:\n\n• En iPad (Safari): Presiona el botón de "Compartir" (ícono con flecha hacia arriba) y selecciona "Agregar al inicio".\n• En Android (Chrome): Toca los 3 puntos superiores y selecciona "Instalar aplicación" o "Agregar a pantalla principal".');
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw-pos.js')
+                    .then(reg => console.log('📱 Service Worker POS registrado con éxito'))
+                    .catch(err => console.warn('⚠️ SW POS Error:', err));
+            });
+        }
     </script>
+
+    <!-- ==================== MODAL ESCÁNER CÁMARA SELFIE ==================== -->
+    <div id="selfieScannerModal">
+        <div class="selfie-scanner-window">
+            <!-- Header -->
+            <div class="scanner-header">
+                <div class="scanner-title">
+                    <i class="fa-solid fa-camera-retro" style="color:var(--green);"></i>
+                    <span>ESCÁNER VISUAL SELFIE</span>
+                    <span class="scanner-live-badge"><span class="scanner-live-dot"></span> EN VIVO</span>
+                </div>
+                <div class="scanner-header-tools">
+                    <button type="button" class="scanner-tool-btn" onclick="toggleCameraFacing()" title="Cambiar cámara frontal / trasera">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                    <button type="button" class="scanner-tool-btn" onclick="closeSelfieScanner()" title="Cerrar ventana">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Viewport de Video y Retícula HUD -->
+            <div class="scanner-viewport" id="scannerViewport">
+                <video id="selfieVideo" playsinline autoplay muted></video>
+                <canvas id="scannerCanvas" style="display:none;"></canvas>
+
+                <!-- Capa HUD de Escáner -->
+                <div class="scanner-hud-overlay">
+                    <div class="scanner-target-box" id="scannerTargetBox">
+                        <span class="hud-corner tl"></span>
+                        <span class="hud-corner tr"></span>
+                        <span class="hud-corner bl"></span>
+                        <span class="hud-corner br"></span>
+                        <div class="hud-laser"></div>
+                        <div class="hud-crosshair"></div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Producto Detectado -->
+                <div class="scanner-detected-card" id="scannerDetectedCard">
+                    <img id="detectedProductImg" src="/favicon.png" alt="Producto" class="scanner-detected-img" onerror="this.src='/favicon.png'">
+                    <div class="scanner-detected-info">
+                        <div class="scanner-detected-tag" id="detectedProductTag">✅ +1 AGREGADO AL TICKET</div>
+                        <div class="scanner-detected-name" id="detectedProductName">V-MOL 1.5 L</div>
+                        <div class="scanner-detected-price" id="detectedProductPrice">$131.00 MXN</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer y Controles -->
+            <div class="scanner-footer">
+                <div class="scanner-status-text" id="scannerStatusText">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Coloca el envase o etiqueta Vonixx frente a la cámara</span>
+                </div>
+
+                <!-- Coincidencias sugeridas en vivo -->
+                <div id="scannerCandidatesSection" style="display:none; flex-direction:column; gap:4px;">
+                    <span style="font-size:10.5px; color:var(--muted); font-weight:700;">SUGERENCIAS VISUALES (Toca para agregar):</span>
+                    <div class="scanner-candidates-row" id="scannerCandidatesRow"></div>
+                </div>
+
+                <!-- Botón destacado para Finalizar Escaneo -->
+                <button type="button" class="btn-finish-scan" onclick="closeSelfieScanner()">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Finalizar Escaneo</span>
+                </button>
+
+                <div style="text-align:center; font-size:10.5px; color:var(--muted-2);">
+                    <span>🧠 Reconocimiento por imagen & diseño de botella (Sin código de barras)</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
