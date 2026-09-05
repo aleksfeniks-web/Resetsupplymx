@@ -3469,26 +3469,6 @@ function resolveToGitRepoUrl(item) {
             } catch (err) {
                 console.warn('Carga de productos del servidor en modo offline/fallback:', err.message);
             }
-        } else if (hasOldUrls) {
-                        localStorage.removeItem('resetsupply_inventory');
-                    }
-                }
-            } catch(e) {}
-
-            try {
-                var res = await fetch('/api/admin/products', {
-                    headers: { 'Authorization': 'Bearer ' + adminToken }
-                });
-                var data = await res.json();
-                if (data.success && Array.isArray(data.products) && data.products.length > 0) {
-                    currentProductsList = data.products.map(function(p) { p.image = resolveToGitRepoUrl(p); return p; });
-                    autoSaveLocalInventory();
-                }
-            } catch (err) {
-                console.error('Error al cargar inventario desde el servidor:', err);
-            }
-            renderInventoryTable();
-            renderQuickProductsTable(currentProductsList);
         }
         
         // ==================== GESTIÓN DE INVENTARIO Y LISTA DE PRECIOS ====================
