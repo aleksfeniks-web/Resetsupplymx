@@ -800,6 +800,193 @@
             .btn-scanner-continue, .btn-scanner-finish { padding: 7px 10px; font-size: 11.5px; }
         }
 
+        /* ==================== SUBMODALES DE APRENDIZAJE Y CALIBRACIÓN ==================== */
+        .scanner-submodal {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 8, 12, 0.88);
+            backdrop-filter: blur(8px);
+            z-index: 100005;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        .scanner-submodal-window {
+            background: var(--panel);
+            border: 1px solid var(--green);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.85), 0 0 25px rgba(61,220,132,0.25);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 460px;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: popIn 0.22s ease-out;
+        }
+        .scanner-submodal-header {
+            padding: 10px 14px;
+            background: var(--panel-2);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .scanner-submodal-body {
+            padding: 12px 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scrollbar-width: thin;
+        }
+        .scanner-submodal-footer {
+            padding: 10px 14px;
+            background: var(--panel-2);
+            border-top: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .teach-snapshot-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--void);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 9px 12px;
+        }
+        .teach-snapshot-preview-wrap {
+            position: relative;
+            width: 58px;
+            height: 58px;
+            border-radius: 7px;
+            overflow: hidden;
+            border: 1px solid var(--line-light);
+            background: #000;
+            flex-shrink: 0;
+        }
+        .teach-snapshot-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .teach-color-badge {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.78);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 2px 0;
+        }
+        .teach-color-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 1px solid #fff;
+        }
+        .teach-snapshot-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .btn-recapture-teach {
+            background: var(--panel-3);
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 4px;
+            transition: all 0.15s;
+        }
+        .btn-recapture-teach:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+        .teach-product-results {
+            max-height: 140px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 6px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 4px;
+            background: var(--void);
+            scrollbar-width: thin;
+        }
+        .teach-product-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 5px;
+            border: 1px solid transparent;
+            background: var(--panel-2);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .teach-product-item:hover {
+            border-color: var(--blue);
+            background: var(--panel-3);
+        }
+        .teach-product-item.selected {
+            border-color: var(--green);
+            background: rgba(61, 220, 132, 0.15);
+        }
+        .btn-save-teach {
+            background: linear-gradient(90deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
+            transition: all 0.15s;
+        }
+        .btn-save-teach:hover {
+            opacity: 0.94;
+            transform: translateY(-1px);
+        }
+        .btn-cancel-teach {
+            background: var(--panel-3);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-cancel-teach:hover {
+            color: var(--text);
+            border-color: var(--line-light);
+        }
+
         /* Category Selector Bar */
         .category-pills {
             display: flex;
@@ -2939,6 +3126,56 @@
             '7898511029962': 'VON-00021'  // V30
         };
 
+        // 2.1 Almacenamiento y Gestión de Calibración / Aprendizaje del Escáner
+        const LEARNED_PRODUCTS_STORAGE_KEY = 'vonixx_learned_products_v1';
+        const LEARNED_BARCODES_STORAGE_KEY = 'vonixx_learned_barcodes_v1';
+
+        function getLearnedProducts() {
+            try {
+                const stored = localStorage.getItem(LEARNED_PRODUCTS_STORAGE_KEY);
+                return stored ? JSON.parse(stored) : [];
+            } catch(e) {
+                return [];
+            }
+        }
+
+        function saveLearnedProductsList(list) {
+            try {
+                localStorage.setItem(LEARNED_PRODUCTS_STORAGE_KEY, JSON.stringify(list));
+                updateLearnedCountBadge();
+            } catch(e) {
+                console.warn('Error saving learned products:', e);
+            }
+        }
+
+        function getLearnedBarcodes() {
+            try {
+                const stored = localStorage.getItem(LEARNED_BARCODES_STORAGE_KEY);
+                return stored ? JSON.parse(stored) : {};
+            } catch(e) {
+                return {};
+            }
+        }
+
+        function saveLearnedBarcode(barcode, productCode) {
+            if (!barcode || !productCode) return;
+            try {
+                const map = getLearnedBarcodes();
+                map[barcode.trim()] = productCode.trim();
+                localStorage.setItem(LEARNED_BARCODES_STORAGE_KEY, JSON.stringify(map));
+            } catch(e) {
+                console.warn('Error saving learned barcode:', e);
+            }
+        }
+
+        function updateLearnedCountBadge() {
+            const list = getLearnedProducts();
+            const badge = document.getElementById('learnedProductsCountBadge');
+            if (badge) {
+                badge.textContent = `Calibrados (${list.length})`;
+            }
+        }
+
         // 3. Firmas cromáticas e iconografía de productos Vonixx
         // Calibradas con discriminación estricta de canales para evitar confusiones (Sintra vs Spell)
         const VONIXX_VISUAL_RULES = [
@@ -2983,6 +3220,7 @@
                 targetBox.classList.remove('matched');
             }
             if (detectedCard) detectedCard.style.display = 'none';
+            updateLearnedCountBadge();
 
             if (scannerState.facingMode === 'user') {
                 viewport.classList.remove('rear-camera');
@@ -3120,8 +3358,9 @@
                         if (barcodes && barcodes.length > 0) {
                             const raw = barcodes[0].rawValue ? barcodes[0].rawValue.trim() : '';
                             if (raw) {
-                                // Buscar directo o por mapeo oficial Vonixx
-                                const targetCode = VONIXX_BARCODES[raw] || raw;
+                                scannerState.lastDetectedBarcode = raw;
+                                const learnedBarcodes = getLearnedBarcodes();
+                                const targetCode = learnedBarcodes[raw] || VONIXX_BARCODES[raw] || raw;
                                 const matched = (state.products || []).find(p => 
                                     (p.code && p.code.toLowerCase() === targetCode.toLowerCase()) ||
                                     (p.id && p.id.toLowerCase() === targetCode.toLowerCase()) ||
@@ -3129,7 +3368,7 @@
                                     (Array.isArray(p.variations) && p.variations.some(v => (v.code && v.code.toLowerCase() === targetCode.toLowerCase()) || (v.barcode && v.barcode.trim() === raw)))
                                 );
                                 if (matched) {
-                                    onProductVisuallyRecognized(matched);
+                                    onProductVisuallyRecognized(matched, !!learnedBarcodes[raw]);
                                     return;
                                 }
                             }
@@ -3336,6 +3575,35 @@
                     }
                 }
 
+                // C.1) EVALUAR PERFILES APRENDIDOS / CALIBRADOS PERSONALIZADOS (ALTA PRIORIDAD)
+                const learnedProfiles = getLearnedProducts();
+                if (learnedProfiles.length > 0) {
+                    learnedProfiles.forEach(lp => {
+                        const targetProd = (state.products || []).find(p => p.id === lp.id || (p.code && p.code.toLowerCase() === (lp.code || '').toLowerCase()));
+                        if (!targetProd) return;
+
+                        const [minH, maxH] = lp.targetHue || [0, 360];
+                        const inHue = (minH <= maxH)
+                            ? (continuousHue >= minH && continuousHue <= maxH)
+                            : (continuousHue >= minH || continuousHue <= maxH);
+
+                        if (inHue && avgHsv.s >= (lp.minSat || 0.14)) {
+                            let matchScore = 0.96;
+                            if (lp.rgbRatio) {
+                                if (lp.rgbRatio.blueDominant && isBlueDominant) matchScore += 0.03;
+                                if (lp.rgbRatio.cyanDominant && isCyanDominant) matchScore += 0.03;
+                            }
+                            const existing = scores.find(s => s.product.id === targetProd.id);
+                            if (existing) {
+                                existing.score = Math.max(existing.score, matchScore);
+                                existing.isLearned = true;
+                            } else {
+                                scores.push({ product: targetProd, score: matchScore, isLearned: true });
+                            }
+                        }
+                    });
+                }
+
                 scores.sort((a, b) => b.score - a.score);
                 scannerState.lastCandidates = scores.slice(0, 4);
                 updateScannerCandidates(scores.slice(0, 3));
@@ -3344,13 +3612,13 @@
                 if (scores.length > 0) {
                     const top = scores[0];
                     if (top.score >= 0.90) {
-                        onProductVisuallyRecognized(top.product);
+                        onProductVisuallyRecognized(top.product, !!top.isLearned);
                         scannerState.consecutiveHits = {};
                     } else if (top.score >= 0.80) {
                         const pid = top.product.id;
                         scannerState.consecutiveHits[pid] = (scannerState.consecutiveHits[pid] || 0) + 1;
                         if (scannerState.consecutiveHits[pid] >= 2) {
-                            onProductVisuallyRecognized(top.product);
+                            onProductVisuallyRecognized(top.product, !!top.isLearned);
                             scannerState.consecutiveHits = {};
                         }
                     } else {
@@ -3393,7 +3661,7 @@
         }
 
         // 11. Acción al reconocer producto: Muestra tarjeta y selector de piezas
-        function onProductVisuallyRecognized(product) {
+        function onProductVisuallyRecognized(product, isLearned) {
             if (!product) return;
 
             scannerState.isAwaitingDecision = true;
@@ -3418,6 +3686,7 @@
             const imgElem = document.getElementById('detectedProductImg');
             const nameElem = document.getElementById('detectedProductName');
             const priceElem = document.getElementById('detectedProductPrice');
+            const tagElem = document.getElementById('detectedProductTag');
             const qtyInput = document.getElementById('scannerQtyInput');
             const statusText = document.getElementById('scannerStatusText');
             const switchChips = document.getElementById('scannerAlternativeChips');
@@ -3429,6 +3698,18 @@
             if (nameElem) nameElem.textContent = product.name;
             if (priceElem) priceElem.textContent = `$${parseFloat(prodPrice).toFixed(2)} MXN`;
             if (qtyInput) qtyInput.value = 1;
+
+            const isCalibrated = isLearned || getLearnedProducts().some(lp => lp.id === product.id || (lp.code && lp.code === product.code));
+            if (tagElem) {
+                if (isCalibrated) {
+                    tagElem.innerHTML = '🎓 PRODUCTO CALIBRADO (APRENDIDO)';
+                    tagElem.style.color = 'var(--blue)';
+                } else {
+                    tagElem.innerHTML = '✨ PRODUCTO DETECTADO';
+                    tagElem.style.color = 'var(--green)';
+                }
+            }
+
             if (switchChips) {
                 switchChips.style.display = 'none';
                 renderAlternativeSwitchChips(product.id);
@@ -3439,7 +3720,8 @@
             }
 
             if (statusText) {
-                statusText.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">¡Detectado: ${product.name.substring(0, 20)}!</span>`;
+                const label = isCalibrated ? `¡Detectado (Calibrado): ${product.name.substring(0, 18)}!` : `¡Detectado: ${product.name.substring(0, 18)}!`;
+                statusText.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">${label}</span>`;
             }
         }
 
@@ -3537,6 +3819,302 @@
             }
         }
 
+        // ==================== APRENDIZAJE Y CALIBRACIÓN INTELIGENTE DEL ESCÁNER ====================
+        let currentTeachingState = {
+            selectedProductId: null,
+            capturedHue: 0,
+            capturedSat: 0,
+            capturedRgb: { r: 0, g: 0, b: 0 },
+            snapshotDataUrl: null,
+            detectedBarcode: null
+        };
+
+        function openTeachProductModal(preselectedProduct) {
+            currentTeachingState.selectedProductId = preselectedProduct ? preselectedProduct.id : null;
+            
+            // Pausar decisiones del escáner en vivo
+            scannerState.isAwaitingDecision = true;
+
+            // Capturar snapshot actual de la cámara
+            captureTeachSnapshot();
+
+            // Actualizar campo de código de barras
+            const barcodeInput = document.getElementById('teachBarcodeInput');
+            if (barcodeInput) {
+                const bc = (preselectedProduct && preselectedProduct.barcode) 
+                    ? preselectedProduct.barcode 
+                    : (scannerState.lastDetectedBarcode || '');
+                barcodeInput.value = bc;
+            }
+
+            // Inicializar buscador y lista de productos
+            const searchInput = document.getElementById('teachProductSearchInput');
+            if (searchInput) {
+                searchInput.value = preselectedProduct ? preselectedProduct.name : '';
+            }
+            filterTeachProducts();
+
+            // Mostrar modal
+            const modal = document.getElementById('scannerTeachModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeTeachProductModal() {
+            const modal = document.getElementById('scannerTeachModal');
+            if (modal) modal.style.display = 'none';
+            if (!scannerState.currentPendingProduct) {
+                scannerState.isAwaitingDecision = false;
+            }
+        }
+
+        function captureTeachSnapshot() {
+            const video = document.getElementById('selfieVideo');
+            if (!video || video.readyState < 2) return;
+
+            try {
+                const vw = video.videoWidth || 640;
+                const vh = video.videoHeight || 480;
+                const cropSize = Math.min(vw, vh) * 0.72;
+                const sx = (vw - cropSize) / 2;
+                const sy = (vh - cropSize) / 2;
+
+                const offCanvas = document.createElement('canvas');
+                offCanvas.width = 64;
+                offCanvas.height = 64;
+                const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+                offCtx.drawImage(video, sx, sy, cropSize, cropSize, 0, 0, 64, 64);
+
+                const imgData = offCtx.getImageData(0, 0, 64, 64);
+                const data = imgData.data;
+
+                let totalR = 0, totalG = 0, totalB = 0, valid = 0, sumHue = 0;
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i], g = data[i+1], b = data[i+2];
+                    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                    if (max > 30 && (max - min) > 15) {
+                        totalR += r; totalG += g; totalB += b;
+                        const hsv = rgbToHsv(r, g, b);
+                        sumHue += hsv.h;
+                        valid++;
+                    }
+                }
+
+                const avgR = valid ? Math.round(totalR / valid) : 128;
+                const avgG = valid ? Math.round(totalG / valid) : 128;
+                const avgB = valid ? Math.round(totalB / valid) : 128;
+                const avgHue = valid ? Math.round(sumHue / valid) : 180;
+                const avgHsv = rgbToHsv(avgR, avgG, avgB);
+
+                currentTeachingState.capturedHue = avgHue;
+                currentTeachingState.capturedSat = avgHsv.s;
+                currentTeachingState.capturedRgb = { r: avgR, g: avgG, b: avgB };
+
+                // Convertir a DataURL para la miniatura
+                const previewCanvas = document.createElement('canvas');
+                previewCanvas.width = 120;
+                previewCanvas.height = 120;
+                const prevCtx = previewCanvas.getContext('2d');
+                prevCtx.drawImage(video, sx, sy, cropSize, cropSize, 0, 0, 120, 120);
+                currentTeachingState.snapshotDataUrl = previewCanvas.toDataURL('image/jpeg', 0.85);
+
+                // Actualizar UI del snapshot
+                const imgElem = document.getElementById('teachSnapshotImg');
+                const dotElem = document.getElementById('teachColorDot');
+                const labelElem = document.getElementById('teachColorLabel');
+                const metricsElem = document.getElementById('teachVisualMetrics');
+
+                if (imgElem) imgElem.src = currentTeachingState.snapshotDataUrl;
+                if (dotElem) dotElem.style.backgroundColor = `rgb(${avgR}, ${avgG}, ${avgB})`;
+                if (labelElem) labelElem.textContent = `~${avgHue}°`;
+                if (metricsElem) {
+                    const isB = avgB > avgG + 6;
+                    const isG = avgG >= avgB - 6;
+                    const balanceText = isB ? 'Azul dominante (B > G)' : (isG ? 'Cian/Verde (G ≈ B)' : 'Cromático');
+                    metricsElem.textContent = `Matiz: ${avgHue}° | Sat: ${(avgHsv.s * 100).toFixed(0)}% | ${balanceText}`;
+                }
+            } catch(err) {
+                console.warn('Error capturing teach snapshot:', err);
+            }
+        }
+
+        function recaptureTeachSnapshot() {
+            captureTeachSnapshot();
+        }
+
+        function filterTeachProducts() {
+            const input = document.getElementById('teachProductSearchInput');
+            const query = (input ? input.value : '').toLowerCase().trim();
+            const container = document.getElementById('teachProductResults');
+            if (!container) return;
+
+            const products = state.products || [];
+            let matches = products;
+            if (query) {
+                matches = products.filter(p => 
+                    (p.name || '').toLowerCase().includes(query) ||
+                    (p.code || '').toLowerCase().includes(query) ||
+                    (p.category || '').toLowerCase().includes(query) ||
+                    (p.barcode && p.barcode.includes(query))
+                );
+            } else if (currentTeachingState.selectedProductId) {
+                matches = products.slice(0, 8);
+            } else {
+                matches = products.slice(0, 8);
+            }
+
+            if (matches.length === 0) {
+                container.innerHTML = '<div style="padding:10px; text-align:center; color:var(--muted); font-size:11px;">No se encontraron productos coincidentes.</div>';
+                return;
+            }
+
+            container.innerHTML = matches.map(p => {
+                const isSelected = p.id === currentTeachingState.selectedProductId;
+                const img = p.image || getProductFallbackImage(p);
+                const price = p.newPrice || p.price;
+                return `
+                    <div class="teach-product-item ${isSelected ? 'selected' : ''}" onclick="selectProductToTeach('${p.id}')">
+                        <img src="${img}" alt="" style="width:26px; height:26px; border-radius:4px; object-fit:contain; background:#fff; padding:1px;" onerror="this.src='/favicon.png'">
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:11.5px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
+                            <div style="font-size:9.5px; color:var(--muted); font-family:'JetBrains Mono';">${p.code || p.id} • $${parseFloat(price).toFixed(2)}</div>
+                        </div>
+                        ${isSelected ? '<i class="fa-solid fa-circle-check" style="color:var(--green); font-size:14px;"></i>' : '<i class="fa-regular fa-circle" style="color:var(--muted); font-size:12px;"></i>'}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectProductToTeach(prodId) {
+            currentTeachingState.selectedProductId = prodId;
+            const prod = (state.products || []).find(p => p.id === prodId);
+            if (prod) {
+                const barcodeInput = document.getElementById('teachBarcodeInput');
+                if (barcodeInput && (!barcodeInput.value || barcodeInput.value.trim() === '')) {
+                    if (prod.barcode) barcodeInput.value = prod.barcode;
+                }
+            }
+            filterTeachProducts();
+        }
+
+        function saveProductLearning() {
+            if (!currentTeachingState.selectedProductId) {
+                alert('Por favor selecciona el producto correspondiente del catálogo.');
+                return;
+            }
+
+            const prod = (state.products || []).find(p => p.id === currentTeachingState.selectedProductId);
+            if (!prod) return;
+
+            const barcodeInput = document.getElementById('teachBarcodeInput');
+            const customBarcode = barcodeInput ? barcodeInput.value.trim() : '';
+
+            const hue = currentTeachingState.capturedHue;
+            let minH = (hue - 24 + 360) % 360;
+            let maxH = (hue + 24) % 360;
+
+            const rgb = currentTeachingState.capturedRgb;
+            const isBlueDom = rgb.b > rgb.g + 6;
+            const isCyanDom = !isBlueDom && (rgb.g >= rgb.b - 12);
+
+            const profile = {
+                id: prod.id,
+                code: prod.code || prod.id,
+                name: prod.name,
+                targetHue: [minH, maxH],
+                learnedHue: hue,
+                minSat: Math.max(0.14, currentTeachingState.capturedSat * 0.70),
+                rgbRatio: {
+                    r: rgb.r,
+                    g: rgb.g,
+                    b: rgb.b,
+                    blueDominant: isBlueDom,
+                    cyanDominant: isCyanDom
+                },
+                customBarcode: customBarcode || null,
+                learnedAt: new Date().toISOString(),
+                snapshotDataUrl: currentTeachingState.snapshotDataUrl
+            };
+
+            // 1. Guardar en lista de perfiles aprendidos
+            let list = getLearnedProducts();
+            list = list.filter(item => item.id !== prod.id);
+            list.push(profile);
+            saveLearnedProductsList(list);
+
+            // 2. Si hay código de barras, guardar en mapa de barcodes
+            if (customBarcode) {
+                saveLearnedBarcode(customBarcode, prod.code || prod.id);
+                VONIXX_BARCODES[customBarcode] = prod.code || prod.id;
+            }
+
+            // 3. Sonido de confirmación y cierre de modal
+            playModernScannerBip();
+            closeTeachProductModal();
+
+            // 4. Reconocimiento inmediato del producto
+            onProductVisuallyRecognized(prod, true);
+
+            // 5. Status
+            const statusText = document.getElementById('scannerStatusText');
+            if (statusText) {
+                statusText.innerHTML = `<i class="fa-solid fa-graduation-cap" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">¡Calibración aprendida para ${prod.name.substring(0, 18)}!</span>`;
+            }
+        }
+
+        function openLearnedManagerModal() {
+            const list = getLearnedProducts();
+            const container = document.getElementById('learnedProductsList');
+            if (!container) return;
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:20px; color:var(--muted); font-size:11.5px;">
+                        <i class="fa-solid fa-graduation-cap" style="font-size:24px; color:var(--muted-2); margin-bottom:6px; display:block;"></i>
+                        No has calibrado ningún producto todavía.<br>
+                        Usa el botón <strong>"Enseñar"</strong> cuando un producto no sea reconocido correctamente.
+                    </div>
+                `;
+            } else {
+                container.innerHTML = list.map(item => `
+                    <div style="display:flex; align-items:center; justify-content:space-between; background:var(--void); border:1px solid var(--line); border-radius:6px; padding:6px 8px;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <img src="${item.snapshotDataUrl || '/favicon.png'}" style="width:28px; height:28px; border-radius:4px; object-fit:cover; border:1px solid var(--line-light);" onerror="this.src='/favicon.png'">
+                            <div>
+                                <div style="font-size:11.5px; font-weight:700; color:var(--text);">${item.name}</div>
+                                <div style="font-size:9.5px; color:var(--muted); font-family:'JetBrains Mono';">Hue: ~${item.learnedHue}° ${item.customBarcode ? '• EAN: ' + item.customBarcode : ''}</div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="deleteLearnedProduct('${item.id}')" style="background:none; border:none; color:#ff4757; font-size:12px; cursor:pointer; padding:4px;" title="Eliminar calibración">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            const modal = document.getElementById('scannerLearnedManagerModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeLearnedManagerModal() {
+            const modal = document.getElementById('scannerLearnedManagerModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function deleteLearnedProduct(id) {
+            let list = getLearnedProducts();
+            list = list.filter(x => x.id !== id);
+            saveLearnedProductsList(list);
+            openLearnedManagerModal();
+        }
+
+        function clearAllLearnedProducts() {
+            if (confirm('¿Deseas eliminar todas las calibraciones aprendidas del escáner?')) {
+                saveLearnedProductsList([]);
+                localStorage.removeItem(LEARNED_BARCODES_STORAGE_KEY);
+                openLearnedManagerModal();
+            }
+        }
+
         // 11. PWA — Instalación en Tablet y Registro de Service Worker
         let deferredPosPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -3582,6 +4160,10 @@
                     <span class="scanner-live-badge"><span class="scanner-live-dot"></span> EN VIVO</span>
                 </div>
                 <div class="scanner-header-tools">
+                    <button type="button" class="scanner-tool-btn" onclick="openTeachProductModal()" title="Enseñar producto al escáner" style="width:auto; padding:0 8px; gap:4px; font-weight:700; font-size:11px; color:var(--green); border-color:var(--green);">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>Enseñar</span>
+                    </button>
                     <button type="button" class="scanner-tool-btn" onclick="toggleCameraFacing()" title="Cambiar cámara frontal / trasera">
                         <i class="fa-solid fa-arrows-rotate"></i>
                     </button>
@@ -3622,10 +4204,16 @@
 
                 <!-- Botón de cambio rápido en caso de querer otra opción (ej. Sintra vs Spell) -->
                 <div style="display:flex; flex-direction:column; gap:4px; padding:0 2px;">
-                    <button type="button" class="btn-switch-detected" onclick="toggleAlternativeCandidates()" style="background:none; border:none; color:var(--blue); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; padding:2px 0; text-align:left;">
-                        <i class="fa-solid fa-arrows-rotate"></i>
-                        <span>¿No es este producto? Toca para cambiar</span>
-                    </button>
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
+                        <button type="button" class="btn-switch-detected" onclick="toggleAlternativeCandidates()" style="background:none; border:none; color:var(--blue); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; padding:2px 0; text-align:left;">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                            <span>¿No es este? Cambiar</span>
+                        </button>
+                        <button type="button" class="btn-teach-detected" onclick="openTeachProductModal(scannerState.currentPendingProduct)" style="background:none; border:none; color:var(--green); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px; padding:2px 0; text-align:right;">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            <span>Calibrar / Enseñar</span>
+                        </button>
+                    </div>
                     <div id="scannerAlternativeChips" style="display:none; flex-wrap:wrap; gap:5px; margin-top:2px;"></div>
                 </div>
 
@@ -3665,6 +4253,17 @@
                     <div class="scanner-candidates-row" id="scannerCandidatesRow"></div>
                 </div>
 
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:3px 2px;">
+                    <button type="button" onclick="openTeachProductModal()" style="background:none; border:none; color:var(--green); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>¿Falla el escáner? Enseñar producto</span>
+                    </button>
+                    <button type="button" onclick="openLearnedManagerModal()" id="btnLearnedCount" style="background:none; border:none; color:var(--muted); font-size:10.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span id="learnedProductsCountBadge">Calibrados (0)</span>
+                    </button>
+                </div>
+
                 <!-- Botón de salida directa -->
                 <button type="button" class="btn-finish-scan" onclick="closeSelfieScanner()">
                     <i class="fa-solid fa-xmark"></i>
@@ -3672,8 +4271,97 @@
                 </button>
 
                 <div style="text-align:center; font-size:10px; color:var(--muted-2);">
-                    <span>🧠 Reconocimiento visual por tonos y envase Vonixx</span>
+                    <span>🧠 Reconocimiento visual y calibración personalizada Vonixx</span>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SUBMODAL DE APRENDIZAJE / CALIBRACIÓN ==================== -->
+    <div id="scannerTeachModal" class="scanner-submodal" style="display:none;">
+        <div class="scanner-submodal-window">
+            <div class="scanner-submodal-header">
+                <div style="display:flex; align-items:center; gap:7px;">
+                    <i class="fa-solid fa-graduation-cap" style="color:var(--green); font-size:16px;"></i>
+                    <span style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text);">Enseñar Producto al Escáner</span>
+                </div>
+                <button type="button" class="scanner-tool-btn" onclick="closeTeachProductModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="scanner-submodal-body">
+                <!-- Tarjeta de Muestra Capturada -->
+                <div class="teach-snapshot-box">
+                    <div class="teach-snapshot-preview-wrap">
+                        <img id="teachSnapshotImg" src="/favicon.png" alt="Captura" class="teach-snapshot-img">
+                        <div class="teach-color-badge">
+                            <span id="teachColorDot" class="teach-color-dot"></span>
+                            <span id="teachColorLabel" style="font-size:9.5px; font-family:'JetBrains Mono'; font-weight:700; color:#fff;">~210°</span>
+                        </div>
+                    </div>
+                    <div class="teach-snapshot-info">
+                        <div style="font-size:11.5px; font-weight:700; color:var(--text);">Firma visual capturada en vivo</div>
+                        <div id="teachVisualMetrics" style="font-size:10px; color:var(--muted); margin-top:2px;">Matiz: 215° | Sat: 65% | Azul dominante</div>
+                        <button type="button" class="btn-recapture-teach" onclick="recaptureTeachSnapshot()">
+                            <i class="fa-solid fa-camera"></i>
+                            <span>Recapturar fotograma</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Buscador de Producto -->
+                <div>
+                    <label style="font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">
+                        1. ¿Qué producto es? (Elige del catálogo)
+                    </label>
+                    <div style="position:relative;">
+                        <input type="text" id="teachProductSearchInput" placeholder="Buscar por nombre o código (ej. Sintra, Spell)..." oninput="filterTeachProducts()" style="width:100%; height:34px; background:var(--void); border:1px solid var(--line); border-radius:6px; padding:0 30px 0 10px; color:var(--text); font-size:12px; outline:none;">
+                        <i class="fa-solid fa-magnifying-glass" style="position:absolute; right:10px; top:11px; color:var(--muted); font-size:12px;"></i>
+                    </div>
+                    <div id="teachProductResults" class="teach-product-results"></div>
+                </div>
+
+                <!-- Código de Barras (Opcional) -->
+                <div>
+                    <label style="font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">
+                        2. Código de barras EAN-13 (Opcional)
+                    </label>
+                    <input type="text" id="teachBarcodeInput" placeholder="ej. 7898511030578" style="width:100%; height:32px; background:var(--void); border:1px solid var(--line); border-radius:6px; padding:0 10px; color:var(--text); font-family:'JetBrains Mono'; font-size:12px; outline:none;">
+                    <span style="font-size:9.5px; color:var(--muted-2); display:block; margin-top:3px;">Si tu envase tiene código de barras, escríbelo o escanéalo para precisión absoluta.</span>
+                </div>
+            </div>
+
+            <div class="scanner-submodal-footer">
+                <button type="button" class="btn-cancel-teach" onclick="closeTeachProductModal()">Cancelar</button>
+                <button type="button" class="btn-save-teach" onclick="saveProductLearning()">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Guardar y Calibrar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SUBMODAL DE GESTIÓN DE PRODUCTOS APRENDIDOS ==================== -->
+    <div id="scannerLearnedManagerModal" class="scanner-submodal" style="display:none;">
+        <div class="scanner-submodal-window">
+            <div class="scanner-submodal-header">
+                <div style="display:flex; align-items:center; gap:7px;">
+                    <i class="fa-solid fa-list-check" style="color:var(--blue); font-size:15px;"></i>
+                    <span style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:14px; text-transform:uppercase; color:var(--text);">Calibraciones Aprendidas</span>
+                </div>
+                <button type="button" class="scanner-tool-btn" onclick="closeLearnedManagerModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="scanner-submodal-body">
+                <div id="learnedProductsList" style="display:flex; flex-direction:column; gap:6px; max-height:280px; overflow-y:auto;"></div>
+            </div>
+            <div class="scanner-submodal-footer" style="justify-content:space-between;">
+                <button type="button" onclick="clearAllLearnedProducts()" style="background:none; border:none; color:#ff4757; font-size:11px; font-weight:700; cursor:pointer;">
+                    <i class="fa-solid fa-trash"></i> Borrar todas
+                </button>
+                <button type="button" class="btn-cancel-teach" onclick="closeLearnedManagerModal()">Cerrar</button>
             </div>
         </div>
     </div>
