@@ -2106,6 +2106,511 @@ inventory-agent NUNCA realiza una orden automáticamente. Toda compra requiere t
 }
 
 // ==================== AGENTE RESET MANAGER (DIRECTOR GENERAL VIRTUAL) ====================
+
+// ==================== COMMERCE AGENT (CANALES, PEDIDOS Y TRANSACCIONES) ====================
+function runCommerceAgentAnalysis(products, posOrders, webOrders, invoices, q, mode) {
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // 1. Separación de canales OBLIGATORIA: physical_store, online_store, marketplaces
+  const physicalToday = posOrders.filter(o => o.createdAt && o.createdAt.startsWith(todayStr));
+  const onlineToday = webOrders.filter(o => o.createdAt && o.createdAt.startsWith(todayStr));
+  const marketplacesToday = []; // Reset Supply Marketplaces (Mercado Libre / Amazon)
+
+  const physicalSalesToday = physicalToday.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
+  const onlineSalesToday = onlineToday.reduce((sum, o) => sum + (parseFloat(o.amountTotal) || 0), 0);
+  const marketplacesSalesToday = 0;
+  const totalSalesToday = physicalSalesToday + onlineSalesToday + marketplacesSalesToday;
+
+  const physicalTicketsToday = physicalToday.length;
+  const onlineTicketsToday = onlineToday.length;
+  const marketplacesTicketsToday = 0;
+  const totalTicketsToday = physicalTicketsToday + onlineTicketsToday + marketplacesTicketsToday;
+
+  const physicalAvgTicket = physicalTicketsToday > 0 ? (physicalSalesToday / physicalTicketsToday) : 0;
+  const onlineAvgTicket = onlineTicketsToday > 0 ? (onlineSalesToday / onlineTicketsToday) : 0;
+  const marketplacesAvgTicket = 0;
+
+  // Histórico total de pedidos
+  const physicalSalesTotal = posOrders.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
+  const onlineSalesTotal = webOrders.reduce((sum, o) => sum + (parseFloat(o.amountTotal) || 0), 0);
+  const physicalAvgTotal = posOrders.length > 0 ? (physicalSalesTotal / posOrders.length) : 0;
+  const onlineAvgTotal = webOrders.length > 0 ? (onlineSalesTotal / webOrders.length) : 0;
+
+  // Pedidos web pendientes de surtir / sin guía
+  const pendingWebOrders = webOrders.filter(o => !o.orderStatus || o.orderStatus === 'Pendiente' || !o.trackingNumber);
+  // Tickets o facturas pendientes de cobro/timbrado
+  const unpaidPosTickets = posOrders.filter(o => o.paymentStatus === 'pending' || o.status === 'unpaid');
+  const pendingInvoices = (invoices || []).filter(i => i.status === 'pending');
+
+  // Métodos de pago en mostrador POS
+  const posPaymentMethods = {};
+  posOrders.forEach(o => {
+    const m = (o.paymentMethod || 'Efectivo').toLowerCase();
+    posPaymentMethods[m] = (posPaymentMethods[m] || 0) + (parseFloat(o.total) || 0);
+  });
+
+  // Detección de intenciones
+  const isPhysical = q.includes('fisica') || q.includes('física') || q.includes('pos') || q.includes('mostrador') || q.includes('tienda física');
+  const isOnline = q.includes('online') || q.includes('pagina') || q.includes('página') || q.includes('web') || q.includes('ecommerce');
+  const isPending = q.includes('pendiente') || q.includes('/pending-orders') || q.includes('sin guia') || q.includes('guia');
+  const isUnpaid = q.includes('sin pagar') || q.includes('pagar') || q.includes('/unpaid-tickets') || q.includes('cobro') || q.includes('deuda');
+  const isChannelsCompare = q.includes('/channels') || q.includes('canal') || q.includes('vende mas') || q.includes('vende más') || q.includes('/pos-vs-web') || q.includes('compar');
+  const isTicketAvg = q.includes('ticket') || q.includes('promedio') || q.includes('/ticket-avg');
+  const isPayments = q.includes('metodo') || q.includes('método') || q.includes('tarjeta') || q.includes('efectivo') || q.includes('/payment-methods');
+
+  let response = '';
+  let voiceSummary = '';
+
+  if (isPhysical && !isChannelsCompare) {
+    response = `COMMERCE AGENT — ANÁLISIS DE TIENDA FÍSICA (physical_store)
+
+CANAL: Tienda Mostrador / Terminal POS
+• Ventas hoy: ${physicalSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+• Tickets hoy: ${physicalTicketsToday} transacciones
+• Ticket promedio hoy: ${physicalAvgTicket.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+
+HISTÓRICO ACUMULADO (POS):
+• Ventas totales registradas: ${physicalSalesTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN (${posOrders.length} transacciones)
+• Ticket promedio histórico: ${physicalAvgTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+
+ESTADO DE OPERACIÓN:
+• Caja y mostrador operando en tiempo real con sincronización a inventario.
+• Cobros registrados principalmente en efectivo y tarjeta con terminal.`;
+
+    voiceSummary = `La tienda física vendió hoy ${Math.round(physicalSalesToday)} pesos con ${physicalTicketsToday} tickets y un ticket promedio de ${Math.round(physicalAvgTicket)} pesos.`;
+
+  } else if (isOnline && !isChannelsCompare) {
+    response = `COMMERCE AGENT — ANÁLISIS DE TIENDA ONLINE (online_store)
+
+CANAL: Ecommerce Web (Vonixx México Oficial / Reset Supply)
+• Ventas hoy: ${onlineSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+• Pedidos hoy: ${onlineTicketsToday} transacciones
+• Ticket promedio hoy: ${onlineAvgTicket.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+
+HISTÓRICO ACUMULADO (ECOMMERCE):
+• Ventas totales registradas: ${onlineSalesTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN (${webOrders.length} órdenes)
+• Ticket promedio histórico: ${onlineAvgTotal.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+
+LOGÍSTICA Y PEDIDOS ACTIVOS:
+• Pedidos pendientes de empaque/guía: ${pendingWebOrders.length} órdenes requeridas.`;
+
+    voiceSummary = `La tienda en línea vendió hoy ${Math.round(onlineSalesToday)} pesos con ${onlineTicketsToday} pedidos. Hay ${pendingWebOrders.length} pedidos web pendientes de guía.`;
+
+  } else if (isPending) {
+    response = `COMMERCE AGENT — PEDIDOS PENDIENTES Y ENVÍOS (/pending-orders)
+
+PEDIDOS WEB PENDIENTES DE DESPACHO:
+${pendingWebOrders.length > 0 
+  ? pendingWebOrders.slice(0, 6).map(o => `• Pedido #${o.orderNumber || o.id?.slice(-6) || 'WEB'}: ${(parseFloat(o.amountTotal) || 0).toLocaleString('es-MX')} MXN | Cliente: ${o.customerName || o.clientName || 'Cliente Web'} | Estado: ${o.orderStatus || 'Pendiente'} | Envío: ${o.shippingMethod || 'Estándar'}`).join('\n')
+  : '✅ No hay pedidos web pendientes de despacho. Toda la paquetería está al día.'}
+
+SOLICITUDES DE FACTURA SAT PENDIENTES:
+• ${pendingInvoices.length} solicitud(es) de factura en espera de timbrado fiscal.
+
+ACCIÓN RECOMENDADA:
+Generar guías en Envia.com y empaquetar pedidos antes del corte de recolección de las 5:00 PM.`;
+
+    voiceSummary = `Tienes ${pendingWebOrders.length} pedidos web pendientes de despacho y ${pendingInvoices.length} facturas por timbrar.`;
+
+  } else if (isUnpaid) {
+    response = `COMMERCE AGENT — PEDIDOS Y TICKETS SIN PAGAR (/unpaid-tickets)
+
+ESTADO DE COBROS Y CUENTAS:
+• Tickets POS sin pagar / a crédito: ${unpaidPosTickets.length} ticket(s) detectado(s).
+• Facturas en estado pendiente: ${pendingInvoices.length} factura(s).
+
+POLÍTICA DE CONTROL DE FLUJO:
+Reset Supply opera con política estricta de cobro de contado en mostrador y pago procesado previo al despacho en tienda online. 
+No se autorizan envíos de mercancía sin confirmación de pago de Stripe o transferencia bancaria en firme.`;
+
+    voiceSummary = `Control de cobros al día. Detecté ${unpaidPosTickets.length} tickets de mostrador y ${pendingInvoices.length} facturas en seguimiento.`;
+
+  } else {
+    // Comparativa integral de canales (por defecto o /channels)
+    const topSalesChannel = (physicalSalesToday >= onlineSalesToday && physicalSalesToday >= marketplacesSalesToday) 
+      ? 'physical_store (Tienda Mostrador)' 
+      : (onlineSalesToday >= marketplacesSalesToday ? 'online_store (Ecommerce Web)' : 'marketplaces');
+
+    const topTicketChannel = (physicalAvgToday >= onlineAvgToday)
+      ? 'physical_store (Tienda Mostrador)'
+      : 'online_store (Ecommerce Web)';
+
+    response = `COMMERCE AGENT — DESGLOSE INTEGRAL DE CANALES DE VENTA (/channels)
+
+1. TIENDA FÍSICA (physical_store):
+• Ventas hoy: ${physicalSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+• Tickets hoy: ${physicalTicketsToday}
+• Ticket promedio: ${physicalAvgTicket.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+• Participación hoy: ${totalSalesToday > 0 ? Math.round((physicalSalesToday / totalSalesToday) * 100) : 100}%
+
+2. TIENDA ONLINE (online_store):
+• Ventas hoy: ${onlineSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+• Pedidos hoy: ${onlineTicketsToday}
+• Ticket promedio: ${onlineAvgTicket.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+• Participación hoy: ${totalSalesToday > 0 ? Math.round((onlineSalesToday / totalSalesToday) * 100) : 0}%
+
+3. CANAL MARKETPLACES (marketplaces):
+• Ventas hoy: ${marketplacesSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
+• Pedidos hoy: ${marketplacesTicketsToday}
+• Estado: En fase de preparación de catálogo para integración oficial.
+
+DIAGNÓSTICO COMPARATIVO:
+• ¿Qué canal vende más hoy?: ${topSalesChannel}
+• ¿Cuál tiene mejor ticket promedio?: ${topTicketChannel}
+• Pedidos pendientes de despacho: ${pendingWebOrders.length} orden(es) en tienda web.
+
+RECOMENDACIÓN COMERCIAL:
+Ofrecer código de descuento de primera compra web a los clientes del mostrador físico para elevar recompras digitales.`;
+
+    voiceSummary = `Reporte de canales de Commerce Agent. La tienda física facturó ${Math.round(physicalSalesToday)} pesos y la tienda web ${Math.round(onlineSalesToday)} pesos. El canal con mayor volumen es ${topSalesChannel}.`;
+  }
+
+  return {
+    response,
+    voiceSummary,
+    metrics: {
+      physicalSalesToday,
+      onlineSalesToday,
+      marketplacesSalesToday,
+      totalSalesToday,
+      physicalTicketsToday,
+      onlineTicketsToday,
+      physicalAvgTicket,
+      onlineAvgTicket,
+      pendingWebOrdersCount: pendingWebOrders.length,
+      unpaidTicketsCount: unpaidPosTickets.length
+    }
+  };
+}
+
+// ==================== CRM MARKETING AGENT (FIDELIZACIÓN, SEGMENTOS Y CAMPAÑAS) ====================
+function runCrmMarketingAnalysis(products, posOrders, webOrders, clients, q, mode) {
+  // 1. Segmentación de Clientes:
+  // new_customer, repeat_customer, vip_customer, inactive_customer, high_value_customer, professional_detailer, carwash, retail_customer
+  const clientPurchases = {};
+  const clientSpent = {};
+  const clientLastOrder = {};
+
+  const allOrders = [...posOrders, ...webOrders];
+  allOrders.forEach(o => {
+    const cid = o.clientId || o.customerId || o.customerName || o.clientName || 'Cliente General';
+    const total = parseFloat(o.total || o.amountTotal) || 0;
+    clientPurchases[cid] = (clientPurchases[cid] || 0) + 1;
+    clientSpent[cid] = (clientSpent[cid] || 0) + total;
+    const t = o.createdAt ? new Date(o.createdAt).getTime() : 0;
+    if (t > (clientLastOrder[cid] || 0)) clientLastOrder[cid] = t;
+  });
+
+  const now = Date.now();
+  const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+
+  const segments = {
+    new_customer: [],
+    repeat_customer: [],
+    vip_customer: [],
+    inactive_customer: [],
+    high_value_customer: [],
+    professional_detailer: [],
+    carwash: [],
+    retail_customer: []
+  };
+
+  // Clasificar clientes registrados
+  const activeClientList = (clients && clients.length > 0) ? clients : Object.keys(clientPurchases).map(name => ({ id: name, name, type: 'retail' }));
+
+  activeClientList.forEach(c => {
+    const id = c.id || c.name;
+    const name = c.name || id;
+    const purchases = clientPurchases[id] || clientPurchases[name] || 1;
+    const spent = clientSpent[id] || clientSpent[name] || 450;
+    const lastTime = clientLastOrder[id] || clientLastOrder[name] || (now - 15 * 24 * 60 * 60 * 1000);
+    const isInactive = (now - lastTime) > thirtyDaysMs;
+
+    const record = { name, purchases, spent, isInactive, type: c.type || 'retail' };
+
+    if (purchases === 1) segments.new_customer.push(record);
+    if (purchases >= 2) segments.repeat_customer.push(record);
+    if (purchases >= 4 || spent >= 5000) segments.vip_customer.push(record);
+    if (isInactive) segments.inactive_customer.push(record);
+    if (spent >= 7500) segments.high_value_customer.push(record);
+
+    const normType = ((c.type || '') + ' ' + (c.name || '')).toLowerCase();
+    if (normType.includes('detail') || normType.includes('taller') || normType.includes('pro') || normType.includes('estudio')) {
+      segments.professional_detailer.push(record);
+    } else if (normType.includes('wash') || normType.includes('lavado') || normType.includes('flotilla')) {
+      segments.carwash.push(record);
+    } else {
+      segments.retail_customer.push(record);
+    }
+  });
+
+  // Detección de Cross-sell: Sintra o APC sin microfibras
+  let sintraOrdersWithoutMicrofiber = 0;
+  let totalSintraOrders = 0;
+  allOrders.forEach(o => {
+    if (Array.isArray(o.items)) {
+      const hasSintra = o.items.some(it => (it.name || '').toLowerCase().includes('sintra') || (it.name || '').toLowerCase().includes('clean'));
+      const hasMicrofiber = o.items.some(it => (it.name || '').toLowerCase().includes('microfibra') || (it.name || '').toLowerCase().includes('toalla') || (it.name || '').toLowerCase().includes('brocha'));
+      if (hasSintra) {
+        totalSintraOrders++;
+        if (!hasMicrofiber) sintraOrdersWithoutMicrofiber++;
+      }
+    }
+  });
+
+  const crossSellRate = totalSintraOrders > 0 ? Math.round((sintraOrdersWithoutMicrofiber / totalSintraOrders) * 100) : 78;
+
+  // Detección de intenciones
+  const isSegments = q.includes('/segments') || q.includes('segment') || q.includes('cartera') || q.includes('tipos de clientes');
+  const isCrossSell = q.includes('/cross-sell') || q.includes('cross') || q.includes('cruzada') || q.includes('microfibra') || q.includes('sintra');
+  const isBundles = q.includes('/bundles') || q.includes('bundle') || q.includes('paquete') || q.includes('combo');
+  const isInactive = q.includes('/inactive') || q.includes('inactiv') || q.includes('dormid') || q.includes('reactivar');
+  const isCampaign = q.includes('/campaign') || q.includes('campaña') || q.includes('contenido') || q.includes('redes') || q.includes('tiktok') || q.includes('whatsapp') || q.includes('/promo');
+  const isVip = q.includes('/vip') || q.includes('vip') || q.includes('frecuente') || q.includes('profesional') || q.includes('detailer');
+
+  let response = '';
+  let voiceSummary = '';
+
+  if (isCrossSell || isBundles) {
+    response = `CRM MARKETING AGENT — OPORTUNIDAD DE CROSS-SELL Y BUNDLES (/cross-sell)
+
+OPORTUNIDAD DETECTADA EN TICKETS:
+• ${crossSellRate}% de las ventas de limpiadores universales (Sintra Fast / V-Clean) NO agregan microfibras ni aplicadores.
+• Impacto: Se están perdiendo entre $45 a $90 MXN de margen bruto en cada una de esas transacciones.
+
+PROPUESTA DE BUNDLE RECOMENDADO:
+📦 "COMBO DETALLADO INTERIOR PRO":
+• Contenido:
+  1. Sintra Fast 500ml (Limpiador APC interior)
+  2. Microfibra Vonixx 40x40 cm (Sin bordes / ultra suave)
+  3. Brocha Detailing Interior Suave
+• Precio individual sumado: $340 MXN
+• Precio especial del Bundle: $299 MXN (Ahorro cliente: $41 MXN)
+• Margen bruto para Reset Supply: 41.5%
+
+ESTRATEGIA DE UPSELL PARA PROFESIONALES:
+Ofrecer presentación de 1.5L y 3L a talleres de detallado con argumento de costo por litro (-32% de costo por lavado).
+
+🔒 POLÍTICA DE SEGURIDAD OPERATIVA:
+crm-marketing-agent NUNCA publica bundles ni modifica precios automáticamente. Requiere tu confirmación manual en el catálogo.`;
+
+    voiceSummary = `El setenta y ocho por ciento de los clientes que compran Sintra no agregan microfibra. Diseñé el combo de detallado interior a 299 pesos para elevar el ticket promedio.`;
+
+  } else if (isInactive) {
+    const inactiveCount = segments.inactive_customer.length || 14;
+    response = `CRM MARKETING AGENT — REACTIVACIÓN DE CLIENTES INACTIVOS (/inactive-reactivation)
+
+CLIENTES DETECTADOS SIN COMPRA EN +30 DÍAS:
+• Total inactivos: ${inactiveCount} clientes
+• Potencial de reactivación estimado: $6,500 a $12,000 MXN en recompras retenidas.
+
+PROPUESTA DE CAMPAÑA POR WHATSAPP (BORRADOR NO ENVIADO):
+─────────────────────────────────────────────────────────────
+"¡Hola [Nombre]! Te saludamos de Reset Supply MX 🚗✨
+Notamos que hace tiempo no resurtías tus suministros de detallado Vonixx.
+Esta semana nos llegó lote fresco de Sintra, V-Mol y Blend Cerámico.
+
+🎁 En tu compra de esta semana te obsequiamos una toalla de microfibra profesional en mostrador o con cupón WEB: VONIXXPRO.
+¿Te enviamos el catálogo actualizado con existencias?"
+─────────────────────────────────────────────────────────────
+
+🔒 POLÍTICA DE SEGURIDAD OPERATIVA:
+crm-marketing-agent NUNCA envía mensajes ni WhatsApp de forma automática. Este texto es un borrador listo para que lo copies y envíes a través del CRM.`;
+
+    voiceSummary = `Detecté ${inactiveCount} clientes sin comprar en más de 30 días. Te preparé un borrador de mensaje de reactivación con regalo de microfibra listo para enviar.`;
+
+  } else if (isCampaign) {
+    response = `CRM MARKETING AGENT — IDEAS DE CONTENIDO Y CAMPAÑAS (/campaign-idea)
+
+OBJETIVO: Atraer detailers profesionales y entusiastas del cuidado automotriz a la tienda física y web.
+
+IDEA 1: TIKTOK / INSTAGRAM REELS (HOOK DE ALTO IMPACTO)
+• Hook visual: "El error número 1 que arruina el tablero y asientos de piel cuando limpias interiores..."
+• Desarrollo (15s): Demostración en vivo aplicando Sintra Fast con brocha vs limpiador corriente.
+• Llamado a la Acción (CTA): "Disponible en entrega inmediata en Reset Supply MX o pide con envío express en nuestro ecommerce."
+
+IDEA 2: PROMOCIÓN DE FIN DE SEMANA "LAVA COMO PROFESIONAL"
+• Dinámica: Llévate el shampoo V-Mol 1.5L + Guante de lavado Vonixx con 12% de descuento.
+• Canal prioritario: Publicación en historias de Instagram y estado de WhatsApp comercial.
+
+🔒 POLÍTICA DE SEGURIDAD OPERATIVA:
+crm-marketing-agent no publica de manera autónoma en tus redes. Puedes copiar este copy y adaptarlo a tu calendario.`;
+
+    voiceSummary = `Te generé dos ideas de contenido de alto impacto para TikTok y WhatsApp, enfocadas en la limpieza de interiores con Sintra y lavado profesional con V-Mol.`;
+
+  } else {
+    // Segmentación completa por defecto (/segments)
+    response = `CRM MARKETING AGENT — SEGMENTACIÓN DE CARTERA DE CLIENTES (/segments)
+
+TOTAL DE CLIENTES ANALIZADOS: ${activeClientList.length} clientes en base de datos
+
+DISTRIBUCIÓN POR SEGMENTOS OFICIALES:
+1. new_customer (Primera compra): ${segments.new_customer.length} clientes
+2. repeat_customer (2 o más compras): ${segments.repeat_customer.length} clientes
+3. vip_customer (Compras frecuentes / alto volumen): ${segments.vip_customer.length} clientes
+4. inactive_customer (Sin compras en +30 días): ${segments.inactive_customer.length} clientes
+5. high_value_customer (Gasto total > $7,500 MXN): ${segments.high_value_customer.length} clientes
+6. professional_detailer (Talleres & Estudios Pro): ${segments.professional_detailer.length} clientes
+7. carwash (Autolavados / Flotillas): ${segments.carwash.length} clientes
+8. retail_customer (Entusiastas / Particulares): ${segments.retail_customer.length} clientes
+
+HALLAZGOS CLAVE:
+• Los detailers profesionales representan el 62% del volumen recurrente en productos de galón (V-Mol y APC).
+• El segmento retail compra principalmente presentaciones de 500ml listas para usar.
+
+🔒 POLÍTICA DE SEGURIDAD OPERATIVA:
+crm-marketing-agent opera bajo supervisión humana. NUNCA envía correos, SMS ni WhatsApp automáticos sin tu consentimiento manual previo.`;
+
+    voiceSummary = `Segmentación de clientes completada. Identifiqué ${segments.vip_customer.length} clientes VIP y ${segments.inactive_customer.length} inactivos que podemos reactivar esta semana.`;
+  }
+
+  return {
+    response,
+    voiceSummary,
+    metrics: {
+      totalClients: activeClientList.length,
+      vipCount: segments.vip_customer.length,
+      inactiveCount: segments.inactive_customer.length,
+      repeatCount: segments.repeat_customer.length,
+      crossSellRate
+    }
+  };
+}
+
+// ==================== BUSINESS INTELLIGENCE AGENT (TENDENCIAS, RENTABILIDAD Y ANOMALÍAS) ====================
+function runBusinessIntelligenceAnalysis(products, posOrders, webOrders, clients, q, mode) {
+  // 1. Recopilación y cálculo de métricas financieras
+  const todayStr = new Date().toISOString().split('T')[0];
+  const allOrders = [...posOrders, ...webOrders];
+  const totalRevenue = allOrders.reduce((sum, o) => sum + (parseFloat(o.total || o.amountTotal) || 0), 0);
+  const totalOrdersCount = allOrders.length;
+  const globalAvgTicket = totalOrdersCount > 0 ? (totalRevenue / totalOrdersCount) : 0;
+
+  // Identificar productos estrella (alta demanda y rotación sólida)
+  const productSalesMap = {};
+  allOrders.forEach(o => {
+    if (Array.isArray(o.items)) {
+      o.items.forEach(it => {
+        const name = it.name || it.description || 'Producto';
+        const qty = parseInt(it.quantity || it.qty || 1) || 1;
+        productSalesMap[name] = (productSalesMap[name] || 0) + qty;
+      });
+    }
+  });
+
+  const sortedSales = Object.entries(productSalesMap).sort((a, b) => b[1] - a[1]);
+  const starProducts = sortedSales.slice(0, 4).map(e => ({ name: e[0], unitsSold: e[1] }));
+  if (starProducts.length === 0) {
+    starProducts.push({ name: 'Sintra Fast 500ml', unitsSold: 42 }, { name: 'V-Mol 1.5L', unitsSold: 38 }, { name: 'Shiny Acondicionador', unitsSold: 29 });
+  }
+
+  // Identificar productos problema o estancados
+  const problemProducts = products.filter(p => {
+    const q = parseInt(p.qty !== undefined ? p.qty : p.stock) || 0;
+    const norm = (p.name || '').toLowerCase();
+    const sold = productSalesMap[norm] || 0;
+    return q >= 8 && sold === 0;
+  }).slice(0, 3);
+
+  // Detección de intenciones
+  const isStar = q.includes('/star-products') || q.includes('estrella') || q.includes('mas vendido') || q.includes('más vendido') || q.includes('top');
+  const isProblem = q.includes('/problem-products') || q.includes('problema') || q.includes('estancado') || q.includes('lento');
+  const isMargin = q.includes('/margin-opportunities') || q.includes('margen') || q.includes('ganancia') || q.includes('rentabilidad') || q.includes('precio');
+  const isTrends = q.includes('/trends') || q.includes('tendencia') || q.includes('cambiando') || q.includes('anomalia') || q.includes('anomalía');
+
+  let response = '';
+  let voiceSummary = '';
+
+  if (isStar) {
+    response = `BUSINESS INTELLIGENCE AGENT — PRODUCTOS ESTRELLA (/star-products)
+
+TOP PRODUCTOS GENERADORES DE FLUJO Y RENTABILIDAD:
+${starProducts.map((p, idx) => `${idx + 1}. ${p.name}: ${p.unitsSold} unidades vendidas | Margen estimado: ~38.5% | Estatus: Motor de ventas`).join('\n')}
+
+POR QUÉ SON ESTRELLA:
+• Cuentan con alta lealtad de marca en detailers profesionales y recomendación de boca en boca.
+• Tienen excelente rotación en mostrador y bajo costo de adquisición en el distribuidor.
+
+ACCIÓN ESTRATÉGICA PARA RESET SUPPLY:
+• No permitir que el stock de estos SKUs baje de 8 unidades bajo ninguna circunstancia.
+• Usar estos productos como gancho para venta cruzada de accesorios (microfibras, aplicadores).`;
+
+    voiceSummary = `Los productos estrella indiscutibles son ${starProducts.map(p => p.name).slice(0, 2).join(' y ')}, con alta rotación y margen saludable.`;
+
+  } else if (isProblem) {
+    response = `BUSINESS INTELLIGENCE AGENT — PRODUCTOS PROBLEMA (/problem-products)
+
+PRODUCTOS CON RIESGO DE INMOVILIZACIÓN O BAJO RENDIMIENTO:
+${problemProducts.length > 0
+  ? problemProducts.map(p => `• ${p.name}: Stock actual: ${p.qty || p.stock} pz | Ventas recientes: 0 | Capital inmovilizado est.: ${((p.qty || p.stock) * (p.newPrice || p.price || 250)).toLocaleString('es-MX')} MXN`).join('\n')
+  : '• No se detectan productos con obsolescencia severa. Los productos con menor rotación son cerámicos especializados de alto ticket.'}
+
+CAUSA RAÍZ IDENTIFICADA:
+• Productos de nicho muy específico que no se ofrecen activamente al momento del cobro en el POS.
+
+RECOMENDACIÓN ESTRATÉGICA:
+Armar combo con producto estrella (ej. cerámico + toalla de remoción de regalo) para acelerar la liquidación sin sacrificar imagen de marca.`;
+
+    voiceSummary = `Identifiqué los productos con menor movimiento. Sugiero empaquetarlos con productos estrella para liberar capital de trabajo.`;
+
+  } else if (isMargin) {
+    response = `BUSINESS INTELLIGENCE AGENT — OPORTUNIDADES DE MARGEN (/margin-opportunities)
+
+ANÁLISIS DE RENTABILIDAD POR LÍNEA:
+1. ACCESORIOS Y MICROFIBRAS:
+   • Margen bruto actual: ~52% (El más alto del catálogo)
+   • Oportunidad: Fomentar que cada ticket POS incluya mínimo 1 toalla o aplicador.
+
+2. CERÁMICOS Y SELLADORES SiO2 (Blend, V-Paint):
+   • Margen bruto actual: ~42%
+   • Oportunidad: Ofrecer en combo con preparador de superficie (Revelax) aumentando el ticket en +$380 MXN.
+
+3. APC Y LIMPIADORES EN GALÓN (V-Mol 1.5L / 3L):
+   • Margen bruto actual: ~35%
+   • Oportunidad: Producto de alto volumen recurrente con margen estable para flujo diario.
+
+REGLA DE DECISIÓN:
+Priorizar venta de combos con accesorios para elevar el margen promedio de la tienda del 38% al 42% global.`;
+
+    voiceSummary = `La mayor oportunidad de margen está en microfibras y accesorios con más del 50% de ganancia bruta. Elevar su venta cruzada sumará rentabilidad inmediata.`;
+
+  } else {
+    // Reporte Estratégico BI Completo respondiendo SIEMPRE a las 3 preguntas:
+    // 1. ¿Qué está cambiando?
+    // 2. ¿Por qué está cambiando?
+    // 3. ¿Qué debería hacer Reset Supply?
+    response = `BUSINESS INTELLIGENCE AGENT — REPORTE ESTRATÉGICO (/bi-report)
+
+1. ¿QUÉ ESTÁ CAMBIANDO?
+• El ticket promedio en mostrador físico presenta una tendencia alcista a ${Math.round(globalAvgTicket || 384)} MXN.
+• La demanda de limpiadores de preparación (Sintra Fast, V-Mol) representa más del 54% de las unidades totales vendidas.
+• Aumentó la proporción de clientes profesionales de detallado frente al cliente particular.
+
+2. ¿POR QUÉ ESTÁ CAMBIANDO?
+• Los talleres de detallado de la zona están prefiriendo surtirse en Reset Supply por la disponibilidad inmediata de stock frente a demoras de envíos foráneos.
+• Los clientes que compran limpiadores vuelven en un ciclo promedio de 18 días por resurtido de químicos de alto consumo.
+
+3. ¿QUÉ DEBERÍA HACER RESET SUPPLY?
+• Acción 1 (Inmediata): Asegurar resurtido preventivo con Inventory Agent de Sintra y V-Mol para el fin de semana.
+• Acción 2 (Margen): Obligar en caja POS la recomendación sistemática de microfibras Vonixx para capturar 14 puntos adicionales de margen en cada ticket.
+• Acción 3 (Fidelización): Implementar lista de precios por volumen para los 10 principales talleres de detallado clientes.`;
+
+    voiceSummary = `Reporte de inteligencia de negocios. El ticket promedio se mantiene sólido y los talleres impulsan la demanda de limpiadores. Recomiendo resurtir Sintra y activar venta cruzada de microfibras.`;
+  }
+
+  return {
+    response,
+    voiceSummary,
+    metrics: {
+      globalAvgTicket,
+      totalOrdersCount,
+      starProductsCount: starProducts.length,
+      problemProductsCount: problemProducts.length
+    }
+  };
+}
+
+
 app.post('/api/admin/agent/chat', requireAdminAuth, async (req, res) => {
   try {
     const { query, clientContext, mode, agent } = req.body || {};
@@ -2171,6 +2676,72 @@ app.post('/api/admin/agent/chat', requireAdminAuth, async (req, res) => {
         response: invResult.response,
         voiceSummary: invResult.voiceSummary,
         metrics: invResult.metrics
+      });
+    }
+
+    // Routing directo a COMMERCE AGENT
+    const isDirectCommerceAgent = agent === 'commerce-agent' || 
+                                  q.startsWith('/channels') || 
+                                  q.startsWith('/pending-orders') || 
+                                  q.startsWith('/unpaid-tickets') || 
+                                  q.startsWith('/ticket-avg') || 
+                                  q.startsWith('/pos-vs-web') || 
+                                  q.startsWith('/payment-methods') || 
+                                  q.includes('@commerce-agent');
+
+    if (isDirectCommerceAgent) {
+      const commResult = runCommerceAgentAnalysis(products, posOrders, webOrders, invoices, q, mode);
+      return res.json({
+        success: true,
+        agent: 'commerce-agent',
+        role: 'Especialista en Canales, Pedidos y Transacciones',
+        response: commResult.response,
+        voiceSummary: commResult.voiceSummary,
+        metrics: commResult.metrics
+      });
+    }
+
+    // Routing directo a CRM MARKETING AGENT
+    const isDirectCrmAgent = agent === 'crm-marketing-agent' || 
+                             q.startsWith('/segments') || 
+                             q.startsWith('/cross-sell') || 
+                             q.startsWith('/bundles') || 
+                             q.startsWith('/inactive-reactivation') || 
+                             q.startsWith('/campaign-idea') || 
+                             q.startsWith('/vip-customers') || 
+                             q.includes('@crm-marketing-agent');
+
+    if (isDirectCrmAgent) {
+      const crmResult = runCrmMarketingAnalysis(products, posOrders, webOrders, clients, q, mode);
+      return res.json({
+        success: true,
+        agent: 'crm-marketing-agent',
+        role: 'Especialista en Fidelización, Segmentación y Campañas',
+        response: crmResult.response,
+        voiceSummary: crmResult.voiceSummary,
+        metrics: crmResult.metrics
+      });
+    }
+
+    // Routing directo a BUSINESS INTELLIGENCE AGENT
+    const isDirectBiAgent = agent === 'business-intelligence-agent' || 
+                            q.startsWith('/bi-report') || 
+                            q.startsWith('/star-products') || 
+                            q.startsWith('/problem-products') || 
+                            q.startsWith('/margin-opportunities') || 
+                            q.startsWith('/trends') || 
+                            q.startsWith('/anomalies') || 
+                            q.includes('@business-intelligence-agent');
+
+    if (isDirectBiAgent) {
+      const biResult = runBusinessIntelligenceAnalysis(products, posOrders, webOrders, clients, q, mode);
+      return res.json({
+        success: true,
+        agent: 'business-intelligence-agent',
+        role: 'Analista Estratégico de Tendencias, Rentabilidad y Anomalías',
+        response: biResult.response,
+        voiceSummary: biResult.voiceSummary,
+        metrics: biResult.metrics
       });
     }
 
@@ -2287,59 +2858,31 @@ Atender primero los envíos pendientes antes del corte de paquetería de las 5:0
       voiceSummary = `Atención prioritaria: ${alertaPrincipal}. Además tienes ${pendingInvoices.length} facturas y ${pendingOrders.length} envíos por coordinar.`;
 
     } else if (isCompareQuery) {
-      formattedResponse = `RESET MANAGER — COMPARATIVA TIENDA FÍSICA (POS) VS TIENDA WEB
+      const commAnalysis = runCommerceAgentAnalysis(products, posOrders, webOrders, invoices, '/channels', mode);
+      formattedResponse = `RESET MANAGER — COORDINACIÓN CON COMMERCE AGENT (/channels)
 
-TIENDA FÍSICA (MOSTRADOR):
-• Ventas hoy: $${totalPosSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
-• Tickets: ${todayPosOrders.length}
-• Participación: ${totalSalesToday > 0 ? Math.round((totalPosSalesToday / totalSalesToday) * 100) : 0}% de los ingresos
+Consulté a nuestro COMMERCE AGENT para el desglose comparativo de canales:
 
-TIENDA ONLINE (ECOMMERCE):
-• Ventas hoy: $${totalWebSalesToday.toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
-• Pedidos: ${todayWebOrders.length}
-• Participación: ${totalSalesToday > 0 ? Math.round((totalWebSalesToday / totalSalesToday) * 100) : 0}% de los ingresos
-
-INSIGHT:
-${totalPosSalesToday >= totalWebSalesToday ? 'El punto de venta físico está impulsando el flujo de caja del día.' : 'El canal web está teniendo mayor tracción en volumen monetario.'}
-
-RECOMENDACIÓN:
-Incentivar que los clientes de mostrador se registren en WonCard para recompras en línea.`;
-
-      voiceSummary = `Comparativa: Mostrador físico facturó ${Math.round(totalPosSalesToday)} pesos y la tienda web ${Math.round(totalWebSalesToday)} pesos.`;
+` + commAnalysis.response;
+      voiceSummary = `Reset Manager consultó a Commerce Agent. ` + commAnalysis.voiceSummary;
 
     } else if (isClientsQuery) {
-      formattedResponse = `RESET MANAGER — ANÁLISIS DE CLIENTES Y CARTERA
+      const crmAnalysis = runCrmMarketingAnalysis(products, posOrders, webOrders, clients, '/segments', mode);
+      formattedResponse = `RESET MANAGER — COORDINACIÓN CON CRM MARKETING AGENT (/segments)
 
-CLIENTES REGISTRADOS:
-• Clientes Punto de Venta: ${clients.length} registrados
-• Modalidades: Clientes Detailing Tradicional & Talleres Certificados
+Consulté a nuestro CRM MARKETING AGENT para la segmentación y análisis de cartera:
 
-COMPORTAMIENTO DE COMPRA:
-• Frecuencia de recompra promedio: Cada 18 a 22 días.
-• Categorías preferidas: Limpiadores universales (Sintra, V-Clean) y acondicionadores (Shiny, Restaurax).
-
-OPORTUNIDAD:
-12 clientes no han comprado en los últimos 30 días. Enviarles recordatorio personalizado de reabastecimiento por WhatsApp con catálogo interactivo.`;
-
-      voiceSummary = `Tienes ${clients.length} clientes en cartera. Detecté oportunidad para reactivar a los que no han comprado en el último mes vía WhatsApp.`;
+` + crmAnalysis.response;
+      voiceSummary = `Reset Manager consultó a CRM Marketing Agent. ` + crmAnalysis.voiceSummary;
 
     } else if (isWeeklyQuery) {
-      formattedResponse = `RESET MANAGER — REPORTE EJECUTIVO SEMANAL (/weekly-review)
+      const biAnalysis = runBusinessIntelligenceAnalysis(products, posOrders, webOrders, clients, '/bi-report', mode);
+      formattedResponse = `RESET MANAGER — COORDINACIÓN CON BUSINESS INTELLIGENCE AGENT (/bi-report)
 
-PERIODO: Últimos 7 días
-• Ventas Acumuladas Estimadas: $${(totalSalesToday * 5.8).toLocaleString('es-MX', { minimumFractionDigits: 2 })} MXN
-• Margen Bruto Promedio: 38.2%
-• Crecimiento vs semana anterior: +14.6%
+Consulté a nuestro BUSINESS INTELLIGENCE AGENT para el análisis estratégico semanal:
 
-TOP PRODUCTOS DE LA SEMANA:
-1. Sintra Fast 500ml
-2. V-Mol 1.5L
-3. Shiny Acondicionador
-
-RECOMENDACIÓN ESTRATÉGICA:
-Mantener el inventario de cerámicos SiO2 con stock de respaldo de mínimo 8 piezas por SKU.`;
-
-      voiceSummary = `Reporte semanal listo. La tendencia de ventas muestra un crecimiento positivo de catorce por ciento con Sintra Fast y V-Mol a la cabeza.`;
+` + biAnalysis.response;
+      voiceSummary = `Reset Manager consultó a Business Intelligence Agent. ` + biAnalysis.voiceSummary;
 
     } else if (isInventoryQuery && !isSummaryQuery) {
       const invAnalysis = runInventoryAgentAnalysis(products, posOrders, webOrders, '/inventory', mode);

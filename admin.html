@@ -220,6 +220,24 @@ textarea[required]:focus,
     color: #f59e0b;
     box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
 }
+.rm-agent-tab.active.comm-theme {
+    background: rgba(16, 185, 129, 0.14);
+    border-color: #10b981;
+    color: #10b981;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+}
+.rm-agent-tab.active.crm-theme {
+    background: rgba(236, 72, 153, 0.14);
+    border-color: #ec4899;
+    color: #ec4899;
+    box-shadow: 0 0 16px rgba(236, 72, 153, 0.25);
+}
+.rm-agent-tab.active.bi-theme {
+    background: rgba(139, 92, 246, 0.14);
+    border-color: #8b5cf6;
+    color: #8b5cf6;
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.25);
+}
 .rm-agent-badge {
     font-size: 9.5px;
     padding: 1px 7px;
@@ -237,6 +255,21 @@ textarea[required]:focus,
     background: rgba(245, 158, 11, 0.15);
     color: #f59e0b;
     border: 1px solid rgba(245, 158, 11, 0.35);
+}
+.rm-agent-badge.comm {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.rm-agent-badge.crm {
+    background: rgba(236, 72, 153, 0.15);
+    color: #ec4899;
+    border: 1px solid rgba(236, 72, 153, 0.35);
+}
+.rm-agent-badge.bi {
+    background: rgba(139, 92, 246, 0.15);
+    color: #8b5cf6;
+    border: 1px solid rgba(139, 92, 246, 0.35);
 }
 
 .rm-btn-authorize {
@@ -783,6 +816,21 @@ textarea[required]:focus,
                     <i class="fa-solid fa-boxes-stacked" style="color:#f59e0b;"></i>
                     <span>Inventory Agent</span>
                     <span class="rm-agent-badge inv">Stock & Reorden</span>
+                </button>
+                <button type="button" class="rm-agent-tab" id="agentTabCommerceAgent" onclick="setActiveAgent('commerce-agent')">
+                    <i class="fa-solid fa-cart-shopping" style="color:#10b981;"></i>
+                    <span>Commerce Agent</span>
+                    <span class="rm-agent-badge comm">Canales & Pedidos</span>
+                </button>
+                <button type="button" class="rm-agent-tab" id="agentTabCrmAgent" onclick="setActiveAgent('crm-marketing-agent')">
+                    <i class="fa-solid fa-bullhorn" style="color:#ec4899;"></i>
+                    <span>CRM Marketing</span>
+                    <span class="rm-agent-badge crm">Clientes & Campañas</span>
+                </button>
+                <button type="button" class="rm-agent-tab" id="agentTabBiAgent" onclick="setActiveAgent('business-intelligence-agent')">
+                    <i class="fa-solid fa-chart-line" style="color:#8b5cf6;"></i>
+                    <span>BI Agent</span>
+                    <span class="rm-agent-badge bi">Tendencias & BI</span>
                 </button>
             </div>
 
@@ -4814,6 +4862,114 @@ function resolveToGitRepoUrl(item) {
                     { cmd: '/velocity', label: '/velocity' },
                     { cmd: '/authorize-reorder', label: '/authorize-reorder' }
                 ]
+            },
+            'commerce-agent': {
+                name: 'Commerce Agent',
+                status: 'En línea • Especialista en Canales & Pedidos',
+                avatar: 'assets/reset_manager_avatar.jpg',
+                hasCrown: false,
+                quote: '“Cada canal con su estrategia, cada pedido rastreado y entregado.”',
+                author: '— Commerce Agent',
+                theme: 'comm',
+                modes: [
+                    { id: 'canales', label: 'Canales de Venta' },
+                    { id: 'pedidos', label: 'Pedidos Web' },
+                    { id: 'pagos', label: 'Métodos de Pago' },
+                    { id: 'cobros', label: 'Tickets Pendientes' }
+                ],
+                bubbleTitle: '¿Qué canal o pedido deseas auditar?',
+                bubbleSub: 'Separo siempre physical_store, online_store y marketplaces. Monitoreo pedidos, pagos y ticket promedio en tiempo real.',
+                placeholder: 'Pregunta por ventas, pedidos pendientes o escribe un comando... (ej. /channels)',
+                chips: [
+                    'Comparativa de canales (/channels)',
+                    '¿Cuánto vendió la tienda física?',
+                    '¿Cuánto vendió la página web?',
+                    'Pedidos pendientes de empaque (/pending-orders)',
+                    '¿Hay pedidos o tickets sin pagar?',
+                    '¿Qué canal tiene mejor ticket promedio?',
+                    'Desglose por métodos de pago',
+                    'Control de logística y paquetería'
+                ],
+                commands: [
+                    { cmd: '/channels', label: '/channels' },
+                    { cmd: '/pending-orders', label: '/pending-orders' },
+                    { cmd: '/unpaid-tickets', label: '/unpaid-tickets' },
+                    { cmd: '/ticket-avg', label: '/ticket-avg' },
+                    { cmd: '/pos-vs-web', label: '/pos-vs-web' },
+                    { cmd: '/payment-methods', label: '/payment-methods' }
+                ]
+            },
+            'crm-marketing-agent': {
+                name: 'CRM Marketing Agent',
+                status: 'En línea • Fidelización, Segmentos & Campañas',
+                avatar: 'assets/reset_manager_avatar.jpg',
+                hasCrown: false,
+                quote: '“Conocer al cliente es la clave: el producto correcto para el cliente adecuado.”',
+                author: '— CRM Marketing Agent',
+                theme: 'crm',
+                modes: [
+                    { id: 'segmentos', label: 'Segmentación' },
+                    { id: 'cross-sell', label: 'Cross-sell & Bundles' },
+                    { id: 'reactivacion', label: 'Reactivar Clientes' },
+                    { id: 'campanas', label: 'Ideas Contenido' }
+                ],
+                bubbleTitle: '¿Cómo podemos fidelizar a tus clientes hoy?',
+                bubbleSub: 'Segmento tu base en 8 perfiles, detecto venta cruzada (Sintra sin microfibras) y creo bundles sin enviar mensajes automáticamente.',
+                placeholder: 'Segmentos, promociones, bundles o comandos... (ej. /segments)',
+                chips: [
+                    'Segmentación de clientes (/segments)',
+                    'Cross-sell Sintra + Microfibras (/cross-sell)',
+                    'Diseñar bundle o paquete especial',
+                    'Reactivar clientes inactivos (+30 días)',
+                    'Ideas de contenido para TikTok y Reels',
+                    'Clientes VIP y detailers frecuentes',
+                    'Estrategia de upsell para presentaciones galón',
+                    'Borrador de WhatsApp comercial'
+                ],
+                commands: [
+                    { cmd: '/segments', label: '/segments' },
+                    { cmd: '/cross-sell', label: '/cross-sell' },
+                    { cmd: '/bundles', label: '/bundles' },
+                    { cmd: '/inactive-reactivation', label: '/inactive-reactivation' },
+                    { cmd: '/campaign-idea', label: '/campaign-idea' },
+                    { cmd: '/vip-customers', label: '/vip-customers' }
+                ]
+            },
+            'business-intelligence-agent': {
+                name: 'Business Intelligence Agent',
+                status: 'En línea • Tendencias, Rentabilidad & Estrategia',
+                avatar: 'assets/reset_manager_avatar.jpg',
+                hasCrown: false,
+                quote: '“¿Qué está cambiando? ¿Por qué? ¿Y qué debemos hacer hoy?”',
+                author: '— Business Intelligence Agent',
+                theme: 'bi',
+                modes: [
+                    { id: 'tendencias', label: '¿Qué cambia?' },
+                    { id: 'causas', label: '¿Por qué?' },
+                    { id: 'acciones', label: '¿Qué hacer?' },
+                    { id: 'rentabilidad', label: 'Margen & Estrellas' }
+                ],
+                bubbleTitle: 'Análisis estratégico del negocio en 3 preguntas',
+                bubbleSub: 'Respondo siempre: ¿Qué está cambiando? ¿Por qué está cambiando? y ¿Qué debería hacer Reset Supply? para maximizar utilidad.',
+                placeholder: 'Tendencias, anomalías, productos estrella o comandos... (ej. /bi-report)',
+                chips: [
+                    'Reporte Estratégico BI (/bi-report)',
+                    '¿Qué está cambiando en ventas?',
+                    '¿Por qué cambia el ticket promedio?',
+                    '¿Qué debería hacer Reset Supply?',
+                    'Productos estrella más rentables',
+                    'Productos problema o estancados',
+                    'Oportunidades de margen en catálogo',
+                    'Detección de anomalías operativas'
+                ],
+                commands: [
+                    { cmd: '/bi-report', label: '/bi-report' },
+                    { cmd: '/star-products', label: '/star-products' },
+                    { cmd: '/problem-products', label: '/problem-products' },
+                    { cmd: '/margin-opportunities', label: '/margin-opportunities' },
+                    { cmd: '/trends', label: '/trends' },
+                    { cmd: '/anomalies', label: '/anomalies' }
+                ]
             }
         };
 
@@ -4824,10 +4980,26 @@ function resolveToGitRepoUrl(item) {
             // Actualizar pestañas superiores
             var tabRm = document.getElementById('agentTabResetManager');
             var tabInv = document.getElementById('agentTabInventoryAgent');
+            var tabComm = document.getElementById('agentTabCommerceAgent');
+            var tabCrm = document.getElementById('agentTabCrmAgent');
+            var tabBi = document.getElementById('agentTabBiAgent');
+
             if (tabRm) tabRm.classList.toggle('active', agentId === 'reset-manager');
             if (tabInv) {
                 tabInv.classList.toggle('active', agentId === 'inventory-agent');
                 tabInv.classList.toggle('inv-theme', agentId === 'inventory-agent');
+            }
+            if (tabComm) {
+                tabComm.classList.toggle('active', agentId === 'commerce-agent');
+                tabComm.classList.toggle('comm-theme', agentId === 'commerce-agent');
+            }
+            if (tabCrm) {
+                tabCrm.classList.toggle('active', agentId === 'crm-marketing-agent');
+                tabCrm.classList.toggle('crm-theme', agentId === 'crm-marketing-agent');
+            }
+            if (tabBi) {
+                tabBi.classList.toggle('active', agentId === 'business-intelligence-agent');
+                tabBi.classList.toggle('bi-theme', agentId === 'business-intelligence-agent');
             }
 
             // Nombre y estatus
@@ -4889,7 +5061,12 @@ function resolveToGitRepoUrl(item) {
             // Comandos
             var cmdContainer = document.getElementById('rmCommandsHintContainer');
             if (cmdContainer) {
-                cmdContainer.innerHTML = '<span>' + (agentId === 'inventory-agent' ? 'Comandos de inventario:' : 'También puedes usar comandos:') + '</span> ';
+                var cmdPrefix = 'También puedes usar comandos:';
+                if (agentId === 'inventory-agent') cmdPrefix = 'Comandos de stock:';
+                else if (agentId === 'commerce-agent') cmdPrefix = 'Comandos de canales:';
+                else if (agentId === 'crm-marketing-agent') cmdPrefix = 'Comandos de CRM:';
+                else if (agentId === 'business-intelligence-agent') cmdPrefix = 'Comandos de BI:';
+                cmdContainer.innerHTML = '<span>' + cmdPrefix + '</span> ';
                 cfg.commands.forEach(function(c) {
                     var btn = document.createElement('button');
                     btn.type = 'button';
@@ -5138,7 +5315,11 @@ function resolveToGitRepoUrl(item) {
             var thinkingDiv = document.createElement('div');
             thinkingDiv.id = thinkingId;
             thinkingDiv.className = 'rm-msg agent';
-            var agentLabel = currentActiveAgent === 'inventory-agent' ? 'Inventory Agent' : 'Reset Manager';
+            var agentLabel = 'Reset Manager';
+            if (currentActiveAgent === 'inventory-agent') agentLabel = 'Inventory Agent';
+            else if (currentActiveAgent === 'commerce-agent') agentLabel = 'Commerce Agent';
+            else if (currentActiveAgent === 'crm-marketing-agent') agentLabel = 'CRM Marketing Agent';
+            else if (currentActiveAgent === 'business-intelligence-agent') agentLabel = 'BI Agent';
             var colorTheme = currentActiveAgent === 'inventory-agent' ? '#f59e0b' : '#00d2ff';
             thinkingDiv.innerHTML = '<div class="rm-bubble-agent" style="color:var(--muted);"><i class="fa-solid fa-spinner fa-spin" style="margin-right:8px; color:' + colorTheme + ';"></i> ' + agentLabel + ' está analizando datos de Reset Supply...</div>';
             chatBody.appendChild(thinkingDiv);
