@@ -38,17 +38,326 @@
         .btn-primary { width: 100%; background: var(--grad); color: var(--void); border: none; padding: 13px; border-radius: 8px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all .2s; }
         .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
 
+        /* ==================== LAYOUT CON SIDEBAR HAMBURGUESA ==================== */
+        .admin-main-wrapper {
+            margin-left: 68px;
+            transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--void);
+        }
+
         /* Header */
-        .admin-header { background: var(--panel); border-bottom: 1px solid var(--line); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .admin-title { font-size: 20px; display: flex; align-items: center; gap: 10px; }
+        .admin-header {
+            background: var(--panel);
+            border-bottom: 1px solid var(--line);
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .admin-title { font-size: 20px; display: flex; align-items: center; gap: 12px; }
         .btn-logout { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
         .btn-logout:hover { border-color: var(--red); color: var(--red); }
 
         /* Container & Tabs */
-        .admin-container { max-width: 1280px; margin: 30px auto; padding: 0 20px; width: 100%; flex: 1; }
-        .admin-tabs { display: flex; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 30px; }
-        .tab-btn { background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); padding: 10px 22px; border-radius: 8px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; transition: all .2s; }
-        .tab-btn:hover, .tab-btn.active { background: var(--grad); color: var(--void); border-color: transparent; }
+        .admin-container { max-width: 1400px; margin: 24px auto; padding: 0 24px; width: 100%; flex: 1; box-sizing: border-box; }
+        .admin-tabs { display: none !important; }
+
+        /* ==================== LEFT HAMBURGER SIDEBAR ==================== */
+        .admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 68px;
+            background: #090e15;
+            border-right: 1px solid #1a2533;
+            z-index: 9500;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s ease;
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.6);
+            overflow: visible;
+        }
+
+        .admin-sidebar:hover,
+        .admin-sidebar.expanded {
+            width: 250px;
+            box-shadow: 14px 0 40px rgba(0, 0, 0, 0.85), 0 0 30px rgba(61, 220, 132, 0.1);
+        }
+
+        .admin-sidebar-header {
+            height: 62px;
+            min-height: 62px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #1a232f;
+            gap: 12px;
+            background: #06090e;
+        }
+
+        .sidebar-hamburger-btn {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 8px;
+            background: #121922;
+            border: 1px solid #202b3a;
+            color: #3ddc84;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        .sidebar-hamburger-btn:hover {
+            background: #1c2633;
+            border-color: #3ddc84;
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 0 12px rgba(61, 220, 132, 0.4);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            pointer-events: none;
+        }
+        .admin-sidebar:hover .sidebar-brand,
+        .admin-sidebar.expanded .sidebar-brand {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .sidebar-brand-img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #3ddc84;
+            box-shadow: 0 0 8px rgba(61, 220, 132, 0.4);
+        }
+
+        .sidebar-brand-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: #f2f5f8;
+            letter-spacing: 0.5px;
+        }
+
+        /* Navegación Sidebar */
+        .admin-sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 14px 10px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .admin-sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+        .admin-sidebar-nav::-webkit-scrollbar-thumb {
+            background: #1c2633;
+            border-radius: 4px;
+        }
+
+        /* Botones de menú de la barra lateral */
+        .sidebar-tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            height: 46px;
+            min-height: 46px;
+            padding: 0 13px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            color: #8fa0b3;
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            position: relative;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .sidebar-tab-icon {
+            width: 22px;
+            min-width: 22px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+
+        .sidebar-tab-label {
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            pointer-events: none;
+        }
+
+        .admin-sidebar:hover .sidebar-tab-label,
+        .admin-sidebar.expanded .sidebar-tab-label {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .sidebar-tab-btn:hover {
+            background: #121922;
+            border-color: #202c3c;
+            color: #f2f5f8;
+        }
+        .sidebar-tab-btn:hover .sidebar-tab-icon {
+            transform: scale(1.15);
+        }
+
+        .sidebar-tab-btn.active {
+            background: linear-gradient(90deg, rgba(61, 220, 132, 0.16), rgba(34, 184, 240, 0.1));
+            border-color: rgba(61, 220, 132, 0.5);
+            color: #3ddc84;
+            box-shadow: 0 0 16px rgba(61, 220, 132, 0.22), inset 3px 0 0 #3ddc84;
+        }
+        .sidebar-tab-btn.active .sidebar-tab-icon {
+            color: #3ddc84 !important;
+        }
+
+        /* Tooltip flotante inmediato al dar hover sobre el ícono (modo colapsado) */
+        .sidebar-tab-btn::after,
+        .sidebar-footer-btn::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: calc(100% + 14px);
+            top: 50%;
+            transform: translateY(-50%) scale(0.95);
+            background: #141c26;
+            border: 1px solid #2c3c50;
+            color: #f2f5f8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 12px rgba(61, 220, 132, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            z-index: 10000;
+        }
+
+        .admin-sidebar:not(:hover):not(.expanded) .sidebar-tab-btn:hover::after,
+        .admin-sidebar:not(:hover):not(.expanded) .sidebar-footer-btn:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(-50%) scale(1);
+        }
+
+        .admin-sidebar-footer {
+            padding: 12px 10px;
+            border-top: 1px solid #1a232f;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #06090e;
+        }
+
+        .sidebar-footer-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            height: 42px;
+            min-height: 42px;
+            padding: 0 13px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: #7b8c9d;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            position: relative;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .sidebar-footer-btn:hover {
+            background: #121922;
+            color: #f2f5f8;
+            border-color: #202c3c;
+        }
+        .sidebar-footer-btn:hover .sidebar-tab-icon {
+            transform: scale(1.15);
+        }
+
+        .sidebar-footer-label {
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            pointer-events: none;
+        }
+        .admin-sidebar:hover .sidebar-footer-label,
+        .admin-sidebar.expanded .sidebar-footer-label {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        @media (max-width: 768px) {
+            .admin-main-wrapper {
+                margin-left: 0;
+            }
+            .admin-sidebar {
+                left: -250px;
+                width: 250px;
+            }
+            .admin-sidebar.expanded {
+                left: 0;
+            }
+            .admin-sidebar .sidebar-tab-label,
+            .admin-sidebar .sidebar-footer-label,
+            .admin-sidebar .sidebar-brand {
+                opacity: 1 !important;
+                transform: none !important;
+                pointer-events: auto !important;
+            }
+        }
 
         /* Stats Cards */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
@@ -787,12 +1096,75 @@ textarea[required]:focus,
         </div>
     </div>
 
-    <!-- Panel de Administración -->
-    <header class="admin-header">
-        <div class="admin-title">
-            <span><i class="fa-solid fa-gear" style="color:var(--blue);"></i></span>
-            <span>Panel de Administración <strong class="gradient-text">Reset Supply MX</strong></span>
+    <!-- BARRA LATERAL NAVEGACIÓN HAMBURGER (MENÚ IZQUIERDO) -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-sidebar-header">
+            <button type="button" class="sidebar-hamburger-btn" id="sidebarToggleBtn" title="Expandir / Contraer menú">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="sidebar-brand">
+                <img src="assets/reset-ia-icon.png" alt="Reset Admin" class="sidebar-brand-img">
+                <span class="sidebar-brand-title">Reset Admin</span>
+            </div>
         </div>
+
+        <nav class="admin-sidebar-nav">
+            <button type="button" class="tab-btn sidebar-tab-btn active" data-tab="orders" data-tooltip="Órdenes y Guías">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-boxes-packing" style="color:var(--green);"></i></span>
+                <span class="sidebar-tab-label">Órdenes y Guías</span>
+            </button>
+            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="pos-sales" data-tooltip="Ventas">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-cash-register" style="color:var(--blue);"></i></span>
+                <span class="sidebar-tab-label">Ventas</span>
+            </button>
+            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="invoices" data-tooltip="Solicitudes">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple);"></i></span>
+                <span class="sidebar-tab-label">Solicitudes</span>
+            </button>
+            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="pos-clients" data-tooltip="Clientes">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-users" style="color:var(--blue);"></i></span>
+                <span class="sidebar-tab-label">Clientes</span>
+            </button>
+            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="products" data-tooltip="Catálogo">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-boxes-stacked" style="color:var(--green);"></i></span>
+                <span class="sidebar-tab-label">Catálogo</span>
+            </button>
+            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="editor" data-tooltip="Editor Visual">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-palette" style="color:var(--yellow);"></i></span>
+                <span class="sidebar-tab-label">Editor Visual</span>
+            </button>
+            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="visor" data-tooltip="Visor">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-tv" style="color:#00d2ff;"></i></span>
+                <span class="sidebar-tab-label">Visor</span>
+            </button>
+        </nav>
+
+        <div class="admin-sidebar-footer">
+            <a href="tienda.html" target="_blank" class="sidebar-footer-btn" data-tooltip="Terminal POS">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-shop" style="color:var(--green);"></i></span>
+                <span class="sidebar-footer-label">Terminal POS</span>
+            </a>
+            <a href="facturacion.html" target="_blank" class="sidebar-footer-btn" data-tooltip="Portal Facturación">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-receipt" style="color:var(--muted);"></i></span>
+                <span class="sidebar-footer-label">Facturación</span>
+            </a>
+            <button type="button" class="sidebar-footer-btn" data-tooltip="Cerrar Sesión" onclick="document.getElementById('logoutBtn').click()">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-right-from-bracket" style="color:var(--red);"></i></span>
+                <span class="sidebar-footer-label" style="color:var(--red);">Cerrar Sesión</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- WRAPPER PRINCIPAL DE ADMINISTRACIÓN -->
+    <div class="admin-main-wrapper" id="adminMainWrapper">
+        <header class="admin-header">
+            <div class="admin-title">
+                <button type="button" class="sidebar-hamburger-btn" id="headerHamburgerBtn" title="Abrir / Cerrar Menú" style="display:inline-flex;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <span><i class="fa-solid fa-gear" style="color:var(--blue);"></i></span>
+                <span>Panel de Administración <strong class="gradient-text">Reset Supply MX</strong></span>
+            </div>
         <div style="display:flex; align-items:center;">
             <a href="tienda.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--green); color:var(--green); font-weight:700;">🏪 Terminal POS (Tienda Física)</a>
             <a href="facturacion.html" target="_blank" class="btn-action" style="text-decoration:none;">🧾 Portal Facturación</a>
@@ -976,15 +1348,7 @@ textarea[required]:focus,
         </div>
 
         <!-- Pestañas principales -->
-        <div class="admin-tabs">
-            <button class="tab-btn active" data-tab="orders"><i class="fa-solid fa-boxes-packing" style="color:var(--green); margin-right:8px;"></i>Órdenes y Guías de Rastreo</button>
-            <button class="tab-btn" data-tab="pos-sales"><i class="fa-solid fa-cash-register" style="color:var(--blue); margin-right:8px;"></i>Ventas Tienda Física (POS)</button>
-            <button class="tab-btn" data-tab="invoices"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--green); margin-right:8px;"></i>Solicitudes de Facturación</button>
-            <button class="tab-btn" data-tab="pos-clients"><i class="fa-solid fa-users" style="color:var(--blue); margin-right:8px;"></i>Clientes Punto de Venta</button>
-            <button class="tab-btn" data-tab="products"><i class="fa-solid fa-boxes-stacked" style="color:var(--green); margin-right:8px;"></i>Catálogo de Productos y Precios</button>
-            <button class="tab-btn" data-tab="editor"><i class="fa-solid fa-palette" style="color:var(--blue); margin-right:8px;"></i>Editor Visual de la Página</button>
-            <button class="tab-btn" data-tab="visor" style="border-color:rgba(0, 212, 255, 0.4); color:var(--blue);">📁 VISOR (Imágenes Pantalla)</button>
-        </div>
+        <!-- Pestañas horizontales reemplazadas por Barra Lateral Hamburger -->
 
         <!-- Sección 1: Órdenes y Guías -->
         <div id="tabOrders" class="tab-content">
@@ -1438,6 +1802,7 @@ textarea[required]:focus,
             </div>
         </div>
     </div>
+    </div><!-- /admin-main-wrapper -->
 
     <!-- Modal Editar Guía de Rastreo -->
     <div id="trackingModal" class="modal" style="display:none;">
@@ -1806,12 +2171,29 @@ textarea[required]:focus,
         var tabPosClients = document.getElementById('tabPosClients');
         var tabVisor = document.getElementById('tabVisor');
 
+        // Control de Barra Lateral Hamburger
+        var adminSidebar = document.getElementById('adminSidebar');
+        var sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+        var headerHamburgerBtn = document.getElementById('headerHamburgerBtn');
+
+        function toggleAdminSidebar() {
+            if (adminSidebar) {
+                adminSidebar.classList.toggle('expanded');
+            }
+        }
+
+        if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleAdminSidebar);
+        if (headerHamburgerBtn) headerHamburgerBtn.addEventListener('click', toggleAdminSidebar);
+
         // Tabs
         tabs.forEach(function(tab) {
             tab.addEventListener('click', function() {
                 tabs.forEach(function(t) { t.classList.remove('active'); });
                 this.classList.add('active');
                 var target = this.getAttribute('data-tab');
+                if (window.innerWidth <= 768 && adminSidebar) {
+                    adminSidebar.classList.remove('expanded');
+                }
 
                 tabOrders.style.display = 'none';
                 tabPosSales.style.display = 'none';
