@@ -441,15 +441,15 @@ const URL_FILENAME_MAP = {
   'alumax.png': 'Alumax%2020L.png',
   'delet-.png': 'DELET.png',
   'delet.png': 'DELET.png',
-  'impact-.png': 'STRIKE.png',
-  'impact.png': 'STRIKE.png',
+  'impact-.png': 'IMPACT.png',
+  'impact.png': 'IMPACT.png',
   'izer-1.png': 'IZER.png',
   'izer.png': 'IZER.png',
   'removex-1.png': 'REMOVEX.png',
   'removex.png': 'REMOVEX.png',
   'rezet.png': 'V-ECO%20FAST.png',
   'sintra-fast.png': 'SINTRA%20FAST.png',
-  'sintra-pro.png': 'SINTRA%20FAST.png',
+  'sintra-pro.png': 'SINTRA-PRO.png',
   '1-6.png': 'BACTRAN%201.5L.png',
   'bactran.png': 'BACTRAN%201.5L.png',
   '1-7.png': 'EXTRACTUS%201.5L.png',
@@ -460,25 +460,32 @@ const URL_FILENAME_MAP = {
   'carnauba-hybrid-wax.png': 'CARNAUBA%20HYBRID%20WAX.png',
   'native-paste-wax.png': 'NATIVE.png',
   'blen-spray-.png': 'BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png',
-  'carnauba-tok-final.png': 'CARNAUBA%20HYBRID%20WAX.png',
+  'carnauba-tok-final.png': 'TOKFINAL.png',
+  'tokfinal.webp': 'TOKFINAL.png',
+  'tokfinal.png': 'TOKFINAL.png',
   'native-spray-wax.png': 'NATIVE%20FAST.png',
   'carnauba-plus.png': 'PLUS.png',
   'citron.png': 'CITRON%201.5L.png',
   'hydrox-wash.png': 'HYDROX%20WASH.png',
   'sinergy-paint.png': 'SINERGY%20PAINT.png',
   'sinergy-wheel.png': 'SINERGY%20SHEEL.png',
-  'hydrox-pro-.png': 'HYDROX%20FAST.png',
+  'hydrox-pro-.png': 'HYDROX-PRO.png',
+  'hydrox-pro.png': 'HYDROX-PRO.png',
   'hydrox-fast.png': 'HYDROX%20FAST.png',
   '1-12.png': 'RESTAURAX.png',
-  '1-13.png': 'RESTAURAX.png',
-  '1-11.png': 'V-PLASTIC.png',
-  '1-16.png': 'V-PLASTIC.png',
+  '1-13.png': 'RESTAURAXAEROSOL.png',
+  'restaurax-aerosol.png': 'RESTAURAXAEROSOL.png',
+  '1-11.png': 'FLEXUS.png',
+  'flexus.png': 'FLEXUS.png',
+  '1-16.png': 'INTENSE.png',
+  'intense.png': 'INTENSE.png',
   'shiny-5.png': 'SHINY.png',
   'shiny.png': 'SHINY.png',
   'revox.png': 'REVOX.png',
   'rexer.png': 'REXER.png',
   'glazy.png': 'GLAZY.png',
   'focus.png': 'FOCUS.png',
+  'prizm.png': 'PRIZM.png',
   'opty.png': 'OPTY.png',
   'v10.png': 'V10.png',
   'v20.png': 'V20.png',
@@ -526,32 +533,43 @@ function resolveToGitRepoUrl(item) {
 
   if (name.includes('alumax')) return GIT_REPO_BASE + 'Alumax%2020L.png';
   if (name.includes('delet')) return GIT_REPO_BASE + 'DELET.png';
-  if (name.includes('strike') || name.includes('impact')) return GIT_REPO_BASE + 'STRIKE.png';
+  if (name.includes('impact')) return GIT_REPO_BASE + 'IMPACT.png';
+  if (name.includes('strike')) return GIT_REPO_BASE + 'STRIKE.png';
   if (name.includes('izer')) return GIT_REPO_BASE + 'IZER.png';
   if (name.includes('removex')) return GIT_REPO_BASE + 'REMOVEX.png';
   if (name.includes('v-eco') || name.includes('veco') || name.includes('rezet')) return GIT_REPO_BASE + 'V-ECO%20FAST.png';
+  if (name.includes('sintra pro') || name.includes('sintra-pro')) return GIT_REPO_BASE + 'SINTRA-PRO.png';
   if (name.includes('sintra')) return GIT_REPO_BASE + 'SINTRA%20FAST.png';
   if (name.includes('bactran')) return GIT_REPO_BASE + 'BACTRAN%201.5L.png';
   if (name.includes('extractus')) return GIT_REPO_BASE + 'EXTRACTUS%201.5L.png';
   if (name.includes('sanitizante')) return GIT_REPO_BASE + 'SANITIZANTE%201.5L.png';
+  if (name.includes('vsc')) return GIT_REPO_BASE + 'KIT%20BASICO.png';
+  if (name.includes('tok final') || name.includes('tok-final') || name.includes('tokfinal')) return GIT_REPO_BASE + 'TOKFINAL.png';
   if (name.includes('carnauba hybrid')) return GIT_REPO_BASE + 'CARNAUBA%20HYBRID%20WAX.png';
+  if (name.includes('blend all') || name.includes('blend-all')) return GIT_REPO_BASE + 'BLENDALLINONE.png';
   if (name.includes('blend')) return GIT_REPO_BASE + 'BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png';
   if (name.includes('native') && (name.includes('spray') || name.includes('fast'))) return GIT_REPO_BASE + 'NATIVE%20FAST.png';
   if (name.includes('native')) return GIT_REPO_BASE + 'NATIVE.png';
   if (name.includes('plus')) return GIT_REPO_BASE + 'PLUS.png';
   if (name.includes('citron')) return GIT_REPO_BASE + 'CITRON%201.5L.png';
+  if (name.includes('v-floc 500') || name.includes('vfloc 500')) return GIT_REPO_BASE + 'V-FLOC-500ML.png';
   if (name.includes('v-mol') || name.includes('vmol') || name.includes('v-floc') || name.includes('vfloc') || name.includes('floc')) return GIT_REPO_BASE + 'V-MOL%201.5L.png';
   if (name.includes('hydrox wash')) return GIT_REPO_BASE + 'HYDROX%20WASH.png';
+  if (name.includes('hydrox pro') || name.includes('hydrox-pro')) return GIT_REPO_BASE + 'HYDROX-PRO.png';
   if (name.includes('hydrox')) return GIT_REPO_BASE + 'HYDROX%20FAST.png';
   if (name.includes('sinergy wheel') || name.includes('sinergy-wheel')) return GIT_REPO_BASE + 'SINERGY%20SHEEL.png';
   if (name.includes('sinergy')) return GIT_REPO_BASE + 'SINERGY%20PAINT.png';
+  if (name.includes('restaurax') && name.includes('aerosol')) return GIT_REPO_BASE + 'RESTAURAXAEROSOL.png';
   if (name.includes('restaurax')) return GIT_REPO_BASE + 'RESTAURAX.png';
-  if (name.includes('v-plastic') || name.includes('flexus') || name.includes('intense')) return GIT_REPO_BASE + 'V-PLASTIC.png';
+  if (name.includes('flexus')) return GIT_REPO_BASE + 'FLEXUS.png';
+  if (name.includes('intense')) return GIT_REPO_BASE + 'INTENSE.png';
+  if (name.includes('v-plastic')) return GIT_REPO_BASE + 'V-PLASTIC.png';
   if (name.includes('shiny')) return GIT_REPO_BASE + 'SHINY.png';
   if (name.includes('revox')) return GIT_REPO_BASE + 'REVOX.png';
   if (name.includes('rexer')) return GIT_REPO_BASE + 'REXER.png';
   if (name.includes('glazy')) return GIT_REPO_BASE + 'GLAZY.png';
   if (name.includes('focus')) return GIT_REPO_BASE + 'FOCUS.png';
+  if (name.includes('prizm')) return GIT_REPO_BASE + 'PRIZM.png';
   if (name.includes('opty')) return GIT_REPO_BASE + 'OPTY.png';
   if (name.includes('v10')) return GIT_REPO_BASE + 'V10.png';
   if (name.includes('v20')) return GIT_REPO_BASE + 'V20.png';
@@ -564,7 +582,6 @@ function resolveToGitRepoUrl(item) {
   if (name.includes('higicouro')) return GIT_REPO_BASE + 'HIGICOURO.png';
   if (name.includes('makker')) return GIT_REPO_BASE + 'MAKKER%202.0.png';
   if (name.includes('spell')) return GIT_REPO_BASE + 'SPELL.png';
-  if (name.includes('prizm')) return GIT_REPO_BASE + 'PRIZM.png';
   if (name.includes('sio2-pro') || name.includes('sio2')) return GIT_REPO_BASE + 'SIO2-PRO.png';
   if (name.includes('v-paint pro') || name.includes('vpaint pro')) return GIT_REPO_BASE + 'V-PAINT%20PRO.png';
   if (name.includes('v-paint') || name.includes('vpaint')) return GIT_REPO_BASE + 'V-PAINT.png';
@@ -735,6 +752,65 @@ app.get('/api/products', async (req, res) => {
   });
   res.json({ success: true, products: processedProducts });
 });
+
+// ============================================================================
+// WebMCP - Protocolo y Herramientas del Asistente Virtual para el Catálogo
+// ============================================================================
+app.get('/api/webmcp/tools', (req, res) => {
+  res.json({
+    success: true,
+    protocol: "WebMCP/1.0",
+    server: "ResetSupplyMX-Vonixx",
+    tools: [
+      {
+        name: "search_catalog",
+        description: "Buscar productos en el catálogo de Vonixx por palabra clave o categoría",
+        parameters: { query: "string", category: "string (opcional)", max_price: "number (opcional)" }
+      },
+      {
+        name: "diagnose_vehicle_issue",
+        description: "Diagnosticar problemas automotrices (sarro, lluvia ácida, plásticos grises, mugre pesada, tapicería manchada) y sugerir productos",
+        parameters: { issue: "string" }
+      },
+      {
+        name: "get_product_details",
+        description: "Obtener ficha técnica, dilución, modo de uso y precio de un producto",
+        parameters: { product_name: "string" }
+      }
+    ]
+  });
+});
+
+app.post('/api/webmcp/query', express.json(), (req, res) => {
+  try {
+    const { query } = req.body || {};
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ error: "Parámetro 'query' es requerido" });
+    }
+    const terms = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/\s+/);
+    const matches = localInventory.filter(p => {
+      const text = ((p.name || '') + ' ' + (p.category || '') + ' ' + (p.description || '')).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return terms.every(t => text.includes(t));
+    }).map(p => ({
+      id: p.id,
+      name: p.name,
+      category: p.category,
+      price: p.newPrice || p.price,
+      image: resolveToGitRepoUrl(p),
+      description: p.description
+    }));
+
+    res.json({
+      success: true,
+      query,
+      resultsCount: matches.length,
+      products: matches.slice(0, 6)
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 // 4. Obtener Lista de Productos para Admin
 app.get('/api/admin/products', requireAdminAuth, async (req, res) => {

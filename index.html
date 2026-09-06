@@ -529,7 +529,154 @@ h1,h2,h3,h4{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.01
   max-width:var(--maxw);margin:0 auto;padding:0 24px;
   display:flex;align-items:center;justify-content:space-between;gap:24px;
 }
-.nav-logo{height:44px;width:auto;}
+.nav-logo{
+  height: 84px;
+  max-height: 88px;
+  width: auto;
+  object-fit: contain;
+  transition: height .25s ease, transform .25s ease;
+  filter: drop-shadow(0 0 12px rgba(61,220,132,0.22));
+}
+.navbar.scrolled .nav-logo{
+  height: 60px;
+}
+.nav-search-btn{
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid var(--line);
+  color: var(--text);
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.nav-search-btn:hover{
+  border-color: var(--green);
+  color: var(--green);
+  box-shadow: 0 0 12px rgba(61,220,132,0.35);
+  transform: translateY(-1px);
+}
+/* ---------- Catalog Real-time Search Box ---------- */
+.products-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.products-search-box {
+  background: rgba(18, 24, 33, 0.85);
+  border: 1px solid rgba(61, 220, 132, 0.3);
+  border-radius: 12px;
+  padding: 12px 18px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+  transition: border-color .25s ease, box-shadow .25s ease;
+  margin-bottom: 8px;
+}
+.products-search-box:focus-within {
+  border-color: var(--green);
+  box-shadow: 0 0 18px rgba(61, 220, 132, 0.3), 0 0 35px rgba(34, 184, 240, 0.15);
+}
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+}
+.search-icon-svg {
+  color: var(--green);
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(61, 220, 132, 0.4));
+}
+#catalogSearchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 16.5px;
+  color: var(--text);
+  letter-spacing: .03em;
+}
+#catalogSearchInput::placeholder {
+  color: #627284;
+  font-weight: 500;
+}
+.search-clear-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  transition: all .2s ease;
+}
+.search-clear-btn:hover {
+  background: rgba(255, 68, 68, 0.25);
+  border-color: #ff4444;
+  color: #ff5555;
+  transform: scale(1.08);
+}
+.search-meta {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 13.5px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.search-meta strong {
+  color: var(--green);
+  font-weight: 700;
+}
+.catalog-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 20px;
+  background: rgba(18, 24, 33, 0.5);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+}
+.catalog-empty-state h4 {
+  font-size: 20px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.catalog-empty-state p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+.btn-ask-webmcp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--grad);
+  color: #04130b;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.btn-ask-webmcp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px rgba(61, 220, 132, 0.4);
+}
 .nav-links{display:flex;gap:32px;}
 .nav-link{
   font-family:'Rajdhani',sans-serif;font-weight:600;font-size:15px;letter-spacing:.04em;text-transform:uppercase;
@@ -776,6 +923,7 @@ section{padding:96px 0;}
   .footer-grid{grid-template-columns:1fr 1fr}
 }
 @media (max-width:768px){
+  .nav-logo{height:58px;}
   .nav-links{
     position:fixed;top:0;right:-100%;height:100vh;width:78%;max-width:320px;
     background:var(--panel);flex-direction:column;padding:120px 32px 40px;gap:26px;
@@ -792,6 +940,7 @@ section{padding:96px 0;}
   .hero-badge{position:static;margin-top:16px;}
 }
 @media (max-width:480px){
+  .nav-logo{height:50px;}
   .products-grid{grid-template-columns:1fr 1fr}
   .container{padding:0 18px;}
 }
@@ -884,6 +1033,12 @@ textarea[required]:focus,
             </ul>
             <div class="nav-actions">
                 <a class="btn-whatsapp" href="https://wa.me/526634606566?text=Hola%2C%20quiero%20hacer%20un%20pedido%20en%20Reset%20Supply%20MX" target="_blank" rel="noopener noreferrer" style="display:none" id="navWhatsapp">WhatsApp</a>
+                <button class="nav-search-btn" id="navSearchBtn" aria-label="Buscar productos" title="Buscar productos en el catálogo">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
                 <button class="cart-btn" id="cartBtn" aria-label="Carrito de compras">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="9" cy="21" r="1"></circle>
@@ -1012,7 +1167,7 @@ textarea[required]:focus,
         <div class="carousel-item" data-category="limpieza">
             <span class="carousel-item-badge">Limpieza</span>
             <div class="carousel-item-img-wrapper">
-                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/STRIKE.png" alt="IMPACT – DESENGRASANTE MULTIUSOS" loading="lazy">
+                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/IMPACT.png" alt="IMPACT – DESENGRASANTE MULTIUSOS" loading="lazy">
             </div>
             <div class="carousel-item-info">
                 <h4 class="carousel-item-title">IMPACT – DESENGRASANTE MULTIUSOS</h4>
@@ -1060,14 +1215,14 @@ textarea[required]:focus,
         <div class="carousel-item" data-category="limpieza">
             <span class="carousel-item-badge">Limpieza</span>
             <div class="carousel-item-img-wrapper">
-                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-ECO%20FAST.png" alt="REZET – ZACS" loading="lazy">
+                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-ECO%20FAST.png" alt="V-ECO FAST – LAVADO ECOLÓGICO EN SECO" loading="lazy">
             </div>
             <div class="carousel-item-info">
-                <h4 class="carousel-item-title">REZET – ZACS</h4>
+                <h4 class="carousel-item-title">V-ECO FAST – LAVADO ECOLÓGICO EN SECO</h4>
                 <div class="carousel-item-price">$206.00</div>
                 <div class="product-card-actions">
-                    <button class="btn-card-action btn-add-cart" data-product="REZET – ZACS" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
-                    <button class="btn-card-action btn-quote-wa" data-product="REZET – ZACS" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
+                    <button class="btn-card-action btn-add-cart" data-product="V-ECO FAST – LAVADO ECOLÓGICO EN SECO" title="Agregar al Carrito"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button>
+                    <button class="btn-card-action btn-quote-wa" data-product="V-ECO FAST – LAVADO ECOLÓGICO EN SECO" title="Cotizar por WhatsApp"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button>
                 </div>
             </div>
         </div>
@@ -1092,7 +1247,7 @@ textarea[required]:focus,
         <div class="carousel-item" data-category="limpieza">
             <span class="carousel-item-badge">Limpieza</span>
             <div class="carousel-item-img-wrapper">
-                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINTRA%20FAST.png" alt="SINTRA PRO – LIMPIADOR DE INTERIORES" loading="lazy">
+                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINTRA-PRO.png" alt="SINTRA PRO – LIMPIADOR DE INTERIORES" loading="lazy">
             </div>
             <div class="carousel-item-info">
                 <h4 class="carousel-item-title">SINTRA PRO – LIMPIADOR DE INTERIORES</h4>
@@ -1108,7 +1263,7 @@ textarea[required]:focus,
         <div class="carousel-item" data-category="vsc">
             <span class="carousel-item-badge">Sistema VSC</span>
             <div class="carousel-item-img-wrapper">
-                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-ECO%20FAST.png" alt="SISTEMA VSC – KIT COMPLETO" loading="lazy">
+                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/KIT%20BASICO.png" alt="SISTEMA VSC – KIT COMPLETO" loading="lazy">
             </div>
             <div class="carousel-item-info">
                 <h4 class="carousel-item-title">SISTEMA VSC – KIT COMPLETO</h4>
@@ -1236,7 +1391,7 @@ textarea[required]:focus,
         <div class="carousel-item" data-category="cera">
             <span class="carousel-item-badge">Ceras</span>
             <div class="carousel-item-img-wrapper">
-                <img src="/tokfinal.webp" alt="CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO" loading="lazy">
+                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/TOKFINAL.png" alt="CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO" loading="lazy">
             </div>
             <div class="carousel-item-info">
                 <h4 class="carousel-item-title">CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO</h4>
@@ -1348,7 +1503,7 @@ textarea[required]:focus,
         <div class="carousel-item" data-category="ceramicos">
             <span class="carousel-item-badge">Cerámicos</span>
             <div class="carousel-item-img-wrapper">
-                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HYDROX%20FAST.png" alt="HYDROX PRO – CERÁMICO HIDROREACTIVO" loading="lazy">
+                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HYDROX-PRO.png" alt="HYDROX PRO – CERÁMICO HIDROREACTIVO" loading="lazy">
             </div>
             <div class="carousel-item-info">
                 <h4 class="carousel-item-title">HYDROX PRO – CERÁMICO HIDROREACTIVO</h4>
@@ -1396,7 +1551,7 @@ textarea[required]:focus,
         <div class="carousel-item" data-category="plasticos">
             <span class="carousel-item-badge">Restauración</span>
             <div class="carousel-item-img-wrapper">
-                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/RESTAURAX.png" alt="RESTAURAX EN AEROSOL" loading="lazy">
+                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/RESTAURAXAEROSOL.png" alt="RESTAURAX EN AEROSOL" loading="lazy">
             </div>
             <div class="carousel-item-info">
                 <h4 class="carousel-item-title">RESTAURAX EN AEROSOL</h4>
@@ -1412,7 +1567,7 @@ textarea[required]:focus,
         <div class="carousel-item" data-category="plasticos">
             <span class="carousel-item-badge">Restauración</span>
             <div class="carousel-item-img-wrapper">
-                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-PLASTIC.png" alt="FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR" loading="lazy">
+                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/FLEXUS.png" alt="FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR" loading="lazy">
             </div>
             <div class="carousel-item-info">
                 <h4 class="carousel-item-title">FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR</h4>
@@ -1428,7 +1583,7 @@ textarea[required]:focus,
         <div class="carousel-item" data-category="plasticos">
             <span class="carousel-item-badge">Restauración</span>
             <div class="carousel-item-img-wrapper">
-                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-PLASTIC.png" alt="INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL" loading="lazy">
+                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/INTENSE.png" alt="INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL" loading="lazy">
             </div>
             <div class="carousel-item-info">
                 <h4 class="carousel-item-title">INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL</h4>
@@ -1524,7 +1679,7 @@ textarea[required]:focus,
         <div class="carousel-item" data-category="cristales">
             <span class="carousel-item-badge">Cristales</span>
             <div class="carousel-item-img-wrapper">
-                <img src="/logoresetsupply.png" alt="PRIZM – RESTAURADOR DE VIDRIOS" loading="lazy">
+                <img src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/PRIZM.png" alt="PRIZM – RESTAURADOR DE VIDRIOS" loading="lazy">
             </div>
             <div class="carousel-item-info">
                 <h4 class="carousel-item-title">PRIZM – RESTAURADOR DE VIDRIOS</h4>
@@ -1614,6 +1769,7 @@ textarea[required]:focus,
                     </div>
                     <h3 class="feature-title">Marca #1 en Latam</h3>
                     <p class="feature-desc">Vonixx es la línea líder en detailing automotriz en toda Latinoamérica, con más de 2M de seguidores.</p>
+                </div>
                 </div>
             </div>
         </div>
@@ -1722,26 +1878,42 @@ textarea[required]:focus,
                     </ul>
                 </aside>
 
-                <div class="products-grid" id="productsGrid">
+                <div class="products-content">
+                    <!-- Buscador de Productos en Tiempo Real -->
+                    <div class="products-search-box" id="productsSearchBox">
+                        <div class="search-input-wrapper">
+                            <svg class="search-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="catalogSearchInput" placeholder="Buscar por producto, cera, shampoo, cerámico, microfibra..." autocomplete="off" />
+                            <button type="button" id="catalogSearchClear" class="search-clear-btn" title="Limpiar búsqueda" style="display:none;">&times;</button>
+                        </div>
+                        <div class="search-meta" id="searchMeta" style="display:none;">
+                            <span id="searchCount"></span>
+                        </div>
+                    </div>
+
+                    <div class="products-grid" id="productsGrid">
                     <!-- LIMPIEZA -->
                     <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/Alumax%2020L.png" alt="Alumax"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">ALUMAX – DESINCRUSTANTE ÁCIDO</h3><p class="product-price">$2,261.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="ALUMAX – Desincrustante Ácido" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="ALUMAX – Desincrustante Ácido" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
                     <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/DELET.png" alt="Delet"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">DELET – LIMPIADOR DE PLÁSTICOS, VINILO Y CAUCHO</h3><p class="product-price">$200.00 – $566.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Delet – Limpiador de Plásticos, Vinilo y Caucho" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Delet – Limpiador de Plásticos, Vinilo y Caucho" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
-                    <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/STRIKE.png" alt="Impact"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">IMPACT – DESENGRASANTE MULTIUSOS</h3><p class="product-price">$225.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Impact – Desengrasante Multiusos" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Impact – Desengrasante Multiusos" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
+                    <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/IMPACT.png" alt="Impact"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">IMPACT – DESENGRASANTE MULTIUSOS</h3><p class="product-price">$225.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Impact – Desengrasante Multiusos" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Impact – Desengrasante Multiusos" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
                     <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/IZER.png" alt="Izer"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">IZER – REMOVEDOR DE ÓXIDO</h3><p class="product-price">$212.00 – $422.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Izer – Removedor de Óxido" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Izer – Removedor de Óxido" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
                     <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/REMOVEX.png" alt="Removex"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">REMOVEX – DESENGRASANTE Y LIMPIADOR DE CHASIS</h3><p class="product-price">$1,817.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Removex – Desengrasante y Limpiador de Chasis" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Removex – Desengrasante y Limpiador de Chasis" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
-                    <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-ECO%20FAST.png" alt="Rezet"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">REZET – ZACS</h3><p class="product-price">$206.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Rezet – Zacs" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Rezet – Zacs" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
+                    <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-ECO%20FAST.png" alt="V-Eco Fast"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">V-ECO FAST – LAVADO ECOLÓGICO EN SECO</h3><p class="product-price">$206.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="V-Eco Fast – Lavado Ecológico en Seco" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="V-Eco Fast – Lavado Ecológico en Seco" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
                     <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINTRA%20FAST.png" alt="Sintra Fast"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">SINTRA FAST – LIMPIADOR DE INTERIORES</h3><p class="product-price">$179.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Sintra Fast – Limpiador de Interiores" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Sintra Fast – Limpiador de Interiores" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
-                    <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINTRA%20FAST.png" alt="Sintra Pro"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">SINTRA PRO – LIMPIADOR DE INTERIORES</h3><p class="product-price">$246.00 – $531.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Sintra Pro – Limpiador de Interiores" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Sintra Pro – Limpiador de Interiores" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
+                    <article class="product-card" data-category="limpieza"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINTRA-PRO.png" alt="Sintra Pro"><span class="product-badge">Limpieza</span></div><div class="product-info"><h3 class="product-name">SINTRA PRO – LIMPIADOR DE INTERIORES</h3><p class="product-price">$246.00 – $531.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Sintra Pro – Limpiador de Interiores" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Sintra Pro – Limpiador de Interiores" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
                     <!-- SISTEMA VSC -->
-                    <article class="product-card" data-category="vsc"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-ECO%20FAST.png" alt="Sistema VSC"><span class="product-badge offer">Oferta</span></div><div class="product-info"><h3 class="product-name">SISTEMA VSC – KIT COMPLETO</h3><p class="product-price"><span class="price-old">$617.00</span> $555.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Sistema VSC – Kit Completo" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Sistema VSC – Kit Completo" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
+                    <article class="product-card" data-category="vsc"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/KIT%20BASICO.png" alt="Sistema VSC"><span class="product-badge offer">Oferta</span></div><div class="product-info"><h3 class="product-name">SISTEMA VSC – KIT COMPLETO</h3><p class="product-price"><span class="price-old">$617.00</span> $555.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Sistema VSC – Kit Completo" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Sistema VSC – Kit Completo" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
                     <article class="product-card" data-category="vsc"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/BACTRAN%201.5L.png" alt="Bactran"><span class="product-badge">Sistema VSC</span></div><div class="product-info"><h3 class="product-name">BACTRAN – LIMPIADOR BACTERICIDA 7 EN 1</h3><p class="product-price">$206.00 – $423.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Bactran – Limpiador Bactericida 7 en 1" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Bactran – Limpiador Bactericida 7 en 1" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
@@ -1759,7 +1931,7 @@ textarea[required]:focus,
                     <!-- CERA LIQUIDA Y SPRAY -->
                     <article class="product-card" data-category="cera-liquida"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png" alt="Blend Spray"><span class="product-badge">Cera líquida</span></div><div class="product-info"><h3 class="product-name">BLEND SPRAY – CERA LÍQUIDA CON SiO2 & CARNAÚBA</h3><p class="product-price">$296.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Blend Spray – Cera Líquida con SiO2 y Carnaúba" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Blend Spray – Cera Líquida con SiO2 y Carnaúba" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
-                    <article class="product-card" data-category="cera-liquida"><div class="product-image"><img loading="lazy" src="/tokfinal.webp" alt="Carnauba Tok Final"><span class="product-badge">Cera líquida</span></div><div class="product-info"><h3 class="product-name">CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO</h3><p class="product-price">$180.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Carnauba Tok Final" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Carnauba Tok Final" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
+                    <article class="product-card" data-category="cera-liquida"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/TOKFINAL.png" alt="Carnauba Tok Final"><span class="product-badge">Cera líquida</span></div><div class="product-info"><h3 class="product-name">CARNAUBA TOK FINAL – CERA DE MANTENIMIENTO</h3><p class="product-price">$180.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Carnauba Tok Final" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Carnauba Tok Final" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
                     <article class="product-card" data-category="cera-liquida"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/NATIVE%20FAST.png" alt="Native Spray Wax"><span class="product-badge">Cera líquida</span></div><div class="product-info"><h3 class="product-name">NATIVE SPRAY WAX – CARNAÚBA LÍQUIDA PREMIUM</h3><p class="product-price">$309.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Native Spray Wax" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Native Spray Wax" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
@@ -1775,7 +1947,7 @@ textarea[required]:focus,
 
                     <article class="product-card" data-category="ceramicos"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINERGY%20SHEEL.png" alt="Sinergy Wheel"><span class="product-badge">Cerámico</span></div><div class="product-info"><h3 class="product-name">SINERGY WHEEL – CERÁMICO PARA LLANTAS</h3><p class="product-price">$618.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Sinergy Wheel – Cerámico para Llantas" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Sinergy Wheel – Cerámico para Llantas" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
-                    <article class="product-card" data-category="ceramicos"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HYDROX%20FAST.png" alt="Hydrox Pro"><span class="product-badge">Cerámico</span></div><div class="product-info"><h3 class="product-name">HYDROX PRO – CERÁMICO HIDROREACTIVO CONCENTRADO</h3><p class="product-price">$571.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Hydrox Pro – Cerámico Hidroreactivo Concentrado" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Hydrox Pro – Cerámico Hidroreactivo Concentrado" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
+                    <article class="product-card" data-category="ceramicos"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HYDROX-PRO.png" alt="Hydrox Pro"><span class="product-badge">Cerámico</span></div><div class="product-info"><h3 class="product-name">HYDROX PRO – CERÁMICO HIDROREACTIVO CONCENTRADO</h3><p class="product-price">$571.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Hydrox Pro – Cerámico Hidroreactivo Concentrado" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Hydrox Pro – Cerámico Hidroreactivo Concentrado" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
                     <article class="product-card" data-category="ceramicos"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HYDROX%20FAST.png" alt="Hydrox Fast"><span class="product-badge">Cerámico</span></div><div class="product-info"><h3 class="product-name">HYDROX FAST – CERÁMICO HIDROREACTIVO</h3><p class="product-price">$201.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Hydrox Fast – Cerámico Hidroreactivo" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Hydrox Fast – Cerámico Hidroreactivo" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
@@ -1784,9 +1956,9 @@ textarea[required]:focus,
 
                     <article class="product-card" data-category="plasticos"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/RESTAURAX.png" alt="Restaurax Aerosol"><span class="product-badge">Restauración</span></div><div class="product-info"><h3 class="product-name">RESTAURAX EN AEROSOL</h3><p class="product-price">$253.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Restaurax en Aerosol" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Restaurax en Aerosol" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
-                    <article class="product-card" data-category="plasticos"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-PLASTIC.png" alt="Flexus"><span class="product-badge">Restauración</span></div><div class="product-info"><h3 class="product-name">FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR</h3><p class="product-price">$277.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Flexus – Renovación de Plásticos Interior" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Flexus – Renovación de Plásticos Interior" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
+                    <article class="product-card" data-category="plasticos"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/FLEXUS.png" alt="Flexus"><span class="product-badge">Restauración</span></div><div class="product-info"><h3 class="product-name">FLEXUS – RENOVACIÓN DE PLÁSTICOS INTERIOR</h3><p class="product-price">$277.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Flexus – Renovación de Plásticos Interior" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Flexus – Renovación de Plásticos Interior" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
-                    <article class="product-card" data-category="plasticos"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-PLASTIC.png" alt="Intense"><span class="product-badge">Restauración</span></div><div class="product-info"><h3 class="product-name">INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL</h3><p class="product-price">$201.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Intense – Plásticos Internos Acabado Natural" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Intense – Plásticos Internos Acabado Natural" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
+                    <article class="product-card" data-category="plasticos"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/INTENSE.png" alt="Intense"><span class="product-badge">Restauración</span></div><div class="product-info"><h3 class="product-name">INTENSE – PLÁSTICOS INTERNOS ACABADO NATURAL</h3><p class="product-price">$201.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Intense – Plásticos Internos Acabado Natural" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Intense – Plásticos Internos Acabado Natural" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
                     <!-- LLANTAS -->
                     <article class="product-card" data-category="llantas"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SHINY.png" alt="Shiny"><span class="product-badge">Llantas</span></div><div class="product-info"><h3 class="product-name">SHINY – ABRILLANTADOR DE LLANTAS BRILLANTE</h3><p class="product-price">$321.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Shiny – Abrillantador de Llantas Brillante" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Shiny – Abrillantador de Llantas Brillante" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
@@ -1800,7 +1972,7 @@ textarea[required]:focus,
 
                     <article class="product-card" data-category="cristales"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/FOCUS.png" alt="Focus"><span class="product-badge">Cristales</span></div><div class="product-info"><h3 class="product-name">FOCUS – REMOVEDOR DE MARCAS DE AGUA</h3><p class="product-price">$254.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Focus – Removedor de Marcas de Agua" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Focus – Removedor de Marcas de Agua" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
-                    <article class="product-card" data-category="cristales"><div class="product-image"><img loading="lazy" src="/logoresetsupply.png" alt="Prizm"><span class="product-badge">Cristales</span></div><div class="product-info"><h3 class="product-name">PRIZM – RESTAURADOR DE VIDRIOS</h3><p class="product-price">$184.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Prizm – Restaurador de Vidrios" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Prizm – Restaurador de Vidrios" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
+                    <article class="product-card" data-category="cristales"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/PRIZM.png" alt="Prizm"><span class="product-badge">Cristales</span></div><div class="product-info"><h3 class="product-name">PRIZM – RESTAURADOR DE VIDRIOS</h3><p class="product-price">$184.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Prizm – Restaurador de Vidrios" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Prizm – Restaurador de Vidrios" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
 
                     <!-- PIEL -->
                     <article class="product-card" data-category="piel"><div class="product-image"><img loading="lazy" src="https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HIGICOURO.png" alt="Higicouro"><span class="product-badge">Piel</span></div><div class="product-info"><h3 class="product-name">HIGICOURO – LIMPIADOR DE PIEL</h3><p class="product-price">$296.00</p><div class="product-card-actions"><button class="btn-card-action btn-add-cart" data-product="Higicouro – Limpiador de Piel" title="Agregar al Carrito"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg><span>Carrito</span></button><button class="btn-card-action btn-quote-wa" data-product="Higicouro – Limpiador de Piel" title="Cotizar por WhatsApp"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.989 4.478-9.989 9.984 0 1.758.459 3.474 1.33 4.982L2 22l5.176-1.348c1.45.791 3.097 1.21 4.836 1.21 5.508 0 9.991-4.479 9.991-9.985 0-2.667-1.037-5.166-2.923-7.051A9.923 9.923 0 0 0 12.012 2zm0 18.156c-1.503 0-2.977-.4-4.264-1.162l-.305-.182-3.153.821.838-3.072-.2-.318a8.147 8.147 0 0 1-1.25-4.259c0-4.498 3.66-8.157 8.16-8.157 2.18 0 4.227.848 5.766 2.389a8.106 8.106 0 0 1 2.386 5.768c0 4.499-3.66 8.16-8.158 8.16z"/></svg><span>Cotizar</span></button></div></div></article>
@@ -2607,6 +2779,21 @@ textarea[required]:focus,
                         quantity: 1
                     });
                 }
+                
+                // Exponer addToCart globalmente para WebMCP y otros componentes
+                window.addToCart = function(pName, pPrice, pImage) {
+                    if (!pName) return;
+                    pPrice = parseFloat(pPrice) || 250.00;
+                    pImage = pImage || 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/Alumax%2020L.png';
+                    var itemExist = cart.find(function(i) { return i.name.toLowerCase() === pName.toLowerCase(); });
+                    if (itemExist) {
+                        itemExist.quantity += 1;
+                    } else {
+                        cart.push({ name: pName, price: pPrice, image: pImage, quantity: 1 });
+                    }
+                    updateCartBadge();
+                    showToast('✅ Producto "' + pName + '" agregado al carrito', '#3ddc84', '#0a0e13', 2500);
+                };
 
                 btnAdd.classList.add('added');
                 setTimeout(function() { btnAdd.classList.remove('added'); }, 1200);
@@ -2719,22 +2906,133 @@ textarea[required]:focus,
             }
         });
 
-        // Filtrado por Categorías
+        // ====================================================================
+        // SISTEMA DE BÚSQUEDA Y FILTRADO EN TIEMPO REAL DEL CATÁLOGO
+        // ====================================================================
+        function normalizeStr(str) {
+            return (str || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        }
+
+        function filterCatalogProducts() {
+            var searchInput = document.getElementById('catalogSearchInput');
+            var searchMeta = document.getElementById('searchMeta');
+            var searchCount = document.getElementById('searchCount');
+            var clearBtn = document.getElementById('catalogSearchClear');
+            var grid = document.getElementById('productsGrid');
+            if (!grid) return;
+
+            var activeLink = document.querySelector('.category-link.active');
+            var activeCategory = activeLink ? activeLink.getAttribute('data-category') : 'all';
+
+            var query = searchInput ? normalizeStr(searchInput.value) : '';
+            var terms = query ? query.split(/\s+/).filter(Boolean) : [];
+
+            if (clearBtn) {
+                clearBtn.style.display = query ? 'flex' : 'none';
+            }
+
+            var allCards = grid.querySelectorAll('.product-card');
+            var visibleCount = 0;
+            var totalCount = allCards.length;
+
+            // Limpiar estado vacío previo si existe
+            var existingEmpty = grid.querySelector('.catalog-empty-state');
+            if (existingEmpty) existingEmpty.remove();
+
+            allCards.forEach(function(card) {
+                var cardCat = card.getAttribute('data-category') || '';
+                var matchesCat = (activeCategory === 'all' || cardCat === activeCategory);
+
+                var matchesSearch = true;
+                if (terms.length > 0) {
+                    var cardText = normalizeStr(card.textContent + ' ' + (card.getAttribute('data-product') || ''));
+                    matchesSearch = terms.every(function(term) {
+                        return cardText.includes(term);
+                    });
+                }
+
+                if (matchesCat && matchesSearch) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Actualizar contador y meta
+            if (searchMeta && searchCount) {
+                if (query.length > 0) {
+                    searchMeta.style.display = 'flex';
+                    searchCount.innerHTML = 'Mostrando <strong>' + visibleCount + '</strong> de <strong>' + totalCount + '</strong> productos para: <em>"' + searchInput.value + '"</em>';
+                } else {
+                    searchMeta.style.display = 'none';
+                }
+            }
+
+            // Mostrar estado vacío si no hay coincidencias
+            if (visibleCount === 0 && (query.length > 0 || activeCategory !== 'all')) {
+                var emptyDiv = document.createElement('div');
+                emptyDiv.className = 'catalog-empty-state';
+                emptyDiv.innerHTML = '<h4>No encontramos productos que coincidan</h4>' +
+                    '<p>No hay resultados para tu búsqueda en esta sección. Prueba con otro término o consulta a nuestro Asistente Inteligente.</p>' +
+                    '<button type="button" class="btn-ask-webmcp" onclick="if(window.openWebMCPAssistant) window.openWebMCPAssistant();">' +
+                    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"></path><path d="M8 12h.01M12 12h.01M16 12h.01"></path></svg>' +
+                    'Preguntar al Asistente Vonixx AI</button>';
+                grid.appendChild(emptyDiv);
+            }
+        }
+
+        window.filterCatalogProducts = filterCatalogProducts;
+
+        // Eventos del Buscador de Texto
+        var catalogSearchInput = document.getElementById('catalogSearchInput');
+        if (catalogSearchInput) {
+            catalogSearchInput.addEventListener('input', filterCatalogProducts);
+            catalogSearchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Escape') {
+                    this.value = '';
+                    filterCatalogProducts();
+                }
+            });
+        }
+
+        var catalogSearchClear = document.getElementById('catalogSearchClear');
+        if (catalogSearchClear) {
+            catalogSearchClear.addEventListener('click', function() {
+                if (catalogSearchInput) {
+                    catalogSearchInput.value = '';
+                    catalogSearchInput.focus();
+                    filterCatalogProducts();
+                }
+            });
+        }
+
+        // Botón de búsqueda rápida en Navbar
+        var navSearchBtn = document.getElementById('navSearchBtn');
+        if (navSearchBtn) {
+            navSearchBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var searchSec = document.getElementById('productos');
+                if (searchSec) {
+                    searchSec.scrollIntoView({ behavior: 'smooth' });
+                }
+                setTimeout(function() {
+                    if (catalogSearchInput) {
+                        catalogSearchInput.focus();
+                        catalogSearchInput.select();
+                    }
+                }, 400);
+            });
+        }
+
+        // Filtrado por Categorías integrado con el buscador
         var categoryLinks = document.querySelectorAll('.category-link');
         categoryLinks.forEach(function (link) {
             link.addEventListener('click', function (e) {
                 e.preventDefault();
                 categoryLinks.forEach(function (l) { l.classList.remove('active'); });
                 this.classList.add('active');
-                var selectedCategory = this.getAttribute('data-category');
-                var allCards = document.querySelectorAll('#productsGrid .product-card');
-                allCards.forEach(function (card) {
-                    if (selectedCategory === 'all' || card.getAttribute('data-category') === selectedCategory) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
+                filterCatalogProducts();
             });
         });
 
@@ -2940,15 +3238,18 @@ const URL_FILENAME_MAP = {
   'alumax.png': 'Alumax%2020L.png',
   'delet-.png': 'DELET.png',
   'delet.png': 'DELET.png',
-  'impact-.png': 'STRIKE.png',
-  'impact.png': 'STRIKE.png',
+  'impact-.png': 'IMPACT.png',
+  'impact.png': 'IMPACT.png',
+  'strike-.png': 'STRIKE.png',
+  'strike.png': 'STRIKE.png',
   'izer-1.png': 'IZER.png',
   'izer.png': 'IZER.png',
   'removex-1.png': 'REMOVEX.png',
   'removex.png': 'REMOVEX.png',
   'rezet.png': 'V-ECO%20FAST.png',
+  'v-eco-fast.png': 'V-ECO%20FAST.png',
   'sintra-fast.png': 'SINTRA%20FAST.png',
-  'sintra-pro.png': 'SINTRA%20FAST.png',
+  'sintra-pro.png': 'SINTRA-PRO.png',
   '1-6.png': 'BACTRAN%201.5L.png',
   'bactran.png': 'BACTRAN%201.5L.png',
   '1-7.png': 'EXTRACTUS%201.5L.png',
@@ -2959,25 +3260,32 @@ const URL_FILENAME_MAP = {
   'carnauba-hybrid-wax.png': 'CARNAUBA%20HYBRID%20WAX.png',
   'native-paste-wax.png': 'NATIVE.png',
   'blen-spray-.png': 'BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png',
-  'carnauba-tok-final.png': 'CARNAUBA%20HYBRID%20WAX.png',
+  'carnauba-tok-final.png': 'TOKFINAL.png',
+  'tokfinal.webp': 'TOKFINAL.png',
+  'tokfinal.png': 'TOKFINAL.png',
   'native-spray-wax.png': 'NATIVE%20FAST.png',
   'carnauba-plus.png': 'PLUS.png',
   'citron.png': 'CITRON%201.5L.png',
   'hydrox-wash.png': 'HYDROX%20WASH.png',
   'sinergy-paint.png': 'SINERGY%20PAINT.png',
   'sinergy-wheel.png': 'SINERGY%20SHEEL.png',
-  'hydrox-pro-.png': 'HYDROX%20FAST.png',
+  'hydrox-pro-.png': 'HYDROX-PRO.png',
+  'hydrox-pro.png': 'HYDROX-PRO.png',
   'hydrox-fast.png': 'HYDROX%20FAST.png',
   '1-12.png': 'RESTAURAX.png',
-  '1-13.png': 'RESTAURAX.png',
-  '1-11.png': 'V-PLASTIC.png',
-  '1-16.png': 'V-PLASTIC.png',
+  '1-13.png': 'RESTAURAXAEROSOL.png',
+  'restaurax-aerosol.png': 'RESTAURAXAEROSOL.png',
+  '1-11.png': 'FLEXUS.png',
+  'flexus.png': 'FLEXUS.png',
+  '1-16.png': 'INTENSE.png',
+  'intense.png': 'INTENSE.png',
   'shiny-5.png': 'SHINY.png',
   'shiny.png': 'SHINY.png',
   'revox.png': 'REVOX.png',
   'rexer.png': 'REXER.png',
   'glazy.png': 'GLAZY.png',
   'focus.png': 'FOCUS.png',
+  'prizm.png': 'PRIZM.png',
   'opty.png': 'OPTY.png',
   'v10.png': 'V10.png',
   'v20.png': 'V20.png',
@@ -3025,14 +3333,18 @@ function resolveToGitRepoUrl(item) {
 
   if (name.includes('alumax')) return GIT_REPO_BASE + 'Alumax%2020L.png';
   if (name.includes('delet')) return GIT_REPO_BASE + 'DELET.png';
-  if (name.includes('strike') || name.includes('impact')) return GIT_REPO_BASE + 'STRIKE.png';
+  if (name.includes('impact')) return GIT_REPO_BASE + 'IMPACT.png';
+  if (name.includes('strike')) return GIT_REPO_BASE + 'STRIKE.png';
   if (name.includes('izer')) return GIT_REPO_BASE + 'IZER.png';
   if (name.includes('removex')) return GIT_REPO_BASE + 'REMOVEX.png';
   if (name.includes('v-eco') || name.includes('veco') || name.includes('rezet')) return GIT_REPO_BASE + 'V-ECO%20FAST.png';
+  if (name.includes('sintra pro') || name.includes('sintra-pro')) return GIT_REPO_BASE + 'SINTRA-PRO.png';
   if (name.includes('sintra')) return GIT_REPO_BASE + 'SINTRA%20FAST.png';
   if (name.includes('bactran')) return GIT_REPO_BASE + 'BACTRAN%201.5L.png';
   if (name.includes('extractus')) return GIT_REPO_BASE + 'EXTRACTUS%201.5L.png';
   if (name.includes('sanitizante')) return GIT_REPO_BASE + 'SANITIZANTE%201.5L.png';
+  if (name.includes('vsc')) return GIT_REPO_BASE + 'KIT%20BASICO.png';
+  if (name.includes('tok final') || name.includes('tok-final') || name.includes('tokfinal')) return GIT_REPO_BASE + 'TOKFINAL.png';
   if (name.includes('carnauba hybrid')) return GIT_REPO_BASE + 'CARNAUBA%20HYBRID%20WAX.png';
   if (name.includes('blend')) return GIT_REPO_BASE + 'BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png';
   if (name.includes('native') && (name.includes('spray') || name.includes('fast'))) return GIT_REPO_BASE + 'NATIVE%20FAST.png';
@@ -3041,16 +3353,21 @@ function resolveToGitRepoUrl(item) {
   if (name.includes('citron')) return GIT_REPO_BASE + 'CITRON%201.5L.png';
   if (name.includes('v-mol') || name.includes('vmol') || name.includes('v-floc') || name.includes('vfloc') || name.includes('floc')) return GIT_REPO_BASE + 'V-MOL%201.5L.png';
   if (name.includes('hydrox wash')) return GIT_REPO_BASE + 'HYDROX%20WASH.png';
+  if (name.includes('hydrox pro') || name.includes('hydrox-pro')) return GIT_REPO_BASE + 'HYDROX-PRO.png';
   if (name.includes('hydrox')) return GIT_REPO_BASE + 'HYDROX%20FAST.png';
   if (name.includes('sinergy wheel') || name.includes('sinergy-wheel')) return GIT_REPO_BASE + 'SINERGY%20SHEEL.png';
   if (name.includes('sinergy')) return GIT_REPO_BASE + 'SINERGY%20PAINT.png';
+  if (name.includes('restaurax') && name.includes('aerosol')) return GIT_REPO_BASE + 'RESTAURAXAEROSOL.png';
   if (name.includes('restaurax')) return GIT_REPO_BASE + 'RESTAURAX.png';
-  if (name.includes('v-plastic') || name.includes('flexus') || name.includes('intense')) return GIT_REPO_BASE + 'V-PLASTIC.png';
+  if (name.includes('flexus')) return GIT_REPO_BASE + 'FLEXUS.png';
+  if (name.includes('intense')) return GIT_REPO_BASE + 'INTENSE.png';
+  if (name.includes('v-plastic')) return GIT_REPO_BASE + 'V-PLASTIC.png';
   if (name.includes('shiny')) return GIT_REPO_BASE + 'SHINY.png';
   if (name.includes('revox')) return GIT_REPO_BASE + 'REVOX.png';
   if (name.includes('rexer')) return GIT_REPO_BASE + 'REXER.png';
   if (name.includes('glazy')) return GIT_REPO_BASE + 'GLAZY.png';
   if (name.includes('focus')) return GIT_REPO_BASE + 'FOCUS.png';
+  if (name.includes('prizm')) return GIT_REPO_BASE + 'PRIZM.png';
   if (name.includes('opty')) return GIT_REPO_BASE + 'OPTY.png';
   if (name.includes('v10')) return GIT_REPO_BASE + 'V10.png';
   if (name.includes('v20')) return GIT_REPO_BASE + 'V20.png';
@@ -3203,16 +3520,10 @@ function resolveToGitRepoUrl(item) {
                 }
             });
 
-            // Respetar categoría activa seleccionada
-            var activeLink = document.querySelector('.category-link.active');
-            var selectedCat = activeLink ? activeLink.getAttribute('data-category') : 'all';
-            grid.querySelectorAll('.product-card').forEach(function(card) {
-                if (selectedCat === 'all' || card.getAttribute('data-category') === selectedCat) {
-                    card.style.display = '';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+            // Aplicar filtrado respetando categoría y búsqueda activa
+            if (typeof filterCatalogProducts === 'function') {
+                filterCatalogProducts();
+            }
 
             // Re-vincular botones de Carrito y WhatsApp
             bindCartAndWaButtons(grid);
@@ -3292,3 +3603,8 @@ function resolveToGitRepoUrl(item) {
 
     })();
     </script>
+
+    <!-- Asistente Virtual Inteligente WebMCP (Voz y Texto) -->
+    <script src="/assets/webmcp.js"></script>
+</body>
+</html>
