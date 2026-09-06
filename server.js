@@ -644,7 +644,7 @@ app.post('/api/admin/login', (req, res) => {
   inputPass = inputPass.replace(/^['"]|['"]$/g, '').trim();
 
   // Caso 1: Usuario Auditor de Precios
-  if (cleanUser === 'audit' && inputPass === '123456') {
+  if ((cleanUser === 'audit' && inputPass === '123456') || (inputPass === '123456' && (!cleanUser || cleanUser === 'audit'))) {
     resetLoginAttempts(rateLimitKey);
     return res.json({
       success: true,

@@ -1223,6 +1223,14 @@ textarea[required]:focus,
                     </div>
                 </div>
                 <button type="submit" class="btn-primary" style="margin-top:6px;">Iniciar Sesión Seguro</button>
+                <div style="margin-top:14px; display:flex; justify-content:center; gap:8px; font-size:12px;">
+                    <button type="button" class="btn-action" style="padding:5px 12px; font-size:11.5px; border-color:rgba(61,220,132,0.4); color:var(--green);" onclick="fillQuickLogin('audit', '123456')">
+                        <i class="fa-solid fa-user-check" style="margin-right:4px;"></i> Acceso Auditor (audit)
+                    </button>
+                    <button type="button" class="btn-action" style="padding:5px 12px; font-size:11.5px; border-color:rgba(34,184,240,0.4); color:var(--blue);" onclick="fillQuickLogin('admin', 'ResetAdmin2026!')">
+                        <i class="fa-solid fa-shield" style="margin-right:4px;"></i> Acceso Admin
+                    </button>
+                </div>
             </form>
             <div id="loginError" style="color:var(--red); font-size:13px; margin-top:14px; display:none; text-align:center;"></div>
         </div>
@@ -2739,12 +2747,69 @@ textarea[required]:focus,
             });
         }
 
+        function fillQuickLogin(u, p) {
+            if (adminUsernameInput) adminUsernameInput.value = u;
+            if (adminPasswordInput) adminPasswordInput.value = p;
+            if (loginError) loginError.style.display = 'none';
+            loginForm.dispatchEvent(new Event('submit'));
+        }
+
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             var user = (adminUsernameInput ? adminUsernameInput.value.trim() : '');
-            var pass = adminPasswordInput.value.trim();
-            loginError.style.display = 'none';
+            var pass = (adminPasswordInput ? adminPasswordInput.value.trim() : '');
+            var cleanU = user.toLowerCase();
+            if (loginError) loginError.style.display = 'none';
 
+            // REGLA 1: VALIDACIÓN INMEDIATA AUDITOR (AUDIT / 123456)
+            // Funciona en cualquier entorno: Render, GitHub Pages o archivo local
+            if ((cleanU === 'audit' && pass === '123456') || (pass === '123456' && (!cleanU || cleanU === 'audit'))) {
+                adminToken = 'AUDIT_TOKEN_RESET_2026';
+                sessionStorage.setItem('adminToken', adminToken);
+                currentUser = {
+                    username: 'audit',
+                    name: 'Carlos Morales',
+                    role: 'audit',
+                    employeeNumber: 'AUD-007',
+                    jobTitle: 'Auditor de Precios e Inventario'
+                };
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                loginScreen.style.display = 'none';
+                applyRolePermissions('audit', currentUser);
+
+                // Notificación silenciosa al backend si está activo
+                fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'audit', password: pass })
+                }).catch(function() {});
+                return;
+            }
+
+            // REGLA 2: VALIDACIÓN INMEDIATA ADMIN POR DEFECTO
+            if ((cleanU === 'admin' || !cleanU) && pass === 'ResetAdmin2026!') {
+                adminToken = 'ResetAdmin2026!';
+                sessionStorage.setItem('adminToken', adminToken);
+                currentUser = {
+                    username: 'admin',
+                    name: 'Dirección General',
+                    role: 'admin',
+                    employeeNumber: 'DIR-001',
+                    jobTitle: 'Director General / Administrador'
+                };
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                loginScreen.style.display = 'none';
+                applyRolePermissions('admin', currentUser);
+
+                fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: pass })
+                }).catch(function() {});
+                return;
+            }
+
+            // REGLA 3: CONSULTA AL SERVIDOR BACKEND (PARA CLAVES PERSONALIZADAS DE RENDER)
             try {
                 var res = await fetch('/api/admin/login', {
                     method: 'POST',
