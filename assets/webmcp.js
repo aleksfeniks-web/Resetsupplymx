@@ -703,15 +703,20 @@
       .webmcp-launcher-icon {
         width: 38px;
         height: 38px;
-        background: linear-gradient(135deg, #3ddc84, #22b8f0);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #04130b;
-        font-size: 18px;
-        box-shadow: 0 0 12px rgba(61, 220, 132, 0.6);
         position: relative;
+        overflow: visible;
+      }
+      .webmcp-launcher-icon img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 0 14px rgba(61, 220, 132, 0.65);
+        display: block;
       }
       .webmcp-pulse {
         position: absolute;
@@ -734,16 +739,12 @@
       .webmcp-launcher-title {
         font-family: 'Rajdhani', sans-serif;
         font-weight: 700;
-        font-size: 14px;
-        letter-spacing: 0.06em;
+        font-size: 15.5px;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
         color: #f2f5f8;
-        line-height: 1.1;
-      }
-      .webmcp-launcher-sub {
-        font-size: 11px;
-        color: #3ddc84;
-        font-weight: 600;
+        line-height: 1;
+        padding-right: 4px;
       }
 
       /* Modal / Drawer de Chat */
@@ -786,16 +787,21 @@
         gap: 12px;
       }
       .webmcp-header-avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, #3ddc84, #22b8f0);
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #04130b;
-        font-weight: 800;
-        font-size: 16px;
+        overflow: hidden;
+        border: 1.5px solid #3ddc84;
+        box-shadow: 0 0 10px rgba(61, 220, 132, 0.4);
+      }
+      .webmcp-header-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
       }
       .webmcp-header-title {
         font-family: 'Rajdhani', sans-serif;
@@ -1143,15 +1149,14 @@
     // 1. Launcher Flotante
     const launcher = document.createElement('div');
     launcher.id = 'webmcp-launcher';
-    launcher.setAttribute('aria-label', 'Abrir Asistente Vonixx WebMCP');
+    launcher.setAttribute('aria-label', 'Abrir Reset IA');
     launcher.innerHTML = `
       <div class="webmcp-launcher-icon">
         <div class="webmcp-pulse"></div>
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <img src="/assets/reset-ia-icon.png" alt="Reset IA" />
       </div>
       <div class="webmcp-launcher-text">
-        <span class="webmcp-launcher-title">Asistente Vonixx</span>
-        <span class="webmcp-launcher-sub"><i class="fa-solid fa-microphone"></i> Voz o Texto WebMCP</span>
+        <span class="webmcp-launcher-title">Reset IA</span>
       </div>
     `;
     document.body.appendChild(launcher);
@@ -1163,10 +1168,10 @@
       <div class="webmcp-header">
         <div class="webmcp-header-info">
           <div class="webmcp-header-avatar">
-            <i class="fa-solid fa-robot"></i>
+            <img src="/assets/reset-ia-icon.png" alt="Reset IA" />
           </div>
           <div>
-            <div class="webmcp-header-title">Reset AI • Vonixx WebMCP</div>
+            <div class="webmcp-header-title">Reset IA</div>
             <div class="webmcp-header-status">
               <span class="webmcp-status-dot"></span> Catálogo conectado en tiempo real
             </div>
@@ -1186,8 +1191,7 @@
         <!-- Mensaje de bienvenida -->
         <div class="webmcp-message bot">
           <div class="webmcp-bubble">
-            ¡Hola! Soy tu <strong>Asistente Virtual Vonixx (WebMCP)</strong> de Reset Supply MX.<br><br>
-            Dime por <strong>voz</strong> 🎙️ o escribe qué problema tiene tu auto y te recomendaré la solución y el producto exacto con su dilución y modo de uso.
+            ¡Hola! Soy <strong>Reset IA</strong>. ¿Te puedo ayudar con alguna duda?
           </div>
         </div>
 
