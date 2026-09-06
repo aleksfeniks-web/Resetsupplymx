@@ -27,9 +27,46 @@
         h1, h2, h3, h4 { font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; }
         .gradient-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
-        /* Login Screen */
-        #loginScreen { position: fixed; inset: 0; background: rgba(10,14,19,0.95); backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 36px; width: 100%; max-width: 420px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; }
+        /* Login Screen - Centrado Perfecto en PC, Tablet y Móvil */
+        #loginScreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            width: 100% !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            background: rgba(8, 12, 18, 0.96) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            z-index: 30000 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 20px 16px !important;
+            box-sizing: border-box !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        .login-card {
+            background: var(--panel) !important;
+            border: 1px solid var(--line) !important;
+            border-radius: 16px !important;
+            padding: 34px 28px !important;
+            width: 100% !important;
+            max-width: 440px !important;
+            margin: auto !important; /* Centrado matemático estricto en Flexbox */
+            box-shadow: 0 25px 60px rgba(0,0,0,0.85) !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+            max-height: calc(100dvh - 36px) !important;
+            max-height: calc(100vh - 36px) !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
         .login-logo { font-size: 24px; font-weight: 700; margin-bottom: 20px; font-family: 'Rajdhani', sans-serif; }
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; font-size: 12.5px; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
@@ -384,9 +421,86 @@
         .btn-delete { color: var(--red); }
         .btn-delete:hover { border-color: var(--red); background: rgba(231, 76, 60, 0.15); }
 
-        /* Modals */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); }
-        .modal-content { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 26px; width: 100%; max-width: 520px; box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
+        /* Modals - Centrado Impecable en Tablet, Móvil y PC */
+        .modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            width: 100% !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            background: rgba(4, 8, 14, 0.88) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            z-index: 30000 !important; /* Por encima de cualquier sidebar (9500), header o elemento */
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 20px 16px !important;
+            box-sizing: border-box !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        .modal[style*="flex"],
+        .modal:not([style*="none"]):not([style*="display: none"]):not([style*="display:none"]) {
+            display: flex !important;
+        }
+        .modal[style*="none"],
+        .modal[style*="display: none"],
+        .modal[style*="display:none"] {
+            display: none !important;
+        }
+
+        .modal-content {
+            background: var(--panel) !important;
+            border: 1px solid var(--line) !important;
+            border-radius: 14px !important;
+            padding: 26px !important;
+            width: 100% !important;
+            max-width: 540px !important;
+            margin: auto !important; /* Centrado matemático estricto en Flexbox */
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8) !important;
+            box-sizing: border-box !important;
+            max-height: calc(100dvh - 36px) !important;
+            max-height: calc(100vh - 36px) !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
+        #productModal .modal-content,
+        #payrollReceiptModal .modal-content,
+        #auditPrintModal .modal-content {
+            max-width: 720px !important;
+        }
+
+        /* Reglas de Tablet y Móvil (Pantallas hasta 1024px) */
+        @media (max-width: 1024px) {
+            #loginScreen,
+            .modal {
+                padding: 12px !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .login-card,
+            .modal-content,
+            .modal-card {
+                margin: auto !important;
+                width: 95% !important;
+                max-width: 520px !important;
+                max-height: calc(100dvh - 24px) !important;
+                max-height: calc(100vh - 24px) !important;
+                padding: 22px 18px !important;
+                box-sizing: border-box !important;
+            }
+            #productModal .modal-content,
+            #payrollReceiptModal .modal-content,
+            #auditPrintModal .modal-content {
+                max-width: 96% !important;
+            }
+        }
     
 /* ==========================================================================
    ROTATING OUTER GLOW ANIMATION (BRAND COLORS #3ddc84 -> #22b8f0)
@@ -2687,6 +2801,20 @@ textarea[required]:focus,
     </div>
 
     <script>
+
+        // Función global para cerrar ventanas emergentes y modales
+        function closeModal(id) {
+            var modal = document.getElementById(id);
+            if (modal) modal.style.display = 'none';
+        }
+
+        // Cerrar modal automáticamente al tocar el fondo oscuro fuera del contenido
+        window.addEventListener('click', function(e) {
+            if (e.target && e.target.classList && e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+
         var adminToken = sessionStorage.getItem('adminToken') || '';
 
         var loginScreen = document.getElementById('loginScreen');
