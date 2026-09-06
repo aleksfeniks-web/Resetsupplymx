@@ -14,9 +14,109 @@
   // Base de conocimiento completa del catálogo oficial Vonixx
   const CATALOG_DATABASE = [
     {
+      id: "VON-00001",
+      name: "V10 – PULIMENTO DE CORTE",
+      category: "pulimentos-blando",
+      price: 380.00,
+      image: GIT_REPO_BASE + "V10.png",
+      keywords: ["v10", "pulimento", "corte", "barniz blando", "rayones", "pulido"],
+      description: "Pulimento de corte para barnices asiáticos y blandos. Elimina marcas de lija grano 1200 a 1500 rápidamente.",
+      use: "Usar con pad de lana o espuma de corte pesado."
+    },
+    {
+      id: "VON-00002",
+      name: "V20 – PULIMENTO DE CORTE MEDIO",
+      category: "pulimentos-blando",
+      price: 360.00,
+      image: GIT_REPO_BASE + "V20.png",
+      keywords: ["v20", "corte medio", "pulido", "barniz blando", "refinado"],
+      description: "Pulimento de corte medio para refinar y remover microrayones moderados en barnices blandos.",
+      use: "Usar con pad de espuma de corte medio o corte suave."
+    },
+    {
+      id: "VON-00003",
+      name: "V30 – PULIMENTO DE ACABADO",
+      category: "pulimentos-blando",
+      price: 340.00,
+      image: GIT_REPO_BASE + "V30.png",
+      keywords: ["v30", "acabado", "lustre", "brillo", "hologramas"],
+      description: "Pulimento de acabado final que elimina hologramas y microrayones leves, dejando un acabado espejo impecable.",
+      use: "Usar con pad de acabado o lustro."
+    },
+    {
+      id: "VON-00004",
+      name: "V-CUT – PULIMENTO DE CORTE PREMIUM",
+      category: "pulimentos-premium",
+      price: 440.00,
+      image: GIT_REPO_BASE + "V-CUT.png",
+      keywords: ["v-cut", "vcut", "corte premium", "barniz duro", "barniz aleman"],
+      description: "Compuesto pulidor de alto corte para barnices duros y de alta resistencia (línea alemana). Cero polvo.",
+      use: "Usar con rotativa o roto-orbital y pad de lana."
+    },
+    {
+      id: "VON-00005",
+      name: "V-POLISH – PULIMENTO CORTE MEDIO PREMIUM",
+      category: "pulimentos-premium",
+      price: 420.00,
+      image: GIT_REPO_BASE + "V-POLISH.png",
+      keywords: ["v-polish", "vpolish", "corte medio", "barniz premium"],
+      description: "Pulimento de corte medio y refinado para pinturas medias a duras con máxima claridad óptica.",
+      use: "Usar con pad de espuma de corte medio."
+    },
+    {
+      id: "VON-00006",
+      name: "V-FINISH – PULIMENTO DE SUPER LUSTRO PREMIUM",
+      category: "pulimentos-premium",
+      price: 395.00,
+      image: GIT_REPO_BASE + "V-FINISH.png",
+      keywords: ["v-finish", "vfinish", "super lustro", "acabado final"],
+      description: "Pulimento de super acabado para remover micro-swirls y brindar profundidad de brillo extrema.",
+      use: "Usar con pad de super lustro."
+    },
+    {
+      id: "VON-00007",
+      name: "BLEND ALL IN ONE – PULIMENTO 3 EN 1",
+      category: "productos-3-en-1",
+      price: 485.00,
+      image: GIT_REPO_BASE + "BLENDALLINONE.png",
+      keywords: ["blend all in one", "aio", "3 en 1", "corte brillo proteccion", "carnauba sio2"],
+      description: "Pulimento de un solo paso que corta microrayones, abrillanta y protege con SiO2 y Carnaúba hasta por 4 meses.",
+      use: "Ideal para servicios rápidos de pulido comercial y abrillantado."
+    },
+    {
+      id: "VON-00008",
+      name: "V40 – PULIMENTO 4 EN 1",
+      category: "productos-3-en-1",
+      price: 375.00,
+      image: GIT_REPO_BASE + "V40.png",
+      keywords: ["v40", "4 en 1", "corte", "refinado", "lustro", "proteccion"],
+      description: "Pulimento versátil que corta, refina, lustra y protege variando el pad utilizado.",
+      use: "Funciona como corte con lana, refinado con espuma media y abrillantado con espuma suave."
+    },
+    {
+      id: "VON-00017",
+      name: "MAKKER – ELIMINADOR DE REMOLINOS Y ABRILLANTADOR",
+      category: "abrillantadores",
+      price: 365.00,
+      image: GIT_REPO_BASE + "MAKKER%202.0.png",
+      keywords: ["makker", "glaze", "abrillantador", "rellenador", "ocultar rayones"],
+      description: "Glaze abrillantador que disimula microrayones y remolinos, aportando brillo profundo sin necesidad de pulir.",
+      use: "Aplicar a mano o con roto-orbital y pad suave."
+    },
+    {
+      id: "VON-00018",
+      name: "BLEND METAL POLISH – PULIMENTO PARA METALES",
+      category: "pulidor-metal",
+      price: 290.00,
+      image: GIT_REPO_BASE + "Alumax%2020L.png",
+      keywords: ["metal polish", "cromo", "aluminio", "escape", "metales"],
+      description: "Pulimento especializado para restaurar brillo en rines pulidos, escapes de acero inoxidable, cromo y molduras metálicas.",
+      use: "Aplicar con microfibra o pad de espuma y frotar hasta retirar la oxidación."
+    },
+    {
       id: "VON-00042",
       name: "V-MOL 1.5 L",
-      category: "limpieza",
+      category: "shampoo",
       price: 131.00,
       image: GIT_REPO_BASE + "V-MOL%201.5L.png",
       keywords: ["vmol", "v-mol", "shampoo", "desincrustante", "suciedad pesada", "barro", "prelavado", "espuma", "ph alcalino"],
@@ -26,7 +126,7 @@
     {
       id: "VON-00026",
       name: "V-FLOC (SHAMPOO PH NEUTRO)",
-      category: "limpieza",
+      category: "shampoo",
       price: 91.00,
       image: GIT_REPO_BASE + "V-FLOC-500ML.png",
       keywords: ["vfloc", "v-floc", "shampoo", "neutro", "ph neutro", "lavado seguro", "espuma", "mantenimiento"],
@@ -36,7 +136,7 @@
     {
       id: "VON-00097",
       name: "HYDROX WASH 500ML",
-      category: "limpieza",
+      category: "shampoo",
       price: 269.00,
       image: GIT_REPO_BASE + "HYDROX%20WASH.png",
       keywords: ["hydrox wash", "shampoo ceramico", "sio2", "proteccion", "repelencia", "brillo"],
@@ -296,7 +396,7 @@
     {
       id: "VON-00117",
       name: "V-PLASTIC COATING CERÁMICO PARA PLÁSTICOS 50ML",
-      category: "plasticos",
+      category: "ceramicos",
       price: 780.00,
       image: GIT_REPO_BASE + "V-PLASTIC.png",
       keywords: ["vplastic", "v-plastic", "coating plasticos", "3 anos", "ceramico molduras"],
@@ -437,6 +537,18 @@
 
   // Reglas de diagnóstico experto para WebMCP
   const DIAGNOSTIC_RULES = [
+    {
+      triggers: ["pulir", "pulimento", "rayones", "swirls", "microrayones", "pulido", "hologramas", "borrar rayas"],
+      problem: "Corrección de pintura, microrayones y pulido",
+      recommendation: "Para pulido en 1 solo paso con protección, usa **BLEND ALL IN ONE** (con SiO2 y Carnaúba). Para barnices asiáticos/blandos, utiliza la línea **V10, V20 y V30**. Para barnices duros alemanes, usa la línea premium **V-CUT, V-POLISH y V-FINISH**.",
+      productNames: ["BLEND ALL IN ONE – PULIMENTO 3 EN 1", "V10 – PULIMENTO DE CORTE", "V-CUT – PULIMENTO DE CORTE PREMIUM"]
+    },
+    {
+      triggers: ["metal", "metales", "escape", "cromo", "aluminio pulido", "tubo de escape", "oxido en cromo"],
+      problem: "Limpieza y pulido de metales y escapes",
+      recommendation: "Para devolver el brillo espejo a puntas de escape, rines de aluminio y molduras cromadas, utiliza **BLEND METAL POLISH**.",
+      productNames: ["BLEND METAL POLISH – PULIMENTO PARA METALES"]
+    },
     {
       triggers: ["lluvia acida", "marca de agua", "marcas de agua", "sarro", "cristal manchado", "vidrio manchado", "vidrios", "cristales"],
       problem: "Marcas de lluvia ácida o sarro en cristales",

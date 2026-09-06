@@ -1862,14 +1862,27 @@ textarea[required]:focus,
                 </div>
                 <div class="category-pills" id="categoryPillsContainer">
                     <button class="cat-pill active" onclick="filterCategory('all', this)"><i class="fa-solid fa-star" style="color:var(--yellow); margin-right:5px;"></i>Todos</button>
-                    <button class="cat-pill" onclick="filterCategory('limpieza', this)"><i class="fa-solid fa-soap" style="color:var(--blue); margin-right:5px;"></i>Limpieza & Shampoos</button>
-                    <button class="cat-pill" onclick="filterCategory('ceramicos', this)"><i class="fa-solid fa-shield-halved" style="color:var(--green); margin-right:5px;"></i>Cerámicos SiO2</button>
-                    <button class="cat-pill" onclick="filterCategory('cera-pasta', this)"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--yellow); margin-right:5px;"></i>Ceras en Pasta</button>
+                    <button class="cat-pill" onclick="filterCategory('limpieza', this)"><i class="fa-solid fa-soap" style="color:var(--blue); margin-right:5px;"></i>Limpieza</button>
+                    <button class="cat-pill" onclick="filterCategory('shampoo', this)"><i class="fa-solid fa-pump-soap" style="color:var(--cyan); margin-right:5px;"></i>Shampoo</button>
+                    <button class="cat-pill" onclick="filterCategory('vsc', this)"><i class="fa-solid fa-spray-can-sparkles" style="color:var(--purple); margin-right:5px;"></i>Sistema VSC</button>
+                    <button class="cat-pill" onclick="filterCategory('cera-pasta', this)"><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--yellow); margin-right:5px;"></i>Ceras Pasta</button>
                     <button class="cat-pill" onclick="filterCategory('cera-liquida', this)"><i class="fa-solid fa-bottle-droplet" style="color:var(--blue); margin-right:5px;"></i>Ceras Líquidas</button>
+                    <button class="cat-pill" onclick="filterCategory('ceramicos', this)"><i class="fa-solid fa-shield-halved" style="color:var(--green); margin-right:5px;"></i>Cerámicos SiO2</button>
+                    <button class="cat-pill" onclick="filterCategory('plasticos', this)"><i class="fa-solid fa-car" style="color:var(--cyan); margin-right:5px;"></i>Plásticos</button>
                     <button class="cat-pill" onclick="filterCategory('llantas', this)"><i class="fa-solid fa-circle-notch" style="color:var(--green); margin-right:5px;"></i>Llantas & Rines</button>
-                    <button class="cat-pill" onclick="filterCategory('plasticos', this)"><i class="fa-solid fa-car" style="color:var(--cyan); margin-right:5px;"></i>Plásticos & Gomas</button>
                     <button class="cat-pill" onclick="filterCategory('cristales', this)">🪟 Cristales</button>
-                    <button class="cat-pill" onclick="filterCategory('accesorios', this)"><i class="fa-solid fa-brush" style="color:var(--green); margin-right:5px;"></i>Accesorios & Pads</button>
+                    <button class="cat-pill" onclick="filterCategory('piel', this)"><i class="fa-solid fa-couch" style="color:var(--yellow); margin-right:5px;"></i>Piel / Cuero</button>
+                    <button class="cat-pill" onclick="filterCategory('pulimentos-blando', this)"><i class="fa-solid fa-gem" style="color:var(--cyan); margin-right:5px;"></i>Pulimentos Blando</button>
+                    <button class="cat-pill" onclick="filterCategory('pulimentos-premium', this)"><i class="fa-solid fa-crown" style="color:var(--yellow); margin-right:5px;"></i>Pulimentos Premium</button>
+                    <button class="cat-pill" onclick="filterCategory('productos-3-en-1', this)"><i class="fa-solid fa-bolt" style="color:var(--green); margin-right:5px;"></i>3 en 1</button>
+                    <button class="cat-pill" onclick="filterCategory('abrillantadores', this)"><i class="fa-solid fa-sun" style="color:var(--yellow); margin-right:5px;"></i>Abrillantadores</button>
+                    <button class="cat-pill" onclick="filterCategory('pulidor-metal', this)"><i class="fa-solid fa-wrench" style="color:var(--muted); margin-right:5px;"></i>Metales</button>
+                    <button class="cat-pill" onclick="filterCategory('pads', this)"><i class="fa-solid fa-compact-disc" style="color:var(--blue); margin-right:5px;"></i>Pads 5"</button>
+                    <button class="cat-pill" onclick="filterCategory('cepillos-pinceles', this)"><i class="fa-solid fa-brush" style="color:var(--green); margin-right:5px;"></i>Brochas & Pinceles</button>
+                    <button class="cat-pill" onclick="filterCategory('microfibras', this)"><i class="fa-solid fa-rug" style="color:var(--cyan); margin-right:5px;"></i>Microfibras</button>
+                    <button class="cat-pill" onclick="filterCategory('pulverizadores', this)"><i class="fa-solid fa-faucet" style="color:var(--blue); margin-right:5px;"></i>Pulverizadores</button>
+                    <button class="cat-pill" onclick="filterCategory('kits', this)"><i class="fa-solid fa-box-open" style="color:var(--yellow); margin-right:5px;"></i>Kits</button>
+                    <button class="cat-pill" onclick="filterCategory('accesorios', this)"><i class="fa-solid fa-screwdriver-wrench" style="color:var(--green); margin-right:5px;"></i>Accesorios</button>
                 </div>
             </div>
 
@@ -2417,14 +2430,15 @@ textarea[required]:focus,
         }
 
         function getProductFallbackImage(p) {
-            if (!p) return '/logoresetsupply.png';
+            if (!p) return 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/Alumax%2020L.png';
             const cat = (p.category || '').toLowerCase();
             const name = (p.name || '').toLowerCase();
-            if (name.includes('tok final') || cat === 'cera-liquida') return '/tokfinal.webp';
-            if (cat === 'limpieza' || name.includes('alumax') || name.includes('v-mol') || name.includes('floc') || name.includes('removex') || name.includes('izer') || name.includes('strike')) {
+            if (name.includes('tok final')) return 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/TOKFINAL.png';
+            if (cat === 'shampoo' || name.includes('floc') || name.includes('v-mol')) return 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-FLOC-500ML.png';
+            if (cat === 'limpieza' || name.includes('alumax') || name.includes('removex') || name.includes('izer') || name.includes('strike')) {
                 return 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/Alumax%2020L.png';
             }
-            if (cat === 'cera-pasta' || name.includes('cera') || name.includes('native') || name.includes('blend') || name.includes('pulimento') || name.includes('v10') || name.includes('v20') || name.includes('v30') || name.includes('makker')) {
+            if (cat === 'cera-pasta' || cat === 'cera-liquida' || name.includes('cera') || name.includes('native') || name.includes('blend')) {
                 return 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png';
             }
             if (cat === 'plasticos' || cat === 'llantas' || name.includes('delet') || name.includes('restaurax') || name.includes('revox') || name.includes('shiny') || name.includes('rexer')) {
@@ -2433,10 +2447,13 @@ textarea[required]:focus,
             if (cat === 'ceramicos' || cat === 'vsc' || name.includes('vsc') || name.includes('hydrox') || name.includes('spell') || name.includes('bactran') || name.includes('extractus')) {
                 return 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINERGY%20PAINT.png';
             }
-            if (cat === 'cristales' || name.includes('glazy') || name.includes('opty') || name.includes('focus')) {
+            if (cat === 'cristales' || name.includes('glazy') || name.includes('opty') || name.includes('focus') || name.includes('prizm')) {
                 return 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/PRIZM.png';
             }
-            return '/logoresetsupply.png';
+            if (cat === 'piel' || name.includes('higicouro') || name.includes('hidrocouro')) {
+                return 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HIGICOURO.png';
+            }
+            return 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/Alumax%2020L.png';
         }
 
         
@@ -2610,12 +2627,25 @@ function resolveToGitRepoUrl(item) {
 
             const categoryLabels = {
                 'limpieza': 'Limpieza',
+                'shampoo': 'Shampoo',
+                'vsc': 'Sistema VSC',
+                'cera-pasta': 'Cera en Pasta',
+                'cera-liquida': 'Cera Líquida y en Spray',
                 'ceramicos': 'Cerámicos SiO2',
-                'cera-pasta': 'Cera Pasta',
-                'cera-liquida': 'Cera Líquida',
-                'llantas': 'Llantas',
-                'plasticos': 'Plásticos',
-                'cristales': 'Cristales',
+                'plasticos': 'Restaurador de Plásticos',
+                'llantas': 'Restaurador de Llantas',
+                'cristales': 'Tratamientos para Cristales',
+                'piel': 'Tratamientos para la Piel',
+                'pulimentos-blando': 'Pulimentos Barniz Blando',
+                'pulimentos-premium': 'Pulimentos Barniz Premium',
+                'productos-3-en-1': 'Productos 3 en 1',
+                'abrillantadores': 'Abrillantadores de Pintura',
+                'pulidor-metal': 'Pulidor de Metal',
+                'pads': 'Pads de 5 Pulgadas',
+                'cepillos-pinceles': 'Cepillos y Pinceles',
+                'microfibras': 'Microfibras Carbrite',
+                'pulverizadores': 'Pulverizadores',
+                'kits': 'Kits Detailing',
                 'accesorios': 'Accesorios'
             };
 
