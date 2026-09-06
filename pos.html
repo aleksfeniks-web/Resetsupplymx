@@ -2910,7 +2910,295 @@
             });
         }
 
-        function printThermalTicket() {
+        // ==========================================
+        // IMPRESIÓN DIRECTA BLUETOOTH / ESC-POS 58MM
+        // ==========================================
+        let bluetoothPrintDevice = null;
+        let bluetoothPrintCharacteristic = null;
+
+        function sanitizeAscii(str) {
+            if (!str) return '';
+            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9 .,:;\/\-_#*+()$%&!=?¿¡\n\r]/g, '');
+        }
+
+        function formatTwoCols(left, right, width = 32) {
+            left = sanitizeAscii(left);
+            right = sanitizeAscii(right);
+            if ((left.length + right.length) >= width) {
+                const maxLeft = Math.max(0, width - right.length - 1);
+                left = left.substring(0, maxLeft);
+            }
+            const spaces = Math.max(1, width - left.length - right.length);
+            return left + ' '.repeat(spaces) + right + '\n';
+        }
+
+        function generateEscPosBytes(order) {
+            const ESC = 0x1B;
+            const GS = 0x1D;
+            const bytes = [];
+
+            function pushStr(str) {
+                const clean = sanitizeAscii(str);
+                for (let i = 0; i < clean.length; i++) {
+                    bytes.push(clean.charCodeAt(i));
+                }
+            }
+
+            // Inicializar impresora ESC @
+            bytes.push(ESC, 0x40);
+
+            // Alineación centrada ESC a 1
+            bytes.push(ESC, 0x61, 0x01);
+            // Doble altura y doble ancho GS ! 0x11
+            bytes.push(GS, 0x21, 0x11);
+            // Negrita ESC E 1
+            bytes.push(ESC, 0x45, 0x01);
+            pushStr('RESET SUPPLY MX\n');
+
+            // Normal GS ! 0x00
+            bytes.push(GS, 0x21, 0x00);
+            bytes.push(ESC, 0x45, 0x00);
+            pushStr('Distribuidor Oficial Vonixx\n');
+            pushStr('Sucursal Matriz Mexico\n');
+            pushStr('RFC: RSM230515XYZ\n');
+            pushStr('--------------------------------\n');
+
+            // Folio y Fecha
+            bytes.push(ESC, 0x45, 0x01);
+            pushStr('FOLIO: #' + order.folio + '\n');
+            bytes.push(ESC, 0x45, 0x00);
+            pushStr(new Date(order.createdAt).toLocaleString('es-MX') + '\n');
+            pushStr('Cajero: ' + (order.seller || 'Caja Principal') + '\n');
+            pushStr('Cliente: ' + (order.customer && order.customer.name ? order.customer.name : 'Publico en General') + '\n');
+            pushStr('--------------------------------\n');
+
+            // Cabecera de items (Izquierda ESC a 0)
+            bytes.push(ESC, 0x61, 0x00);
+            bytes.push(ESC, 0x45, 0x01);
+            pushStr(formatTwoCols('CANT/DESCRIPCION', 'TOTAL'));
+            bytes.push(ESC, 0x45, 0x00);
+            pushStr('--------------------------------\n');
+
+            // Lista de productos
+            order.items.forEach(it => {
+                const pName = it.variation ? it.name + ' (' + it.variation + ')' : it.name;
+                const totalItem = '$' + (it.price * it.quantity).toFixed(2);
+                const firstLine = it.quantity + 'x ' + pName;
+                if (firstLine.length + totalItem.length < 32) {
+                    pushStr(formatTwoCols(firstLine, totalItem));
+                } else {
+                    pushStr(firstLine + '\n');
+                    pushStr(formatTwoCols('  @ $' + it.price.toFixed(2), totalItem));
+                }
+            });
+
+            pushStr('--------------------------------\n');
+            pushStr(formatTwoCols('SUBTOTAL:', '$' + order.subtotal.toFixed(2)));
+            if (order.discount > 0) {
+                pushStr(formatTwoCols('DESCUENTO:', '-$' + order.discount.toFixed(2)));
+            }
+            pushStr(formatTwoCols('IVA (16%):', '$' + order.tax.toFixed(2)));
+
+            // Total en grande y negrita
+            bytes.push(ESC, 0x45, 0x01);
+            bytes.push(GS, 0x21, 0x11);
+            pushStr(formatTwoCols('TOTAL:', '$' + order.total.toFixed(2)));
+            bytes.push(GS, 0x21, 0x00);
+            bytes.push(ESC, 0x45, 0x00);
+
+            pushStr('--------------------------------\n');
+            const methodNames = { cash: 'EFECTIVO', card: 'TARJETA', spei: 'SPEI', mixed: 'PAGO MIXTO' };
+            pushStr(formatTwoCols('METODO:', methodNames[order.paymentMethod] || 'EFECTIVO'));
+            if (order.paymentMethod === 'cash') {
+                pushStr(formatTwoCols('PAGADO:', '$' + order.amountPaid.toFixed(2)));
+                pushStr(formatTwoCols('CAMBIO:', '$' + order.change.toFixed(2)));
+            }
+            pushStr('================================\n');
+
+            // Pie de ticket centrado ESC a 1
+            bytes.push(ESC, 0x61, 0x01);
+            pushStr('GRACIAS POR TU COMPRA!\n');
+            pushStr('Conserva tu ticket para cambios\n');
+            pushStr('(maximo 7 dias)\n');
+            pushStr('www.resetsupplymx.com\n\n');
+
+            // Alimentar y cortar papel (feed & partial cut)
+            bytes.push(ESC, 0x64, 0x04); // Feed 4 lines
+            bytes.push(GS, 0x56, 0x41, 0x00); // Partial cut
+
+            return new Uint8Array(bytes);
+        }
+
+        function generatePlainTextTicket(order) {
+            let t = '';
+            t += '       RESET SUPPLY MX\n';
+            t += '  Distribuidor Oficial Vonixx\n';
+            t += '    Sucursal Matriz Mexico\n';
+            t += '--------------------------------\n';
+            t += 'FOLIO: #' + order.folio + '\n';
+            t += new Date(order.createdAt).toLocaleString('es-MX') + '\n';
+            t += 'Cajero: ' + (order.seller || 'Caja Principal') + '\n';
+            t += 'Cliente: ' + (order.customer && order.customer.name ? order.customer.name : 'Publico en General') + '\n';
+            t += '--------------------------------\n';
+            t += formatTwoCols('CANT/DESCRIPCION', 'TOTAL');
+            t += '--------------------------------\n';
+            order.items.forEach(it => {
+                const pName = it.variation ? it.name + ' (' + it.variation + ')' : it.name;
+                const totalItem = '$' + (it.price * it.quantity).toFixed(2);
+                const firstLine = it.quantity + 'x ' + pName;
+                if (firstLine.length + totalItem.length < 32) {
+                    t += formatTwoCols(firstLine, totalItem);
+                } else {
+                    t += firstLine + '\n';
+                    t += formatTwoCols('  @ $' + it.price.toFixed(2), totalItem);
+                }
+            });
+            t += '--------------------------------\n';
+            t += formatTwoCols('SUBTOTAL:', '$' + order.subtotal.toFixed(2));
+            if (order.discount > 0) {
+                t += formatTwoCols('DESCUENTO:', '-$' + order.discount.toFixed(2));
+            }
+            t += formatTwoCols('IVA (16%):', '$' + order.tax.toFixed(2));
+            t += formatTwoCols('TOTAL:', '$' + order.total.toFixed(2) + ' MXN');
+            t += '--------------------------------\n';
+            const methodNames = { cash: 'EFECTIVO', card: 'TARJETA', spei: 'SPEI', mixed: 'PAGO MIXTO' };
+            t += formatTwoCols('METODO:', methodNames[order.paymentMethod] || 'EFECTIVO');
+            if (order.paymentMethod === 'cash') {
+                t += formatTwoCols('PAGADO:', '$' + order.amountPaid.toFixed(2));
+                t += formatTwoCols('CAMBIO:', '$' + order.change.toFixed(2));
+            }
+            t += '================================\n';
+            t += '    GRACIAS POR TU COMPRA!\n';
+            t += ' Conserva tu ticket para cambios\n';
+            t += '         (max 7 dias)\n';
+            t += '    www.resetsupplymx.com\n\n\n';
+            return t;
+        }
+
+        async function printThermalTicket() {
+            const order = state.lastCompletedOrder;
+            if (!order) {
+                window.print();
+                return;
+            }
+
+            // 1. INTENTO VÍA WEB BLUETOOTH DIRECTO (Chrome / Edge / Android)
+            if (navigator.bluetooth && typeof navigator.bluetooth.requestDevice === 'function') {
+                try {
+                    if (!bluetoothPrintCharacteristic || !bluetoothPrintDevice || !bluetoothPrintDevice.gatt.connected) {
+                        bluetoothPrintDevice = await navigator.bluetooth.requestDevice({
+                            filters: [
+                                { namePrefix: 'MTP' },
+                                { namePrefix: 'RPP' },
+                                { namePrefix: 'POS' },
+                                { namePrefix: 'MPT' },
+                                { namePrefix: 'Blue' },
+                                { namePrefix: 'Inner' },
+                                { namePrefix: 'Printer' },
+                                { namePrefix: '58' }
+                            ],
+                            optionalServices: [
+                                '000018f0-0000-1000-8000-00805f9b34fb',
+                                '0000ffe0-0000-1000-8000-00805f9b34fb',
+                                'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
+                                '49535343-fe7d-4ae5-8fa9-9fafd205e455'
+                            ],
+                            acceptAllDevices: false
+                        }).catch(async () => {
+                            return await navigator.bluetooth.requestDevice({
+                                acceptAllDevices: true,
+                                optionalServices: [
+                                    '000018f0-0000-1000-8000-00805f9b34fb',
+                                    '0000ffe0-0000-1000-8000-00805f9b34fb',
+                                    'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
+                                    '49535343-fe7d-4ae5-8fa9-9fafd205e455'
+                                ]
+                            });
+                        });
+
+                        const server = await bluetoothPrintDevice.gatt.connect();
+                        
+                        let service = null;
+                        const servicesToCheck = [
+                            '000018f0-0000-1000-8000-00805f9b34fb',
+                            '0000ffe0-0000-1000-8000-00805f9b34fb',
+                            'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
+                            '49535343-fe7d-4ae5-8fa9-9fafd205e455'
+                        ];
+
+                        for (const sUuid of servicesToCheck) {
+                            try {
+                                service = await server.getPrimaryService(sUuid);
+                                if (service) break;
+                            } catch (errService) {}
+                        }
+
+                        if (!service) {
+                            const services = await server.getPrimaryServices();
+                            if (services && services.length > 0) {
+                                service = services[0];
+                            }
+                        }
+
+                        if (service) {
+                            const characteristics = await service.getCharacteristics();
+                            for (const c of characteristics) {
+                                if (c.properties.write || c.properties.writeWithoutResponse) {
+                                    bluetoothPrintCharacteristic = c;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (bluetoothPrintCharacteristic) {
+                        const escPosData = generateEscPosBytes(order);
+                        const chunkSize = 100;
+                        for (let offset = 0; offset < escPosData.length; offset += chunkSize) {
+                            const chunk = escPosData.slice(offset, offset + chunkSize);
+                            if (bluetoothPrintCharacteristic.properties.writeWithoutResponse) {
+                                await bluetoothPrintCharacteristic.writeValueWithoutResponse(chunk);
+                            } else {
+                                await bluetoothPrintCharacteristic.writeValue(chunk);
+                            }
+                        }
+                        return;
+                    }
+                } catch (btErr) {
+                    console.warn('Web Bluetooth directo no completado:', btErr);
+                }
+            }
+
+            // 2. INTENTO VÍA APP BLUETOOTH PRINT / RAWBT EN ANDROID / TABLET
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isMobile) {
+                const plainTicket = generatePlainTextTicket(order);
+                const escPosData = generateEscPosBytes(order);
+                let binaryStr = '';
+                for (let i = 0; i < escPosData.length; i++) {
+                    binaryStr += String.fromCharCode(escPosData[i]);
+                }
+                const base64Data = btoa(binaryStr);
+
+                // Intento 1: RawBT scheme directo base64
+                // Intento 2: Bluetooth Print scheme texto
+                const rawbtUrl = 'rawbt:base64,' + base64Data;
+                const btPrintUrl = 'bluetoothprint://' + encodeURIComponent(plainTicket);
+
+                const dummyLink = document.createElement('a');
+                dummyLink.href = rawbtUrl;
+                dummyLink.style.display = 'none';
+                document.body.appendChild(dummyLink);
+                dummyLink.click();
+                setTimeout(() => {
+                    if (document.body.contains(dummyLink)) {
+                        document.body.removeChild(dummyLink);
+                    }
+                }, 1000);
+                return;
+            }
+
+            // 3. FALLBACK ESTÁNDAR: Diálogo del navegador configurado a 58mm
             window.print();
         }
 
