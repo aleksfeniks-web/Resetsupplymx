@@ -1460,40 +1460,6 @@ textarea[required]:focus,
                 </div>
             </form>
         </div>
-    <!-- Modal Eliminar Venta de Mostrador / Reintegrar Stock -->
-    <div id="deletePosOrderModal" class="modal" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.78); z-index:9999; padding:20px;">
-        <div class="modal-content" style="max-width:540px; background:var(--panel); border:1.5px solid var(--line); border-radius:14px; padding:24px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h3 style="margin:0; color:var(--red); font-size:18px; display:flex; align-items:center; gap:8px;">
-                    <i class="fa-solid fa-trash-can"></i> Eliminar Venta de Mostrador
-                </h3>
-                <button type="button" onclick="closeDeletePosOrderModal()" style="background:none; border:none; color:var(--muted); font-size:22px; cursor:pointer; line-height:1;">&times;</button>
-            </div>
-            
-            <p style="font-size:13.5px; color:var(--text); margin-bottom:12px;">
-                ¿Deseas eliminar del sistema la venta con folio <strong id="delPosOrderFolio" style="color:var(--green);">#POS-000000</strong>?
-            </p>
-
-            <div id="delPosOrderDetails" style="background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:16px; font-size:12.5px; max-height:180px; overflow-y:auto;">
-            </div>
-
-            <div style="background:rgba(61,220,132,0.08); border:1px solid rgba(61,220,132,0.3); border-radius:8px; padding:14px; margin-bottom:20px;">
-                <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:13px; color:var(--text); margin:0;">
-                    <input type="checkbox" id="delPosRestoreStockCheckbox" checked style="margin-top:3px; accent-color:var(--green); transform:scale(1.25);">
-                    <span>
-                        <strong style="color:var(--green);">Restituir productos al Inventario (+Stock)</strong><br>
-                        <span style="font-size:11.5px; color:var(--muted);">Devuelve las piezas vendidas en este ticket al inventario físico disponible. Desmarca esta opción solo si el producto se extravió o no debe regresar al inventario.</span>
-                    </span>
-                </label>
-            </div>
-
-            <div style="display:flex; justify-content:flex-end; gap:10px;">
-                <button type="button" class="btn-action" onclick="closeDeletePosOrderModal()" style="padding:8px 16px;">Cancelar</button>
-                <button type="button" class="btn-action btn-delete" id="confirmDeletePosBtn" onclick="executeDeletePosSale()" style="padding:8px 18px; font-weight:700;">
-                    <i class="fa-solid fa-trash-can" style="margin-right:6px;"></i>Confirmar Eliminación
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- Modal Editar / Crear Producto Completo -->
@@ -1675,6 +1641,42 @@ textarea[required]:focus,
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Eliminar Venta de Mostrador / Reintegrar Stock -->
+    <div id="deletePosOrderModal" class="modal" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:100000; padding:20px; box-sizing:border-box;">
+        <div class="modal-content" style="max-width:540px; background:var(--panel); border:1.5px solid var(--line); border-radius:14px; padding:24px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.9);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; color:var(--red); font-size:18px; display:flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-trash-can"></i> Eliminar Venta de Mostrador
+                </h3>
+                <button type="button" onclick="closeDeletePosOrderModal()" style="background:none; border:none; color:var(--muted); font-size:24px; cursor:pointer; line-height:1;">&times;</button>
+            </div>
+            
+            <p style="font-size:13.5px; color:var(--text); margin-bottom:12px;">
+                ¿Deseas eliminar del sistema la venta con folio <strong id="delPosOrderFolio" style="color:var(--green);">#POS-000000</strong>?
+            </p>
+
+            <div id="delPosOrderDetails" style="background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:16px; font-size:12.5px; max-height:180px; overflow-y:auto;">
+            </div>
+
+            <div style="background:rgba(61,220,132,0.08); border:1px solid rgba(61,220,132,0.3); border-radius:8px; padding:14px; margin-bottom:20px;">
+                <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:13px; color:var(--text); margin:0;">
+                    <input type="checkbox" id="delPosRestoreStockCheckbox" checked style="margin-top:3px; accent-color:var(--green); transform:scale(1.25);">
+                    <span>
+                        <strong style="color:var(--green);">Restituir productos al Inventario (+Stock)</strong><br>
+                        <span style="font-size:11.5px; color:var(--muted);">Devuelve las piezas vendidas en este ticket al inventario físico disponible. Desmarca esta opción solo si el producto se extravió o no debe regresar al inventario.</span>
+                    </span>
+                </label>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="btn-action" onclick="closeDeletePosOrderModal()" style="padding:8px 16px;">Cancelar</button>
+                <button type="button" class="btn-action btn-delete" id="confirmDeletePosBtn" onclick="executeDeletePosSale()" style="padding:8px 18px; font-weight:700;">
+                    <i class="fa-solid fa-trash-can" style="margin-right:6px;"></i>Confirmar Eliminación
+                </button>
+            </div>
         </div>
     </div>
 
@@ -2258,41 +2260,100 @@ textarea[required]:focus,
 
         // Modal para confirmar eliminación de venta POS individual
         window.openDeletePosOrderModal = function(orderId) {
-            var order = (currentPosOrdersList || []).find(function(o) { return o.id === orderId || o.folio === orderId; });
-            if (!order) return;
-            posOrderIdToDelete = order.folio || order.id;
+            posOrderIdToDelete = String(orderId || '').trim();
+            var cleanId = posOrderIdToDelete.toUpperCase();
+            var order = (currentPosOrdersList || []).find(function(o) {
+                var oFolio = String(o.folio || '').trim().toUpperCase();
+                var oId = String(o.id || '').trim().toUpperCase();
+                return oFolio === cleanId || oId === cleanId;
+            });
 
-            document.getElementById('delPosOrderFolio').textContent = '#' + posOrderIdToDelete;
+            var folioDisplay = (order && (order.folio || order.id)) ? (order.folio || order.id) : posOrderIdToDelete;
+            posOrderIdToDelete = folioDisplay;
 
-            var detailsHtml = '<div style="margin-bottom:6px; color:var(--text); font-weight:600;">Resumen del Ticket:</div>';
-            detailsHtml += '<div style="color:var(--muted); margin-bottom:4px;">Fecha: ' + new Date(order.createdAt).toLocaleString('es-MX') + ' | Cajero: ' + (order.seller || 'Mostrador') + '</div>';
-            detailsHtml += '<div style="color:var(--green); font-weight:700; margin-bottom:8px;">Total: $' + (order.total || 0).toFixed(2) + ' MXN (' + (order.paymentMethod || 'efectivo').toUpperCase() + ')</div>';
+            var folioElem = document.getElementById('delPosOrderFolio');
+            if (folioElem) folioElem.textContent = '#' + folioDisplay;
 
-            if (Array.isArray(order.items) && order.items.length > 0) {
-                detailsHtml += '<div style="font-weight:600; margin-bottom:4px; color:var(--text);">Artículos vendidos (bajas aplicadas):</div><ul style="margin:0; padding-left:20px; line-height:1.5;">';
-                order.items.forEach(function(it) {
-                    var varText = it.variation ? ' (' + it.variation + ')' : '';
-                    detailsHtml += '<li><strong>' + (it.quantity || 1) + 'x</strong> ' + (it.name || 'Producto') + varText + ' — $' + ((it.price || 0) * (it.quantity || 1)).toFixed(2) + '</li>';
-                });
-                detailsHtml += '</ul>';
+            var detailsElem = document.getElementById('delPosOrderDetails');
+            if (detailsElem) {
+                var detailsHtml = '<div style="margin-bottom:6px; color:var(--text); font-weight:600;">Resumen del Ticket:</div>';
+                if (order) {
+                    detailsHtml += '<div style="color:var(--muted); margin-bottom:4px;">Fecha: ' + (order.createdAt ? new Date(order.createdAt).toLocaleString('es-MX') : 'Reciente') + ' | Cajero: ' + (order.seller || 'Mostrador') + '</div>';
+                    detailsHtml += '<div style="color:var(--green); font-weight:700; margin-bottom:8px;">Total: $' + (parseFloat(order.total) || 0).toFixed(2) + ' MXN (' + (order.paymentMethod || 'efectivo').toUpperCase() + ')</div>';
+
+                    if (Array.isArray(order.items) && order.items.length > 0) {
+                        detailsHtml += '<div style="font-weight:600; margin-bottom:4px; color:var(--text);">Artículos vendidos (bajas aplicadas):</div><ul style="margin:0; padding-left:20px; line-height:1.5;">';
+                        order.items.forEach(function(it) {
+                            var varText = it.variation ? ' (' + it.variation + ')' : '';
+                            detailsHtml += '<li><strong>' + (it.quantity || 1) + 'x</strong> ' + (it.name || 'Producto') + varText + ' — $' + ((parseFloat(it.price) || 0) * (parseInt(it.quantity) || 1)).toFixed(2) + '</li>';
+                        });
+                        detailsHtml += '</ul>';
+                    }
+                } else {
+                    detailsHtml += '<div style="color:var(--muted); padding:6px 0;">Folio seleccionado: <strong style="color:var(--green);">' + folioDisplay + '</strong></div>';
+                }
+                detailsElem.innerHTML = detailsHtml;
             }
 
-            document.getElementById('delPosOrderDetails').innerHTML = detailsHtml;
-            document.getElementById('delPosRestoreStockCheckbox').checked = true;
-            document.getElementById('deletePosOrderModal').style.display = 'flex';
+            var chk = document.getElementById('delPosRestoreStockCheckbox');
+            if (chk) chk.checked = true;
+
+            var modal = document.getElementById('deletePosOrderModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            } else {
+                var confirmDelete = confirm('¿Eliminar la venta #' + folioDisplay + ' de mostrador?\n\n- Presiona ACEPTAR para eliminar y devolver productos al inventario (+stock).\n- Presiona CANCELAR para no eliminar.');
+                if (confirmDelete) {
+                    window.executeDeletePosSaleDirect(posOrderIdToDelete, true);
+                }
+            }
         };
 
         window.closeDeletePosOrderModal = function() {
-            document.getElementById('deletePosOrderModal').style.display = 'none';
+            var modal = document.getElementById('deletePosOrderModal');
+            if (modal) modal.style.display = 'none';
             posOrderIdToDelete = null;
+        };
+
+        window.executeDeletePosSaleDirect = async function(folio, restoreStock) {
+            try {
+                var tokenToUse = adminToken || sessionStorage.getItem('adminToken') || '';
+                var headers = {};
+                if (tokenToUse) headers['Authorization'] = 'Bearer ' + tokenToUse;
+
+                var res = await fetch('/api/admin/pos/orders/' + encodeURIComponent(folio) + '?restoreStock=' + restoreStock, {
+                    method: 'DELETE',
+                    headers: headers
+                });
+                var data = await res.json();
+                if (data.success) {
+                    showToastAdmin('🗑️ Venta #' + folio + ' eliminada con éxito.');
+                    if (data.products && Array.isArray(data.products)) {
+                        currentProductsList = data.products.map(function(p) { p.image = resolveToGitRepoUrl(p); return p; });
+                        autoSaveLocalInventory();
+                        renderInventoryTable();
+                        renderQuickProductsTable(currentProductsList);
+                    } else {
+                        await loadProducts();
+                    }
+                    await loadPosSales();
+                } else {
+                    alert('❌ Error al eliminar venta: ' + (data.error || 'Desconocido'));
+                }
+            } catch (err) {
+                console.error('Error al eliminar venta direct:', err);
+                alert('No se pudo conectar con el servidor.');
+            }
         };
 
         window.executeDeletePosSale = async function() {
             if (!posOrderIdToDelete) return;
-            var restoreStock = document.getElementById('delPosRestoreStockCheckbox').checked;
+            var restoreStock = document.getElementById('delPosRestoreStockCheckbox') ? document.getElementById('delPosRestoreStockCheckbox').checked : true;
             var btn = document.getElementById('confirmDeletePosBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:6px;"></i>Eliminando...';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:6px;"></i>Eliminando...';
+            }
 
             try {
                 var tokenToUse = adminToken || sessionStorage.getItem('adminToken') || '';
@@ -2327,8 +2388,10 @@ textarea[required]:focus,
                 console.error('Error al eliminar venta POS:', err);
                 alert('No se pudo conectar con el servidor para eliminar la venta.');
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-trash-can" style="margin-right:6px;"></i>Confirmar Eliminación';
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-trash-can" style="margin-right:6px;"></i>Confirmar Eliminación';
+                }
             }
         };
 
