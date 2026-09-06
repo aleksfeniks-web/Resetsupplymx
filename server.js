@@ -641,6 +641,45 @@ let localInventory = [
   {"id":"VON-00122","code":"VON-00122","name":"KIT BÁSICO DETAILING VONIXX","category":"accesorios","udm":"PZ","qty":2,"price":499,"pct":0,"newPrice":499,"image":"https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/KIT%20BASICO.png","description":"KIT BÁSICO DE LIMPIEZA Y CUIDADO AUTOMOTRIZ VONIXX","sec":"Línea de Accesorios","variations":[{"id":"v1","name":"Kit","price":499,"qty":2}]}
 ];
 
+const INVENTORY_FILE = path.join(__dirname, 'admin', 'inventory.json');
+const POS_ORDERS_FILE = path.join(__dirname, 'admin', 'pos_orders.json');
+
+function findProductInInventory(idOrCode) {
+  if (!idOrCode) return null;
+  const target = String(idOrCode).trim().toLowerCase();
+  return localInventory.find(p => 
+    (p.id && String(p.id).trim().toLowerCase() === target) ||
+    (p.code && String(p.code).trim().toLowerCase() === target) ||
+    (p.name && String(p.name).trim().toLowerCase() === target)
+  );
+}
+
+function loadLocalInventoryFromDisk() {
+  try {
+    if (fs.existsSync(INVENTORY_FILE)) {
+      const raw = fs.readFileSync(INVENTORY_FILE, 'utf8');
+      const data = JSON.parse(raw);
+      if (Array.isArray(data) && data.length > 0) {
+        localInventory = data;
+      }
+    }
+  } catch (e) {
+    console.warn('Error leyendo inventory.json:', e.message);
+  }
+}
+
+function saveLocalInventoryToDisk() {
+  try {
+    const adminDir = path.join(__dirname, 'admin');
+    if (!fs.existsSync(adminDir)) fs.mkdirSync(adminDir, { recursive: true });
+    fs.writeFileSync(INVENTORY_FILE, JSON.stringify(localInventory, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error guardando inventory.json:', e.message);
+  }
+}
+
+loadLocalInventoryFromDisk();
+
 // Función auxiliar para recalcular nuevo precio
 function calculateItemPrices(item) {
   const basePrice = parseFloat(item.price) || 0;
@@ -778,6 +817,7 @@ app.post('/api/admin/products', requireAdminAuth, async (req, res) => {
     }
   }
 
+  saveLocalInventoryToDisk();
   res.json({ success: true, id: docId, product: productData, products: localInventory.map(calculateItemPrices) });
 });
 
@@ -811,6 +851,7 @@ app.post('/api/admin/products/batch', requireAdminAuth, async (req, res) => {
     }
   }
 
+  saveLocalInventoryToDisk();
   res.json({ success: true, message: 'Inventario actualizado con éxito', products: localInventory });
 });
 
@@ -827,6 +868,7 @@ app.delete('/api/admin/products/:id', requireAdminAuth, async (req, res) => {
     }
   }
 
+  saveLocalInventoryToDisk();
   res.json({ success: true, message: 'Producto eliminado correctamente', products: localInventory });
 });
 
@@ -953,6 +995,32 @@ let localSellers = [
 let localPosOrders = [];
 let localInvoices = [];
 let localPosClients = [];
+
+function loadLocalPosOrdersFromDisk() {
+  try {
+    if (fs.existsSync(POS_ORDERS_FILE)) {
+      const raw = fs.readFileSync(POS_ORDERS_FILE, 'utf8');
+      const data = JSON.parse(raw);
+      if (Array.isArray(data)) {
+        localPosOrders = data;
+      }
+    }
+  } catch (e) {
+    console.warn('Error leyendo pos_orders.json:', e.message);
+  }
+}
+
+function saveLocalPosOrdersToDisk() {
+  try {
+    const adminDir = path.join(__dirname, 'admin');
+    if (!fs.existsSync(adminDir)) fs.mkdirSync(adminDir, { recursive: true });
+    fs.writeFileSync(POS_ORDERS_FILE, JSON.stringify(localPosOrders, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error guardando pos_orders.json:', e.message);
+  }
+}
+
+loadLocalPosOrdersFromDisk();
 
 // 1. Obtener lista de vendedores públicos
 app.get('/api/pos/sellers', (req, res) => {
@@ -1095,19 +1163,23 @@ app.post('/api/pos/orders', async (req, res) => {
   items.forEach(it => {
     const prodId = it.id || it.code;
     const qtySold = parseInt(it.quantity) || 1;
-    const prod = localInventory.find(p => p.id === prodId || p.code === prodId);
+    const prod = findProductInInventory(prodId);
     if (prod) {
       prod.qty = Math.max(0, (parseInt(prod.qty) || 0) - qtySold);
       calculateItemPrices(prod);
       // Si tiene variaciones, descontar en la variación específica
       if (it.variation && Array.isArray(prod.variations)) {
-        const vMatch = prod.variations.find(v => v.name === it.variation || v.id === it.variation);
+        const vTarget = String(it.variation).trim().toLowerCase();
+        const vMatch = prod.variations.find(v => (v.name && String(v.name).trim().toLowerCase() === vTarget) || (v.id && String(v.id).trim().toLowerCase() === vTarget));
         if (vMatch && vMatch.qty !== undefined) {
           vMatch.qty = Math.max(0, (parseInt(vMatch.qty) || 0) - qtySold);
         }
       }
     }
   });
+
+  saveLocalPosOrdersToDisk();
+  saveLocalInventoryToDisk();
 
   // 3. Sincronizar con Firestore si está conectado
   if (db) {
@@ -1119,7 +1191,7 @@ app.post('/api/pos/orders', async (req, res) => {
       const batch = db.batch();
       items.forEach(it => {
         const prodId = it.id || it.code;
-        const prod = localInventory.find(p => p.id === prodId || p.code === prodId);
+        const prod = findProductInInventory(prodId);
         if (prod) {
           const docRef = db.collection('products').doc(prod.id);
           batch.set(docRef, calculateItemPrices(prod), { merge: true });
@@ -1131,7 +1203,12 @@ app.post('/api/pos/orders', async (req, res) => {
     }
   }
 
-  res.json({ success: true, order: posOrder, message: `Venta registrada con éxito. Folio: ${folio}` });
+  res.json({
+    success: true,
+    order: posOrder,
+    products: localInventory.map(calculateItemPrices),
+    message: `Venta registrada con éxito. Folio: ${folio}`
+  });
 });
 
 // 4. Obtener Lista de Ventas POS
@@ -1145,6 +1222,7 @@ app.get('/api/pos/orders', async (req, res) => {
           dbPos.push({ id: doc.id, ...doc.data() });
         });
         localPosOrders = dbPos;
+        saveLocalPosOrdersToDisk();
       }
     } catch (err) {
       console.warn('⚠️ No se pudo leer pos_orders de Firestore:', err.message);
@@ -1206,6 +1284,201 @@ app.get('/api/pos/stats', async (req, res) => {
     }
   });
 });
+
+// 6. Eliminar Venta Individual de Mostrador (y gestionar restitución de bajas en inventario)
+const deleteSinglePosOrderHandler = async (req, res) => {
+  const { id } = req.params;
+  const restoreStock = req.query.restoreStock !== 'false' && (req.body ? req.body.restoreStock !== false : true);
+  const cleanId = (id || '').trim().toUpperCase();
+
+  let orderIndex = localPosOrders.findIndex(o => (o.folio && o.folio.toUpperCase() === cleanId) || (o.id && o.id.toUpperCase() === cleanId));
+  let orderToDelete = orderIndex >= 0 ? localPosOrders[orderIndex] : null;
+
+  if (!orderToDelete && db) {
+    try {
+      const docSnap = await db.collection('pos_orders').doc(cleanId).get();
+      if (docSnap.exists) {
+        orderToDelete = { id: docSnap.id, ...docSnap.data() };
+      }
+    } catch (e) {
+      console.warn('Error buscando orden en Firestore:', e.message);
+    }
+  }
+
+  if (!orderToDelete) {
+    return res.status(404).json({ success: false, error: `No se encontró la venta con folio ${cleanId}` });
+  }
+
+  // 1. Restituir stock al inventario si restoreStock es true
+  const affectedProducts = [];
+  if (restoreStock && Array.isArray(orderToDelete.items)) {
+    orderToDelete.items.forEach(it => {
+      const prodId = it.id || it.code;
+      const qtyRestored = parseInt(it.quantity) || 1;
+      const prod = findProductInInventory(prodId);
+      if (prod) {
+        prod.qty = (parseInt(prod.qty) || 0) + qtyRestored;
+        calculateItemPrices(prod);
+        if (it.variation && Array.isArray(prod.variations)) {
+          const vTarget = String(it.variation).trim().toLowerCase();
+          const vMatch = prod.variations.find(v => (v.name && String(v.name).trim().toLowerCase() === vTarget) || (v.id && String(v.id).trim().toLowerCase() === vTarget));
+          if (vMatch) {
+            vMatch.qty = (parseInt(vMatch.qty) || 0) + qtyRestored;
+          }
+        }
+        if (!affectedProducts.includes(prod)) affectedProducts.push(prod);
+      }
+    });
+  }
+
+  // 2. Eliminar de localPosOrders
+  if (orderIndex >= 0) {
+    localPosOrders.splice(orderIndex, 1);
+  } else {
+    localPosOrders = localPosOrders.filter(o => (o.folio && o.folio.toUpperCase() !== cleanId) && (o.id && o.id.toUpperCase() !== cleanId));
+  }
+
+  saveLocalPosOrdersToDisk();
+  saveLocalInventoryToDisk();
+
+  // 3. Sincronizar con Firestore si está conectado
+  if (db) {
+    try {
+      const batch = db.batch();
+      const orderRef = db.collection('pos_orders').doc(orderToDelete.folio || orderToDelete.id || cleanId);
+      batch.delete(orderRef);
+
+      if (restoreStock && affectedProducts.length > 0) {
+        affectedProducts.forEach(prod => {
+          const prodRef = db.collection('products').doc(prod.id);
+          batch.set(prodRef, calculateItemPrices(prod), { merge: true });
+        });
+      }
+      await batch.commit();
+      console.log(`🗑️ Venta POS ${cleanId} eliminada de Firestore.`);
+    } catch (err) {
+      console.error('❌ Error eliminando orden POS de Firestore:', err.message);
+    }
+  }
+
+  res.json({
+    success: true,
+    message: `Venta ${cleanId} eliminada con éxito.${restoreStock ? ' Stock restituido al inventario.' : ' Bajas de inventario mantenidas.'}`,
+    deletedFolio: cleanId,
+    restoredStock: restoreStock,
+    orders: localPosOrders,
+    products: localInventory.map(calculateItemPrices)
+  });
+};
+
+app.delete('/api/admin/pos/orders/:id', requireAdminAuth, deleteSinglePosOrderHandler);
+app.delete('/api/pos/orders/:id', deleteSinglePosOrderHandler);
+
+// 7. Eliminar Todas las Ventas POS (Limpieza masiva con opción de restituir stock)
+const clearAllPosOrdersHandler = async (req, res) => {
+  const restoreStock = req.query.restoreStock !== 'false' && (req.body ? req.body.restoreStock !== false : true);
+
+  if (db) {
+    try {
+      const snapshot = await db.collection('pos_orders').get();
+      if (!snapshot.empty) {
+        let dbPos = [];
+        snapshot.forEach(doc => dbPos.push({ id: doc.id, ...doc.data() }));
+        localPosOrders = dbPos;
+      }
+    } catch (e) {}
+  }
+
+  const affectedProducts = [];
+  if (restoreStock) {
+    localPosOrders.forEach(order => {
+      if (Array.isArray(order.items)) {
+        order.items.forEach(it => {
+          const prodId = it.id || it.code;
+          const qtyRestored = parseInt(it.quantity) || 1;
+          const prod = findProductInInventory(prodId);
+          if (prod) {
+            prod.qty = (parseInt(prod.qty) || 0) + qtyRestored;
+            calculateItemPrices(prod);
+            if (it.variation && Array.isArray(prod.variations)) {
+              const vTarget = String(it.variation).trim().toLowerCase();
+              const vMatch = prod.variations.find(v => (v.name && String(v.name).trim().toLowerCase() === vTarget) || (v.id && String(v.id).trim().toLowerCase() === vTarget));
+              if (vMatch) {
+                vMatch.qty = (parseInt(vMatch.qty) || 0) + qtyRestored;
+              }
+            }
+            if (!affectedProducts.includes(prod)) affectedProducts.push(prod);
+          }
+        });
+      }
+    });
+  }
+
+  const count = localPosOrders.length;
+  localPosOrders = [];
+  saveLocalPosOrdersToDisk();
+  saveLocalInventoryToDisk();
+
+  if (db) {
+    try {
+      const snapshot = await db.collection('pos_orders').get();
+      const batch = db.batch();
+      snapshot.forEach(doc => batch.delete(doc.ref));
+      if (restoreStock && affectedProducts.length > 0) {
+        affectedProducts.forEach(prod => {
+          const prodRef = db.collection('products').doc(prod.id);
+          batch.set(prodRef, calculateItemPrices(prod), { merge: true });
+        });
+      }
+      await batch.commit();
+      console.log(`🗑️ Todas las ventas POS (${count}) eliminadas de Firestore.`);
+    } catch (err) {
+      console.error('❌ Error eliminando órdenes POS en Firestore:', err.message);
+    }
+  }
+
+  res.json({
+    success: true,
+    message: `Se eliminaron ${count} ventas de mostrador.${restoreStock ? ' Stock restituido al inventario.' : ' Bajas de inventario mantenidas.'}`,
+    deletedCount: count,
+    restoredStock: restoreStock,
+    orders: [],
+    products: localInventory.map(calculateItemPrices)
+  });
+};
+
+app.delete('/api/admin/pos/orders', requireAdminAuth, clearAllPosOrdersHandler);
+app.delete('/api/pos/orders', clearAllPosOrdersHandler);
+
+// 8. Sincronizar y Auditar Inventario con Bajas de Ventas Mostrador
+const syncInventoryWithPosHandler = async (req, res) => {
+  // Asegurar que localInventory tenga los precios y campos calculados
+  const processedProducts = localInventory.map(calculateItemPrices);
+  saveLocalInventoryToDisk();
+
+  if (db) {
+    try {
+      const batch = db.batch();
+      processedProducts.forEach(p => {
+        const ref = db.collection('products').doc(p.id);
+        batch.set(ref, p, { merge: true });
+      });
+      await batch.commit();
+    } catch (err) {
+      console.warn('⚠️ Error al sincronizar inventario en Firestore:', err.message);
+    }
+  }
+
+  res.json({
+    success: true,
+    message: 'Inventario sincronizado exitosamente con todas las existencias y bajas vigentes.',
+    products: processedProducts,
+    ordersCount: localPosOrders.length
+  });
+};
+
+app.post('/api/admin/pos/sync-inventory', requireAdminAuth, syncInventoryWithPosHandler);
+app.post('/api/pos/sync-inventory', syncInventoryWithPosHandler);
 
 // ==================== MÓDULO DE FACTURACIÓN CFDI ====================
 

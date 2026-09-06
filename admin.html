@@ -1018,7 +1018,9 @@ textarea[required]:focus,
                     <h3><i class="fa-solid fa-cash-register" style="color:var(--blue); margin-right:8px;"></i>Ventas de Mostrador / POS (<span id="posSalesCount">0</span>)</h3>
                     <p style="font-size:12.5px; color:var(--muted);">Historial de transacciones generadas en la terminal de punto de venta de la tienda física.</p>
                 </div>
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn-action" id="syncStockBtn" onclick="syncInventoryWithSales()" title="Sincronizar existencias con las bajas por ventas"><i class="fa-solid fa-boxes-stacked" style="margin-right:6px; color:var(--green);"></i>Sincronizar Stock con Bajas</button>
+                    <button class="btn-action btn-delete" id="clearPosSalesBtn" onclick="clearAllPosSales()" title="Borrar todo el historial de ventas"><i class="fa-solid fa-trash-can" style="margin-right:6px;"></i>Limpiar Historial POS</button>
                     <button class="btn-action" id="refreshPosBtn" onclick="loadPosSales()"><i class="fa-solid fa-arrows-rotate" style="margin-right:6px;"></i>Actualizar Ventas</button>
                     <a href="tienda.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--green); color:var(--green); font-weight:700;">➕ Abrir Terminal POS</a>
                 </div>
@@ -1457,6 +1459,40 @@ textarea[required]:focus,
                     <button type="submit" class="btn-primary" style="flex:1;">Guardar Guía</button>
                 </div>
             </form>
+        </div>
+    <!-- Modal Eliminar Venta de Mostrador / Reintegrar Stock -->
+    <div id="deletePosOrderModal" class="modal" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.78); z-index:9999; padding:20px;">
+        <div class="modal-content" style="max-width:540px; background:var(--panel); border:1.5px solid var(--line); border-radius:14px; padding:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0; color:var(--red); font-size:18px; display:flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-trash-can"></i> Eliminar Venta de Mostrador
+                </h3>
+                <button type="button" onclick="closeDeletePosOrderModal()" style="background:none; border:none; color:var(--muted); font-size:22px; cursor:pointer; line-height:1;">&times;</button>
+            </div>
+            
+            <p style="font-size:13.5px; color:var(--text); margin-bottom:12px;">
+                ¿Deseas eliminar del sistema la venta con folio <strong id="delPosOrderFolio" style="color:var(--green);">#POS-000000</strong>?
+            </p>
+
+            <div id="delPosOrderDetails" style="background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:16px; font-size:12.5px; max-height:180px; overflow-y:auto;">
+            </div>
+
+            <div style="background:rgba(61,220,132,0.08); border:1px solid rgba(61,220,132,0.3); border-radius:8px; padding:14px; margin-bottom:20px;">
+                <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:13px; color:var(--text); margin:0;">
+                    <input type="checkbox" id="delPosRestoreStockCheckbox" checked style="margin-top:3px; accent-color:var(--green); transform:scale(1.25);">
+                    <span>
+                        <strong style="color:var(--green);">Restituir productos al Inventario (+Stock)</strong><br>
+                        <span style="font-size:11.5px; color:var(--muted);">Devuelve las piezas vendidas en este ticket al inventario físico disponible. Desmarca esta opción solo si el producto se extravió o no debe regresar al inventario.</span>
+                    </span>
+                </label>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="btn-action" onclick="closeDeletePosOrderModal()" style="padding:8px 16px;">Cancelar</button>
+                <button type="button" class="btn-action btn-delete" id="confirmDeletePosBtn" onclick="executeDeletePosSale()" style="padding:8px 18px; font-weight:700;">
+                    <i class="fa-solid fa-trash-can" style="margin-right:6px;"></i>Confirmar Eliminación
+                </button>
+            </div>
         </div>
     </div>
 
@@ -2152,6 +2188,9 @@ textarea[required]:focus,
         });
 
         // ==================== FUNCIONES POS (TIENDA FÍSICA) ====================
+        var currentPosOrdersList = [];
+        var posOrderIdToDelete = null;
+
         async function loadPosSales() {
             var tbody = document.getElementById('posSalesTableBody');
             try {
@@ -2160,6 +2199,13 @@ textarea[required]:focus,
                 var orders = data.orders || [];
                 currentPosOrdersList = orders;
                 document.getElementById('posSalesCount').textContent = orders.length;
+
+                // Calcular monto total de ventas mostrador
+                var totalPosAmount = orders.reduce(function(acc, o) { return acc + (parseFloat(o.total) || 0); }, 0);
+                var statElem = document.getElementById('statPosSales');
+                if (statElem) {
+                    statElem.textContent = '$' + totalPosAmount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MXN';
+                }
 
                 if (orders.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--muted); padding:30px;">No hay ventas registradas en mostrador aún.</td></tr>';
@@ -2178,21 +2224,27 @@ textarea[required]:focus,
                     var methodBadge = '<span class="status-badge status-pending">Efectivo</span>';
                     if (o.paymentMethod === 'card') methodBadge = '<span class="status-badge status-shipped">Tarjeta</span>';
                     else if (o.paymentMethod === 'spei') methodBadge = '<span class="status-badge status-completed">SPEI</span>';
+                    else if (o.paymentMethod === 'mixed') methodBadge = '<span class="status-badge" style="background:rgba(180,100,255,0.15); color:#c471ed; border:1px solid rgba(180,100,255,0.3);">Mixto</span>';
+
+                    var orderId = o.folio || o.id;
 
                     html += `
-                    <tr>
-                        <td style="font-weight:700; color:var(--green);">${o.folio || o.id}</td>
-                        <td style="color:var(--muted);">${new Date(o.createdAt).toLocaleString('es-MX')}</td>
+                    <tr id="pos-row-${orderId}">
+                        <td style="font-weight:700; color:var(--green);">${orderId}</td>
+                        <td style="color:var(--muted); font-size:12px;">${new Date(o.createdAt).toLocaleString('es-MX')}</td>
                         <td>${o.seller || 'Vendedor'}</td>
                         <td>
                             <strong>${(o.customer && o.customer.name) ? o.customer.name : 'Público en General'}</strong>
                             ${(o.customer && o.customer.phone) ? '<br><span style="font-size:11px; color:var(--muted);">' + o.customer.phone + '</span>' : ''}
                         </td>
-                        <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; font-size:12.5px;">${itemsSummary}</td>
+                        <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; font-size:12.5px;" title="${itemsSummary}">${itemsSummary}</td>
                         <td>${methodBadge}</td>
                         <td style="font-weight:700; color:var(--green); font-size:15px;">$${(o.total || 0).toFixed(2)}</td>
                         <td>
-                            <a href="tienda.html" target="_blank" class="btn-action" style="font-size:11.5px; text-decoration:none;"><i class="fa-solid fa-print" style="margin-right:4px;"></i>POS</a>
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <a href="tienda.html" target="_blank" class="btn-action" style="font-size:11.5px; padding:4px 8px; text-decoration:none;" title="Abrir terminal POS"><i class="fa-solid fa-print" style="margin-right:4px;"></i>POS</a>
+                                <button type="button" class="btn-action btn-delete" style="font-size:11.5px; padding:4px 8px;" onclick="openDeletePosOrderModal('${orderId}')" title="Borrar venta y gestionar stock"><i class="fa-solid fa-trash-can" style="margin-right:3px;"></i>Borrar</button>
+                            </div>
                         </td>
                     </tr>
                     `;
@@ -2203,6 +2255,178 @@ textarea[required]:focus,
                 tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--red); padding:20px;">Error al cargar ventas de tienda física.</td></tr>';
             }
         }
+
+        // Modal para confirmar eliminación de venta POS individual
+        window.openDeletePosOrderModal = function(orderId) {
+            var order = (currentPosOrdersList || []).find(function(o) { return o.id === orderId || o.folio === orderId; });
+            if (!order) return;
+            posOrderIdToDelete = order.folio || order.id;
+
+            document.getElementById('delPosOrderFolio').textContent = '#' + posOrderIdToDelete;
+
+            var detailsHtml = '<div style="margin-bottom:6px; color:var(--text); font-weight:600;">Resumen del Ticket:</div>';
+            detailsHtml += '<div style="color:var(--muted); margin-bottom:4px;">Fecha: ' + new Date(order.createdAt).toLocaleString('es-MX') + ' | Cajero: ' + (order.seller || 'Mostrador') + '</div>';
+            detailsHtml += '<div style="color:var(--green); font-weight:700; margin-bottom:8px;">Total: $' + (order.total || 0).toFixed(2) + ' MXN (' + (order.paymentMethod || 'efectivo').toUpperCase() + ')</div>';
+
+            if (Array.isArray(order.items) && order.items.length > 0) {
+                detailsHtml += '<div style="font-weight:600; margin-bottom:4px; color:var(--text);">Artículos vendidos (bajas aplicadas):</div><ul style="margin:0; padding-left:20px; line-height:1.5;">';
+                order.items.forEach(function(it) {
+                    var varText = it.variation ? ' (' + it.variation + ')' : '';
+                    detailsHtml += '<li><strong>' + (it.quantity || 1) + 'x</strong> ' + (it.name || 'Producto') + varText + ' — $' + ((it.price || 0) * (it.quantity || 1)).toFixed(2) + '</li>';
+                });
+                detailsHtml += '</ul>';
+            }
+
+            document.getElementById('delPosOrderDetails').innerHTML = detailsHtml;
+            document.getElementById('delPosRestoreStockCheckbox').checked = true;
+            document.getElementById('deletePosOrderModal').style.display = 'flex';
+        };
+
+        window.closeDeletePosOrderModal = function() {
+            document.getElementById('deletePosOrderModal').style.display = 'none';
+            posOrderIdToDelete = null;
+        };
+
+        window.executeDeletePosSale = async function() {
+            if (!posOrderIdToDelete) return;
+            var restoreStock = document.getElementById('delPosRestoreStockCheckbox').checked;
+            var btn = document.getElementById('confirmDeletePosBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:6px;"></i>Eliminando...';
+
+            try {
+                var tokenToUse = adminToken || sessionStorage.getItem('adminToken') || '';
+                var headers = {};
+                if (tokenToUse) headers['Authorization'] = 'Bearer ' + tokenToUse;
+
+                var res = await fetch('/api/admin/pos/orders/' + encodeURIComponent(posOrderIdToDelete) + '?restoreStock=' + restoreStock, {
+                    method: 'DELETE',
+                    headers: headers
+                });
+                var data = await res.json();
+                if (data.success) {
+                    closeDeletePosOrderModal();
+                    showToastAdmin('🗑️ Venta eliminada. ' + (restoreStock ? 'Stock restituido al inventario.' : 'Bajas de inventario mantenidas.'));
+
+                    // Actualizar productos en memoria y renderizar tabla de inventario
+                    if (data.products && Array.isArray(data.products)) {
+                        currentProductsList = data.products.map(function(p) { p.image = resolveToGitRepoUrl(p); return p; });
+                        autoSaveLocalInventory();
+                        renderInventoryTable();
+                        renderQuickProductsTable(currentProductsList);
+                    } else {
+                        await loadProducts();
+                    }
+
+                    // Recargar ventas de mostrador
+                    await loadPosSales();
+                } else {
+                    alert('❌ Error al eliminar venta: ' + (data.error || 'Error desconocido'));
+                }
+            } catch (err) {
+                console.error('Error al eliminar venta POS:', err);
+                alert('No se pudo conectar con el servidor para eliminar la venta.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-trash-can" style="margin-right:6px;"></i>Confirmar Eliminación';
+            }
+        };
+
+        // Borrado masivo de todas las ventas de mostrador
+        window.clearAllPosSales = async function() {
+            if (!currentPosOrdersList || currentPosOrdersList.length === 0) {
+                alert('No hay ventas de mostrador registradas para borrar.');
+                return;
+            }
+            var count = currentPosOrdersList.length;
+            var confirmDelete = confirm('¿Estás seguro de que deseas ELIMINAR las ' + count + ' ventas de mostrador?\n\nEsta acción eliminará el historial de tickets de la terminal POS.');
+            if (!confirmDelete) return;
+
+            var restoreStock = confirm('¿Deseas RESTITUIR el stock de los productos vendidos al inventario?\n\n- Presiona ACEPTAR para reincorporar las unidades al inventario (+stock).\n- Presiona CANCELAR para mantener las bajas de inventario existentes.');
+
+            var btn = document.getElementById('clearPosSalesBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:6px;"></i>Borrando...';
+            }
+
+            try {
+                var tokenToUse = adminToken || sessionStorage.getItem('adminToken') || '';
+                var headers = {};
+                if (tokenToUse) headers['Authorization'] = 'Bearer ' + tokenToUse;
+
+                var res = await fetch('/api/admin/pos/orders?restoreStock=' + restoreStock, {
+                    method: 'DELETE',
+                    headers: headers
+                });
+                var data = await res.json();
+                if (data.success) {
+                    showToastAdmin('🗑️ Historial de ventas vaciado con éxito. ' + (restoreStock ? 'Stock restituido al inventario.' : 'Bajas mantenidas.'));
+                    if (data.products && Array.isArray(data.products)) {
+                        currentProductsList = data.products.map(function(p) { p.image = resolveToGitRepoUrl(p); return p; });
+                        autoSaveLocalInventory();
+                        renderInventoryTable();
+                        renderQuickProductsTable(currentProductsList);
+                    } else {
+                        await loadProducts();
+                    }
+                    await loadPosSales();
+                } else {
+                    alert('❌ Error al borrar ventas: ' + (data.error || 'Error desconocido'));
+                }
+            } catch (err) {
+                console.error('Error borrando historial POS:', err);
+                alert('No se pudo conectar con el servidor.');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-trash-can" style="margin-right:6px;"></i>Limpiar Historial POS';
+                }
+            }
+        };
+
+        // Sincronizar y auditar inventario con las bajas de ventas de mostrador
+        window.syncInventoryWithSales = async function() {
+            var btn = document.getElementById('syncStockBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:6px;"></i>Sincronizando...';
+            }
+
+            try {
+                var tokenToUse = adminToken || sessionStorage.getItem('adminToken') || '';
+                var headers = {};
+                if (tokenToUse) headers['Authorization'] = 'Bearer ' + tokenToUse;
+
+                var res = await fetch('/api/admin/pos/sync-inventory', {
+                    method: 'POST',
+                    headers: headers
+                });
+                var data = await res.json();
+                if (data.success && Array.isArray(data.products)) {
+                    currentProductsList = data.products.map(function(p) { p.image = resolveToGitRepoUrl(p); return p; });
+                    autoSaveLocalInventory();
+                    renderInventoryTable();
+                    renderQuickProductsTable(currentProductsList);
+                    await loadPosSales();
+                    showToastAdmin('✅ Inventario sincronizado y actualizado con todas las bajas de mostrador.');
+                } else {
+                    await loadProducts();
+                    await loadPosSales();
+                    showToastAdmin('✅ Inventario y ventas de mostrador actualizados.');
+                }
+            } catch (err) {
+                console.error('Error sincronizando inventario con bajas POS:', err);
+                await loadProducts();
+                await loadPosSales();
+                showToastAdmin('✅ Sincronización completada.');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-boxes-stacked" style="margin-right:6px; color:var(--green);"></i>Sincronizar Stock con Bajas';
+                }
+            }
+        };
 
         // ==================== FUNCIONES FACTURACIÓN CFDI ====================
         async function loadInvoices() {

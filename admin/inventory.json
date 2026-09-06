@@ -1,0 +1,1244 @@
+[
+  {
+    "id": "VON-00042",
+    "code": "VON-00042",
+    "name": "V-MOL 1.5 L",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 131,
+    "pct": 0,
+    "newPrice": 131,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-MOL%201.5L.png",
+    "description": "",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [],
+    "updatedAt": "2026-09-06T01:21:41.472Z",
+    "subtotal": 262,
+    "newSubtotal": 262
+  },
+  {
+    "id": "VON-00026",
+    "code": "VON-00026",
+    "name": "V FLOC (SHAMPOO PH NEUTRO) 500ML",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 91,
+    "pct": 0,
+    "newPrice": 91,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-MOL%201.5L.png",
+    "description": "SHAMPOO AUTOMOTRIZ DE PH NEUTRO DE ALTO RENDIMIENTO",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 91,
+        "qty": 2
+      },
+      {
+        "id": "v2",
+        "name": "1.5 L",
+        "price": 230,
+        "qty": 5
+      },
+      {
+        "id": "v3",
+        "name": "3 L",
+        "price": 420,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00097",
+    "code": "VON-00097",
+    "name": "HYDROX WASH 500ML",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 269,
+    "pct": 0,
+    "newPrice": 269,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HYDROX%20WASH.png",
+    "description": "SHAMPOO CERÁMICO DE LIMPIEZA Y PROTECCIÓN SiO2",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 269,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00072",
+    "code": "VON-00072",
+    "name": "ALUMAX EXP 20 L",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 1237,
+    "pct": 0,
+    "newPrice": 1237,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/Alumax%2020L.png",
+    "description": "DESINCRUSTANTE ÁCIDO PARA RINES Y MOTOR PRESENTACIÓN EXP 20L",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "20 L",
+        "price": 1237,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00084",
+    "code": "VON-00084",
+    "name": "REMOVEX EXP 20L",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 994,
+    "pct": 0,
+    "newPrice": 994,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/REMOVEX.png",
+    "description": "DESENGRASANTE Y LIMPIADOR DE CHASIS INDUSTRIAL 20L",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "20 L",
+        "price": 994,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00067",
+    "code": "VON-00067",
+    "name": "V-ECO FAST 500 ML",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 85,
+    "pct": 0,
+    "newPrice": 85,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-ECO%20FAST.png",
+    "description": "LAVADO ECOLÓGICO EN SECO PARA CARROCERÍA Y CRISTALES",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 85,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00039",
+    "code": "VON-00039",
+    "name": "IZER 500ML",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 4,
+    "price": 116,
+    "pct": 0,
+    "newPrice": 116,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/IZER.png",
+    "description": "REMOVEDOR DE CONTAMINACIÓN FÉRREA Y ÓXIDO CON INDICADOR DE COLOR",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 116,
+        "qty": 4
+      },
+      {
+        "id": "v2",
+        "name": "1.5 L",
+        "price": 290,
+        "qty": 3
+      }
+    ]
+  },
+  {
+    "id": "VON-00040",
+    "code": "VON-00040",
+    "name": "STRIKE 500ML",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 4,
+    "price": 193,
+    "pct": 0,
+    "newPrice": 193,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/STRIKE.png",
+    "description": "REMOVEDOR DE ALQUITRÁN, BREA Y ADHESIVOS DE PINTURA",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 193,
+        "qty": 4
+      }
+    ]
+  },
+  {
+    "id": "VON-00027",
+    "code": "VON-00027",
+    "name": "DELET (LIMPIADOR DE PLÁSTICOS, VINILO Y CAUCHO) 500ML",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 109,
+    "pct": 0,
+    "newPrice": 109,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/DELET.png",
+    "description": "LIMPIADOR DE ALTO PODER PARA NEUMÁTICOS, CAUCHO Y PLÁSTICOS",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 109,
+        "qty": 2
+      },
+      {
+        "id": "v2",
+        "name": "1.5 L",
+        "price": 285,
+        "qty": 4
+      }
+    ]
+  },
+  {
+    "id": "VON-00028",
+    "code": "VON-00028",
+    "name": "SINTRA FAST (LIMPIADOR DE INTERIORES) 500ML",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 98,
+    "pct": 0,
+    "newPrice": 98,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINTRA%20FAST.png",
+    "description": "LIMPIADOR MULTIUSOS DE INTERIORES LISTO PARA USAR",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 98,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00091",
+    "code": "VON-00091",
+    "name": "BACTRAN 1.5L",
+    "category": "vsc",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 113,
+    "pct": 0,
+    "newPrice": 113,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/BACTRAN%201.5L.png",
+    "description": "LIMPIADOR Y DESINFECTANTE BACTERICIDA 7 EN 1 PARA TAPIZADOS",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "1.5 L",
+        "price": 113,
+        "qty": 2
+      },
+      {
+        "id": "v2",
+        "name": "5 L",
+        "price": 340,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00093",
+    "code": "VON-00093",
+    "name": "EXTRACTUS 1.5L",
+    "category": "vsc",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 107,
+    "pct": 0,
+    "newPrice": 107,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/EXTRACTUS%201.5L.png",
+    "description": "DETERGENTE ULTRA CONCENTRADO PARA EXTRACCIÓN DE ALFOMBRAS Y TAPIZ",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "1.5 L",
+        "price": 107,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00104",
+    "code": "VON-00104",
+    "name": "SANITIZANTE FINALIZADOR 1.5 L",
+    "category": "vsc",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 118,
+    "pct": 0,
+    "newPrice": 118,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SANITIZANTE%201.5L.png",
+    "description": "PROTECTOR Y NEUTRALIZADOR DE OLORES PARA INTERIORES",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "1.5 L",
+        "price": 118,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00031",
+    "code": "VON-00031",
+    "name": "RESTAURAX (RESTAURADOR DE PLÁSTICOS, VINILO Y CAUCHO)",
+    "category": "plasticos",
+    "udm": "PZ",
+    "qty": 4,
+    "price": 201,
+    "pct": 0,
+    "newPrice": 201,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/RESTAURAX.png",
+    "description": "RESTAURA Y PROTEGE SUPERFICIES DE PLÁSTICO Y VINILO CONTRA UV",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 201,
+        "qty": 4
+      },
+      {
+        "id": "v2",
+        "name": "1.5 L",
+        "price": 480,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00061",
+    "code": "VON-00061",
+    "name": "REVOX 500 ML",
+    "category": "llantas",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 136,
+    "pct": 0,
+    "newPrice": 136,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/REVOX.png",
+    "description": "ABRILLANTADOR DE NEUMÁTICOS CON ACABADO SATINADO Y ALTA DURABILIDAD",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 136,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00106",
+    "code": "VON-00106",
+    "name": "REXER 500ML",
+    "category": "llantas",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 182,
+    "pct": 0,
+    "newPrice": 182,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/REXER.png",
+    "description": "ACONDICIONADOR HIDRÓFOBICO Y PROTECTOR DE LLANTAS",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 182,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00062",
+    "code": "VON-00062",
+    "name": "SHINY 500 ML",
+    "category": "llantas",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 176,
+    "pct": 0,
+    "newPrice": 176,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SHINY.png",
+    "description": "ABRILLANTADOR DE LLANTAS DE EFECTO MOJADO INTENSO Y REPELENTE",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 176,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00046",
+    "code": "VON-00046",
+    "name": "PAD PARA POL DE VIDRIOS TIPO ALFOMBRA 5\"",
+    "category": "accesorios",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 219,
+    "pct": 0,
+    "newPrice": 219,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/PAD%20GRIS.png",
+    "description": "PAD DE ALFOMBRA PARA CORTE Y PULIDO PROFUNDO DE CRISTALES 5 PULGADAS",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "5 pulgadas",
+        "price": 219,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00047",
+    "code": "VON-00047",
+    "name": "PAD PARA POL DE VIDRIOS TIPO LONA 5\"",
+    "category": "accesorios",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 219,
+    "pct": 0,
+    "newPrice": 219,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/PAD%20LONA.png",
+    "description": "PAD DE LONA PARA ELIMINACIÓN DE MARCAS DE AGUA EN VIDRIOS 5 PULGADAS",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "5 pulgadas",
+        "price": 219,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "MIC-00001",
+    "code": "MIC-00001",
+    "name": "MICROFIBRA",
+    "category": "accesorios",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 133,
+    "pct": 0,
+    "newPrice": 133,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/APLICADOR.png",
+    "description": "TOALLA DE MICROFIBRA DE ALTO GRAMAJE 40X40 CM SIN COSTURAS",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "40x40 cm",
+        "price": 133,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "MIC-00002",
+    "code": "MIC-00002",
+    "name": "MICROFIBRA CHICA",
+    "category": "accesorios",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 44,
+    "pct": 0,
+    "newPrice": 44,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/APLICADOR.png",
+    "description": "MICROFIBRA COMPACTA MULTIUSOS PARA INTERIORES Y DETALLES",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "30x30 cm",
+        "price": 44,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00001",
+    "code": "VON-00001",
+    "name": "V10 PULIMENTO DE CORTE 500ML",
+    "category": "cera-pasta",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 130,
+    "pct": 0,
+    "newPrice": 130,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V10.png",
+    "description": "PULIMENTO DE CORTE RÁPIDO PARA ELIMINAR RAYONES PROFUNDOS",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 130,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00002",
+    "code": "VON-00002",
+    "name": "V20 PULIMENTO DE CORTE MEDIO 500ML",
+    "category": "cera-pasta",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 152,
+    "pct": 0,
+    "newPrice": 152,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V20.png",
+    "description": "COMPUESTO PULIDOR MEDIO PARA ACABADO LISO Y SIN HOLOGRAMAS",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 152,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00003",
+    "code": "VON-00003",
+    "name": "V30 PULIMENTO DE ACABADO 500ML",
+    "category": "cera-pasta",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 162,
+    "pct": 0,
+    "newPrice": 162,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V30.png",
+    "description": "PULIMENTO DE ULTRA ACABADO Y BRILLO ESPEJO",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 162,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00004",
+    "code": "VON-00004",
+    "name": "LINEA V PULIMENTO DE CORTE PREMIUM V-CUT 500ML",
+    "category": "cera-pasta",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 398,
+    "pct": 0,
+    "newPrice": 398,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-CUT.png",
+    "description": "PULIMENTO PREMIUM V-CUT CORTE EXTREMO TECNOLOGÍA BASE AGUA",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 398,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00005",
+    "code": "VON-00005",
+    "name": "LINEA V PULIMENTO CORTE MEDIO PREMIUM V-POLISH 500ML",
+    "category": "cera-pasta",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 370,
+    "pct": 0,
+    "newPrice": 370,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-POLISH.png",
+    "description": "PULIMENTO DE CORTE MEDIO V-POLISH LIBRE DE POLVO Y SILICONAS",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 370,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00006",
+    "code": "VON-00006",
+    "name": "LINEA V PULIMENTO DE ACABADO PREMIUM V-FINISH 500ML",
+    "category": "cera-pasta",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 370,
+    "pct": 0,
+    "newPrice": 370,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-FINISH.png",
+    "description": "PULIMENTO FINALIZADOR V-FINISH BRILLO PROFUNDO TIPO SHOW CAR",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 370,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00034",
+    "code": "VON-00034",
+    "name": "OPTY 240 ML",
+    "category": "cristales",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 444,
+    "pct": 0,
+    "newPrice": 444,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/OPTY.png",
+    "description": "REPELENTE DE LLUVIA Y SELLADOR DE CRISTALES DE LARGA DURACIÓN",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "240 ML",
+        "price": 444,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00035",
+    "code": "VON-00035",
+    "name": "GLAZY 500ML",
+    "category": "cristales",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 105,
+    "pct": 0,
+    "newPrice": 105,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/GLAZY.png",
+    "description": "LIMPIADOR DE CRISTALES SIN RESIDUOS NI MANCHAS",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 105,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00086",
+    "code": "VON-00086",
+    "name": "FOCUS 240 ML",
+    "category": "cristales",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 139,
+    "pct": 0,
+    "newPrice": 139,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/FOCUS.png",
+    "description": "DESCONTAMINANTE Y REMOVEDOR DE MARCAS DE AGUA EN VIDRIOS",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "240 ML",
+        "price": 139,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00007",
+    "code": "VON-00007",
+    "name": "BLEND ALL IN ONE (3 PASOS EN 1) 500ML",
+    "category": "cera-liquida",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 388,
+    "pct": 0,
+    "newPrice": 388,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png",
+    "description": "PULIMENTO TODO EN UNO: CORTE, ACABADO Y PROTECCIÓN SiO2 + CARNAÚBA",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 388,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00008",
+    "code": "VON-00008",
+    "name": "V40 (4 PASOS EN 1) 500ML",
+    "category": "cera-liquida",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 190,
+    "pct": 0,
+    "newPrice": 190,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V40.png",
+    "description": "PULIMENTO Y CERA 4 EN 1: CORTE, REFINADO, BRILLO Y PROTECCIÓN",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 190,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00036",
+    "code": "VON-00036",
+    "name": "CARNAUBA HYBRID WAX 240ML",
+    "category": "cera-pasta",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 233,
+    "pct": 0,
+    "newPrice": 233,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/CARNAUBA%20HYBRID%20WAX.png",
+    "description": "CERA HÍBRIDA DE CARNAÚBA Y POLÍMEROS SINTÉTICOS EN PASTA",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "240 ML",
+        "price": 233,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00010",
+    "code": "VON-00010",
+    "name": "BLEND PASTE WAX 100ML",
+    "category": "cera-pasta",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 317,
+    "pct": 0,
+    "newPrice": 317,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png",
+    "description": "CERA DE CARNAÚBA Y SiO2 HASTA 7 MESES DE DURABILIDAD",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "100 ML",
+        "price": 317,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00011",
+    "code": "VON-00011",
+    "name": "CARNAUBA PLUS 500ML",
+    "category": "cera-liquida",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 120,
+    "pct": 0,
+    "newPrice": 120,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/PLUS.png",
+    "description": "CERA LÍQUIDA LIMPIADORA Y PROTECTORA",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 120,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00013",
+    "code": "VON-00013",
+    "name": "NATIVE CLEANER WAX 500ML",
+    "category": "cera-liquida",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 200,
+    "pct": 0,
+    "newPrice": 200,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/NATIVE.png",
+    "description": "CERA PREPARADORA CON CARNAÚBA BRASILEÑA 100% PURA",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 200,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00014",
+    "code": "VON-00014",
+    "name": "NATIVE SPRAY WAX 500ML",
+    "category": "cera-liquida",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 169,
+    "pct": 0,
+    "newPrice": 169,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/NATIVE%20FAST.png",
+    "description": "CERA LÍQUIDA EN SPRAY CON CARNAÚBA PURA PARA MANTENIMIENTO",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 169,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00015",
+    "code": "VON-00015",
+    "name": "HIDRACOURO (HIDRATANTE Y PROTECTOR DE PIEL) 500ML",
+    "category": "cristales",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 137,
+    "pct": 0,
+    "newPrice": 137,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HIDRACOURO.png",
+    "description": "CREMA HIDRATANTE DE PIEL Y CUERO AUTOMOTRIZ",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 137,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00016",
+    "code": "VON-00016",
+    "name": "HIGICOURO (LIMPIADOR DE PIEL) 500ML",
+    "category": "cristales",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 88,
+    "pct": 0,
+    "newPrice": 88,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HIGICOURO.png",
+    "description": "LIMPIADOR SUAVE Y EFECTIVO PARA PIEL Y ASIENTOS DE CUERO",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 88,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00017",
+    "code": "VON-00017",
+    "name": "MAKKER (ELIMINADOR DE MARCA DE REMOLINOS) 500ML",
+    "category": "cera-pasta",
+    "udm": "PZ",
+    "qty": 4,
+    "price": 162,
+    "pct": 0,
+    "newPrice": 162,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/MAKKER%202.0.png",
+    "description": "RELLENADOR Y MASCARADOR DE SWIRLS Y MICRORAYONES CON BRILLO",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 162,
+        "qty": 4
+      }
+    ]
+  },
+  {
+    "id": "VON-00095",
+    "code": "VON-00095",
+    "name": "HYDROX FAST 500ML",
+    "category": "ceramicos",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 110,
+    "pct": 0,
+    "newPrice": 110,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HYDROX%20FAST.png",
+    "description": "SELLADOR CERÁMICO DE RÁPIDA APLICACIÓN HIDROREACTIVO",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 110,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00063",
+    "code": "VON-00063",
+    "name": "SPELL 500 ML",
+    "category": "ceramicos",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 130,
+    "pct": 0,
+    "newPrice": 130,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SPELL.png",
+    "description": "SELLADOR RÁPIDO DE SIO2 PARA APLICAR DURANTE EL ENJUAGUE",
+    "sec": "Línea de Pulimentos y Ceras",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 130,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00110",
+    "code": "VON-00110",
+    "name": "CITRON 1.5 L (SHAMPOO DESENGRASANTE)",
+    "category": "limpieza",
+    "udm": "PZ",
+    "qty": 3,
+    "price": 275,
+    "pct": 0,
+    "newPrice": 275,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/CITRON%201.5L.png",
+    "description": "SHAMPOO DESENGRASANTE CÍTRICO CONCENTRADÍSIMO",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "1.5 L",
+        "price": 275,
+        "qty": 3
+      }
+    ]
+  },
+  {
+    "id": "VON-00111",
+    "code": "VON-00111",
+    "name": "PRIZM 500 ML (RESTAURADOR DE CRISTALES)",
+    "category": "cristales",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 380,
+    "pct": 0,
+    "newPrice": 380,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/PRIZM.png",
+    "description": "ELIMINADOR DE MARCAS DE AGUA Y LLUVIA ÁCIDA EN VIDRIOS",
+    "sec": "Línea de Detailing / Limpieza",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 380,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00112",
+    "code": "VON-00112",
+    "name": "SINERGY WHEEL 500 ML",
+    "category": "ceramicos",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 590,
+    "pct": 0,
+    "newPrice": 590,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SINERGY%20SHEEL.png",
+    "description": "SELLADOR CERÁMICO PARA RINES RESISTENTE A ALTA TEMPERATURA",
+    "sec": "Línea de Cerámicos y Selladores",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 590,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00113",
+    "code": "VON-00113",
+    "name": "SIO2-PRO 500 ML",
+    "category": "ceramicos",
+    "udm": "PZ",
+    "qty": 3,
+    "price": 340,
+    "pct": 0,
+    "newPrice": 340,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SIO2-PRO.png",
+    "description": "SELLADOR CERÁMICO EN SPRAY BOOSTER DE MANTENIMIENTO",
+    "sec": "Línea de Cerámicos y Selladores",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "500 ML",
+        "price": 340,
+        "qty": 3
+      }
+    ]
+  },
+  {
+    "id": "VON-00114",
+    "code": "VON-00114",
+    "name": "V-PAINT COATING CERÁMICO 50 ML",
+    "category": "ceramicos",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 950,
+    "pct": 0,
+    "newPrice": 950,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-PAINT.png",
+    "description": "VITRIFICADOR CERÁMICO HASTA 3 AÑOS DE PROTECCIÓN PARA PINTURA",
+    "sec": "Línea de Cerámicos y Selladores",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "50 ML",
+        "price": 950,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00115",
+    "code": "VON-00115",
+    "name": "V-PAINT PRO COATING CERÁMICO 50 ML",
+    "category": "ceramicos",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 1250,
+    "pct": 0,
+    "newPrice": 1250,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-PAINT%20PRO.png",
+    "description": "VITRIFICADOR PROFESIONAL DE ULTRA DUREZA 9H",
+    "sec": "Línea de Cerámicos y Selladores",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "50 ML",
+        "price": 1250,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00116",
+    "code": "VON-00116",
+    "name": "V-LIGHT COATING CERÁMICO PARA FAROS 50 ML",
+    "category": "ceramicos",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 790,
+    "pct": 0,
+    "newPrice": 790,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-LIGHT.png",
+    "description": "RECUBRIMIENTO CERÁMICO ESPECIALIZADO PARA POLICARBONATO Y FAROS",
+    "sec": "Línea de Cerámicos y Selladores",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "50 ML",
+        "price": 790,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00117",
+    "code": "VON-00117",
+    "name": "V-PLASTIC COATING CERÁMICO PARA PLÁSTICOS 50 ML",
+    "category": "plasticos",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 780,
+    "pct": 0,
+    "newPrice": 780,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-PLASTIC.png",
+    "description": "COATING CERÁMICO DE HASTA 3 AÑOS PARA PLÁSTICOS EXTERIORES",
+    "sec": "Línea de Cerámicos y Selladores",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "50 ML",
+        "price": 780,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00118",
+    "code": "VON-00118",
+    "name": "V-LEATHER COATING CERÁMICO PARA CUERO 50 ML",
+    "category": "cristales",
+    "udm": "PZ",
+    "qty": 1,
+    "price": 860,
+    "pct": 0,
+    "newPrice": 860,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/V-LEATHER.png",
+    "description": "PROTECCIÓN Y REPELENCIA NANOTECNOLÓGICA PARA CUERO Y PIEL",
+    "sec": "Línea de Cerámicos y Selladores",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "50 ML",
+        "price": 860,
+        "qty": 1
+      }
+    ]
+  },
+  {
+    "id": "VON-00119",
+    "code": "VON-00119",
+    "name": "PAD VOXER CORTE LEVE 5\"",
+    "category": "accesorios",
+    "udm": "PZ",
+    "qty": 3,
+    "price": 280,
+    "pct": 0,
+    "newPrice": 280,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/CORTE%20LEVE.png",
+    "description": "PAD DE ESPUMA DE CORTE LIGERO / MEDIO PARA PULIDO 5 PULGADAS",
+    "sec": "Línea de Accesorios",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "5 Pulgadas",
+        "price": 280,
+        "qty": 3
+      }
+    ]
+  },
+  {
+    "id": "VON-00120",
+    "code": "VON-00120",
+    "name": "APLICADOR DE MICROFIBRA CON ENCAJE",
+    "category": "accesorios",
+    "udm": "PZ",
+    "qty": 6,
+    "price": 65,
+    "pct": 0,
+    "newPrice": 65,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/APLICADOR.png",
+    "description": "APLICADOR ERGONÓMICO DE MICROFIBRA PARA CERAS Y ACONDICIONADORES",
+    "sec": "Línea de Accesorios",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "Pieza",
+        "price": 65,
+        "qty": 6
+      }
+    ]
+  },
+  {
+    "id": "VON-00121",
+    "code": "VON-00121",
+    "name": "SET DE BROCHAS PARA DETALLADO AUTOMOTRIZ (5 PZAS)",
+    "category": "accesorios",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 340,
+    "pct": 0,
+    "newPrice": 340,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/BROCHAS.png",
+    "description": "JUEGO DE 5 BROCHAS SUAVES RESISTENTES A QUÍMICOS PARA INTERIOR Y EXTERIOR",
+    "sec": "Línea de Accesorios",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "Set 5 Piezas",
+        "price": 340,
+        "qty": 2
+      }
+    ]
+  },
+  {
+    "id": "VON-00122",
+    "code": "VON-00122",
+    "name": "KIT BÁSICO DETAILING VONIXX",
+    "category": "accesorios",
+    "udm": "PZ",
+    "qty": 2,
+    "price": 499,
+    "pct": 0,
+    "newPrice": 499,
+    "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/KIT%20BASICO.png",
+    "description": "KIT BÁSICO DE LIMPIEZA Y CUIDADO AUTOMOTRIZ VONIXX",
+    "sec": "Línea de Accesorios",
+    "variations": [
+      {
+        "id": "v1",
+        "name": "Kit",
+        "price": 499,
+        "qty": 2
+      }
+    ]
+  }
+]
