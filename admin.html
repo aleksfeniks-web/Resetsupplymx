@@ -5149,6 +5149,7 @@ function resolveToGitRepoUrl(item) {
                     { cmd: '/weekly-review', label: '/weekly-review' },
                     { cmd: '/reorder', label: '/reorder' },
                     { cmd: '/promo', label: '/promo' },
+                    { cmd: 'Configurar en POS un descuento automático del 10% cuando agreguen un accesorio al limpiador.', label: '⚡ Configurar Promo 10% Limpiador+Accesorio' },
                     { cmd: '/inventory-audit', label: '/inventory-audit' },
                     { cmd: '/manager-brief', label: '/manager-brief' }
                 ]
@@ -5593,12 +5594,16 @@ function resolveToGitRepoUrl(item) {
                     .replace(/(recommended_order)/g, '<span class="rm-tech-metric inv" style="background:rgba(16,185,129,0.15); border-color:#10b981; color:#10b981;">$1</span>')
                     .replace(/(🔒 POLÍTICA DE SEGURIDAD OPERATIVA:?[^\n]*)/g, '<div style="background:rgba(239,68,68,0.1); border-left:3px solid #ef4444; padding:6px 10px; margin:8px 0; border-radius:4px; font-size:11.5px; color:#fca5a5;">$1</div>')
                     .replace(/(🔒 GARANTÍA DE CONTROL HUMANO:?[^\n]*)/g, '<div style="background:rgba(16,185,129,0.1); border-left:3px solid #10b981; padding:6px 10px; margin:8px 0; border-radius:4px; font-size:11.5px; color:#6ee7b7;">$1</div>')
+                    .replace(/(RESET MANAGER — CONFIGURACIÓN[^\n]+)/g, '<strong style="color:#10b981;">$1</strong>')
+                    .replace(/(INSTRUCCIÓN DE DIRECCIÓN EJECUTADA:?|INSTRUCCIÓN EJECUTADA:?|DETALLE DE LA REGLA EN POS:?|PARÁMETROS DE LA REGLA EN POS:?|IMPACTO ESTRATÉGICO:?|INSTRUCCIÓN PARA EL EQUIPO DE CAJA:?|INSTRUCCIÓN PARA CAJA:?)/g, '<strong style="color:#3ddc84;">$1</strong>')
                     .replace(/(Ventas:?|Utilidad bruta estimada:?|Tickets:?|Ticket promedio:?|Productos más vendidos:?|TOTAL PRODUCTOS EN CATÁLOGO:?|ACCIONES PRIORITARIAS:?|ESTADO GENERAL DEL ALMACÉN:?|RECOMENDACIÓN DE PEDIDO AL PROVEEDOR[^\n]*|PRODUCTOS EN RIESGO CRÍTICO[^\n]*|CAPITAL INMOVILIZADO DETECTADO:?|MÉTRICAS DE ROTACIÓN[^\n]*|ORDEN DE COMPRA APROBADA[^\n]*)/g, '<strong>$1</strong>');
 
                 // Si la respuesta incluye recommended_order y no está ya autorizada, agregar botón interactivo de autorización
                 var authorizeBtnHtml = '';
                 if (text.includes('recommended_order') && !text.includes('AUTORIZACIÓN DE COMPRA REGISTRADA')) {
                     authorizeBtnHtml = '<div style="margin-top:14px;"><button type="button" class="rm-btn-authorize" onclick="sendAiQuickQuery(\'/authorize-reorder\')"><i class="fa-solid fa-circle-check"></i> Autorizar Recomendación de Compra al Proveedor</button></div>';
+                } else if (text.includes('CONFIGURACIÓN EN POS APLICADA')) {
+                    authorizeBtnHtml = '<div style="margin-top:14px;"><a href="tienda.html" target="_blank" class="rm-btn-authorize" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none; background:linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-cash-register"></i> Abrir Terminal POS para Verificar Promoción</a></div>';
                 }
 
                 msgDiv.innerHTML = '<div class="rm-bubble-agent">' + formatted + authorizeBtnHtml + '</div><span class="rm-msg-time">' + timeStr + '</span>';

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "promo_limpiador_accesorio_10",
+    "name": "Combo Limpiador + Accesorio (10% OFF)",
+    "description": "Descuento automático del 10% cuando agreguen un accesorio al limpiador en Punto de Venta (POS)",
+    "discountPct": 10,
+    "discountType": "pct",
+    "type": "bundle_cross_sell",
+    "triggerCategories": [
+      "limpieza",
+      "Limpieza y Descontaminación",
+      "shampoo"
+    ],
+    "triggerKeywords": [
+      "sintra",
+      "v-clean",
+      "deox",
+      "strike",
+      "apc",
+      "limpiador",
+      "cleaner",
+      "shampoo",
+      "remover",
+      "impact",
+      "izer",
+      "delet",
+      "bactran",
+      "extractus",
+      "sanitizante"
+    ],
+    "targetCategories": [
+      "accesorios",
+      "Accesorios y Aplicadores",
+      "pads"
+    ],
+    "targetKeywords": [
+      "microfibra",
+      "toalla",
+      "aplicador",
+      "brocha",
+      "pad",
+      "cepillo",
+      "guante",
+      "espuma",
+      "accesorio"
+    ],
+    "active": true,
+    "autoApply": true,
+    "badgeText": "Combo Limpiador + Accesorio (-10%)",
+    "createdAt": "2026-09-06T20:03:56.419Z",
+    "updatedAt": "2026-09-06T20:03:56.420Z",
+    "createdBy": "Reset Manager"
+  }
+]

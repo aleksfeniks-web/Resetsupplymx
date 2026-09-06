@@ -1850,6 +1850,15 @@
 
             <!-- Footer con Descuentos, Métodos de Pago y Cobro -->
             <div class="cart-footer">
+                <!-- Banner de Promoción Automática Activa -->
+                <div id="posPromoAlert" style="display:none; margin-bottom:12px; padding:10px 14px; background:rgba(61,220,132,0.12); border:1px solid #3ddc84; border-radius:8px; font-size:12.5px; color:#3ddc84; align-items:center; justify-content:space-between; box-shadow:0 0 15px rgba(61,220,132,0.15);">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="color:#3ddc84; font-size:14px;"></i>
+                        <span id="posPromoAlertText"><strong>¡Combo Aplicado!</strong> 10% OFF</span>
+                    </div>
+                    <span style="background:#3ddc84; color:#04130b; font-weight:800; font-size:10px; padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.5px;">Auto POS</span>
+                </div>
+
                 <!-- Desglose Financiero -->
                 <div class="financial-summary">
                     <div class="summary-row">
@@ -1859,8 +1868,8 @@
                     <div class="summary-row" style="align-items:center;">
                         <span>Descuento:</span>
                         <div style="display:flex; gap:6px; align-items:center;">
-                            <input type="number" id="discountInput" class="cust-input font-mono" style="width:70px; padding:3px 6px; text-align:right;" value="0" min="0" oninput="calculateTotals()">
-                            <select id="discountTypeSelect" class="cust-input" style="width:50px; padding:3px;" onchange="calculateTotals()">
+                            <input type="number" id="discountInput" class="cust-input font-mono" style="width:70px; padding:3px 6px; text-align:right;" value="0" min="0" oninput="state.manualDiscountEdited = true; calculateTotals()">
+                            <select id="discountTypeSelect" class="cust-input" style="width:50px; padding:3px;" onchange="state.manualDiscountEdited = true; calculateTotals()">
                                 <option value="fixed">$</option>
                                 <option value="pct">%</option>
                             </select>
@@ -2122,7 +2131,10 @@
             discount: 0,
             discountType: 'fixed',
             selectedVariations: {}, // prodId -> variation object
-            lastCompletedOrder: null
+            lastCompletedOrder: null,
+            promotions: [],
+            activePromo: null,
+            manualDiscountEdited: false
         };
 
         // INICIALIZACIÓN
@@ -2130,7 +2142,12 @@
             initClock();
             checkSavedAuth();
             loadProducts();
+            loadPromotions();
             generateNewFolio();
+
+            // Sincronizar promociones periódicamente y al recuperar foco
+            window.addEventListener('focus', loadPromotions);
+            setInterval(loadPromotions, 30000);
 
             // Evento de búsqueda instantánea
             document.getElementById('posSearchInput').addEventListener('input', (e) => {
@@ -2323,6 +2340,21 @@
                 }
             } catch (err) {
                 console.warn('⚠️ Cargando catálogo local...');
+            }
+        }
+
+        async function loadPromotions() {
+            try {
+                const res = await fetch('/api/pos/promotions');
+                const data = await res.json();
+                if (data && data.success && Array.isArray(data.promotions)) {
+                    state.promotions = data.promotions;
+                    if (state.cart && state.cart.length > 0) {
+                        calculateTotals();
+                    }
+                }
+            } catch (err) {
+                console.warn('⚠️ No se pudieron cargar promociones de POS:', err);
             }
         }
 
@@ -2531,6 +2563,10 @@
         function clearCart() {
             if (state.cart.length === 0) return;
             state.cart = [];
+            state.manualDiscountEdited = false;
+            state.activePromo = null;
+            const promoBanner = document.getElementById('posPromoAlert');
+            if (promoBanner) promoBanner.style.display = 'none';
             document.getElementById('custNameInput').value = '';
             document.getElementById('custPhoneInput').value = '';
             document.getElementById('custEmailInput').value = '';
@@ -2622,6 +2658,58 @@
         function calculateTotals() {
             let subtotal = 0;
             state.cart.forEach(it => subtotal += (it.price * it.quantity));
+
+            // Evaluación de promociones automáticas configuradas por Reset Manager
+            let matchedPromo = null;
+            if (Array.isArray(state.promotions) && state.promotions.length > 0 && state.cart.length > 0) {
+                for (const promo of state.promotions) {
+                    if (!promo.active) continue;
+                    if (promo.type === 'bundle_cross_sell' || promo.id === 'promo_limpiador_accesorio_10') {
+                        const hasCleaner = state.cart.some(it => {
+                            const name = (it.name || '').toLowerCase();
+                            const prod = (state.products || []).find(p => p.id === it.id);
+                            const cat = (prod && prod.category ? prod.category : '').toLowerCase();
+                            return cat.includes('limpieza') || cat.includes('shampoo') || /(sintra|v-clean|deox|strike|apc|limpiador|cleaner|shampoo|remover|impact|izer|delet|bactran|extractus|sanitizante)/i.test(name);
+                        });
+                        const hasAccessory = state.cart.some(it => {
+                            const name = (it.name || '').toLowerCase();
+                            const prod = (state.products || []).find(p => p.id === it.id);
+                            const cat = (prod && prod.category ? prod.category : '').toLowerCase();
+                            return cat.includes('accesorio') || cat.includes('pad') || /(microfibra|toalla|aplicador|brocha|pad|cepillo|espuma|guante|accesorio)/i.test(name);
+                        });
+
+                        if (hasCleaner && hasAccessory) {
+                            matchedPromo = promo;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            const promoBanner = document.getElementById('posPromoAlert');
+            const promoText = document.getElementById('posPromoAlertText');
+            const discountInput = document.getElementById('discountInput');
+            const discountTypeSelect = document.getElementById('discountTypeSelect');
+
+            if (matchedPromo) {
+                if (!state.manualDiscountEdited && discountInput && discountTypeSelect) {
+                    discountInput.value = matchedPromo.discountPct || 10;
+                    discountTypeSelect.value = matchedPromo.discountType || 'pct';
+                    state.activePromo = matchedPromo;
+                }
+                if (promoBanner && promoText) {
+                    promoText.innerHTML = `<strong>🎉 ${matchedPromo.name || 'Promo Automática'}:</strong> Descuento del ${matchedPromo.discountPct || 10}% aplicado en mostrador`;
+                    promoBanner.style.display = 'flex';
+                }
+            } else {
+                if (promoBanner) promoBanner.style.display = 'none';
+                if (state.activePromo) {
+                    if (!state.manualDiscountEdited && discountInput) {
+                        discountInput.value = '0';
+                    }
+                    state.activePromo = null;
+                }
+            }
 
             const discountVal = parseFloat(document.getElementById('discountInput').value) || 0;
             const discountType = document.getElementById('discountTypeSelect').value;
