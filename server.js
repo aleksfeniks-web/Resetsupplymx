@@ -632,18 +632,13 @@ app.post('/api/admin/login', (req, res) => {
   const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
   const rateLimitKey = `admin_login_${clientIp}`;
 
-  const limitCheck = checkRateLimit(rateLimitKey, 15, 15 * 60 * 1000);
-  if (limitCheck.blocked) {
-    return res.status(429).json({ success: false, error: limitCheck.message });
-  }
-
   const { username, password } = req.body || {};
   const cleanUser = (username || '').toString().trim().toLowerCase();
   let inputPass = (password || '').toString();
   try { inputPass = decodeURIComponent(inputPass); } catch(e) {}
   inputPass = inputPass.replace(/^['"]|['"]$/g, '').trim();
 
-  // Caso 1: Usuario Auditor de Precios
+  // Caso 1: Usuario Auditor de Precios (audit / 123456)
   if ((cleanUser === 'audit' && inputPass === '123456') || (inputPass === '123456' && (!cleanUser || cleanUser === 'audit'))) {
     resetLoginAttempts(rateLimitKey);
     return res.json({
@@ -661,8 +656,12 @@ app.post('/api/admin/login', (req, res) => {
   }
 
   // Caso 2: Usuario Administrador (Dirección General)
+  // Revisa la lista completa incluyendo process.env.ADMIN_PASSWORD de Render
   const validPasses = getAdminPasswords();
-  if ((cleanUser === 'admin' || !cleanUser) && validPasses.includes(inputPass)) {
+  const envPass = (process.env.ADMIN_PASSWORD || '').replace(/^['"]|['"]$/g, '').trim();
+  const isAdminMatch = validPasses.includes(inputPass) || (envPass && inputPass === envPass);
+
+  if ((cleanUser === 'admin' || !cleanUser) && isAdminMatch) {
     resetLoginAttempts(rateLimitKey);
     return res.json({
       success: true,
@@ -678,7 +677,13 @@ app.post('/api/admin/login', (req, res) => {
     });
   }
 
-  recordFailedAttempt(rateLimitKey, 15, 15 * 60 * 1000, 15 * 60 * 1000);
+  // Solo aplicar rate limiting ante intentos FALLIDOS
+  const limitCheck = checkRateLimit(rateLimitKey, 30, 15 * 60 * 1000);
+  if (limitCheck.blocked) {
+    return res.status(429).json({ success: false, error: limitCheck.message });
+  }
+
+  recordFailedAttempt(rateLimitKey, 30, 15 * 60 * 1000, 15 * 60 * 1000);
   res.status(401).json({ success: false, error: 'Credenciales inválidas. Verifica tu usuario y contraseña.' });
 });
 

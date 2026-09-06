@@ -42,7 +42,7 @@
             backdrop-filter: blur(12px) !important;
             -webkit-backdrop-filter: blur(12px) !important;
             z-index: 30000 !important;
-            display: flex !important;
+            display: flex;
             align-items: center !important;
             justify-content: center !important;
             padding: 20px 16px !important;
@@ -50,6 +50,12 @@
             overflow-x: hidden !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch !important;
+        }
+        #loginScreen.hidden,
+        #loginScreen[style*="none"],
+        #loginScreen[style*="display: none"],
+        #loginScreen[style*="display:none"] {
+            display: none !important;
         }
         .login-card {
             background: var(--panel) !important;
@@ -2819,6 +2825,24 @@ textarea[required]:focus,
 
         var loginScreen = document.getElementById('loginScreen');
         var loginForm = document.getElementById('loginForm');
+
+        function hideLoginScreen() {
+            var el = document.getElementById('loginScreen');
+            if (el) {
+                el.classList.add('hidden');
+                el.style.setProperty('display', 'none', 'important');
+                el.style.display = 'none';
+            }
+        }
+
+        function showLoginScreen() {
+            var el = document.getElementById('loginScreen');
+            if (el) {
+                el.classList.remove('hidden');
+                el.style.setProperty('display', 'flex', 'important');
+                el.style.display = 'flex';
+            }
+        }
         var adminPasswordInput = document.getElementById('adminPasswordInput');
         var loginError = document.getElementById('loginError');
         var logoutBtn = document.getElementById('logoutBtn');
@@ -2851,7 +2875,7 @@ textarea[required]:focus,
         var closeProductModalBtn = document.getElementById('closeProductModalBtn');
 
         if (adminToken) {
-            loginScreen.style.display = 'none';
+            hideLoginScreen();
             applyRolePermissions(currentUser ? currentUser.role : 'admin', currentUser);
         }
 
@@ -2902,7 +2926,7 @@ textarea[required]:focus,
                     jobTitle: 'Auditor de Precios e Inventario'
                 };
                 sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
-                loginScreen.style.display = 'none';
+                hideLoginScreen();
                 applyRolePermissions('audit', currentUser);
 
                 // Notificación silenciosa al backend si está activo
@@ -2926,7 +2950,7 @@ textarea[required]:focus,
                     jobTitle: 'Director General / Administrador'
                 };
                 sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
-                loginScreen.style.display = 'none';
+                hideLoginScreen();
                 applyRolePermissions('admin', currentUser);
 
                 fetch('/api/admin/login', {
@@ -2950,7 +2974,7 @@ textarea[required]:focus,
                     sessionStorage.setItem('adminToken', adminToken);
                     sessionStorage.setItem('currentUser', JSON.stringify(data.user || { role: data.role }));
                     currentUser = data.user || { role: data.role };
-                    loginScreen.style.display = 'none';
+                    hideLoginScreen();
                     applyRolePermissions(data.role, data.user);
                 } else {
                     loginError.textContent = data.error || 'Credenciales inválidas. Verifica tu usuario y contraseña.';
@@ -3306,7 +3330,7 @@ textarea[required]:focus,
                 if (!data.success) {
                     if (res.status === 401) {
                         sessionStorage.removeItem('adminToken');
-                        loginScreen.style.display = 'flex';
+                        showLoginScreen();
                     }
                     return;
                 }
