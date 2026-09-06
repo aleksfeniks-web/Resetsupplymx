@@ -59,13 +59,11 @@
         }
         .login-card {
             background: var(--panel) !important;
-            border: 1px solid var(--line) !important;
             border-radius: 16px !important;
             padding: 34px 28px !important;
             width: 100% !important;
             max-width: 440px !important;
             margin: auto !important; /* Centrado matemático estricto en Flexbox */
-            box-shadow: 0 25px 60px rgba(0,0,0,0.85) !important;
             text-align: center !important;
             box-sizing: border-box !important;
             max-height: calc(100dvh - 36px) !important;
@@ -462,13 +460,11 @@
 
         .modal-content {
             background: var(--panel) !important;
-            border: 1px solid var(--line) !important;
             border-radius: 14px !important;
             padding: 26px !important;
             width: 100% !important;
             max-width: 540px !important;
             margin: auto !important; /* Centrado matemático estricto en Flexbox */
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8) !important;
             box-sizing: border-box !important;
             max-height: calc(100dvh - 36px) !important;
             max-height: calc(100vh - 36px) !important;
@@ -513,24 +509,39 @@
    ========================================================================== */
 @keyframes rotateGlowBorder {
   0% {
-    box-shadow: 0 0 25px rgba(61, 220, 132, 0.45), 0 0 45px rgba(34, 184, 240, 0.3), inset 0 0 15px rgba(61, 220, 132, 0.1);
-    border-color: rgba(61, 220, 132, 0.65);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85),
+                0 -8px 30px rgba(61, 220, 132, 0.6),
+                8px 0 35px rgba(34, 184, 240, 0.4),
+                inset 0 0 16px rgba(61, 220, 132, 0.15);
+    border-color: rgba(61, 220, 132, 0.85);
   }
   25% {
-    box-shadow: 12px 0 30px rgba(34, 184, 240, 0.5), -12px 0 35px rgba(61, 220, 132, 0.45), inset 0 0 15px rgba(34, 184, 240, 0.15);
-    border-color: rgba(34, 184, 240, 0.7);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85),
+                10px 0 35px rgba(34, 184, 240, 0.65),
+                0 8px 35px rgba(61, 220, 132, 0.4),
+                inset 0 0 16px rgba(34, 184, 240, 0.18);
+    border-color: rgba(34, 184, 240, 0.9);
   }
   50% {
-    box-shadow: 0 12px 35px rgba(61, 220, 132, 0.55), 0 -12px 45px rgba(34, 184, 240, 0.5), inset 0 0 20px rgba(61, 220, 132, 0.2);
-    border-color: rgba(61, 220, 132, 0.8);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85),
+                0 10px 40px rgba(61, 220, 132, 0.7),
+                -10px 0 35px rgba(34, 184, 240, 0.4),
+                inset 0 0 20px rgba(61, 220, 132, 0.2);
+    border-color: rgba(61, 220, 132, 0.95);
   }
   75% {
-    box-shadow: -12px 0 30px rgba(34, 184, 240, 0.55), 12px 0 35px rgba(61, 220, 132, 0.45), inset 0 0 15px rgba(34, 184, 240, 0.15);
-    border-color: rgba(34, 184, 240, 0.7);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85),
+                -10px 0 35px rgba(34, 184, 240, 0.65),
+                0 -8px 35px rgba(61, 220, 132, 0.4),
+                inset 0 0 16px rgba(34, 184, 240, 0.18);
+    border-color: rgba(34, 184, 240, 0.9);
   }
   100% {
-    box-shadow: 0 0 25px rgba(61, 220, 132, 0.45), 0 0 45px rgba(34, 184, 240, 0.3), inset 0 0 15px rgba(61, 220, 132, 0.1);
-    border-color: rgba(61, 220, 132, 0.65);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85),
+                0 -8px 30px rgba(61, 220, 132, 0.6),
+                8px 0 35px rgba(34, 184, 240, 0.4),
+                inset 0 0 16px rgba(61, 220, 132, 0.15);
+    border-color: rgba(61, 220, 132, 0.85);
   }
 }
 
@@ -544,8 +555,9 @@
 .fac-card,
 .modal-glow {
   position: relative !important;
+  border-width: 2px !important;
+  border-style: solid !important;
   animation: rotateGlowBorder 4s linear infinite !important;
-  border: 1.5px solid rgba(61, 220, 132, 0.6) !important;
 }
 
 @keyframes inputRequiredGlow {
@@ -1375,7 +1387,7 @@ textarea[required]:focus,
                 <span class="sidebar-user-status-dot"></span>
             </div>
             <div class="sidebar-user-info">
-                <div id="sidebarUserName" style="font-weight:700; font-size:14px; color:#f2f5f8; letter-spacing:0.3px;">Carlos Morales</div>
+                <div id="sidebarUserName" style="font-weight:700; font-size:14px; color:#f2f5f8; letter-spacing:0.3px;">Wilmer Nieves</div>
                 <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
                     <span id="sidebarUserBadge" style="font-size:10.5px; background:rgba(61,220,132,0.15); color:var(--green); border:1px solid rgba(61,220,132,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">AUD-007</span>
                     <span id="sidebarUserRole" style="font-size:11px; color:var(--muted);">Auditor de Precios</span>
@@ -2144,7 +2156,7 @@ textarea[required]:focus,
                 <div class="payroll-stat-card" style="border-color:rgba(34,184,240,0.3);">
                     <span class="payroll-stat-label">Mis Solicitudes Enviadas</span>
                     <span class="payroll-stat-num" id="auditStatSent" style="color:#22b8f0;">0</span>
-                    <span style="font-size:11.5px; color:var(--muted);">Por Auditor Carlos Morales (#AUD-007)</span>
+                    <span style="font-size:11.5px; color:var(--muted);">Por Auditor Wilmer Nieves (#AUD-007)</span>
                 </div>
             </div>
 
@@ -2190,7 +2202,7 @@ textarea[required]:focus,
                         Buzón de Solicitudes del Auditor de Precios
                     </h2>
                     <p style="font-size:13.5px; color:var(--muted); margin-top:4px;">
-                        Mensajes internos, propuestas de corrección de precios y reportes de inventario emitidos por Auditor Carlos Morales (#AUD-007).
+                        Mensajes internos, propuestas de corrección de precios y reportes de inventario emitidos por Auditor Wilmer Nieves (#AUD-007).
                     </p>
                 </div>
                 <button type="button" class="btn-action" onclick="loadAdminAuditSuggestions()" style="border-color:var(--green); color:var(--green);">
@@ -2456,24 +2468,24 @@ textarea[required]:focus,
 
                 <div class="form-group">
                     <label>Nombre Completo del Colaborador</label>
-                    <input type="text" id="payrollEmpName" class="form-input" placeholder="ej. Juan Ramón Estrada" required>
+                    <input type="text" id="payrollEmpName" class="form-input" placeholder="ej. Juan Ramón Estrada (o dejar en blanco)">
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                     <div class="form-group">
                         <label>Puesto</label>
-                        <input type="text" id="payrollEmpPosition" class="form-input" placeholder="ej. Vendedor Mostrador POS" required>
+                        <input type="text" id="payrollEmpPosition" class="form-input" placeholder="ej. Vendedor Mostrador POS">
                     </div>
                     <div class="form-group">
                         <label>Área / Departamento</label>
-                        <input type="text" id="payrollEmpDept" class="form-input" placeholder="ej. Ventas / Detallado" required>
+                        <input type="text" id="payrollEmpDept" class="form-input" placeholder="ej. Ventas / Detallado">
                     </div>
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
                     <div class="form-group">
                         <label>RFC</label>
-                        <input type="text" id="payrollEmpRfc" class="form-input" placeholder="EARJ920415A10" maxlength="13" style="text-transform:uppercase;" required>
+                        <input type="text" id="payrollEmpRfc" class="form-input" placeholder="EARJ920415A10" maxlength="13" style="text-transform:uppercase;">
                     </div>
                     <div class="form-group">
                         <label>CURP</label>
@@ -2488,11 +2500,11 @@ textarea[required]:focus,
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
                     <div class="form-group">
                         <label>Salario Diario ($ MXN) <small style="color:var(--green);">(Mínimo ZLFN: $374.89)</small></label>
-                        <input type="number" step="0.01" min="374.89" id="payrollEmpSalary" class="form-input" value="374.89" required>
+                        <input type="number" step="0.01" id="payrollEmpSalary" class="form-input" placeholder="374.89">
                     </div>
                     <div class="form-group">
                         <label>Fecha de Ingreso</label>
-                        <input type="date" id="payrollEmpHireDate" class="form-input" required>
+                        <input type="date" id="payrollEmpHireDate" class="form-input">
                     </div>
                 </div>
 
@@ -2772,7 +2784,7 @@ textarea[required]:focus,
 
     <!-- Modal Eliminar Venta de Mostrador / Reintegrar Stock -->
     <div id="deletePosOrderModal" class="modal" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:100000; padding:20px; box-sizing:border-box;">
-        <div class="modal-content" style="max-width:540px; background:var(--panel); border:1.5px solid var(--line); border-radius:14px; padding:24px; position:relative; box-shadow:0 25px 60px rgba(0,0,0,0.9);">
+        <div class="modal-content" style="max-width:540px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                 <h3 style="margin:0; color:var(--red); font-size:18px; display:flex; align-items:center; gap:8px;">
                     <i class="fa-solid fa-trash-can"></i> Eliminar Venta de Mostrador
@@ -2920,7 +2932,7 @@ textarea[required]:focus,
                 sessionStorage.setItem('adminToken', adminToken);
                 currentUser = {
                     username: 'audit',
-                    name: 'Carlos Morales',
+                    name: 'Wilmer Nieves',
                     role: 'audit',
                     employeeNumber: 'AUD-007',
                     jobTitle: 'Auditor de Precios e Inventario'
@@ -7011,7 +7023,7 @@ Crear bundle Sintra + microfibra con precio promocional en mostrador.`;
 
             if (sidebarUserCard) {
                 sidebarUserCard.style.display = 'flex';
-                if (sidebarUserName) sidebarUserName.textContent = user.name || (role === 'audit' ? 'Carlos Morales' : 'Dirección General');
+                if (sidebarUserName) sidebarUserName.textContent = user.name || (role === 'audit' ? 'Wilmer Nieves' : 'Dirección General');
                 if (sidebarUserBadge) sidebarUserBadge.textContent = user.employeeNumber || (role === 'audit' ? 'AUD-007' : 'DIR-001');
                 if (sidebarUserRole) sidebarUserRole.textContent = user.jobTitle || (role === 'audit' ? 'Auditor de Precios' : 'Administrador General');
                 if (sidebarUserAvatar) sidebarUserAvatar.src = (role === 'audit' ? 'assets/audit_avatar.svg' : 'assets/reset-ia-icon.png');
@@ -7361,7 +7373,7 @@ Crear bundle Sintra + microfibra con precio promocional en mostrador.`;
                 // Hoja de control físico
                 var html = '<div style="padding:10px;">' +
                     '<div style="display:flex; justify-content:space-between; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:12px;">' +
-                        '<div><strong>RESET SUPPLY MX — PLANILLA DE AUDITORÍA FÍSICA</strong><br><small>Auditor: Carlos Morales (#AUD-007) | Fecha: ' + new Date().toLocaleDateString('es-MX') + '</small></div>' +
+                        '<div><strong>RESET SUPPLY MX — PLANILLA DE AUDITORÍA FÍSICA</strong><br><small>Auditor: Wilmer Nieves (#AUD-007) | Fecha: ' + new Date().toLocaleDateString('es-MX') + '</small></div>' +
                         '<div><strong>Catálogo: ' + (cat || 'Todos') + '</strong> (' + filtered.length + ' ítems)</div>' +
                     '</div>' +
                     '<table style="width:100%; border-collapse:collapse; font-size:11.5px;">' +
@@ -7596,22 +7608,18 @@ Crear bundle Sintra + microfibra con precio promocional en mostrador.`;
 
         async function savePayrollEmployeeForm(e) {
             e.preventDefault();
-            var id = document.getElementById('payrollEmpId').value;
-            var name = document.getElementById('payrollEmpName').value;
-            var position = document.getElementById('payrollEmpPosition').value;
-            var department = document.getElementById('payrollEmpDept').value;
-            var rfc = document.getElementById('payrollEmpRfc').value.toUpperCase();
-            var curp = document.getElementById('payrollEmpCurp').value.toUpperCase();
-            var nss = document.getElementById('payrollEmpNss').value;
-            var dailySalary = parseFloat(document.getElementById('payrollEmpSalary').value) || MINIMUM_DAILY_SALARY_ZLFN;
-            var hireDate = document.getElementById('payrollEmpHireDate').value;
-            var bank = document.getElementById('payrollEmpBank').value;
-            var account = document.getElementById('payrollEmpAccount').value;
-
-            if (dailySalary < MINIMUM_DAILY_SALARY_ZLFN) {
-                alert('El salario diario no puede ser menor al salario mínimo general de la Frontera Norte ($' + MINIMUM_DAILY_SALARY_ZLFN + ' MXN).');
-                return;
-            }
+            var id = (document.getElementById('payrollEmpId').value || '').trim();
+            var name = (document.getElementById('payrollEmpName').value || '').trim() || 'Colaborador General';
+            var position = (document.getElementById('payrollEmpPosition').value || '').trim() || 'Puesto General';
+            var department = (document.getElementById('payrollEmpDept').value || '').trim() || 'Operaciones';
+            var rfc = (document.getElementById('payrollEmpRfc').value || '').trim().toUpperCase() || 'XAXX010101000';
+            var curp = (document.getElementById('payrollEmpCurp').value || '').trim().toUpperCase();
+            var nss = (document.getElementById('payrollEmpNss').value || '').trim();
+            var rawSalary = parseFloat(document.getElementById('payrollEmpSalary').value);
+            var dailySalary = (!isNaN(rawSalary) && rawSalary > 0) ? Math.max(rawSalary, MINIMUM_DAILY_SALARY_ZLFN) : MINIMUM_DAILY_SALARY_ZLFN;
+            var hireDate = document.getElementById('payrollEmpHireDate').value || new Date().toISOString().split('T')[0];
+            var bank = (document.getElementById('payrollEmpBank').value || '').trim() || 'BBVA';
+            var account = (document.getElementById('payrollEmpAccount').value || '').trim();
 
             try {
                 var res = await fetch('/api/admin/payroll/employees', {

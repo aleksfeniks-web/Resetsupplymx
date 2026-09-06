@@ -57,7 +57,7 @@ app.post('/api/audit/suggestions', requireAdminOrAuditAuth, (req, res) => {
     type: type || 'price_change', // 'price_change', 'inventory_error', 'catalog_error'
     notes: (notes || '').trim(),
     employeeNumber: 'AUD-007',
-    employeeName: 'Carlos Morales',
+    employeeName: 'Wilmer Nieves',
     status: 'pending', // 'pending', 'approved', 'rejected'
     createdAt: new Date().toISOString()
   };
@@ -112,6 +112,20 @@ const DEFAULT_PAYROLL_DATA = {
   },
   employees: [
     {
+      id: 'AUD-007',
+      name: 'Wilmer Nieves',
+      position: 'Auditor de Precios e Inventario',
+      department: 'Control y Auditoría',
+      rfc: 'NIEW900512AB1',
+      curp: 'NIEW900512HBCXX01',
+      nss: '12984561234',
+      dailySalary: 450.00,
+      hireDate: '2023-03-01',
+      bank: 'BBVA',
+      account: '**** 1234',
+      status: 'active'
+    },
+    {
       id: 'EMP-001',
       name: 'Juan R. Estrada',
       position: 'Vendedor de Mostrador POS',
@@ -162,12 +176,22 @@ function loadPayrollData() {
     if (fs.existsSync(PAYROLL_FILE)) {
       const raw = fs.readFileSync(PAYROLL_FILE, 'utf8');
       const data = JSON.parse(raw);
-      if (data && data.employees) return data;
+      if (data && Array.isArray(data.employees)) {
+        let modified = false;
+        data.employees.forEach(e => {
+          if (e.id === 'AUD-007' && (e.name === 'Carlos Morales' || !e.name)) {
+            e.name = 'Wilmer Nieves';
+            modified = true;
+          }
+        });
+        if (modified) savePayrollData(data);
+        return data;
+      }
     }
   } catch (e) {
     console.warn('Error leyendo payroll_data.json:', e.message);
   }
-  return DEFAULT_PAYROLL_DATA;
+  return JSON.parse(JSON.stringify(DEFAULT_PAYROLL_DATA));
 }
 
 function savePayrollData(data) {
@@ -191,45 +215,85 @@ app.post('/api/admin/payroll/employees', requireAdminAuth, (req, res) => {
   const data = loadPayrollData();
   const emp = req.body || {};
 
-  if (!emp.name || !emp.dailySalary) {
-    return res.status(400).json({ success: false, error: 'Nombre y salario diario son obligatorios.' });
-  }
+  // Permitir guardar trabajadores aunque haga falta algún campo
+  const name = (emp.name || '').trim() || 'Colaborador General';
+  const dailySalary = Math.max(374.89, parseFloat(emp.dailySalary) || 374.89);
+  const position = (emp.position || '').trim() || 'Puesto General';
+  const department = (emp.department || '').trim() || 'Operaciones';
+  const rfc = (emp.rfc || '').trim().toUpperCase() || 'XAXX010101000';
+  const curp = (emp.curp || '').trim().toUpperCase() || '';
+  const nss = (emp.nss || '').trim() || '';
+  const hireDate = emp.hireDate || new Date().toISOString().split('T')[0];
+  const bank = (emp.bank || '').trim() || 'BBVA';
+  const account = (emp.account || '').trim() || '';
+  const status = emp.status || 'active';
 
-  // Garantizar salario mínimo frontera norte
-  const daily = parseFloat(emp.dailySalary) || 374.89;
-  if (daily < 374.89) {
-    return res.status(400).json({ success: false, error: 'El salario no puede ser menor al salario mínimo de la Frontera Norte ($374.89 MXN).' });
-  }
-
+  let savedEmployee = null;
   if (emp.id) {
-    const idx = data.employees.findIndex(e => e.id === emp.id);
+    const idx = data.employees.findIndex(e => String(e.id).trim().toLowerCase() === String(emp.id).trim().toLowerCase());
     if (idx !== -1) {
-      data.employees[idx] = { ...data.employees[idx], ...emp, dailySalary: daily };
+      data.employees[idx] = {
+        ...data.employees[idx],
+        name,
+        position,
+        department,
+        rfc,
+        curp,
+        nss,
+        dailySalary,
+        hireDate,
+        bank,
+        account,
+        status
+      };
+      savedEmployee = data.employees[idx];
     } else {
-      data.employees.push({ ...emp, dailySalary: daily });
+      savedEmployee = {
+        id: emp.id,
+        name,
+        position,
+        department,
+        rfc,
+        curp,
+        nss,
+        dailySalary,
+        hireDate,
+        bank,
+        account,
+        status
+      };
+      data.employees.push(savedEmployee);
     }
   } else {
     const newId = 'EMP-' + String(data.employees.length + 1).padStart(3, '0');
-    data.employees.push({
-      ...emp,
+    savedEmployee = {
       id: newId,
-      dailySalary: daily,
-      status: emp.status || 'active',
-      hireDate: emp.hireDate || new Date().toISOString().split('T')[0]
-    });
+      name,
+      position,
+      department,
+      rfc,
+      curp,
+      nss,
+      dailySalary,
+      hireDate,
+      bank,
+      account,
+      status
+    };
+    data.employees.push(savedEmployee);
   }
 
   savePayrollData(data);
-  res.json({ success: true, employees: data.employees });
+  res.json({ success: true, employee: savedEmployee, employees: data.employees });
 });
 
 // Eliminar / Desactivar empleado
 app.delete('/api/admin/payroll/employees/:id', requireAdminAuth, (req, res) => {
   const data = loadPayrollData();
   const { id } = req.params;
-  data.employees = data.employees.filter(e => e.id !== id);
+  data.employees = data.employees.filter(e => String(e.id).trim().toLowerCase() !== String(id).trim().toLowerCase());
   savePayrollData(data);
-  res.json({ success: true, employees: data.employees });
+  res.json({ success: true, employees: data.employees, message: 'Colaborador eliminado correctamente.' });
 });
 
 // Registrar dispersión de nómina en historial
@@ -647,7 +711,7 @@ app.post('/api/admin/login', (req, res) => {
       role: 'audit',
       user: {
         username: 'audit',
-        name: 'Carlos Morales',
+        name: 'Wilmer Nieves',
         role: 'audit',
         employeeNumber: 'AUD-007',
         jobTitle: 'Auditor de Precios e Inventario'
