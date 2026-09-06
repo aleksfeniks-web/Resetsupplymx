@@ -6,6 +6,252 @@ require('dotenv').config();
 
 const app = express();
 app.set('trust proxy', 1);
+
+// ==================== MÓDULO DE AUDITORÍA DE PRECIOS E INVENTARIO ====================
+const AUDIT_SUGGESTIONS_FILE = path.join(__dirname, 'admin', 'audit_suggestions.json');
+
+function loadAuditSuggestions() {
+  try {
+    if (fs.existsSync(AUDIT_SUGGESTIONS_FILE)) {
+      const raw = fs.readFileSync(AUDIT_SUGGESTIONS_FILE, 'utf8');
+      const data = JSON.parse(raw);
+      if (Array.isArray(data)) return data;
+    }
+  } catch (e) {
+    console.warn('Error leyendo audit_suggestions.json:', e.message);
+  }
+  return [];
+}
+
+function saveAuditSuggestions(list) {
+  try {
+    const adminDir = path.join(__dirname, 'admin');
+    if (!fs.existsSync(adminDir)) fs.mkdirSync(adminDir, { recursive: true });
+    fs.writeFileSync(AUDIT_SUGGESTIONS_FILE, JSON.stringify(list, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error guardando audit_suggestions.json:', e.message);
+  }
+}
+
+// Obtener solicitudes de auditoría
+app.get('/api/audit/suggestions', requireAdminOrAuditAuth, (req, res) => {
+  const suggestions = loadAuditSuggestions();
+  res.json({ success: true, suggestions });
+});
+
+// Crear nueva sugerencia o reporte de error (Auditor)
+app.post('/api/audit/suggestions', requireAdminOrAuditAuth, (req, res) => {
+  const { productId, productName, sku, currentPrice, suggestedPrice, type, notes } = req.body || {};
+  if (!productName && !productId) {
+    return res.status(400).json({ success: false, error: 'Debe especificar el producto a auditar.' });
+  }
+
+  const suggestions = loadAuditSuggestions();
+  const newSuggestion = {
+    id: 'sug_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+    productId: productId || '',
+    productName: productName || 'Producto',
+    sku: sku || '',
+    currentPrice: parseFloat(currentPrice) || 0,
+    suggestedPrice: (suggestedPrice !== undefined && suggestedPrice !== null && suggestedPrice !== '') ? parseFloat(suggestedPrice) : null,
+    type: type || 'price_change', // 'price_change', 'inventory_error', 'catalog_error'
+    notes: (notes || '').trim(),
+    employeeNumber: 'AUD-007',
+    employeeName: 'Carlos Morales',
+    status: 'pending', // 'pending', 'approved', 'rejected'
+    createdAt: new Date().toISOString()
+  };
+
+  suggestions.unshift(newSuggestion);
+  saveAuditSuggestions(suggestions);
+  res.json({ success: true, suggestion: newSuggestion, message: 'Solicitud enviada a Dirección General con éxito.' });
+});
+
+// Resolver sugerencia (Aprobar o Rechazar - Solo Admin)
+app.put('/api/audit/suggestions/:id', requireAdminAuth, (req, res) => {
+  const { id } = req.params;
+  const { action, adminNotes } = req.body || {};
+  const suggestions = loadAuditSuggestions();
+  const sugIndex = suggestions.findIndex(s => s.id === id);
+
+  if (sugIndex === -1) {
+    return res.status(404).json({ success: false, error: 'Solicitud no encontrada.' });
+  }
+
+  const sug = suggestions[sugIndex];
+  sug.status = action === 'approve' ? 'approved' : 'rejected';
+  sug.adminNotes = (adminNotes || '').trim();
+  sug.resolvedAt = new Date().toISOString();
+
+  // Si se aprueba y trae precio sugerido, actualizar precio en catálogo
+  let priceUpdated = false;
+  if (action === 'approve' && sug.suggestedPrice !== null && !isNaN(sug.suggestedPrice)) {
+    const product = findProductInInventory(sug.productId || sug.sku || sug.productName);
+    if (product) {
+      product.customNewPrice = parseFloat(sug.suggestedPrice);
+      product.price = parseFloat(sug.suggestedPrice);
+      saveLocalInventoryToDisk();
+      priceUpdated = true;
+    }
+  }
+
+  saveAuditSuggestions(suggestions);
+  res.json({ success: true, suggestion: sug, priceUpdated, message: action === 'approve' ? 'Sugerencia aprobada y aplicada.' : 'Sugerencia rechazada.' });
+});
+
+// ==================== MÓDULO DE NÓMINA FRONTERA NORTE (ZLFN) ====================
+const PAYROLL_FILE = path.join(__dirname, 'admin', 'payroll_data.json');
+
+const DEFAULT_PAYROLL_DATA = {
+  settings: {
+    zone: 'ZLFN',
+    minimumDailySalary: 374.89, // Salario mínimo frontera norte 2024
+    imssWorkerRateApprox: 0.0275,
+    infonavitEmployerRate: 0.05,
+    statePayrollTaxRate: 0.03 // ISN frontera norte
+  },
+  employees: [
+    {
+      id: 'EMP-001',
+      name: 'Juan R. Estrada',
+      position: 'Vendedor de Mostrador POS',
+      department: 'Ventas y Atención',
+      rfc: 'EARJ920415A10',
+      curp: 'EARJ920415HBCRRN02',
+      nss: '12987654321',
+      dailySalary: 374.89,
+      hireDate: '2023-01-15',
+      bank: 'BBVA',
+      account: '**** 4921',
+      status: 'active'
+    },
+    {
+      id: 'EMP-002',
+      name: 'Miguel A. Vázquez',
+      position: 'Master Detailer & Técnico Vonixx',
+      department: 'Taller y Servicios',
+      rfc: 'VAMA881120B88',
+      curp: 'VAMA881120HBCZZM04',
+      nss: '12034567891',
+      dailySalary: 550.00,
+      hireDate: '2022-06-01',
+      bank: 'Santander',
+      account: '**** 8812',
+      status: 'active'
+    },
+    {
+      id: 'EMP-003',
+      name: 'Sofía Valenzuela',
+      position: 'Almacén y Control de Envíos',
+      department: 'Logística',
+      rfc: 'VASS950710C33',
+      curp: 'VASS950710MBCLLR07',
+      nss: '12123456789',
+      dailySalary: 420.00,
+      hireDate: '2023-09-01',
+      bank: 'Banorte',
+      account: '**** 3309',
+      status: 'active'
+    }
+  ],
+  history: []
+};
+
+function loadPayrollData() {
+  try {
+    if (fs.existsSync(PAYROLL_FILE)) {
+      const raw = fs.readFileSync(PAYROLL_FILE, 'utf8');
+      const data = JSON.parse(raw);
+      if (data && data.employees) return data;
+    }
+  } catch (e) {
+    console.warn('Error leyendo payroll_data.json:', e.message);
+  }
+  return DEFAULT_PAYROLL_DATA;
+}
+
+function savePayrollData(data) {
+  try {
+    const adminDir = path.join(__dirname, 'admin');
+    if (!fs.existsSync(adminDir)) fs.mkdirSync(adminDir, { recursive: true });
+    fs.writeFileSync(PAYROLL_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Error guardando payroll_data.json:', e.message);
+  }
+}
+
+// Obtener datos de nómina (empleados, historial, configuración)
+app.get('/api/admin/payroll', requireAdminAuth, (req, res) => {
+  const data = loadPayrollData();
+  res.json({ success: true, ...data });
+});
+
+// Guardar/Actualizar empleado
+app.post('/api/admin/payroll/employees', requireAdminAuth, (req, res) => {
+  const data = loadPayrollData();
+  const emp = req.body || {};
+
+  if (!emp.name || !emp.dailySalary) {
+    return res.status(400).json({ success: false, error: 'Nombre y salario diario son obligatorios.' });
+  }
+
+  // Garantizar salario mínimo frontera norte
+  const daily = parseFloat(emp.dailySalary) || 374.89;
+  if (daily < 374.89) {
+    return res.status(400).json({ success: false, error: 'El salario no puede ser menor al salario mínimo de la Frontera Norte ($374.89 MXN).' });
+  }
+
+  if (emp.id) {
+    const idx = data.employees.findIndex(e => e.id === emp.id);
+    if (idx !== -1) {
+      data.employees[idx] = { ...data.employees[idx], ...emp, dailySalary: daily };
+    } else {
+      data.employees.push({ ...emp, dailySalary: daily });
+    }
+  } else {
+    const newId = 'EMP-' + String(data.employees.length + 1).padStart(3, '0');
+    data.employees.push({
+      ...emp,
+      id: newId,
+      dailySalary: daily,
+      status: emp.status || 'active',
+      hireDate: emp.hireDate || new Date().toISOString().split('T')[0]
+    });
+  }
+
+  savePayrollData(data);
+  res.json({ success: true, employees: data.employees });
+});
+
+// Eliminar / Desactivar empleado
+app.delete('/api/admin/payroll/employees/:id', requireAdminAuth, (req, res) => {
+  const data = loadPayrollData();
+  const { id } = req.params;
+  data.employees = data.employees.filter(e => e.id !== id);
+  savePayrollData(data);
+  res.json({ success: true, employees: data.employees });
+});
+
+// Registrar dispersión de nómina en historial
+app.post('/api/admin/payroll/history', requireAdminAuth, (req, res) => {
+  const data = loadPayrollData();
+  const payrollRecord = req.body || {};
+  if (!payrollRecord.period || !payrollRecord.items) {
+    return res.status(400).json({ success: false, error: 'Datos de periodo o desglose incompletos.' });
+  }
+
+  payrollRecord.id = 'PAY-' + Date.now();
+  payrollRecord.processedAt = new Date().toISOString();
+  data.history = data.history || [];
+  data.history.unshift(payrollRecord);
+
+  // Mantener últimos 100 registros
+  if (data.history.length > 100) data.history = data.history.slice(0, 100);
+
+  savePayrollData(data);
+  res.json({ success: true, record: payrollRecord, message: 'Nómina registrada y guardada exitosamente.' });
+});
+
 const PORT = process.env.PORT || 3000;
 
 // Inicializar Stripe si existe la clave
@@ -344,7 +590,7 @@ function getAdminPasswords() {
 
 const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || 'ResetAdmin2026!').replace(/^['"]|['"]$/g, '').trim();
 
-// Middleware para verificar token/clave admin
+// Middleware para verificar token de administración (Solo Admin)
 function requireAdminAuth(req, res, next) {
   const authHeader = req.headers['authorization'];
   let token = authHeader && authHeader.split(' ')[1];
@@ -354,35 +600,86 @@ function requireAdminAuth(req, res, next) {
   }
   const validPasses = getAdminPasswords();
   if (token && validPasses.includes(token)) {
+    req.userRole = 'admin';
     next();
   } else {
-    res.status(401).json({ error: 'Acceso no autorizado. Clave de administración requerida.' });
+    res.status(401).json({ error: 'Acceso no autorizado. Permisos de administrador requeridos.' });
   }
 }
 
-// 1. Login de Administración
+// Middleware para verificar token de Administrador o Auditor
+function requireAdminOrAuditAuth(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  let token = authHeader && authHeader.split(' ')[1];
+  if (token) {
+    try { token = decodeURIComponent(token); } catch(e) {}
+    token = token.replace(/^['"]|['"]$/g, '').trim();
+  }
+  const validPasses = getAdminPasswords();
+  if (token === 'AUDIT_TOKEN_RESET_2026') {
+    req.userRole = 'audit';
+    return next();
+  }
+  if (token && validPasses.includes(token)) {
+    req.userRole = 'admin';
+    return next();
+  }
+  res.status(401).json({ error: 'Acceso no autorizado. Inicia sesión para continuar.' });
+}
+
+// 1. Login de Sistema con Roles (Admin y Auditor)
 app.post('/api/admin/login', (req, res) => {
   const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
   const rateLimitKey = `admin_login_${clientIp}`;
 
-  const limitCheck = checkRateLimit(rateLimitKey, 10, 15 * 60 * 1000);
+  const limitCheck = checkRateLimit(rateLimitKey, 15, 15 * 60 * 1000);
   if (limitCheck.blocked) {
     return res.status(429).json({ success: false, error: limitCheck.message });
   }
 
-  const { password } = req.body || {};
+  const { username, password } = req.body || {};
+  const cleanUser = (username || '').toString().trim().toLowerCase();
   let inputPass = (password || '').toString();
   try { inputPass = decodeURIComponent(inputPass); } catch(e) {}
   inputPass = inputPass.replace(/^['"]|['"]$/g, '').trim();
 
-  const validPasses = getAdminPasswords();
-  if (inputPass && validPasses.includes(inputPass)) {
+  // Caso 1: Usuario Auditor de Precios
+  if (cleanUser === 'audit' && inputPass === '123456') {
     resetLoginAttempts(rateLimitKey);
-    res.json({ success: true, token: inputPass });
-  } else {
-    recordFailedAttempt(rateLimitKey, 10, 15 * 60 * 1000, 15 * 60 * 1000);
-    res.status(401).json({ success: false, error: 'Contraseña de administración incorrecta.' });
+    return res.json({
+      success: true,
+      token: 'AUDIT_TOKEN_RESET_2026',
+      role: 'audit',
+      user: {
+        username: 'audit',
+        name: 'Carlos Morales',
+        role: 'audit',
+        employeeNumber: 'AUD-007',
+        jobTitle: 'Auditor de Precios e Inventario'
+      }
+    });
   }
+
+  // Caso 2: Usuario Administrador (Dirección General)
+  const validPasses = getAdminPasswords();
+  if ((cleanUser === 'admin' || !cleanUser) && validPasses.includes(inputPass)) {
+    resetLoginAttempts(rateLimitKey);
+    return res.json({
+      success: true,
+      token: inputPass,
+      role: 'admin',
+      user: {
+        username: 'admin',
+        name: 'Dirección General',
+        role: 'admin',
+        employeeNumber: 'DIR-001',
+        jobTitle: 'Administrador General'
+      }
+    });
+  }
+
+  recordFailedAttempt(rateLimitKey, 15, 15 * 60 * 1000, 15 * 60 * 1000);
+  res.status(401).json({ success: false, error: 'Credenciales inválidas. Verifica tu usuario y contraseña.' });
 });
 
 // 2. Obtener Lista de Pedidos desde Firestore

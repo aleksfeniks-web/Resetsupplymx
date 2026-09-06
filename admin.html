@@ -1070,6 +1070,134 @@ textarea[required]:focus,
     margin-top: 3px;
     align-self: flex-end;
 }
+
+        /* ===== USER PROFILE CARD EN SIDEBAR ===== */
+        .sidebar-user-card {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-bottom: 1px solid #1a232f;
+            background: #080d14;
+            transition: all 0.25s ease;
+        }
+        .sidebar-user-avatar-wrap {
+            position: relative;
+            width: 40px;
+            min-width: 40px;
+            height: 40px;
+        }
+        .sidebar-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--green);
+            box-shadow: 0 0 12px rgba(61, 220, 132, 0.4);
+        }
+        .sidebar-user-status-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background: #3ddc84;
+            border-radius: 50%;
+            border: 2px solid #090e15;
+            box-shadow: 0 0 6px #3ddc84;
+        }
+        .sidebar-user-info {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .admin-sidebar:hover .sidebar-user-info,
+        .admin-sidebar.expanded .sidebar-user-info {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        /* ===== BADGES Y TARJETAS DE AUDITORÍA Y NÓMINA ===== */
+        .audit-badge-pending {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .audit-badge-approved {
+            background: rgba(61, 220, 132, 0.15);
+            color: #3ddc84;
+            border: 1px solid rgba(61, 220, 132, 0.4);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .audit-badge-rejected {
+            background: rgba(255, 75, 75, 0.15);
+            color: #ff4b4b;
+            border: 1px solid rgba(255, 75, 75, 0.4);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .payroll-stat-card {
+            background: #0f1620;
+            border: 1px solid #1c2736;
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+        .payroll-stat-num {
+            font-size: 24px;
+            font-weight: 800;
+            font-family: 'Rajdhani', sans-serif;
+            color: #f2f5f8;
+            letter-spacing: 0.5px;
+        }
+        .payroll-stat-label {
+            font-size: 12px;
+            color: #7b8c9d;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== ESTILOS PARA IMPRESIÓN Y RECIBOS ===== */
+        @media print {
+            body {
+                background: #fff !important;
+                color: #000 !important;
+            }
+            .admin-sidebar, .admin-header, .btn-action, .btn-primary, .no-print {
+                display: none !important;
+            }
+            .admin-main-wrapper {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .printable-section {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: #fff !important;
+                color: #000 !important;
+            }
+        }
+
 </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -1078,11 +1206,15 @@ textarea[required]:focus,
     <!-- Pantalla de Login -->
     <div id="loginScreen">
         <div class="login-card">
-            <div class="login-logo"><i class="fa-solid fa-shield-halved" style="color:var(--green); margin-right:8px;"></i><span class="gradient-text">ADMINISTRACIÓN RESET SUPPLY</span></div>
-            <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px;">Ingresa la contraseña de administración configurada en Render (ADMIN_PASSWORD).</p>
+            <div class="login-logo"><i class="fa-solid fa-shield-halved" style="color:var(--green); margin-right:8px;"></i><span class="gradient-text">ACCESO AL SISTEMA RESET SUPPLY</span></div>
+            <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px;">Introduce tus credenciales de acceso para continuar.</p>
             <form id="loginForm">
-                <div class="form-group">
-                    <label>Contraseña de Administrador</label>
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label style="display:block; margin-bottom:6px; font-size:13px; color:var(--text); font-weight:600;"><i class="fa-solid fa-user" style="color:var(--blue); margin-right:6px;"></i>Usuario</label>
+                    <input type="text" id="adminUsernameInput" class="form-input" placeholder="Usuario (ej. admin o audit)" required autocomplete="username">
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label style="display:block; margin-bottom:6px; font-size:13px; color:var(--text); font-weight:600;"><i class="fa-solid fa-lock" style="color:var(--green); margin-right:6px;"></i>Contraseña</label>
                     <div style="position:relative; display:flex; align-items:center;">
                         <input type="password" id="adminPasswordInput" class="form-input" style="padding-right:42px;" placeholder="••••••••" required autocomplete="current-password">
                         <button type="button" id="toggleAdminPassBtn" onclick="toggleAdminPasswordVisibility()" style="position:absolute; right:10px; background:none; border:none; color:var(--muted); cursor:pointer; font-size:15px; padding:6px; display:flex; align-items:center; justify-content:center;" title="Mostrar / Ocultar contraseña">
@@ -1108,34 +1240,70 @@ textarea[required]:focus,
             </div>
         </div>
 
+        <!-- Tarjeta de Perfil de Usuario en Sidebar -->
+        <div class="sidebar-user-card" id="sidebarUserCard">
+            <div class="sidebar-user-avatar-wrap">
+                <img id="sidebarUserAvatar" src="assets/audit_avatar.svg" alt="Avatar" class="sidebar-user-avatar">
+                <span class="sidebar-user-status-dot"></span>
+            </div>
+            <div class="sidebar-user-info">
+                <div id="sidebarUserName" style="font-weight:700; font-size:14px; color:#f2f5f8; letter-spacing:0.3px;">Carlos Morales</div>
+                <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
+                    <span id="sidebarUserBadge" style="font-size:10.5px; background:rgba(61,220,132,0.15); color:var(--green); border:1px solid rgba(61,220,132,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">AUD-007</span>
+                    <span id="sidebarUserRole" style="font-size:11px; color:var(--muted);">Auditor de Precios</span>
+                </div>
+            </div>
+        </div>
+
         <nav class="admin-sidebar-nav">
-            <button type="button" class="tab-btn sidebar-tab-btn active" data-tab="orders" data-tooltip="Órdenes y Guías">
+            <!-- PESTAÑAS EXCLUSIVAS DEL AUDITOR DE PRECIOS -->
+            <button type="button" class="tab-btn sidebar-tab-btn audit-only-tab" data-tab="audit-prices" data-tooltip="Auditoría de Precios">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-barcode" style="color:var(--green);"></i></span>
+                <span class="sidebar-tab-label">Auditoría Precios</span>
+            </button>
+            <button type="button" class="sidebar-tab-btn audit-only-tab" id="sidebarPrintAuditBtn" onclick="openAuditPrintModal()" data-tooltip="Imprimir Precios/Conteo">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-print" style="color:#00d2ff;"></i></span>
+                <span class="sidebar-tab-label">Imprimir Auditoría</span>
+            </button>
+
+            <!-- PESTAÑAS GENERALES PARA ADMINISTRADOR -->
+            <button type="button" class="tab-btn sidebar-tab-btn admin-only-tab active" data-tab="orders" data-tooltip="Órdenes y Guías">
                 <span class="sidebar-tab-icon"><i class="fa-solid fa-boxes-packing" style="color:var(--green);"></i></span>
                 <span class="sidebar-tab-label">Órdenes y Guías</span>
             </button>
-            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="pos-sales" data-tooltip="Ventas">
+            <button type="button" class="tab-btn sidebar-tab-btn admin-only-tab" data-tab="pos-sales" data-tooltip="Ventas">
                 <span class="sidebar-tab-icon"><i class="fa-solid fa-cash-register" style="color:var(--blue);"></i></span>
                 <span class="sidebar-tab-label">Ventas</span>
             </button>
-            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="invoices" data-tooltip="Solicitudes">
+            <button type="button" class="tab-btn sidebar-tab-btn admin-only-tab" data-tab="invoices" data-tooltip="Solicitudes">
                 <span class="sidebar-tab-icon"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple);"></i></span>
                 <span class="sidebar-tab-label">Solicitudes</span>
             </button>
-            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="pos-clients" data-tooltip="Clientes">
+            <button type="button" class="tab-btn sidebar-tab-btn admin-only-tab" data-tab="pos-clients" data-tooltip="Clientes">
                 <span class="sidebar-tab-icon"><i class="fa-solid fa-users" style="color:var(--blue);"></i></span>
                 <span class="sidebar-tab-label">Clientes</span>
             </button>
-            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="products" data-tooltip="Catálogo">
+            <button type="button" class="tab-btn sidebar-tab-btn admin-only-tab" data-tab="products" data-tooltip="Catálogo">
                 <span class="sidebar-tab-icon"><i class="fa-solid fa-boxes-stacked" style="color:var(--green);"></i></span>
                 <span class="sidebar-tab-label">Catálogo</span>
             </button>
-            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="editor" data-tooltip="Editor Visual">
+            <button type="button" class="tab-btn sidebar-tab-btn admin-only-tab" data-tab="editor" data-tooltip="Editor Visual">
                 <span class="sidebar-tab-icon"><i class="fa-solid fa-palette" style="color:var(--yellow);"></i></span>
                 <span class="sidebar-tab-label">Editor Visual</span>
             </button>
-            <button type="button" class="tab-btn sidebar-tab-btn" data-tab="visor" data-tooltip="Visor">
+            <button type="button" class="tab-btn sidebar-tab-btn admin-only-tab" data-tab="visor" data-tooltip="Visor">
                 <span class="sidebar-tab-icon"><i class="fa-solid fa-tv" style="color:#00d2ff;"></i></span>
                 <span class="sidebar-tab-label">Visor</span>
+            </button>
+            <!-- Buzón Solicitudes Auditoría para Admin -->
+            <button type="button" class="tab-btn sidebar-tab-btn admin-only-tab" data-tab="audit-admin" data-tooltip="Solicitudes Auditoría">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-bell" style="color:#ffc107;"></i></span>
+                <span class="sidebar-tab-label">Buzón Auditoría <span id="sidebarAuditBadge" class="audit-badge-pending" style="display:none; margin-left:6px;">0</span></span>
+            </button>
+            <!-- Módulo de Nómina Frontera Norte -->
+            <button type="button" class="tab-btn sidebar-tab-btn admin-only-tab" data-tab="payroll" data-tooltip="Nómina (Frontera Norte)">
+                <span class="sidebar-tab-icon"><i class="fa-solid fa-wallet" style="color:#22b8f0;"></i></span>
+                <span class="sidebar-tab-label">Nómina Frontera Nte.</span>
             </button>
         </nav>
 
@@ -1165,11 +1333,17 @@ textarea[required]:focus,
                 <span><i class="fa-solid fa-gear" style="color:var(--blue);"></i></span>
                 <span>Panel de Administración <strong class="gradient-text">Reset Supply MX</strong></span>
             </div>
-        <div style="display:flex; align-items:center;">
-            <a href="tienda.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--green); color:var(--green); font-weight:700;">🏪 Terminal POS (Tienda Física)</a>
-            <a href="facturacion.html" target="_blank" class="btn-action" style="text-decoration:none;">🧾 Portal Facturación</a>
-            <a href="/clientes/puntodeventa.html" target="_blank" class="btn-action" style="text-decoration:none; margin-right:14px; border-color:var(--blue); color:var(--blue);">🤝 Alta Punto de Venta</a>
-            <button class="btn-logout" id="logoutBtn"><i class="fa-solid fa-right-from-bracket" style="color:var(--red); margin-right:6px;"></i>Cerrar Sesión</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <!-- Notificación Interna para Administrador de Solicitudes del Auditor -->
+            <button type="button" id="headerAuditNotificationBtn" class="btn-action" style="display:none; text-decoration:none; border-color:#ffc107; color:#ffc107; font-weight:700; align-items:center; gap:6px;" onclick="goToAuditAdminTab()">
+                <i class="fa-solid fa-bell"></i> Solicitudes Auditor (<span id="headerAuditCount">0</span>)
+            </button>
+            <div id="headerTopButtons" style="display:flex; align-items:center; gap:8px;">
+                <a href="tienda.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--green); color:var(--green); font-weight:700;">🏪 Terminal POS</a>
+                <a href="facturacion.html" target="_blank" class="btn-action" style="text-decoration:none;">🧾 Facturación</a>
+                <a href="/clientes/puntodeventa.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--blue); color:var(--blue);">🤝 Alta PDV</a>
+            </div>
+            <button class="btn-logout" id="logoutBtn" style="margin-left:6px;"><i class="fa-solid fa-right-from-bracket" style="color:var(--red); margin-right:6px;"></i>Cerrar Sesión</button>
         </div>
     </header>
 
@@ -1801,10 +1975,447 @@ textarea[required]:focus,
                 </div>
             </div>
         </div>
+
+        <!-- ==================== SECCIÓN: AUDITORÍA DE PRECIOS E INVENTARIO (AUDITOR & ADMIN) ==================== -->
+        <div id="tabAuditPrices" class="tab-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; flex-wrap:wrap; gap:16px;">
+                <div>
+                    <h2 style="font-size:22px; font-weight:800; font-family:'Rajdhani',sans-serif; color:#f2f5f8; display:flex; align-items:center; gap:10px;">
+                        <i class="fa-solid fa-barcode" style="color:var(--green);"></i>
+                        Auditoría de Precios e Inventario Físico
+                    </h2>
+                    <p style="font-size:13.5px; color:var(--muted); margin-top:4px;">
+                        Control y revisión física de precios vigentes, detección de anomalías y emisión de sugerencias de ajuste a Dirección General.
+                    </p>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button type="button" class="btn-action" onclick="openAuditPrintModal('tags')" style="border-color:#00d2ff; color:#00d2ff;">
+                        <i class="fa-solid fa-tags" style="margin-right:6px;"></i> Imprimir Etiquetas / Cenefas
+                    </button>
+                    <button type="button" class="btn-action" onclick="openAuditPrintModal('sheet')" style="border-color:var(--green); color:var(--green);">
+                        <i class="fa-solid fa-clipboard-check" style="margin-right:6px;"></i> Imprimir Hoja de Conteo
+                    </button>
+                    <button type="button" class="btn-action" onclick="openAuditSuggestionModal()" style="border-color:#ffc107; color:#ffc107; font-weight:700;">
+                        <i class="fa-solid fa-pen-to-square" style="margin-right:6px;"></i> Sugerir Precio / Reportar Error
+                    </button>
+                </div>
+            </div>
+
+            <!-- Resumen Rápido de Auditoría -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:24px;">
+                <div class="payroll-stat-card" style="border-color:rgba(61,220,132,0.3);">
+                    <span class="payroll-stat-label">Total Productos Auditables</span>
+                    <span class="payroll-stat-num" id="auditStatTotal" style="color:var(--green);">0</span>
+                    <span style="font-size:11.5px; color:var(--muted);">Sincronizado con catálogo activo</span>
+                </div>
+                <div class="payroll-stat-card" style="border-color:rgba(255,193,7,0.3);">
+                    <span class="payroll-stat-label">Stock en Nivel Crítico (≤ 5)</span>
+                    <span class="payroll-stat-num" id="auditStatLowStock" style="color:#ffc107;">0</span>
+                    <span style="font-size:11.5px; color:var(--muted);">Requieren revisión física</span>
+                </div>
+                <div class="payroll-stat-card" style="border-color:rgba(34,184,240,0.3);">
+                    <span class="payroll-stat-label">Mis Solicitudes Enviadas</span>
+                    <span class="payroll-stat-num" id="auditStatSent" style="color:#22b8f0;">0</span>
+                    <span style="font-size:11.5px; color:var(--muted);">Por Auditor Carlos Morales (#AUD-007)</span>
+                </div>
+            </div>
+
+            <!-- Filtros y Búsqueda -->
+            <div class="admin-filters" style="display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap; align-items:center;">
+                <div style="flex:1; min-width:240px; position:relative;">
+                    <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--muted);"></i>
+                    <input type="text" id="auditSearchInput" class="form-input" placeholder="Buscar por nombre, SKU o palabra clave..." style="padding-left:38px;" oninput="filterAuditProducts()">
+                </div>
+                <select id="auditCategoryFilter" class="form-input" style="width:220px;" onchange="filterAuditProducts()">
+                    <option value="">Todas las Categorías</option>
+                </select>
+                <button type="button" class="btn-action" onclick="loadAuditProducts()" title="Recargar"><i class="fa-solid fa-arrows-rotate"></i></button>
+            </div>
+
+            <!-- Tabla de Auditoría de Precios -->
+            <div class="admin-table-wrapper" style="overflow-x:auto;">
+                <table class="admin-table" style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="width:90px;">SKU / Cód</th>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th style="text-align:right;">Precio Web / POS</th>
+                            <th style="text-align:center;">Stock Sistema</th>
+                            <th style="text-align:center;">Estado Auditoría</th>
+                            <th style="text-align:center; width:170px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditProductsTableBody">
+                        <tr><td colspan="7" style="text-align:center; color:var(--muted); padding:30px;">Cargando catálogo para auditoría...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== SECCIÓN: BUZÓN DE SOLICITUDES DE AUDITORÍA (SOLO ADMIN) ==================== -->
+        <div id="tabAuditAdmin" class="tab-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; flex-wrap:wrap; gap:16px;">
+                <div>
+                    <h2 style="font-size:22px; font-weight:800; font-family:'Rajdhani',sans-serif; color:#f2f5f8; display:flex; align-items:center; gap:10px;">
+                        <i class="fa-solid fa-bell" style="color:#ffc107;"></i>
+                        Buzón de Solicitudes del Auditor de Precios
+                    </h2>
+                    <p style="font-size:13.5px; color:var(--muted); margin-top:4px;">
+                        Mensajes internos, propuestas de corrección de precios y reportes de inventario emitidos por Auditor Carlos Morales (#AUD-007).
+                    </p>
+                </div>
+                <button type="button" class="btn-action" onclick="loadAdminAuditSuggestions()" style="border-color:var(--green); color:var(--green);">
+                    <i class="fa-solid fa-arrows-rotate" style="margin-right:6px;"></i> Actualizar Solicitudes
+                </button>
+            </div>
+
+            <!-- Tabla de Solicitudes Recibidas -->
+            <div class="admin-table-wrapper" style="overflow-x:auto;">
+                <table class="admin-table" style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="width:140px;">Fecha / Hora</th>
+                            <th>Emisor</th>
+                            <th>Producto / SKU</th>
+                            <th>Tipo de Reporte</th>
+                            <th style="text-align:right;">Precio Actual</th>
+                            <th style="text-align:right;">Precio Sugerido</th>
+                            <th>Notas del Auditor</th>
+                            <th style="text-align:center;">Estado</th>
+                            <th style="text-align:center; width:180px;">Decisión Dirección</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminAuditTableBody">
+                        <tr><td colspan="9" style="text-align:center; color:var(--muted); padding:30px;">Cargando solicitudes de auditoría...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== SECCIÓN: MÓDULO DE NÓMINA FRONTERA NORTE (ZLFN - LFT / IMSS / ISR) ==================== -->
+        <div id="tabPayroll" class="tab-content" style="display:none;">
+            <!-- Encabezado del Módulo -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; flex-wrap:wrap; gap:16px;">
+                <div>
+                    <h2 style="font-size:22px; font-weight:800; font-family:'Rajdhani',sans-serif; color:#f2f5f8; display:flex; align-items:center; gap:10px;">
+                        <i class="fa-solid fa-wallet" style="color:#22b8f0;"></i>
+                        Módulo de Nómina — Zona Libre de la Frontera Norte (ZLFN)
+                    </h2>
+                    <p style="font-size:13.5px; color:var(--muted); margin-top:4px;">
+                        Cálculo legal de percepciones, deducciones oficiales (IMSS obrero, retención ISR) y cargas patronales conforme a la LFT mexicana.
+                    </p>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button type="button" class="btn-action" onclick="openPayrollEmployeeModal()" style="border-color:var(--green); color:var(--green); font-weight:700;">
+                        <i class="fa-solid fa-user-plus" style="margin-right:6px;"></i> + Nuevo Colaborador
+                    </button>
+                    <button type="button" class="btn-action" onclick="calculateAndProcessPayroll()" style="border-color:#00d2ff; color:#00d2ff; font-weight:700;">
+                        <i class="fa-solid fa-calculator" style="margin-right:6px;"></i> Dispersar / Guardar Nómina
+                    </button>
+                </div>
+            </div>
+
+            <!-- Banner Normativo Frontera Norte (ZLFN) -->
+            <div style="background:linear-gradient(90deg, rgba(34,184,240,0.1), rgba(61,220,132,0.08)); border:1px solid rgba(34,184,240,0.3); border-radius:10px; padding:14px 18px; margin-bottom:22px; display:flex; gap:14px; align-items:center;">
+                <div style="font-size:26px; color:#22b8f0; min-width:32px; text-align:center;"><i class="fa-solid fa-scale-balanced"></i></div>
+                <div style="font-size:13px; color:#c6d4e2; line-height:1.5;">
+                    <strong style="color:#fff; font-size:14px;">Marco Legal Aplicable: Zona Libre de la Frontera Norte (ZLFN)</strong><br>
+                    • <strong>Salario Mínimo General Vigente:</strong> <span style="color:#3ddc84; font-weight:700;">$374.89 MXN diarios</span> ($11,404.16 MXN mensuales). Ningún trabajador puede registrar salario inferior.<br>
+                    • <strong>Exención Fiscal LISR Art. 96:</strong> A los colaboradores que perciben exclusivamente el salario mínimo general <em>no se les retiene Impuesto Sobre la Renta (ISR)</em>.<br>
+                    • <strong>Horas Extras LFT:</strong> Primeras 9 horas semanales pagadas al 200% (dobles); excedentes pagadas al 300% (triples). Prima dominical del 25% (Art. 71 LFT). Vacaciones Dignas mín. 12 días primer año con 25% de prima vacacional.
+                </div>
+            </div>
+
+            <!-- Métricas Financieras de Nómina -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:24px;">
+                <div class="payroll-stat-card">
+                    <span class="payroll-stat-label">Plantilla de Personal</span>
+                    <span class="payroll-stat-num" id="payrollStatEmployees">3</span>
+                    <span style="font-size:11.5px; color:var(--muted);">Colaboradores registrados</span>
+                </div>
+                <div class="payroll-stat-card">
+                    <span class="payroll-stat-label">Neto Quincenal a Dispersar</span>
+                    <span class="payroll-stat-num" id="payrollStatNetToPay" style="color:var(--green);">$0.00</span>
+                    <span style="font-size:11.5px; color:var(--muted);">Total percepciones - retenciones</span>
+                </div>
+                <div class="payroll-stat-card">
+                    <span class="payroll-stat-label">Retención ISR al SAT</span>
+                    <span class="payroll-stat-num" id="payrollStatTotalIsr" style="color:#ffc107;">$0.00</span>
+                    <span style="font-size:11.5px; color:var(--muted);">Art. 96 Ley del ISR</span>
+                </div>
+                <div class="payroll-stat-card">
+                    <span class="payroll-stat-label">Costo Total Tienda (Empresa)</span>
+                    <span class="payroll-stat-num" id="payrollStatCompanyCost" style="color:#22b8f0;">$0.00</span>
+                    <span style="font-size:11.5px; color:var(--muted);">Incluye IMSS, INFONAVIT 5% e ISN 3%</span>
+                </div>
+            </div>
+
+            <!-- Parámetros del Periodo de Nómina -->
+            <div style="background:#0c121a; border:1px solid #1c2736; border-radius:10px; padding:16px 20px; margin-bottom:20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <label style="font-size:13px; font-weight:700; color:#fff;"><i class="fa-solid fa-calendar-days" style="color:var(--blue); margin-right:4px;"></i> Periodo:</label>
+                    <select id="payrollPeriodType" class="form-input" style="width:160px;" onchange="updatePayrollCalculations()">
+                        <option value="quincenal" selected>Quincenal (15 días)</option>
+                        <option value="semanal">Semanal (7 días)</option>
+                    </select>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <label style="font-size:13px; font-weight:700; color:#fff;">Fecha de Pago:</label>
+                    <input type="date" id="payrollPaymentDate" class="form-input" style="width:160px;">
+                </div>
+                <div style="margin-left:auto; display:flex; gap:8px;">
+                    <button type="button" class="btn-action" onclick="exportPayrollSummaryCSV()" style="font-size:12px;">
+                        <i class="fa-solid fa-file-excel" style="margin-right:4px; color:var(--green);"></i> Exportar Contabilidad
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabla de Pre-Nómina y Captura de Incidencias -->
+            <div class="admin-table-wrapper" style="overflow-x:auto; margin-bottom:24px;">
+                <table class="admin-table" style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th>Colaborador / RFC</th>
+                            <th>Puesto</th>
+                            <th style="text-align:right;">Salario Diario</th>
+                            <th style="text-align:center; width:90px;">Días Trab.</th>
+                            <th style="text-align:center; width:90px;">Hrs Ext (Dobl)</th>
+                            <th style="text-align:center; width:90px;">Hrs Ext (Trip)</th>
+                            <th style="text-align:center; width:90px;">Dom. Trab.</th>
+                            <th style="text-align:right;">Bonos / Comis.</th>
+                            <th style="text-align:right;">Total Percep.</th>
+                            <th style="text-align:right;">IMSS Obrero</th>
+                            <th style="text-align:right;">Ret. ISR</th>
+                            <th style="text-align:right; color:var(--green);">Neto a Pagar</th>
+                            <th style="text-align:center; width:130px;">Recibo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payrollTableBody">
+                        <tr><td colspan="13" style="text-align:center; color:var(--muted); padding:30px;">Cargando colaboradores de nómina...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Directorio Rápido de Colaboradores -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h3 style="font-size:17px; font-weight:700; color:#f2f5f8;"><i class="fa-solid fa-id-card" style="color:var(--blue); margin-right:6px;"></i> Directorio Oficial de Personal</h3>
+                <span style="font-size:12px; color:var(--muted);">Gestiona salarios diarios, cuentas bancarias y datos fiscales</span>
+            </div>
+            <div class="admin-table-wrapper" style="overflow-x:auto;">
+                <table class="admin-table" style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th>No. Emp</th>
+                            <th>Nombre Completo</th>
+                            <th>Puesto / Área</th>
+                            <th>RFC</th>
+                            <th>CURP</th>
+                            <th>NSS</th>
+                            <th style="text-align:right;">Salario Diario</th>
+                            <th>Fecha Ingreso</th>
+                            <th style="text-align:center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payrollEmployeesTableBody">
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
     </div><!-- /admin-main-wrapper -->
 
-    <!-- Modal Editar Guía de Rastreo -->
+    
+    <!-- ==================== MODAL: SUGERIR CAMBIO DE PRECIO / ERROR (AUDITOR) ==================== -->
+    <div id="auditSuggestionModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:550px;">
+            <h3 style="margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-pen-to-square" style="color:#ffc107;"></i> Sugerir Cambio de Precio o Reportar Error
+            </h3>
+            <form id="auditSuggestionForm" onsubmit="submitAuditSuggestionForm(event)">
+                <input type="hidden" id="auditModalProductId">
+                <input type="hidden" id="auditModalSku">
+                
+                <div class="form-group">
+                    <label>Producto a Auditar</label>
+                    <input type="text" id="auditModalProductName" class="form-input" readonly style="background:#131b24; color:#a0b0c0;">
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                    <div class="form-group">
+                        <label>Precio Actual (Web / POS)</label>
+                        <input type="text" id="auditModalCurrentPrice" class="form-input" readonly style="background:#131b24; color:#a0b0c0;">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio Sugerido ($ MXN)</label>
+                        <input type="number" step="0.50" id="auditModalSuggestedPrice" class="form-input" placeholder="ej. 389.00">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Solicitud</label>
+                    <select id="auditModalType" class="form-input">
+                        <option value="price_change">Sugerir Cambio de Precio (Ajuste comercial o costo)</option>
+                        <option value="inventory_error">Discrepancia en Inventario Físico vs Sistema</option>
+                        <option value="catalog_error">Error en Catálogo (Nombre, presentación o SKU)</option>
+                        <option value="pos_discrepancy">Discrepancia Tienda Física vs Página Web</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Observaciones / Justificación para Dirección</label>
+                    <textarea id="auditModalNotes" class="form-input" rows="3" placeholder="Describe el motivo del ajuste o el conteo físico realizado..." required></textarea>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-action" onclick="closeModal('auditSuggestionModal')">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="width:auto; padding:10px 22px; background:linear-gradient(135deg, #ffc107, #ff9800); color:#000;">
+                        <i class="fa-solid fa-paper-plane" style="margin-right:6px;"></i> Enviar a Dirección
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: IMPRESIÓN DE AUDITORÍA Y ETIQUETAS ==================== -->
+    <div id="auditPrintModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:650px;">
+            <h3 style="margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-print" style="color:#00d2ff;"></i> Impresión de Etiquetas y Formatos de Auditoría
+            </h3>
+            <p style="font-size:13px; color:var(--muted); margin-bottom:18px;">
+                Genera cenefas de precios listas para recortar o una hoja formal para conteo físico en estantería.
+            </p>
+
+            <div class="form-group">
+                <label>Formato de Impresión</label>
+                <select id="auditPrintModeSelect" class="form-input" onchange="renderAuditPrintPreview()">
+                    <option value="tags">Cenefas / Etiquetas de Precios para Góndola (con Código de Barras)</option>
+                    <option value="sheet">Hoja de Control Físico de Inventario (Planilla para Conteo Manual)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Filtrar por Categoría a Imprimir</label>
+                <select id="auditPrintCategorySelect" class="form-input" onchange="renderAuditPrintPreview()">
+                    <option value="">Todas las Categorías</option>
+                </select>
+            </div>
+
+            <div id="auditPrintPreviewArea" style="max-height:280px; overflow-y:auto; background:#fff; color:#000; border-radius:8px; padding:16px; margin:16px 0; border:1px solid #ddd; font-family:'Inter',sans-serif;">
+                <!-- Vista previa de impresión -->
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+                <button type="button" class="btn-action" onclick="closeModal('auditPrintModal')">Cerrar</button>
+                <button type="button" class="btn-primary" style="width:auto; padding:10px 24px;" onclick="triggerAuditPrint()">
+                    <i class="fa-solid fa-print" style="margin-right:6px;"></i> Mandar a Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: ALTA / EDICIÓN DE EMPLEADO (NÓMINA) ==================== -->
+    <div id="payrollEmployeeModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:560px;">
+            <h3 style="margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-user-gear" style="color:var(--green);"></i> <span id="payrollEmpModalTitle">Colaborador de la Tienda</span>
+            </h3>
+            <form id="payrollEmployeeForm" onsubmit="savePayrollEmployeeForm(event)">
+                <input type="hidden" id="payrollEmpId">
+
+                <div class="form-group">
+                    <label>Nombre Completo del Colaborador</label>
+                    <input type="text" id="payrollEmpName" class="form-input" placeholder="ej. Juan Ramón Estrada" required>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label>Puesto</label>
+                        <input type="text" id="payrollEmpPosition" class="form-input" placeholder="ej. Vendedor Mostrador POS" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Área / Departamento</label>
+                        <input type="text" id="payrollEmpDept" class="form-input" placeholder="ej. Ventas / Detallado" required>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                    <div class="form-group">
+                        <label>RFC</label>
+                        <input type="text" id="payrollEmpRfc" class="form-input" placeholder="EARJ920415A10" maxlength="13" style="text-transform:uppercase;" required>
+                    </div>
+                    <div class="form-group">
+                        <label>CURP</label>
+                        <input type="text" id="payrollEmpCurp" class="form-input" placeholder="18 Caracteres" maxlength="18" style="text-transform:uppercase;">
+                    </div>
+                    <div class="form-group">
+                        <label>NSS (IMSS)</label>
+                        <input type="text" id="payrollEmpNss" class="form-input" placeholder="11 Dígitos" maxlength="11">
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                    <div class="form-group">
+                        <label>Salario Diario ($ MXN) <small style="color:var(--green);">(Mínimo ZLFN: $374.89)</small></label>
+                        <input type="number" step="0.01" min="374.89" id="payrollEmpSalary" class="form-input" value="374.89" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Ingreso</label>
+                        <input type="date" id="payrollEmpHireDate" class="form-input" required>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                    <div class="form-group">
+                        <label>Banco Dispersión</label>
+                        <input type="text" id="payrollEmpBank" class="form-input" placeholder="ej. BBVA / Santander">
+                    </div>
+                    <div class="form-group">
+                        <label>Cuenta / Clave Interbancaria</label>
+                        <input type="text" id="payrollEmpAccount" class="form-input" placeholder="**** 1234">
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                    <button type="button" class="btn-action" onclick="closeModal('payrollEmployeeModal')">Cancelar</button>
+                    <button type="submit" class="btn-primary" style="width:auto; padding:10px 22px;">Guardar Colaborador</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: VISOR DE RECIBO OFICIAL DE NÓMINA (CFDI REPRESENTATIVO) ==================== -->
+    <div id="payrollReceiptModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:720px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h3 style="display:flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-file-invoice-dollar" style="color:var(--green);"></i> Comprobante de Nómina
+                </h3>
+                <button type="button" class="btn-action" onclick="printReceiptDoc()" style="border-color:#00d2ff; color:#00d2ff;">
+                    <i class="fa-solid fa-print" style="margin-right:4px;"></i> Imprimir Recibo
+                </button>
+            </div>
+
+            <div id="receiptPrintableArea" style="background:#fff; color:#000; padding:24px; border-radius:8px; font-family:'Inter',sans-serif; border:1px solid #ccc; font-size:12px; line-height:1.4;">
+                <!-- Recibo generado dinámicamente -->
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+                <button type="button" class="btn-action" onclick="closeModal('payrollReceiptModal')">Cerrar</button>
+                <button type="button" class="btn-primary" style="width:auto; padding:10px 20px;" onclick="printReceiptDoc()">
+                    <i class="fa-solid fa-print" style="margin-right:6px;"></i> Imprimir en Hoja Carta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor oculto exclusivamente para impresión limpia del navegador -->
+    <div id="printContainerDirect" class="printable-section" style="display:none;"></div>
+
+<!-- Modal Editar Guía de Rastreo -->
     <div id="trackingModal" class="modal" style="display:none;">
         <div class="modal-content">
             <h3 style="margin-bottom:16px;"><i class="fa-solid fa-truck-fast" style="color:var(--blue); margin-right:8px;"></i> Agregar / Editar Guía de Rastreo</h3>
@@ -2076,11 +2687,19 @@ textarea[required]:focus,
         var loginError = document.getElementById('loginError');
         var logoutBtn = document.getElementById('logoutBtn');
 
+        var adminUsernameInput = document.getElementById('adminUsernameInput');
         var tabs = document.querySelectorAll('.tab-btn');
         var tabOrders = document.getElementById('tabOrders');
         var tabPosSales = document.getElementById('tabPosSales');
         var tabInvoices = document.getElementById('tabInvoices');
         var tabProducts = document.getElementById('tabProducts');
+        var tabAuditPrices = document.getElementById('tabAuditPrices');
+        var tabAuditAdmin = document.getElementById('tabAuditAdmin');
+        var tabPayroll = document.getElementById('tabPayroll');
+        var currentUser = null;
+        try {
+            currentUser = JSON.parse(sessionStorage.getItem('currentUser') || 'null');
+        } catch (e) {}
 
         var ordersTableBody = document.getElementById('ordersTableBody');
         var productsTableBody = document.getElementById('productsTableBody');
@@ -2097,10 +2716,7 @@ textarea[required]:focus,
 
         if (adminToken) {
             loginScreen.style.display = 'none';
-            loadOrders();
-            loadPosSales();
-            loadInvoices();
-            loadProducts();
+            applyRolePermissions(currentUser ? currentUser.role : 'admin', currentUser);
         }
 
         function toggleAdminPasswordVisibility() {
@@ -2125,6 +2741,7 @@ textarea[required]:focus,
 
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            var user = (adminUsernameInput ? adminUsernameInput.value.trim() : '');
             var pass = adminPasswordInput.value.trim();
             loginError.style.display = 'none';
 
@@ -2132,19 +2749,18 @@ textarea[required]:focus,
                 var res = await fetch('/api/admin/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: pass })
+                    body: JSON.stringify({ username: user, password: pass })
                 });
                 var data = await res.json();
                 if (data.success) {
                     adminToken = data.token;
                     sessionStorage.setItem('adminToken', adminToken);
+                    sessionStorage.setItem('currentUser', JSON.stringify(data.user || { role: data.role }));
+                    currentUser = data.user || { role: data.role };
                     loginScreen.style.display = 'none';
-                    loadOrders();
-                    loadPosSales();
-                    loadInvoices();
-                    loadProducts();
+                    applyRolePermissions(data.role, data.user);
                 } else {
-                    loginError.textContent = data.error || 'Contraseña de administración incorrecta.';
+                    loginError.textContent = data.error || 'Credenciales inválidas. Verifica tu usuario y contraseña.';
                     loginError.style.display = 'block';
                 }
             } catch (err) {
@@ -2155,6 +2771,7 @@ textarea[required]:focus,
 
         logoutBtn.addEventListener('click', function() {
             sessionStorage.removeItem('adminToken');
+            sessionStorage.removeItem('currentUser');
             location.reload();
         });
 
@@ -2202,6 +2819,9 @@ textarea[required]:focus,
                 tabProducts.style.display = 'none';
                 tabEditor.style.display = 'none';
                 if (tabVisor) tabVisor.style.display = 'none';
+                if (tabAuditPrices) tabAuditPrices.style.display = 'none';
+                if (tabAuditAdmin) tabAuditAdmin.style.display = 'none';
+                if (tabPayroll) tabPayroll.style.display = 'none';
 
                 if (target === 'orders') {
                     tabOrders.style.display = 'block';
@@ -2224,6 +2844,15 @@ textarea[required]:focus,
                 } else if (target === 'visor') {
                     tabVisor.style.display = 'block';
                     loadVisorImages();
+                } else if (target === 'audit-prices') {
+                    if (tabAuditPrices) tabAuditPrices.style.display = 'block';
+                    loadAuditProducts();
+                } else if (target === 'audit-admin') {
+                    if (tabAuditAdmin) tabAuditAdmin.style.display = 'block';
+                    loadAdminAuditSuggestions();
+                } else if (target === 'payroll') {
+                    if (tabPayroll) tabPayroll.style.display = 'block';
+                    loadPayrollModule();
                 }
             });
         });
@@ -6148,6 +6777,992 @@ Crear bundle Sintra + microfibra con precio promocional en mostrador.`;
             appendChatMessage('agent', localResp);
             speakAiResponse('Resumen de Reset Supply. Ventas por ' + Math.round(totalV) + ' pesos en ' + tickets + ' tickets. ' + alertTxt);
         }
-    </script>
+    
+        // ==================== APLICACIÓN DE ROLES Y PERMISOS ====================
+        function applyRolePermissions(role, user) {
+            role = role || 'admin';
+            user = user || {};
+
+            var sidebarUserCard = document.getElementById('sidebarUserCard');
+            var sidebarUserAvatar = document.getElementById('sidebarUserAvatar');
+            var sidebarUserName = document.getElementById('sidebarUserName');
+            var sidebarUserBadge = document.getElementById('sidebarUserBadge');
+            var sidebarUserRole = document.getElementById('sidebarUserRole');
+            var resetManagerWidget = document.getElementById('resetManagerWidget');
+            var headerTopButtons = document.getElementById('headerTopButtons');
+            var headerAuditNotificationBtn = document.getElementById('headerAuditNotificationBtn');
+
+            if (sidebarUserCard) {
+                sidebarUserCard.style.display = 'flex';
+                if (sidebarUserName) sidebarUserName.textContent = user.name || (role === 'audit' ? 'Carlos Morales' : 'Dirección General');
+                if (sidebarUserBadge) sidebarUserBadge.textContent = user.employeeNumber || (role === 'audit' ? 'AUD-007' : 'DIR-001');
+                if (sidebarUserRole) sidebarUserRole.textContent = user.jobTitle || (role === 'audit' ? 'Auditor de Precios' : 'Administrador General');
+                if (sidebarUserAvatar) sidebarUserAvatar.src = (role === 'audit' ? 'assets/audit_avatar.svg' : 'assets/reset-ia-icon.png');
+            }
+
+            if (role === 'audit') {
+                // Modo Auditor: Ocultar todo lo de Dirección
+                document.querySelectorAll('.admin-only-tab').forEach(function(el) { el.style.display = 'none'; });
+                document.querySelectorAll('.audit-only-tab').forEach(function(el) { el.style.display = 'flex'; });
+                if (resetManagerWidget) resetManagerWidget.style.display = 'none';
+                if (headerTopButtons) headerTopButtons.style.display = 'none';
+                if (headerAuditNotificationBtn) headerAuditNotificationBtn.style.display = 'none';
+
+                // Cambiar vista activa a auditoría de precios
+                var auditTabBtn = document.querySelector('.sidebar-tab-btn[data-tab="audit-prices"]');
+                if (auditTabBtn) auditTabBtn.click();
+            } else {
+                // Modo Administrador General
+                document.querySelectorAll('.admin-only-tab').forEach(function(el) { el.style.display = 'flex'; });
+                document.querySelectorAll('.audit-only-tab').forEach(function(el) { el.style.display = 'none'; });
+                if (resetManagerWidget) resetManagerWidget.style.display = 'block';
+                if (headerTopButtons) headerTopButtons.style.display = 'flex';
+
+                loadOrders();
+                loadPosSales();
+                loadInvoices();
+                loadProducts();
+                checkAuditNotifications();
+            }
+        }
+
+        function goToAuditAdminTab() {
+            var btn = document.querySelector('.sidebar-tab-btn[data-tab="audit-admin"]');
+            if (btn) btn.click();
+        }
+
+        // ==================== LÓGICA DE AUDITORÍA DE PRECIOS E INVENTARIO ====================
+        var allAuditProducts = [];
+        var allAuditSuggestions = [];
+
+        async function loadAuditProducts() {
+            try {
+                var res = await fetch('/api/products');
+                var data = await res.json();
+                allAuditProducts = Array.isArray(data) ? data : (data.products || []);
+                renderAuditCategories();
+                filterAuditProducts();
+                loadAuditStats();
+            } catch (err) {
+                console.error('Error al cargar productos de auditoría:', err);
+            }
+        }
+
+        function renderAuditCategories() {
+            var catSelect = document.getElementById('auditCategoryFilter');
+            var printCatSelect = document.getElementById('auditPrintCategorySelect');
+            if (!catSelect) return;
+
+            var categories = new Set();
+            allAuditProducts.forEach(function(p) {
+                if (p.category) categories.add(p.category);
+            });
+
+            var html = '<option value="">Todas las Categorías</option>';
+            categories.forEach(function(cat) {
+                html += '<option value="' + escapeHtml(cat) + '">' + escapeHtml(cat) + '</option>';
+            });
+            catSelect.innerHTML = html;
+            if (printCatSelect) printCatSelect.innerHTML = html;
+        }
+
+        function filterAuditProducts() {
+            var search = (document.getElementById('auditSearchInput').value || '').toLowerCase().trim();
+            var cat = (document.getElementById('auditCategoryFilter').value || '');
+            var tbody = document.getElementById('auditProductsTableBody');
+            if (!tbody) return;
+
+            var filtered = allAuditProducts.filter(function(p) {
+                var matchCat = !cat || p.category === cat;
+                var matchSearch = !search || 
+                    (p.name && p.name.toLowerCase().includes(search)) ||
+                    (p.code && p.code.toLowerCase().includes(search)) ||
+                    (p.id && String(p.id).toLowerCase().includes(search)) ||
+                    (p.description && p.description.toLowerCase().includes(search));
+                return matchCat && matchSearch;
+            });
+
+            // Actualizar contadores
+            var statTotal = document.getElementById('auditStatTotal');
+            var statLow = document.getElementById('auditStatLowStock');
+            if (statTotal) statTotal.textContent = allAuditProducts.length;
+            if (statLow) {
+                var lowCount = allAuditProducts.filter(function(p) { return (parseInt(p.qty) || 0) <= 5; }).length;
+                statLow.textContent = lowCount;
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--muted); padding:30px;">No se encontraron productos con los filtros seleccionados.</td></tr>';
+                return;
+            }
+
+            var rows = '';
+            filtered.forEach(function(p) {
+                var price = parseFloat(p.price) || 0;
+                var qty = parseInt(p.qty) || 0;
+                var sku = p.code || p.id || 'N/A';
+                var statusBadge = qty <= 0 
+                    ? '<span class="audit-badge-rejected">Agotado (0)</span>' 
+                    : (qty <= 5 ? '<span class="audit-badge-pending">Stock Crítico (' + qty + ')</span>' : '<span class="audit-badge-approved">Stock Normal (' + qty + ')</span>');
+
+                var rowData = encodeURIComponent(JSON.stringify({ id: p.id, code: p.code, name: p.name, price: price, qty: qty, category: p.category }));
+
+                rows += '<tr>' +
+                    '<td><code style="color:var(--blue); font-weight:700;">' + escapeHtml(sku) + '</code></td>' +
+                    '<td><div style="font-weight:700; color:#fff;">' + escapeHtml(p.name) + '</div><div style="font-size:11px; color:var(--muted);">' + escapeHtml(p.category || 'General') + '</div></td>' +
+                    '<td>' + escapeHtml(p.category || 'Sin Categoría') + '</td>' +
+                    '<td style="text-align:right; font-weight:700; color:var(--green); font-size:15px; font-family:\'Rajdhani\',sans-serif;">
+</body>
+</html>
+ + price.toFixed(2) + ' MXN</td>' +
+                    '<td style="text-align:center; font-weight:700;">' + qty + ' pzas</td>' +
+                    '<td style="text-align:center;">' + statusBadge + '</td>' +
+                    '<td style="text-align:center;">' +
+                        '<button type="button" class="btn-action" style="font-size:11.5px; padding:5px 10px; border-color:#ffc107; color:#ffc107;" onclick="openAuditSuggestionModalWithProduct(\'' + rowData + '\')">' +
+                            '<i class="fa-solid fa-pen-to-square"></i> Sugerir / Reportar' +
+                        '</button>' +
+                    '</td>' +
+                '</tr>';
+            });
+            tbody.innerHTML = rows;
+        }
+
+        async function loadAuditStats() {
+            try {
+                var res = await fetch('/api/audit/suggestions', {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                if (data.success && Array.isArray(data.suggestions)) {
+                    allAuditSuggestions = data.suggestions;
+                    var statSent = document.getElementById('auditStatSent');
+                    if (statSent) statSent.textContent = allAuditSuggestions.length;
+                }
+            } catch (e) {}
+        }
+
+        function openAuditSuggestionModal(prod) {
+            var modal = document.getElementById('auditSuggestionModal');
+            if (!modal) return;
+            document.getElementById('auditModalProductId').value = prod ? (prod.id || '') : '';
+            document.getElementById('auditModalSku').value = prod ? (prod.code || '') : '';
+            document.getElementById('auditModalProductName').value = prod ? prod.name : 'Auditoría General / Ajuste Libre';
+            document.getElementById('auditModalCurrentPrice').value = prod ? ('
+</body>
+</html>
+ + (parseFloat(prod.price) || 0).toFixed(2) + ' MXN') : 'N/A';
+            document.getElementById('auditModalSuggestedPrice').value = '';
+            document.getElementById('auditModalNotes').value = '';
+            modal.style.display = 'flex';
+        }
+
+        function openAuditSuggestionModalWithProduct(encodedData) {
+            try {
+                var p = JSON.parse(decodeURIComponent(encodedData));
+                openAuditSuggestionModal(p);
+            } catch (e) {
+                openAuditSuggestionModal();
+            }
+        }
+
+        async function submitAuditSuggestionForm(e) {
+            e.preventDefault();
+            var productId = document.getElementById('auditModalProductId').value;
+            var sku = document.getElementById('auditModalSku').value;
+            var productName = document.getElementById('auditModalProductName').value;
+            var currentPrice = (document.getElementById('auditModalCurrentPrice').value || '').replace(/[^0-9.]/g, '');
+            var suggestedPrice = document.getElementById('auditModalSuggestedPrice').value;
+            var type = document.getElementById('auditModalType').value;
+            var notes = document.getElementById('auditModalNotes').value;
+
+            try {
+                var res = await fetch('/api/audit/suggestions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify({
+                        productId: productId,
+                        sku: sku,
+                        productName: productName,
+                        currentPrice: currentPrice,
+                        suggestedPrice: suggestedPrice,
+                        type: type,
+                        notes: notes
+                    })
+                });
+                var data = await res.json();
+                if (data.success) {
+                    alert('✅ Solicitud registrada exitosamente.\n\nSe ha enviado la notificación interna a Dirección General para su autorización.');
+                    closeModal('auditSuggestionModal');
+                    loadAuditStats();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo enviar la solicitud.'));
+                }
+            } catch (err) {
+                alert('Error al conectar con el servidor.');
+            }
+        }
+
+        // ==================== BUZÓN DE AUDITORÍA PARA ADMINISTRADOR ====================
+        async function checkAuditNotifications() {
+            try {
+                var res = await fetch('/api/audit/suggestions', {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                if (data.success && Array.isArray(data.suggestions)) {
+                    var pending = data.suggestions.filter(function(s) { return s.status === 'pending'; });
+                    var badge = document.getElementById('sidebarAuditBadge');
+                    var headerBtn = document.getElementById('headerAuditNotificationBtn');
+                    var headerCount = document.getElementById('headerAuditCount');
+
+                    if (pending.length > 0) {
+                        if (badge) { badge.textContent = pending.length; badge.style.display = 'inline-block'; }
+                        if (headerBtn) { headerBtn.style.display = 'inline-flex'; }
+                        if (headerCount) { headerCount.textContent = pending.length; }
+                    } else {
+                        if (badge) badge.style.display = 'none';
+                        if (headerBtn) headerBtn.style.display = 'none';
+                    }
+                }
+            } catch (e) {}
+        }
+
+        async function loadAdminAuditSuggestions() {
+            var tbody = document.getElementById('adminAuditTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--muted); padding:30px;">Cargando solicitudes...</td></tr>';
+
+            try {
+                var res = await fetch('/api/audit/suggestions', {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                if (data.success && Array.isArray(data.suggestions)) {
+                    var list = data.suggestions;
+                    checkAuditNotifications();
+
+                    if (list.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--muted); padding:30px;">No hay solicitudes de auditoría registradas.</td></tr>';
+                        return;
+                    }
+
+                    var rows = '';
+                    list.forEach(function(s) {
+                        var dateStr = new Date(s.createdAt).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
+                        var statusBadge = s.status === 'approved' 
+                            ? '<span class="audit-badge-approved">Aprobada</span>' 
+                            : (s.status === 'rejected' ? '<span class="audit-badge-rejected">Rechazada</span>' : '<span class="audit-badge-pending">Pendiente</span>');
+
+                        var typeLabel = s.type === 'price_change' ? 'Cambio de Precio' : (s.type === 'inventory_error' ? 'Discrepancia Inventario' : (s.type === 'pos_discrepancy' ? 'Discrepancia POS' : 'Error en Catálogo'));
+
+                        var actions = '';
+                        if (s.status === 'pending') {
+                            actions = '<button type="button" class="btn-action" style="padding:4px 8px; font-size:11px; border-color:var(--green); color:var(--green); margin-right:4px;" onclick="resolveAuditSuggestion(\'' + s.id + '\', \'approve\')" title="Aprobar y aplicar precio"><i class="fa-solid fa-check"></i> Aprobar</button>' +
+                                      '<button type="button" class="btn-action" style="padding:4px 8px; font-size:11px; border-color:var(--red); color:var(--red);" onclick="resolveAuditSuggestion(\'' + s.id + '\', \'reject\')" title="Rechazar solicitud"><i class="fa-solid fa-xmark"></i> Rechazar</button>';
+                        } else {
+                            actions = '<span style="font-size:11px; color:var(--muted);">Revisado</span>';
+                        }
+
+                        rows += '<tr>' +
+                            '<td style="font-size:12px; color:var(--muted);">' + dateStr + '</td>' +
+                            '<td><strong style="color:#fff;">' + escapeHtml(s.employeeName || 'Auditor') + '</strong><br><small style="color:var(--green);">' + escapeHtml(s.employeeNumber || 'AUD-007') + '</small></td>' +
+                            '<td><strong>' + escapeHtml(s.productName) + '</strong><br><code style="color:var(--blue); font-size:11px;">' + escapeHtml(s.sku || 'N/A') + '</code></td>' +
+                            '<td><span style="font-size:12px; color:#c6d4e2;">' + typeLabel + '</span></td>' +
+                            '<td style="text-align:right; color:var(--muted);">
+</body>
+</html>
+ + (parseFloat(s.currentPrice) || 0).toFixed(2) + '</td>' +
+                            '<td style="text-align:right; font-weight:700; color:#ffc107;">' + (s.suggestedPrice ? ('
+</body>
+</html>
+ + parseFloat(s.suggestedPrice).toFixed(2) + ' MXN') : 'N/A') + '</td>' +
+                            '<td style="font-size:12.5px; max-width:240px;">' + escapeHtml(s.notes || 'Sin observaciones') + '</td>' +
+                            '<td style="text-align:center;">' + statusBadge + '</td>' +
+                            '<td style="text-align:center;">' + actions + '</td>' +
+                        '</tr>';
+                    });
+                    tbody.innerHTML = rows;
+                }
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--red); padding:30px;">Error al cargar solicitudes de auditoría.</td></tr>';
+            }
+        }
+
+        async function resolveAuditSuggestion(id, action) {
+            var msg = action === 'approve' ? '¿Aprobar esta solicitud? Si incluye precio sugerido, se actualizará el catálogo automáticamente.' : '¿Rechazar esta solicitud?';
+            if (!confirm(msg)) return;
+
+            try {
+                var res = await fetch('/api/audit/suggestions/' + id, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify({ action: action })
+                });
+                var data = await res.json();
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                    loadAdminAuditSuggestions();
+                    loadProducts();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo procesar la solicitud.'));
+                }
+            } catch (err) {
+                alert('Error al conectar con el servidor.');
+            }
+        }
+
+        // ==================== MOTOR DE IMPRESIÓN PARA AUDITORÍA ====================
+        function openAuditPrintModal(mode) {
+            var modal = document.getElementById('auditPrintModal');
+            var select = document.getElementById('auditPrintModeSelect');
+            if (select && mode) select.value = mode;
+            if (modal) modal.style.display = 'flex';
+            renderAuditPrintPreview();
+        }
+
+        function renderAuditPrintPreview() {
+            var mode = document.getElementById('auditPrintModeSelect').value;
+            var cat = document.getElementById('auditPrintCategorySelect').value;
+            var area = document.getElementById('auditPrintPreviewArea');
+            if (!area) return;
+
+            var filtered = allAuditProducts.filter(function(p) {
+                return !cat || p.category === cat;
+            });
+
+            if (mode === 'tags') {
+                // Cenefas / Etiquetas de góndola
+                var html = '<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">';
+                filtered.forEach(function(p) {
+                    var price = parseFloat(p.price) || 0;
+                    var sku = p.code || p.id || 'N/A';
+                    html += '<div style="border:1.5px dashed #000; padding:10px; border-radius:6px; background:#fff; text-align:center;">' +
+                        '<div style="font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:#333;">RESET SUPPLY MX</div>' +
+                        '<div style="font-size:12px; font-weight:700; margin:4px 0; line-height:1.2; height:28px; overflow:hidden;">' + escapeHtml(p.name) + '</div>' +
+                        '<div style="font-size:10px; color:#666;">' + escapeHtml(p.category || 'Línea Vonixx') + '</div>' +
+                        '<div style="font-size:18px; font-weight:800; color:#000; margin:6px 0;">
+</body>
+</html>
+ + price.toFixed(2) + ' <small style="font-size:10px;">MXN</small></div>' +
+                        '<div style="font-family:monospace; font-size:11px; letter-spacing:2px; font-weight:bold; background:#eee; padding:2px 4px; border-radius:3px;">||| | ||||| | ' + escapeHtml(sku) + '</div>' +
+                    '</div>';
+                });
+                html += '</div>';
+                area.innerHTML = html;
+            } else {
+                // Hoja de control físico
+                var html = '<div style="padding:10px;">' +
+                    '<div style="display:flex; justify-content:space-between; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:12px;">' +
+                        '<div><strong>RESET SUPPLY MX — PLANILLA DE AUDITORÍA FÍSICA</strong><br><small>Auditor: Carlos Morales (#AUD-007) | Fecha: ' + new Date().toLocaleDateString('es-MX') + '</small></div>' +
+                        '<div><strong>Catálogo: ' + (cat || 'Todos') + '</strong> (' + filtered.length + ' ítems)</div>' +
+                    '</div>' +
+                    '<table style="width:100%; border-collapse:collapse; font-size:11.5px;">' +
+                        '<thead>' +
+                            '<tr style="border-bottom:1px solid #000; text-align:left;">' +
+                                '<th style="padding:4px;">SKU</th>' +
+                                '<th style="padding:4px;">Producto</th>' +
+                                '<th style="padding:4px; text-align:right;">Precio</th>' +
+                                '<th style="padding:4px; text-align:center;">Sistema</th>' +
+                                '<th style="padding:4px; text-align:center; border-left:1px solid #ccc;">Conteo Físico</th>' +
+                                '<th style="padding:4px; text-align:center; border-left:1px solid #ccc;">Diferencia</th>' +
+                                '<th style="padding:4px; border-left:1px solid #ccc;">Notas Auditor</th>' +
+                            '</tr>' +
+                        '</thead>' +
+                        '<tbody>';
+                filtered.forEach(function(p) {
+                    var price = parseFloat(p.price) || 0;
+                    var qty = parseInt(p.qty) || 0;
+                    var sku = p.code || p.id || 'N/A';
+                    html += '<tr style="border-bottom:1px solid #eee;">' +
+                        '<td style="padding:5px; font-family:monospace;">' + escapeHtml(sku) + '</td>' +
+                        '<td style="padding:5px; font-weight:600;">' + escapeHtml(p.name) + '</td>' +
+                        '<td style="padding:5px; text-align:right;">
+</body>
+</html>
+ + price.toFixed(2) + '</td>' +
+                        '<td style="padding:5px; text-align:center; font-weight:bold;">' + qty + '</td>' +
+                        '<td style="padding:5px; text-align:center; border-left:1px solid #ccc; width:90px;"><div style="height:20px; border:1px solid #999; border-radius:3px;"></div></td>' +
+                        '<td style="padding:5px; text-align:center; border-left:1px solid #ccc; width:70px;"><div style="height:20px; border:1px solid #999; border-radius:3px;"></div></td>' +
+                        '<td style="padding:5px; border-left:1px solid #ccc; width:120px;"><div style="height:20px; border-bottom:1px solid #999;"></div></td>' +
+                    '</tr>';
+                });
+                html += '</tbody></table>' +
+                    '<div style="margin-top:30px; display:flex; justify-content:space-between;">' +
+                        '<div style="border-top:1px solid #000; width:220px; text-align:center; padding-top:4px; font-size:11px;">Firma Auditor de Precios</div>' +
+                        '<div style="border-top:1px solid #000; width:220px; text-align:center; padding-top:4px; font-size:11px;">Firma Dirección General</div>' +
+                    '</div></div>';
+                area.innerHTML = html;
+            }
+        }
+
+        function triggerAuditPrint() {
+            var previewContent = document.getElementById('auditPrintPreviewArea').innerHTML;
+            var printContainer = document.getElementById('printContainerDirect');
+            if (printContainer) {
+                printContainer.innerHTML = previewContent;
+                window.print();
+            }
+        }
+
+        // ==================== MÓDULO DE NÓMINA FRONTERA NORTE (ZLFN) ====================
+        const MINIMUM_DAILY_SALARY_ZLFN = 374.89; // Salario mínimo legal frontera norte 2024
+        var payrollEmployees = [];
+        var payrollIncidences = {};
+
+        async function loadPayrollModule() {
+            try {
+                var paymentDateInput = document.getElementById('payrollPaymentDate');
+                if (paymentDateInput && !paymentDateInput.value) {
+                    paymentDateInput.value = new Date().toISOString().split('T')[0];
+                }
+
+                var res = await fetch('/api/admin/payroll', {
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                if (data.success && Array.isArray(data.employees)) {
+                    payrollEmployees = data.employees;
+                    renderPayrollEmployees();
+                    updatePayrollCalculations();
+                }
+            } catch (e) {
+                console.error('Error al cargar nómina:', e);
+            }
+        }
+
+        function renderPayrollEmployees() {
+            var tbody = document.getElementById('payrollEmployeesTableBody');
+            var statCount = document.getElementById('payrollStatEmployees');
+            if (statCount) statCount.textContent = payrollEmployees.length;
+            if (!tbody) return;
+
+            if (payrollEmployees.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--muted); padding:20px;">No hay colaboradores registrados. Agrega uno nuevo.</td></tr>';
+                return;
+            }
+
+            var rows = '';
+            payrollEmployees.forEach(function(e) {
+                var salary = parseFloat(e.dailySalary) || MINIMUM_DAILY_SALARY_ZLFN;
+                var encoded = encodeURIComponent(JSON.stringify(e));
+
+                rows += '<tr>' +
+                    '<td><code style="color:var(--green); font-weight:700;">' + escapeHtml(e.id) + '</code></td>' +
+                    '<td><strong style="color:#fff;">' + escapeHtml(e.name) + '</strong></td>' +
+                    '<td>' + escapeHtml(e.position) + ' <small style="color:var(--muted);">(' + escapeHtml(e.department || 'General') + ')</small></td>' +
+                    '<td style="font-family:monospace;">' + escapeHtml(e.rfc || 'N/A') + '</td>' +
+                    '<td style="font-family:monospace; font-size:11px;">' + escapeHtml(e.curp || 'N/A') + '</td>' +
+                    '<td style="font-family:monospace;">' + escapeHtml(e.nss || 'N/A') + '</td>' +
+                    '<td style="text-align:right; font-weight:700; color:var(--green); font-family:\'Rajdhani\',sans-serif; font-size:15px;">
+</body>
+</html>
+ + salary.toFixed(2) + ' MXN</td>' +
+                    '<td>' + escapeHtml(e.hireDate || 'N/A') + '</td>' +
+                    '<td style="text-align:center;">' +
+                        '<button type="button" class="btn-action" style="padding:4px 8px; font-size:11px; margin-right:4px;" onclick="openPayrollEmployeeModalWithData(\'' + encoded + '\')"><i class="fa-solid fa-pen"></i></button>' +
+                        '<button type="button" class="btn-action" style="padding:4px 8px; font-size:11px; border-color:var(--red); color:var(--red);" onclick="deletePayrollEmployee(\'' + e.id + '\')"><i class="fa-solid fa-trash"></i></button>' +
+                    '</td>' +
+                '</tr>';
+            });
+            tbody.innerHTML = rows;
+        }
+
+        function updatePayrollCalculations() {
+            var periodType = document.getElementById('payrollPeriodType').value;
+            var defaultDays = periodType === 'semanal' ? 7 : 15;
+            var tbody = document.getElementById('payrollTableBody');
+            if (!tbody) return;
+
+            var totalNet = 0;
+            var totalIsr = 0;
+            var totalCompanyCost = 0;
+            var rows = '';
+
+            payrollEmployees.forEach(function(e) {
+                var empId = e.id;
+                var inc = payrollIncidences[empId] || {
+                    days: defaultDays,
+                    doubleHours: 0,
+                    tripleHours: 0,
+                    sundayWorked: 0,
+                    bonuses: 0
+                };
+                payrollIncidences[empId] = inc;
+
+                var daily = parseFloat(e.dailySalary) || MINIMUM_DAILY_SALARY_ZLFN;
+                var hourly = daily / 8;
+
+                // 1. Percepciones
+                var basePay = daily * inc.days;
+                var doublePay = inc.doubleHours * (hourly * 2);
+                var triplePay = inc.tripleHours * (hourly * 3);
+                var sundayPay = inc.sundayWorked * (daily * 0.25);
+                var bonusPay = parseFloat(inc.bonuses) || 0;
+                var totalPerceptions = basePay + doublePay + triplePay + sundayPay + bonusPay;
+
+                // 2. Salario Base de Cotización (Factor integración LFT mínimo 1.0493: 15 días aguinaldo + 12 días vacaciones dignas con 25% prima)
+                var sbc = daily * 1.0493;
+
+                // 3. Deducción IMSS Obrero (~2.75% del SBC)
+                var imssObrero = sbc * inc.days * 0.0275;
+
+                // 4. Retención de ISR (LISR Art. 96)
+                // REGLA ESTRICTA ZLFN: Trabajador con salario mínimo de frontera norte NO RETIENE ISR
+                var isr = 0;
+                if (daily > MINIMUM_DAILY_SALARY_ZLFN) {
+                    var taxable = totalPerceptions;
+                    // Tarifa proporcional de ISR quincenal/semanal
+                    var taxRate = taxable > (periodType === 'semanal' ? 5000 : 10000) ? 0.16 : 0.08;
+                    isr = taxable * taxRate;
+                }
+
+                // 5. Neto a pagar al colaborador
+                var netPay = totalPerceptions - imssObrero - isr;
+
+                // 6. Cargas Patronales (Costo Empresa)
+                var imssPatronal = sbc * inc.days * 0.15; // Estimado cuota patronal IMSS
+                var infonavitPatronal = sbc * inc.days * 0.05; // 5% INFONAVIT
+                var isnEstatal = totalPerceptions * 0.03; // 3% ISN frontera norte
+                var employeeCompanyCost = totalPerceptions + imssPatronal + infonavitPatronal + isnEstatal;
+
+                totalNet += netPay;
+                totalIsr += isr;
+                totalCompanyCost += employeeCompanyCost;
+
+                rows += '<tr>' +
+                    '<td><strong style="color:#fff;">' + escapeHtml(e.name) + '</strong><br><small style="color:var(--muted); font-family:monospace;">' + escapeHtml(e.rfc || 'N/A') + '</small></td>' +
+                    '<td>' + escapeHtml(e.position) + '</td>' +
+                    '<td style="text-align:right; font-weight:700; color:var(--green); font-family:\'Rajdhani\',sans-serif;">
+</body>
+</html>
+ + daily.toFixed(2) + '</td>' +
+                    '<td style="text-align:center;"><input type="number" min="0" max="31" class="form-input" style="width:55px; padding:3px; text-align:center;" value="' + inc.days + '" onchange="updateIncidence(\'' + empId + '\', \'days\', this.value)"></td>' +
+                    '<td style="text-align:center;"><input type="number" min="0" max="50" class="form-input" style="width:55px; padding:3px; text-align:center;" value="' + inc.doubleHours + '" onchange="updateIncidence(\'' + empId + '\', \'doubleHours\', this.value)"></td>' +
+                    '<td style="text-align:center;"><input type="number" min="0" max="50" class="form-input" style="width:55px; padding:3px; text-align:center;" value="' + inc.tripleHours + '" onchange="updateIncidence(\'' + empId + '\', \'tripleHours\', this.value)"></td>' +
+                    '<td style="text-align:center;"><input type="number" min="0" max="5" class="form-input" style="width:50px; padding:3px; text-align:center;" value="' + inc.sundayWorked + '" onchange="updateIncidence(\'' + empId + '\', \'sundayWorked\', this.value)"></td>' +
+                    '<td style="text-align:right;"><input type="number" min="0" step="50" class="form-input" style="width:80px; padding:3px; text-align:right;" value="' + inc.bonuses + '" onchange="updateIncidence(\'' + empId + '\', \'bonuses\', this.value)"></td>' +
+                    '<td style="text-align:right; font-weight:700; color:#fff;">
+</body>
+</html>
+ + totalPerceptions.toFixed(2) + '</td>' +
+                    '<td style="text-align:right; color:#ff9800;">-
+</body>
+</html>
+ + imssObrero.toFixed(2) + '</td>' +
+                    '<td style="text-align:right; color:' + (isr > 0 ? '#ff4b4b' : 'var(--muted)') + ';">' + (isr > 0 ? '-
+</body>
+</html>
+ + isr.toFixed(2) : '$0.00 (Exento)') + '</td>' +
+                    '<td style="text-align:right; font-weight:800; font-size:15px; color:var(--green); font-family:\'Rajdhani\',sans-serif;">
+</body>
+</html>
+ + netPay.toFixed(2) + ' MXN</td>' +
+                    '<td style="text-align:center;">' +
+                        '<button type="button" class="btn-action" style="padding:4px 8px; font-size:11px; border-color:#00d2ff; color:#00d2ff;" onclick="viewPayrollReceipt(\'' + empId + '\')">' +
+                            '<i class="fa-solid fa-receipt"></i> Ver Recibo' +
+                        '</button>' +
+                    '</td>' +
+                '</tr>';
+            });
+
+            tbody.innerHTML = rows;
+            var statNet = document.getElementById('payrollStatNetToPay');
+            var statIsr = document.getElementById('payrollStatTotalIsr');
+            var statCost = document.getElementById('payrollStatCompanyCost');
+            if (statNet) statNet.textContent = '
+</body>
+</html>
+ + totalNet.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MXN';
+            if (statIsr) statIsr.textContent = '
+</body>
+</html>
+ + totalIsr.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MXN';
+            if (statCost) statCost.textContent = '
+</body>
+</html>
+ + totalCompanyCost.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MXN';
+        }
+
+        function updateIncidence(empId, field, val) {
+            if (!payrollIncidences[empId]) payrollIncidences[empId] = {};
+            payrollIncidences[empId][field] = parseFloat(val) || 0;
+            updatePayrollCalculations();
+        }
+
+        function openPayrollEmployeeModal(emp) {
+            var modal = document.getElementById('payrollEmployeeModal');
+            if (!modal) return;
+            document.getElementById('payrollEmpModalTitle').textContent = emp ? 'Editar Colaborador' : 'Nuevo Colaborador de Tienda';
+            document.getElementById('payrollEmpId').value = emp ? emp.id : '';
+            document.getElementById('payrollEmpName').value = emp ? emp.name : '';
+            document.getElementById('payrollEmpPosition').value = emp ? emp.position : '';
+            document.getElementById('payrollEmpDept').value = emp ? (emp.department || 'Ventas') : 'Ventas';
+            document.getElementById('payrollEmpRfc').value = emp ? (emp.rfc || '') : '';
+            document.getElementById('payrollEmpCurp').value = emp ? (emp.curp || '') : '';
+            document.getElementById('payrollEmpNss').value = emp ? (emp.nss || '') : '';
+            document.getElementById('payrollEmpSalary').value = emp ? (parseFloat(emp.dailySalary) || MINIMUM_DAILY_SALARY_ZLFN) : MINIMUM_DAILY_SALARY_ZLFN;
+            document.getElementById('payrollEmpHireDate').value = emp ? (emp.hireDate || '') : new Date().toISOString().split('T')[0];
+            document.getElementById('payrollEmpBank').value = emp ? (emp.bank || '') : 'BBVA';
+            document.getElementById('payrollEmpAccount').value = emp ? (emp.account || '') : '';
+            modal.style.display = 'flex';
+        }
+
+        function openPayrollEmployeeModalWithData(encoded) {
+            try {
+                var emp = JSON.parse(decodeURIComponent(encoded));
+                openPayrollEmployeeModal(emp);
+            } catch (e) {
+                openPayrollEmployeeModal();
+            }
+        }
+
+        async function savePayrollEmployeeForm(e) {
+            e.preventDefault();
+            var id = document.getElementById('payrollEmpId').value;
+            var name = document.getElementById('payrollEmpName').value;
+            var position = document.getElementById('payrollEmpPosition').value;
+            var department = document.getElementById('payrollEmpDept').value;
+            var rfc = document.getElementById('payrollEmpRfc').value.toUpperCase();
+            var curp = document.getElementById('payrollEmpCurp').value.toUpperCase();
+            var nss = document.getElementById('payrollEmpNss').value;
+            var dailySalary = parseFloat(document.getElementById('payrollEmpSalary').value) || MINIMUM_DAILY_SALARY_ZLFN;
+            var hireDate = document.getElementById('payrollEmpHireDate').value;
+            var bank = document.getElementById('payrollEmpBank').value;
+            var account = document.getElementById('payrollEmpAccount').value;
+
+            if (dailySalary < MINIMUM_DAILY_SALARY_ZLFN) {
+                alert('El salario diario no puede ser menor al salario mínimo general de la Frontera Norte (
+</body>
+</html>
+ + MINIMUM_DAILY_SALARY_ZLFN + ' MXN).');
+                return;
+            }
+
+            try {
+                var res = await fetch('/api/admin/payroll/employees', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        name: name,
+                        position: position,
+                        department: department,
+                        rfc: rfc,
+                        curp: curp,
+                        nss: nss,
+                        dailySalary: dailySalary,
+                        hireDate: hireDate,
+                        bank: bank,
+                        account: account
+                    })
+                });
+                var data = await res.json();
+                if (data.success) {
+                    alert('✅ Colaborador guardado exitosamente.');
+                    closeModal('payrollEmployeeModal');
+                    payrollEmployees = data.employees;
+                    renderPayrollEmployees();
+                    updatePayrollCalculations();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo guardar el colaborador.'));
+                }
+            } catch (err) {
+                alert('Error al conectar con el servidor.');
+            }
+        }
+
+        async function deletePayrollEmployee(id) {
+            if (!confirm('¿Seguro que deseas eliminar este colaborador de la plantilla de nómina?')) return;
+            try {
+                var res = await fetch('/api/admin/payroll/employees/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + adminToken }
+                });
+                var data = await res.json();
+                if (data.success) {
+                    payrollEmployees = data.employees;
+                    renderPayrollEmployees();
+                    updatePayrollCalculations();
+                }
+            } catch (e) {
+                alert('Error al eliminar colaborador.');
+            }
+        }
+
+        function viewPayrollReceipt(empId) {
+            var emp = payrollEmployees.find(function(e) { return e.id === empId; });
+            if (!emp) return;
+
+            var periodType = document.getElementById('payrollPeriodType').value;
+            var inc = payrollIncidences[empId] || { days: (periodType === 'semanal' ? 7 : 15), doubleHours: 0, tripleHours: 0, sundayWorked: 0, bonuses: 0 };
+            var daily = parseFloat(emp.dailySalary) || MINIMUM_DAILY_SALARY_ZLFN;
+            var hourly = daily / 8;
+
+            var basePay = daily * inc.days;
+            var doublePay = inc.doubleHours * (hourly * 2);
+            var triplePay = inc.tripleHours * (hourly * 3);
+            var sundayPay = inc.sundayWorked * (daily * 0.25);
+            var bonusPay = parseFloat(inc.bonuses) || 0;
+            var totalPerceptions = basePay + doublePay + triplePay + sundayPay + bonusPay;
+
+            var sbc = daily * 1.0493;
+            var imssObrero = sbc * inc.days * 0.0275;
+            var isr = daily > MINIMUM_DAILY_SALARY_ZLFN ? (totalPerceptions * (periodType === 'semanal' ? 0.08 : 0.09)) : 0;
+            var totalDeductions = imssObrero + isr;
+            var netPay = totalPerceptions - totalDeductions;
+
+            var payDate = document.getElementById('payrollPaymentDate').value || new Date().toISOString().split('T')[0];
+
+            var html = '<div style="border:2px solid #000; padding:18px; border-radius:4px;">' +
+                '<div style="display:flex; justify-content:space-between; border-bottom:2px solid #000; padding-bottom:12px; margin-bottom:14px;">' +
+                    '<div>' +
+                        '<h2 style="margin:0 0 4px 0; font-size:18px; font-weight:800; letter-spacing:0.5px;">RESET SUPPLY MX</h2>' +
+                        '<div style="font-size:11.5px; color:#333;">Distribuidor Oficial Vonixx México | R.F.C. RSM220315AB1</div>' +
+                        '<div style="font-size:11px; color:#555;">Régimen General de Ley Personas Morales | Zona Libre de la Frontera Norte (ZLFN)</div>' +
+                    '</div>' +
+                    '<div style="text-align:right;">' +
+                        '<div style="font-size:13px; font-weight:800; border:1.5px solid #000; padding:4px 8px; border-radius:4px;">RECIBO DE NÓMINA</div>' +
+                        '<div style="font-size:11px; margin-top:4px;">Periodo: <strong>' + (periodType === 'semanal' ? 'Semanal' : 'Quincenal') + '</strong></div>' +
+                        '<div style="font-size:11px;">Fecha de Pago: ' + payDate + '</div>' +
+                    '</div>' +
+                '</div>' +
+
+                '<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; background:#f9f9f9; padding:10px; border-radius:4px; margin-bottom:14px; border:1px solid #ddd; font-size:11.5px;">' +
+                    '<div>' +
+                        '<strong>Colaborador:</strong> ' + escapeHtml(emp.name) + '<br>' +
+                        '<strong>No. Empleado:</strong> ' + escapeHtml(emp.id) + '<br>' +
+                        '<strong>Puesto:</strong> ' + escapeHtml(emp.position) + '<br>' +
+                        '<strong>Departamento:</strong> ' + escapeHtml(emp.department || 'Ventas') +
+                    '</div>' +
+                    '<div>' +
+                        '<strong>R.F.C.:</strong> ' + escapeHtml(emp.rfc || 'N/A') + '<br>' +
+                        '<strong>C.U.R.P.:</strong> ' + escapeHtml(emp.curp || 'N/A') + '<br>' +
+                        '<strong>N.S.S. (IMSS):</strong> ' + escapeHtml(emp.nss || 'N/A') + '<br>' +
+                        '<strong>Salario Diario:</strong> 
+</body>
+</html>
+ + daily.toFixed(2) + ' MXN (SBC: 
+</body>
+</html>
+ + sbc.toFixed(2) + ')' +
+                    '</div>' +
+                '</div>' +
+
+                '<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">' +
+                    '<div>' +
+                        '<div style="font-weight:800; background:#e8f4fd; padding:6px; border:1px solid #bce0fd; text-align:center; font-size:11px;">PERCEPCIONES</div>' +
+                        '<table style="width:100%; border-collapse:collapse; font-size:11px; margin-top:6px;">' +
+                            '<tr><td style="padding:4px 0;">001 Sueldo Ordinario (' + inc.days + ' días)</td><td style="text-align:right; font-weight:600;">
+</body>
+</html>
+ + basePay.toFixed(2) + '</td></tr>' +
+                            (inc.doubleHours > 0 ? '<tr><td style="padding:4px 0;">019 Horas Extras Dobles (' + inc.doubleHours + ' hrs)</td><td style="text-align:right;">
+</body>
+</html>
+ + doublePay.toFixed(2) + '</td></tr>' : '') +
+                            (inc.tripleHours > 0 ? '<tr><td style="padding:4px 0;">020 Horas Extras Triples (' + inc.tripleHours + ' hrs)</td><td style="text-align:right;">
+</body>
+</html>
+ + triplePay.toFixed(2) + '</td></tr>' : '') +
+                            (inc.sundayWorked > 0 ? '<tr><td style="padding:4px 0;">021 Prima Dominical 25%</td><td style="text-align:right;">
+</body>
+</html>
+ + sundayPay.toFixed(2) + '</td></tr>' : '') +
+                            (bonusPay > 0 ? '<tr><td style="padding:4px 0;">038 Bonos de Puntualidad / Ventas</td><td style="text-align:right;">
+</body>
+</html>
+ + bonusPay.toFixed(2) + '</td></tr>' : '') +
+                            '<tr style="border-top:1.5px solid #000; font-weight:800;">' +
+                                '<td style="padding:6px 0;">TOTAL PERCEPCIONES:</td>' +
+                                '<td style="text-align:right; padding:6px 0;">
+</body>
+</html>
+ + totalPerceptions.toFixed(2) + '</td>' +
+                            '</tr>' +
+                        '</table>' +
+                    '</div>' +
+
+                    '<div>' +
+                        '<div style="font-weight:800; background:#fde8e8; padding:6px; border:1px solid #fdbcb8; text-align:center; font-size:11px;">DEDUCCIONES</div>' +
+                        '<table style="width:100%; border-collapse:collapse; font-size:11px; margin-top:6px;">' +
+                            '<tr><td style="padding:4px 0;">001 Seguridad Social (IMSS Obrero)</td><td style="text-align:right; font-weight:600;">
+</body>
+</html>
+ + imssObrero.toFixed(2) + '</td></tr>' +
+                            '<tr><td style="padding:4px 0;">002 Retención ISR Art. 96</td><td style="text-align:right;">' + (isr > 0 ? '
+</body>
+</html>
+ + isr.toFixed(2) : '$0.00 (Exento Salario Mínimo ZLFN)') + '</td></tr>' +
+                            '<tr style="border-top:1.5px solid #000; font-weight:800;">' +
+                                '<td style="padding:6px 0;">TOTAL DEDUCCIONES:</td>' +
+                                '<td style="text-align:right; padding:6px 0;">
+</body>
+</html>
+ + totalDeductions.toFixed(2) + '</td>' +
+                            '</tr>' +
+                        '</table>' +
+                    '</div>' +
+                '</div>' +
+
+                '<div style="background:#e8f7ee; border:1.5px solid #a3e6be; padding:12px; border-radius:4px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">' +
+                    '<span style="font-size:13px; font-weight:800; color:#1e4620;">IMPORTE NETO RECIBIDO EN PESOS MEXICANOS:</span>' +
+                    '<span style="font-size:20px; font-weight:800; color:#0f5132;">
+</body>
+</html>
+ + netPay.toFixed(2) + ' MXN</span>' +
+                '</div>' +
+
+                '<div style="font-size:10.5px; color:#444; margin-bottom:30px; text-align:justify; line-height:1.3;">' +
+                    'Recibí de Reset Supply MX la cantidad neta indicada en el presente recibo a mi entera satisfacción y conformidad, que cubre el pago de mis sueldos, salarios ordinarios, horas extras y demás prestaciones que me correspondieron por el periodo especificado, no adeudándoseme cantidad alguna por ningún concepto derivado de mi relación laboral.' +
+                '</div>' +
+
+                '<div style="display:flex; justify-content:space-around; text-align:center; font-size:11px;">' +
+                    '<div>' +
+                        '<div style="border-top:1px solid #000; width:220px; padding-top:4px; font-weight:700;">' + escapeHtml(emp.name) + '</div>' +
+                        '<div style="font-size:10px; color:#666;">Firma del Colaborador</div>' +
+                    '</div>' +
+                    '<div>' +
+                        '<div style="border-top:1px solid #000; width:220px; padding-top:4px; font-weight:700;">RESET SUPPLY MX</div>' +
+                        '<div style="font-size:10px; color:#666;">Firma Representante Legal / Patrón</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+            var area = document.getElementById('receiptPrintableArea');
+            if (area) area.innerHTML = html;
+            var modal = document.getElementById('payrollReceiptModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function printReceiptDoc() {
+            var receiptHtml = document.getElementById('receiptPrintableArea').innerHTML;
+            var printContainer = document.getElementById('printContainerDirect');
+            if (printContainer) {
+                printContainer.innerHTML = receiptHtml;
+                window.print();
+            }
+        }
+
+        async function calculateAndProcessPayroll() {
+            var periodType = document.getElementById('payrollPeriodType').value;
+            var payDate = document.getElementById('payrollPaymentDate').value || new Date().toISOString().split('T')[0];
+
+            if (!confirm('¿Deseas procesar y dispersar la nómina ' + periodType.toUpperCase() + ' con fecha ' + payDate + '? Se guardará en el historial administrativo.')) {
+                return;
+            }
+
+            var items = [];
+            var totalPayrollNet = 0;
+
+            payrollEmployees.forEach(function(e) {
+                var inc = payrollIncidences[e.id] || { days: (periodType === 'semanal' ? 7 : 15), doubleHours: 0, tripleHours: 0, sundayWorked: 0, bonuses: 0 };
+                var daily = parseFloat(e.dailySalary) || MINIMUM_DAILY_SALARY_ZLFN;
+                var basePay = daily * inc.days;
+                var hourly = daily / 8;
+                var doublePay = inc.doubleHours * (hourly * 2);
+                var triplePay = inc.tripleHours * (hourly * 3);
+                var sundayPay = inc.sundayWorked * (daily * 0.25);
+                var bonusPay = parseFloat(inc.bonuses) || 0;
+                var totalPerceptions = basePay + doublePay + triplePay + sundayPay + bonusPay;
+
+                var sbc = daily * 1.0493;
+                var imssObrero = sbc * inc.days * 0.0275;
+                var isr = daily > MINIMUM_DAILY_SALARY_ZLFN ? (totalPerceptions * (periodType === 'semanal' ? 0.08 : 0.09)) : 0;
+                var net = totalPerceptions - imssObrero - isr;
+
+                totalPayrollNet += net;
+                items.push({
+                    employeeId: e.id,
+                    name: e.name,
+                    position: e.position,
+                    dailySalary: daily,
+                    perceptions: totalPerceptions,
+                    imssObrero: imssObrero,
+                    isr: isr,
+                    netPay: net
+                });
+            });
+
+            try {
+                var res = await fetch('/api/admin/payroll/history', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + adminToken
+                    },
+                    body: JSON.stringify({
+                        period: periodType,
+                        paymentDate: payDate,
+                        totalNet: totalPayrollNet,
+                        employeesCount: payrollEmployees.length,
+                        items: items
+                    })
+                });
+                var data = await res.json();
+                if (data.success) {
+                    alert('✅ Nómina dispersada y registrada con éxito.\n\nTotal neto: 
+</body>
+</html>
+ + totalPayrollNet.toLocaleString('es-MX', { minimumFractionDigits: 2 }) + ' MXN.');
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo guardar la nómina.'));
+                }
+            } catch (err) {
+                alert('Error al conectar con el servidor.');
+            }
+        }
+
+        function exportPayrollSummaryCSV() {
+            var periodType = document.getElementById('payrollPeriodType').value;
+            var payDate = document.getElementById('payrollPaymentDate').value || new Date().toISOString().split('T')[0];
+
+            var csv = 'No. Empleado,Nombre,RFC,Puesto,Salario Diario,Dias Trab,Percepciones,IMSS Obrero,Retencion ISR,Neto a Pagar\n';
+            payrollEmployees.forEach(function(e) {
+                var inc = payrollIncidences[e.id] || { days: (periodType === 'semanal' ? 7 : 15), doubleHours: 0, tripleHours: 0, sundayWorked: 0, bonuses: 0 };
+                var daily = parseFloat(e.dailySalary) || MINIMUM_DAILY_SALARY_ZLFN;
+                var basePay = daily * inc.days;
+                var hourly = daily / 8;
+                var doublePay = inc.doubleHours * (hourly * 2);
+                var triplePay = inc.tripleHours * (hourly * 3);
+                var sundayPay = inc.sundayWorked * (daily * 0.25);
+                var bonusPay = parseFloat(inc.bonuses) || 0;
+                var totalPerceptions = basePay + doublePay + triplePay + sundayPay + bonusPay;
+
+                var sbc = daily * 1.0493;
+                var imssObrero = sbc * inc.days * 0.0275;
+                var isr = daily > MINIMUM_DAILY_SALARY_ZLFN ? (totalPerceptions * (periodType === 'semanal' ? 0.08 : 0.09)) : 0;
+                var net = totalPerceptions - imssObrero - isr;
+
+                csv += [
+                    '"' + e.id + '"',
+                    '"' + e.name + '"',
+                    '"' + (e.rfc || '') + '"',
+                    '"' + e.position + '"',
+                    daily.toFixed(2),
+                    inc.days,
+                    totalPerceptions.toFixed(2),
+                    imssObrero.toFixed(2),
+                    isr.toFixed(2),
+                    net.toFixed(2)
+                ].join(',') + '\n';
+            });
+
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Nomina_ResetSupplyMX_' + periodType + '_' + payDate + '.csv';
+            link.click();
+        }
+
+</script>
 </body>
 </html>
