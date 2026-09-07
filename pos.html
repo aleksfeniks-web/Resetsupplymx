@@ -25,7 +25,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <!-- Tesseract OCR para reconocimiento óptico de etiquetas Vonixx -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
     <style>
         :root {
@@ -2345,6 +2345,11 @@
             window.addEventListener('focus', loadPromotions);
             setInterval(loadPromotions, 30000);
 
+            // Precarga anticipada del motor de OCR en segundo plano para escaneo instantáneo
+            setTimeout(() => {
+                if (typeof getTesseractWorker === 'function') getTesseractWorker().catch(() => {});
+            }, 1200);
+
             // Evento de búsqueda instantánea
             document.getElementById('posSearchInput').addEventListener('input', (e) => {
                 state.searchQuery = e.target.value.toLowerCase().trim();
@@ -3639,7 +3644,10 @@
             isProcessingFrame: false,
             isAwaitingDecision: false, // Pausa la cámara mientras el cajero confirma piezas
             currentPendingProduct: null, // Producto que está en la tarjeta de confirmación
-            currentPendingQty: 1
+            currentPendingQty: 1,
+            isOcrRunning: false,
+            lastOcrText: '',
+            lastOcrAttemptTime: 0
         };
 
         // 1. Sonido bip moderno sintetizado con Web Audio API
@@ -3704,7 +3712,11 @@
             '7898511028897': 'VON-00005', // NATIVE
             '7898511029948': 'VON-00019', // V10
             '7898511029955': 'VON-00020', // V20
-            '7898511029962': 'VON-00021'  // V30
+            '7898511029962': 'VON-00021', // V30
+            '7898511030241': 'VON-00067', // V-ECO FAST 500ML
+            '7898511027210': 'VON-00067', // V-ECO 1.5L
+            '7898511030432': 'VON-00040', // STRIKE 500ML
+            '7898511028774': 'VON-00040'  // STRIKE 1.5L
         };
 
         // 2.1 Almacenamiento y Gestión de Calibración / Aprendizaje del Escáner
@@ -3761,15 +3773,46 @@
         const VONIXX_BOTTLE_PROFILES = [
             {
                 name: 'SINTRA FAST',
-                keywords: ['sintra fast', 'sintra'],
-                check: (f) => (f.whiteRatio > 0.12 || f.isWhite) && (f.blueRatio > 0.06 || (f.avgB > f.avgG + 6)),
-                baseScore: 0.94
+                keywords: ['sintra fast'],
+                // Sintra Fast: Botella blanca/translúcida con banda azul cielo intensa y letras azules
+                // REGLA CRÍTICA ANTI FALSOS POSITIVOS: Se descalifica totalmente si hay tinte verde, lima, naranja o ámbar
+                check: (f) => {
+                    if (f.greenRatio > 0.03 || f.limeRatio > 0.03 || f.orangeRatio > 0.03 || f.amberRatio > 0.03 || f.yellowRatio > 0.04) return false;
+                    if (f.avgG >= f.avgB || f.avgR >= f.avgB) return false;
+                    return (f.whiteRatio > 0.14 || f.isWhite) && f.blueRatio > 0.07 && f.avgB > f.avgG + 8 && f.avgB > f.avgR + 8;
+                },
+                baseScore: 0.90
             },
             {
                 name: 'SINTRA PRO',
-                keywords: ['sintra pro', 'sintra'],
-                check: (f) => (f.darkRatio > 0.16 || f.isDark) && (f.blueRatio > 0.05 || (f.avgB > f.avgG + 5)),
-                baseScore: 0.92
+                keywords: ['sintra pro'],
+                // Sintra Pro: Botella negra/oscura con etiqueta azul/dorada
+                check: (f) => (f.darkRatio > 0.18 || f.isDark) && f.blueRatio > 0.06 && f.avgB > f.avgG + 6,
+                baseScore: 0.90
+            },
+            {
+                name: 'V-ECO FAST',
+                keywords: ['v-eco fast', 'v-eco', 'veco'],
+                // V-Eco Fast: Envase traslúcido con líquido verde oliva / menta / lima característico
+                check: (f) => {
+                    if (f.avgB > f.avgG + 6) return false;
+                    const hasGreen = (f.greenRatio > 0.04 || f.limeRatio > 0.04) && (f.avgG > f.avgB + 2);
+                    const hasEcoHue = (f.continuousHue >= 65 && f.continuousHue <= 165);
+                    return (hasGreen || hasEcoHue) && (f.whiteRatio > 0.08 || f.isWhite || f.greenRatio > 0.04);
+                },
+                baseScore: 0.94
+            },
+            {
+                name: 'STRIKE',
+                keywords: ['strike'],
+                // Strike: Botella traslúcida con líquido/etiqueta ambarina / naranja amarillento
+                check: (f) => {
+                    if (f.avgB > f.avgR + 6 || f.blueRatio > 0.05) return false;
+                    const hasAmber = (f.orangeRatio > 0.04 || f.amberRatio > 0.04 || f.yellowRatio > 0.05);
+                    const hasStrikeHue = (f.continuousHue >= 16 && f.continuousHue <= 60);
+                    return (hasAmber || hasStrikeHue) && (f.avgR > f.avgB + 8);
+                },
+                baseScore: 0.93
             },
             {
                 name: 'V-MOL',
@@ -3856,12 +3899,6 @@
                 baseScore: 0.88
             },
             {
-                name: 'STRIKE',
-                keywords: ['strike'],
-                check: (f) => f.amberRatio > 0.07 && f.avgR > f.avgB + 16,
-                baseScore: 0.91
-            },
-            {
                 name: 'IZER',
                 keywords: ['izer'],
                 check: (f) => f.purpleRatio > 0.07 && f.avgR > f.avgG + 8 && f.avgB > f.avgG + 8,
@@ -3915,6 +3952,7 @@
             }
             if (detectedCard) detectedCard.style.display = 'none';
             updateLearnedCountBadge();
+            if (typeof getTesseractWorker === 'function') getTesseractWorker().catch(() => {});
 
             if (scannerState.facingMode === 'user') {
                 viewport.classList.remove('rear-camera');
@@ -4146,219 +4184,130 @@
         }
 
         // Botón de Forzar Detección Inmediata (Manual)
+        // Jerarquía estricta obligatoria exigida por el negocio:
+        // 1. OCR (Texto de la etiqueta: STRIKE, V-ECO, SINTRA, DELET, V-MOL, SPELL, etc.)
+        // 2. Color / envase / líquido
+        // 3. Código de barras (último recurso / fallback)
         async function captureAndDetectNow() {
             if (!scannerState.active || scannerState.isAwaitingDecision) return;
             const video = document.getElementById('selfieVideo');
             if (!video || video.readyState < 2) return;
+
             const statusText = document.getElementById('scannerStatusText');
             if (statusText) {
-                statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="color:var(--blue);"></i><span>Analizando envase y etiqueta...</span>';
+                statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="color:var(--green);"></i><span>Leyendo etiqueta de texto (Prioridad 1)...</span>';
             }
-            await analyzeCurrentFrame(true);
+
+            // =========================================================================
+            // PASO 1 (MÁXIMA PRIORIDAD): LECTURA DE ETIQUETA POR OCR
+            // =========================================================================
+            try {
+                const ocrMatch = await runOcrPass(video, true);
+                if (ocrMatch && ocrMatch.product) {
+                    console.log('✅ Prioridad 1 (OCR) tuvo éxito:', ocrMatch.matchedKeyword, '->', ocrMatch.product.name);
+                    onProductVisuallyRecognized(ocrMatch.product, false, 'ocr');
+                    return;
+                }
+            } catch (ocrErr) {
+                console.warn('Error en lectura de etiqueta:', ocrErr);
+            }
+
+            // =========================================================================
+            // PASO 2 (SEGUNDA PRIORIDAD): CROMATISMO Y COLOR DEL ENVASE
+            // Solo se evalúa si el OCR no encontró texto legible en la etiqueta
+            // =========================================================================
+            if (statusText) {
+                statusText.innerHTML = '<i class="fa-solid fa-palette" style="color:var(--yellow);"></i><span>Analizando color del envase (Prioridad 2)...</span>';
+            }
+            try {
+                const colorMatch = analyzeBottleColor(video);
+                if (colorMatch && colorMatch.product) {
+                    console.log('✅ Prioridad 2 (Color) tuvo éxito:', colorMatch.product.name, 'Score:', colorMatch.score);
+                    onProductVisuallyRecognized(colorMatch.product, !!colorMatch.isLearned, 'color');
+                    return;
+                }
+            } catch (colorErr) {
+                console.warn('Error en análisis cromático:', colorErr);
+            }
+
+            // =========================================================================
+            // PASO 3 (ÚLTIMA PRIORIDAD / FALLBACK): CÓDIGO DE BARRAS
+            // Solo se recurre a esto si no se leyó la etiqueta de texto ni el color del envase
+            // =========================================================================
+            if (statusText) {
+                statusText.innerHTML = '<i class="fa-solid fa-barcode" style="color:var(--blue);"></i><span>Buscando código de barras (Prioridad 3)...</span>';
+            }
+            try {
+                const barcodeMatch = await detectBarcodeFallback(video);
+                if (barcodeMatch && barcodeMatch.product) {
+                    console.log('✅ Prioridad 3 (Código de barras) tuvo éxito:', barcodeMatch.product.name);
+                    onProductVisuallyRecognized(barcodeMatch.product, !!barcodeMatch.isLearned, 'barcode');
+                    return;
+                }
+            } catch (bcErr) {
+                console.warn('Error en detección de código de barras:', bcErr);
+            }
+
+            // Ninguna coincidencia encontrada
+            if (statusText) {
+                statusText.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:var(--yellow);"></i><span>No se detectó el texto ni el envase. Acerca la etiqueta o usa "Enseñar".</span>';
+            }
         }
 
-        // 9. Análisis de fotograma y correspondencia de producto de alta precisión
+        // 9. Bucle continuo de análisis en vivo con jerarquía estricta:
+        // Prioridad 1: Etiqueta de texto (OCR continuo en vivo)
+        // Prioridad 2: Color y silueta del envase (amortiguado para priorizar la lectura de etiqueta)
+        // Prioridad 3: Código de barras (solo si no hay texto ni color)
         async function analyzeCurrentFrame(forceDecision = false) {
             if (scannerState.isProcessingFrame || scannerState.isAwaitingDecision) return;
 
             const video = document.getElementById('selfieVideo');
             if (!video || video.readyState < 2) return;
 
+            if (forceDecision) {
+                await captureAndDetectNow();
+                return;
+            }
+
             scannerState.isProcessingFrame = true;
             try {
-                // A) DETECCIÓN DE CÓDIGO DE BARRAS NATIVO
-                if ('BarcodeDetector' in window && !scannerState._barcodeDetector) {
-                    try {
-                        scannerState._barcodeDetector = new BarcodeDetector({
-                            formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code']
-                        });
-                    } catch (e) {
-                        scannerState._barcodeDetector = null;
-                    }
-                }
-                if (scannerState._barcodeDetector) {
-                    try {
-                        const barcodes = await scannerState._barcodeDetector.detect(video);
-                        if (barcodes && barcodes.length > 0) {
-                            const raw = barcodes[0].rawValue ? barcodes[0].rawValue.trim() : '';
-                            if (raw) {
-                                scannerState.lastDetectedBarcode = raw;
-                                const learnedBarcodes = getLearnedBarcodes();
-                                const targetCode = learnedBarcodes[raw] || VONIXX_BARCODES[raw] || raw;
-                                const matched = (state.products || []).find(p => 
-                                    (p.code && p.code.toLowerCase() === targetCode.toLowerCase()) ||
-                                    (p.id && p.id.toLowerCase() === targetCode.toLowerCase()) ||
-                                    (p.barcode && p.barcode.trim() === raw) ||
-                                    (Array.isArray(p.variations) && p.variations.some(v => (v.code && v.code.toLowerCase() === targetCode.toLowerCase()) || (v.barcode && v.barcode.trim() === raw)))
-                                );
-                                if (matched) {
-                                    onProductVisuallyRecognized(matched, !!learnedBarcodes[raw]);
-                                    return;
-                                }
-                            }
-                        }
-                    } catch (bcErr) {}
-                }
+                // =========================================================================
+                // ETAPA 1 (MÁXIMA PRIORIDAD): LECTURA DE TEXTO DE ETIQUETA POR OCR
+                // Ejecución no bloqueante en vivo que dispara de inmediato al leer la palabra clave
+                // =========================================================================
+                runOcrPass(video, false).catch(() => {});
 
-                // B) OCR EN VIVO DE LA ETIQUETA (si el navegador soporta TextDetector)
-                if ('TextDetector' in window && !scannerState._textDetector) {
-                    try { scannerState._textDetector = new TextDetector(); } catch(e) { scannerState._textDetector = null; }
-                }
-                if (scannerState._textDetector) {
-                    try {
-                        const detectedTexts = await scannerState._textDetector.detect(video);
-                        if (detectedTexts && detectedTexts.length > 0) {
-                            const fullStr = detectedTexts.map(t => t.rawValue).join(' ').toLowerCase();
-                            const matchedOcr = (state.products || []).find(p => {
-                                const n = (p.name || '').toLowerCase();
-                                const words = n.split(' ').filter(w => w.length >= 4);
-                                return words.some(w => fullStr.includes(w));
-                            });
-                            if (matchedOcr) {
-                                onProductVisuallyRecognized(matchedOcr);
-                                return;
-                            }
-                        }
-                    } catch(tErr) {}
-                }
+                // =========================================================================
+                // ETAPA 2 (SEGUNDA PRIORIDAD): CROMATISMO Y FORMA DEL ENVASE VONIXX
+                // =========================================================================
+                const colorMatch = analyzeBottleColor(video);
 
-                // C) RECONOCIMIENTO FÍSICO Y CROMÁTICO DEL ENVASE
-                const canvas = document.getElementById('scannerCanvas');
-                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                if (colorMatch && colorMatch.product) {
+                    const pid = colorMatch.product.id;
+                    scannerState.consecutiveHits[pid] = (scannerState.consecutiveHits[pid] || 0) + 1;
 
-                const vw = video.videoWidth || 640;
-                const vh = video.videoHeight || 480;
-
-                // Región vertical centrada correspondiente a la botella en la retícula HUD
-                const cropW = Math.round(vw * 0.48);
-                const cropH = Math.round(vh * 0.62);
-                const sx = Math.round((vw - cropW) / 2);
-                const sy = Math.round((vh - cropH) / 2);
-
-                const sampleW = 64;
-                const sampleH = 80;
-                canvas.width = sampleW;
-                canvas.height = sampleH;
-
-                ctx.drawImage(video, sx, sy, cropW, cropH, 0, 0, sampleW, sampleH);
-                const features = extractFrameFeatures(ctx, sampleW, sampleH);
-
-                // Si la mano cubre más del 65% del lente y no hay color ni envase
-                if (features.skinRatio > 0.65 && features.satRatio < 0.08 && !features.isDark && !features.isWhite) {
-                    updateScannerCandidates([]);
-                    scannerState.consecutiveHits = {};
-                    const statusText = document.getElementById('scannerStatusText');
-                    if (statusText) {
-                        statusText.innerHTML = '<i class="fa-solid fa-eye" style="color:var(--yellow);"></i><span>Centra el envase Vonixx en la retícula</span>';
-                    }
-                    return;
-                }
-
-                const scores = [];
-                const products = state.products || [];
-
-                // Evaluar reglas de botellas oficiales
-                VONIXX_BOTTLE_PROFILES.forEach(rule => {
-                    if (rule.check(features)) {
-                        const matchedProds = products.filter(p => {
-                            const pName = (p.name || '').toLowerCase();
-                            const pCode = (p.code || '').toLowerCase();
-                            return rule.keywords.some(k => pName.includes(k) || pCode.includes(k));
-                        });
-
-                        matchedProds.forEach(p => {
-                            let score = rule.baseScore + (features.satRatio * 0.08);
-                            scores.push({ product: p, score: score, profileName: rule.name });
-                        });
-                    }
-                });
-
-                // Desempate de precisión (ej. Sintra vs Spell)
-                if (scores.length >= 2) {
-                    const isSintra = features.blueRatio > features.cyanRatio || (features.avgB > features.avgG + 8);
-                    const isSpell = features.cyanRatio >= features.blueRatio && (features.avgG >= features.avgB - 14);
-
-                    scores.forEach(s => {
-                        const name = (s.product.name || '').toLowerCase();
-                        if (name.includes('sintra')) {
-                            if (isSintra) s.score += 0.08;
-                            else if (isSpell) s.score -= 0.30;
-                        }
-                        if (name.includes('spell')) {
-                            if (isSpell) s.score += 0.08;
-                            else if (isSintra) s.score -= 0.30;
-                        }
-                    });
-                }
-
-                // C.1) EVALUAR PERFILES APRENDIDOS / CALIBRADOS PERSONALIZADOS
-                const learnedProfiles = getLearnedProducts();
-                if (learnedProfiles.length > 0) {
-                    learnedProfiles.forEach(lp => {
-                        const targetProd = products.find(p => p.id === lp.id || (p.code && p.code.toLowerCase() === (lp.code || '').toLowerCase()));
-                        if (!targetProd) return;
-
-                        const [minH, maxH] = lp.targetHue || [0, 360];
-                        const inHue = (minH <= maxH)
-                            ? (features.continuousHue >= minH && features.continuousHue <= maxH)
-                            : (features.continuousHue >= minH || features.continuousHue <= maxH);
-
-                        if (inHue && features.satRatio >= 0.06) {
-                            let matchScore = 0.98;
-                            const existing = scores.find(s => s.product.id === targetProd.id);
-                            if (existing) {
-                                existing.score = Math.max(existing.score, matchScore);
-                                existing.isLearned = true;
-                            } else {
-                                scores.push({ product: targetProd, score: matchScore, isLearned: true });
-                            }
-                        }
-                    });
-                }
-
-                scores.sort((a, b) => b.score - a.score);
-
-                // Actualizar chips de sugerencias en vivo
-                const uniqueCandidates = [];
-                scores.forEach(s => {
-                    if (!uniqueCandidates.some(u => u.product.id === s.product.id)) {
-                        uniqueCandidates.push(s);
-                    }
-                });
-
-                scannerState.lastCandidates = uniqueCandidates.slice(0, 4);
-                updateScannerCandidates(uniqueCandidates.slice(0, 3));
-
-                // Confirmación y disparo
-                if (uniqueCandidates.length > 0) {
-                    const top = uniqueCandidates[0];
-
-                    if (forceDecision) {
-                        onProductVisuallyRecognized(top.product, !!top.isLearned);
+                    // Para no ganarle indebidamente al OCR en vivo, el color requiere al menos
+                    // 4 cuadros estables (~1.2 segundos con la botella fija) y alta confianza (>= 0.88)
+                    if (scannerState.consecutiveHits[pid] >= 4 && colorMatch.score >= 0.88) {
+                        console.log('✨ Prioridad 2 (Color continuo confirmado):', colorMatch.product.name);
+                        onProductVisuallyRecognized(colorMatch.product, !!colorMatch.isLearned, 'color');
                         scannerState.consecutiveHits = {};
                         return;
                     }
-
-                    if (top.score >= 0.74) {
-                        onProductVisuallyRecognized(top.product, !!top.isLearned);
-                        scannerState.consecutiveHits = {};
-                    } else if (top.score >= 0.62) {
-                        const pid = top.product.id;
-                        scannerState.consecutiveHits[pid] = (scannerState.consecutiveHits[pid] || 0) + 1;
-                        if (scannerState.consecutiveHits[pid] >= 2) {
-                            onProductVisuallyRecognized(top.product, !!top.isLearned);
-                            scannerState.consecutiveHits = {};
-                        }
-                    } else {
-                        scannerState.consecutiveHits = {};
-                    }
                 } else {
                     scannerState.consecutiveHits = {};
-                    if (forceDecision) {
-                        const statusText = document.getElementById('scannerStatusText');
-                        if (statusText) {
-                            statusText.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:var(--yellow);"></i><span>Acerca más la etiqueta o el código de barras</span>';
-                        }
+                }
+
+                // =========================================================================
+                // ETAPA 3 (ÚLTIMA PRIORIDAD / FALLBACK): CÓDIGO DE BARRAS
+                // Solo si el usuario muestra el código y no hubo lectura de etiqueta ni color dominante
+                // =========================================================================
+                if (!colorMatch || colorMatch.score < 0.70) {
+                    const bcMatch = await detectBarcodeFallback(video);
+                    if (bcMatch && bcMatch.product) {
+                        console.log('⚡ Prioridad 3 (Código de barras detectado):', bcMatch.product.name);
+                        onProductVisuallyRecognized(bcMatch.product, !!bcMatch.isLearned, 'barcode');
+                        return;
                     }
                 }
 
@@ -4395,7 +4344,7 @@
         }
 
         // 11. Acción al reconocer producto: Muestra tarjeta y selector de piezas
-        function onProductVisuallyRecognized(product, isLearned) {
+        function onProductVisuallyRecognized(product, isLearned = false, detectionSource = 'color') {
             if (!product) return;
 
             scannerState.isAwaitingDecision = true;
@@ -4438,6 +4387,12 @@
                 if (isCalibrated) {
                     tagElem.innerHTML = '🎓 PRODUCTO CALIBRADO (APRENDIDO)';
                     tagElem.style.color = 'var(--blue)';
+                } else if (detectionSource === 'ocr') {
+                    tagElem.innerHTML = '📖 ETIQUETA LEÍDA (OCR)';
+                    tagElem.style.color = 'var(--green)';
+                } else if (detectionSource === 'barcode') {
+                    tagElem.innerHTML = '⚡ CÓDIGO DE BARRAS';
+                    tagElem.style.color = 'var(--blue)';
                 } else {
                     tagElem.innerHTML = '✨ PRODUCTO DETECTADO';
                     tagElem.style.color = 'var(--green)';
@@ -4454,7 +4409,11 @@
             }
 
             if (statusText) {
-                const label = isCalibrated ? `¡Detectado (Calibrado): ${product.name.substring(0, 18)}!` : `¡Detectado: ${product.name.substring(0, 18)}!`;
+                let label = `¡Detectado: ${product.name.substring(0, 18)}!`;
+                if (isCalibrated) label = `¡Detectado (Calibrado): ${product.name.substring(0, 18)}!`;
+                else if (detectionSource === 'ocr') label = `¡Etiqueta leída: ${product.name.substring(0, 18)}!`;
+                else if (detectionSource === 'barcode') label = `¡Código leído: ${product.name.substring(0, 18)}!`;
+
                 statusText.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">${label}</span>`;
             }
         }
@@ -4480,11 +4439,11 @@
                 prods = scannerState.lastCandidates.map(c => c.product).filter(p => p.id !== currentId);
             }
             if (prods.length === 0) {
-                const priorityNames = ['sintra', 'spell', 'mol', 'floc', 'alumax', 'delet'];
+                const priorityNames = ['v-eco', 'strike', 'sintra', 'spell', 'mol', 'floc', 'alumax', 'delet'];
                 prods = (state.products || []).filter(p => {
                     const n = (p.name || '').toLowerCase();
                     return p.id !== currentId && priorityNames.some(k => n.includes(k));
-                }).slice(0, 4);
+                }).slice(0, 5);
             }
 
             container.innerHTML = prods.map(p => {
@@ -4848,6 +4807,384 @@
                 openLearnedManagerModal();
             }
         }
+
+        // ==================== MOTOR DE OCR ÓPTICO DE ETIQUETAS (PRIORIDAD TEXTO) ====================
+        const VONIXX_LABEL_DICTIONARY = [
+            { key: 'v-eco', name: 'V-ECO', variations: ['veco', 'v-eco', 'v eco', 'v.eco', 'eco fast', 'ecofast', 'lavado ecologico', 'ecologico', 'en seco', 'lavagem ecologica'], prodSearch: ['v-eco', 'veco'] },
+            { key: 'strike', name: 'STRIKE', variations: ['strike', 'strik', 'strlke', 's1rike', 'trike', 's-trike', 'alquitran', 'brea', 'adhesivo', 'remov strike'], prodSearch: ['strike'] },
+            { key: 'sintra', name: 'SINTRA', variations: ['sintra fast', 'sintra', 's1ntra', 'slntra', 'sin tra', 'sintra pro', 'limpiador de interiores', 'interior cleaner'], prodSearch: ['sintra fast', 'sintra'] },
+            { key: 'delet', name: 'DELET', variations: ['delet', 'dele1', 'de1et', 'delet pneus', 'limpador para pneus', 'limpiador de plasticos', 'pneus e borrachas', 'borrachas'], prodSearch: ['delet'] },
+            { key: 'v-mol', name: 'V-MOL', variations: ['v-mol', 'v mol', 'vmol', 'v-m0l', 'vm0l', 'lava autos desincrustante', 'desincrustante'], prodSearch: ['v-mol', 'v mol'] },
+            { key: 'v-floc', name: 'V-FLOC', variations: ['v-floc', 'v floc', 'vfloc', 'v-fl0c', 'shampoo de alta lubrificacao', 'lubrificacao', 'shampoo ph neutro'], prodSearch: ['v-floc', 'v floc'] },
+            { key: 'alumax', name: 'ALUMAX', variations: ['alumax', 'aluma', 'desincrustante acido', 'acido para rines'], prodSearch: ['alumax'] },
+            { key: 'spell', name: 'SPELL', variations: ['spell', 'spel', '5pell', 'selante de pintura', 'selante spray', 'silica'], prodSearch: ['spell'] },
+            { key: 'removex', name: 'REMOVEX', variations: ['removex', 'remov', 'desengraxante', 'chassis'], prodSearch: ['removex'] },
+            { key: 'citron', name: 'CITRON', variations: ['citron', 'citr0n', 'desengraxante natural'], prodSearch: ['citron'] },
+            { key: 'bactran', name: 'BACTRAN', variations: ['bactran', 'bact', 'limpador bactericida', 'bactericida'], prodSearch: ['bactran'] },
+            { key: 'extractus', name: 'EXTRACTUS', variations: ['extractus', 'extrac', 'limpador de estofados'], prodSearch: ['extractus'] },
+            { key: 'restaurax', name: 'RESTAURAX', variations: ['restaurax', 'restaura', 'renovador de plasticos'], prodSearch: ['restaurax'] },
+            { key: 'shiny', name: 'SHINY', variations: ['shiny', 'shin', 'pretinho para pneus', 'revitalizador'], prodSearch: ['shiny'] },
+            { key: 'prizm', name: 'PRIZM', variations: ['prizm', 'priz', 'restaurador de vidros'], prodSearch: ['prizm'] },
+            { key: 'blend', name: 'BLEND', variations: ['blend', 'cera carnauba silica'], prodSearch: ['blend'] },
+            { key: 'native', name: 'NATIVE', variations: ['native', 'carnauba cleaner wax'], prodSearch: ['native'] },
+            { key: 'izer', name: 'IZER', variations: ['izer', '1zer', 'descontaminante ferroso'], prodSearch: ['izer'] },
+            { key: 'tok final', name: 'TOK FINAL', variations: ['tok final', 'tok', 'cera rapida'], prodSearch: ['tok final'] },
+            { key: 'v10', name: 'V10', variations: ['v10', 'polidor corte'], prodSearch: ['v10'] },
+            { key: 'v20', name: 'V20', variations: ['v20', 'polidor refino'], prodSearch: ['v20'] },
+            { key: 'v30', name: 'V30', variations: ['v30', 'polidor lustro'], prodSearch: ['v30'] }
+        ];
+
+        // Normaliza texto eliminando acentos, signos y espacios redundantes
+        function cleanOcrText(str) {
+            if (!str) return '';
+            return str.toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9\s-]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        // Detecta coincidencias en el diccionario de etiquetas Vonixx con tolerancia a OCR ruidoso
+        function matchTextToVonixxProduct(rawText) {
+            if (!rawText) return null;
+            const clean = cleanOcrText(rawText);
+            if (!clean || clean.length < 3) return null;
+
+            // Variantes sustituyendo caracteres ambiguos típicos de OCR (1->i, 0->o, 5->s)
+            const subClean = clean
+                .replace(/1/g, 'i')
+                .replace(/0/g, 'o')
+                .replace(/5/g, 's')
+                .replace(/8/g, 'b')
+                .replace(/@/g, 'a')
+                .replace(/\$/g, 's');
+
+            const products = state.products || [];
+            let bestMatch = null;
+            let highestConfidence = 0;
+
+            for (const item of VONIXX_LABEL_DICTIONARY) {
+                for (const variant of item.variations) {
+                    const cleanVar = cleanOcrText(variant);
+                    const regex = new RegExp('(?:^|\\s)' + cleanVar.replace(/[-\s]/g, '[-_\\s]?') + '(?:$|\\s)', 'i');
+
+                    const matched = regex.test(clean) || clean.includes(cleanVar) ||
+                                    regex.test(subClean) || subClean.includes(cleanVar);
+
+                    if (matched) {
+                        const confidence = Math.min(1.0, 0.88 + (cleanVar.length * 0.02));
+                        if (confidence > highestConfidence) {
+                            // Buscar en los productos del catálogo
+                            const target = products.find(p => {
+                                const pName = (p.name || '').toLowerCase();
+                                const pCode = (p.code || '').toLowerCase();
+                                return item.prodSearch.some(s => pName.includes(s) || pCode.includes(s));
+                            });
+                            if (target) {
+                                highestConfidence = confidence;
+                                bestMatch = {
+                                    product: target,
+                                    confidence: confidence,
+                                    matchedKeyword: variant,
+                                    dictionaryKey: item.key
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            return bestMatch;
+        }
+
+        // Instancia persistente del worker de Tesseract para evitar recargas lentas
+        let tesseractWorker = null;
+        let isInitializingWorker = false;
+
+        async function getTesseractWorker() {
+            if (tesseractWorker) return tesseractWorker;
+            if (isInitializingWorker) {
+                let attempts = 0;
+                while (isInitializingWorker && attempts < 25) {
+                    await new Promise(r => setTimeout(r, 100));
+                    attempts++;
+                    if (tesseractWorker) return tesseractWorker;
+                }
+            }
+            if (!window.Tesseract) return null;
+            try {
+                isInitializingWorker = true;
+                console.log('⚡ Inicializando worker persistente de Tesseract.js...');
+                const worker = await Tesseract.createWorker('eng');
+                try {
+                    await worker.setParameters({
+                        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-/. ',
+                        tessedit_pageseg_mode: '11'
+                    });
+                } catch(pErr) {}
+                tesseractWorker = worker;
+                console.log('✅ Worker de Tesseract.js listo y precargado para POS');
+                return tesseractWorker;
+            } catch (err) {
+                console.warn('⚠️ No se pudo inicializar Tesseract worker:', err);
+                return null;
+            } finally {
+                isInitializingWorker = false;
+            }
+        }
+
+        // Preparación del canvas para OCR con aumento de contraste y des-espejado si es cámara selfie
+        function prepareOcrCanvas(video, flipHorizontal) {
+            const vw = video.videoWidth || 640;
+            const vh = video.videoHeight || 480;
+
+            // Recorte de la zona central donde se encuadra la etiqueta de la botella
+            const cw = Math.round(vw * 0.65);
+            const ch = Math.round(vh * 0.55);
+            const cx = Math.round((vw - cw) / 2);
+            const cy = Math.round((vh - ch) / 2);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 440;
+            canvas.height = 320;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            if (flipHorizontal) {
+                ctx.save();
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, cx, cy, cw, ch, 0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            } else {
+                ctx.drawImage(video, cx, cy, cw, ch, 0, 0, canvas.width, canvas.height);
+            }
+
+            // Realce de contraste para que las letras oscuras sobre blanco o claras sobre oscuro sean legibles
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const d = imgData.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const gray = (d[i] * 0.299 + d[i+1] * 0.587 + d[i+2] * 0.114);
+                const contrasted = gray > 125 ? Math.min(255, gray * 1.35) : Math.max(0, gray * 0.65);
+                d[i] = contrasted;
+                d[i+1] = contrasted;
+                d[i+2] = contrasted;
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            return canvas;
+        }
+
+        // Ejecución de lectura OCR (Prioridad 1)
+        async function runOcrPass(video, forceWait = false) {
+            if (!scannerState.active || (scannerState.isAwaitingDecision && !forceWait)) return null;
+
+            const isSelfie = scannerState.facingMode === 'user';
+            const primaryCanvas = prepareOcrCanvas(video, isSelfie);
+
+            // 1. TextDetector API nativo del dispositivo si está disponible
+            if ('TextDetector' in window && !scannerState._textDetector) {
+                try { scannerState._textDetector = new TextDetector(); } catch(e) { scannerState._textDetector = null; }
+            }
+            if (scannerState._textDetector) {
+                try {
+                    const detected = await scannerState._textDetector.detect(primaryCanvas);
+                    if (detected && detected.length > 0) {
+                        const textStr = detected.map(t => t.rawValue).join(' ');
+                        const match = matchTextToVonixxProduct(textStr);
+                        if (match) return match;
+                    }
+                } catch(tdErr) {}
+            }
+
+            // 2. Tesseract.js Worker OCR
+            if (window.Tesseract) {
+                if (scannerState.isOcrRunning && !forceWait) {
+                    return null;
+                }
+
+                const executeTesseract = async () => {
+                    scannerState.isOcrRunning = true;
+                    try {
+                        const worker = await getTesseractWorker();
+                        let textResult = '';
+                        if (worker) {
+                            const res = await worker.recognize(primaryCanvas);
+                            textResult = (res && res.data && res.data.text) ? res.data.text : '';
+                        } else {
+                            const res = await window.Tesseract.recognize(primaryCanvas, 'eng', { logger: () => {} });
+                            textResult = (res && res.data && res.data.text) ? res.data.text : '';
+                        }
+
+                        if (textResult) {
+                            scannerState.lastOcrText = textResult;
+                            let match = matchTextToVonixxProduct(textResult);
+                            if (match) return match;
+
+                            // Fallback de orientación en modo manual forzado
+                            if (forceWait && isSelfie) {
+                                const fallbackCanvas = prepareOcrCanvas(video, false);
+                                let res2Text = '';
+                                if (worker) {
+                                    const r2 = await worker.recognize(fallbackCanvas);
+                                    res2Text = (r2 && r2.data && r2.data.text) ? r2.data.text : '';
+                                } else {
+                                    const r2 = await window.Tesseract.recognize(fallbackCanvas, 'eng', { logger: () => {} });
+                                    res2Text = (r2 && r2.data && r2.data.text) ? r2.data.text : '';
+                                }
+                                if (res2Text) {
+                                    match = matchTextToVonixxProduct(res2Text);
+                                    if (match) return match;
+                                }
+                            }
+                        }
+                    } catch (ocrErr) {
+                        console.warn('Tesseract OCR error:', ocrErr);
+                    } finally {
+                        scannerState.isOcrRunning = false;
+                    }
+                    return null;
+                };
+
+                if (forceWait) {
+                    return await executeTesseract();
+                } else {
+                    executeTesseract().then(match => {
+                        if (match && scannerState.active && !scannerState.isAwaitingDecision) {
+                            console.log('📖 OCR en vivo detectó etiqueta:', match.matchedKeyword, '->', match.product.name);
+                            onProductVisuallyRecognized(match.product, false, 'ocr');
+                        }
+                    });
+                }
+            }
+
+            return null;
+        }
+
+        // Análisis del color del envase / líquido (Prioridad 2)
+        function analyzeBottleColor(video) {
+            if (!video || video.readyState < 2) return null;
+            const canvas = document.getElementById('scannerCanvas');
+            if (!canvas) return null;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            const vw = video.videoWidth || 640;
+            const vh = video.videoHeight || 480;
+
+            const cropW = Math.round(vw * 0.48);
+            const cropH = Math.round(vh * 0.62);
+            const sx = Math.round((vw - cropW) / 2);
+            const sy = Math.round((vh - cropH) / 2);
+
+            const sampleW = 64;
+            const sampleH = 80;
+            canvas.width = sampleW;
+            canvas.height = sampleH;
+
+            ctx.drawImage(video, sx, sy, cropW, cropH, 0, 0, sampleW, sampleH);
+            const features = extractFrameFeatures(ctx, sampleW, sampleH);
+
+            if (features.skinRatio > 0.65 && features.satRatio < 0.08 && !features.isDark && !features.isWhite) {
+                updateScannerCandidates([]);
+                return null;
+            }
+
+            const scores = [];
+            const products = state.products || [];
+
+            VONIXX_BOTTLE_PROFILES.forEach(rule => {
+                if (rule.check(features)) {
+                    const matchedProds = products.filter(p => {
+                        const pName = (p.name || '').toLowerCase();
+                        const pCode = (p.code || '').toLowerCase();
+                        return rule.keywords.some(k => pName.includes(k) || pCode.includes(k));
+                    });
+
+                    matchedProds.forEach(p => {
+                        let score = rule.baseScore + (features.satRatio * 0.08);
+                        scores.push({ product: p, score: score, profileName: rule.name });
+                    });
+                }
+            });
+
+            // Perfiles aprendidos y calibrados
+            const learnedProfiles = getLearnedProducts();
+            if (learnedProfiles.length > 0) {
+                learnedProfiles.forEach(lp => {
+                    const targetProd = products.find(p => p.id === lp.id || (p.code && p.code.toLowerCase() === (lp.code || '').toLowerCase()));
+                    if (!targetProd) return;
+
+                    const [minH, maxH] = lp.targetHue || [0, 360];
+                    const inHue = (minH <= maxH)
+                        ? (features.continuousHue >= minH && features.continuousHue <= maxH)
+                        : (features.continuousHue >= minH || features.continuousHue <= maxH);
+
+                    if (inHue && features.satRatio >= 0.06) {
+                        let matchScore = 0.98;
+                        const existing = scores.find(s => s.product.id === targetProd.id);
+                        if (existing) {
+                            existing.score = Math.max(existing.score, matchScore);
+                            existing.isLearned = true;
+                        } else {
+                            scores.push({ product: targetProd, score: matchScore, isLearned: true });
+                        }
+                    }
+                });
+            }
+
+            scores.sort((a, b) => b.score - a.score);
+
+            const uniqueCandidates = [];
+            scores.forEach(s => {
+                if (s.score >= 0.55 && !uniqueCandidates.some(u => u.product.id === s.product.id)) {
+                    uniqueCandidates.push(s);
+                }
+            });
+
+            scannerState.lastCandidates = uniqueCandidates.slice(0, 4);
+            updateScannerCandidates(uniqueCandidates.slice(0, 3));
+
+            if (uniqueCandidates.length > 0 && uniqueCandidates[0].score >= 0.65) {
+                return uniqueCandidates[0];
+            }
+            return null;
+        }
+
+        // Detección de Código de Barras como último recurso de fallback (Prioridad 3)
+        async function detectBarcodeFallback(video) {
+            if (!video || video.readyState < 2) return null;
+            if ('BarcodeDetector' in window && !scannerState._barcodeDetector) {
+                try {
+                    scannerState._barcodeDetector = new BarcodeDetector({
+                        formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code']
+                    });
+                } catch (e) {
+                    scannerState._barcodeDetector = null;
+                }
+            }
+            if (!scannerState._barcodeDetector) return null;
+
+            try {
+                const barcodes = await scannerState._barcodeDetector.detect(video);
+                if (barcodes && barcodes.length > 0) {
+                    const raw = barcodes[0].rawValue ? barcodes[0].rawValue.trim() : '';
+                    if (raw) {
+                        scannerState.lastDetectedBarcode = raw;
+                        const learnedBarcodes = getLearnedBarcodes();
+                        const targetCode = learnedBarcodes[raw] || VONIXX_BARCODES[raw] || raw;
+                        const matched = (state.products || []).find(p => 
+                            (p.code && p.code.toLowerCase() === targetCode.toLowerCase()) ||
+                            (p.id && p.id.toLowerCase() === targetCode.toLowerCase()) ||
+                            (p.barcode && p.barcode.trim() === raw) ||
+                            (Array.isArray(p.variations) && p.variations.some(v => (v.code && v.code.toLowerCase() === targetCode.toLowerCase()) || (v.barcode && v.barcode.trim() === raw)))
+                        );
+                        if (matched) {
+                            return { product: matched, isLearned: !!learnedBarcodes[raw] };
+                        }
+                    }
+                }
+            } catch (bcErr) {}
+            return null;
+        }
+
 
         // 11. PWA — Instalación en Tablet y Registro de Service Worker
         let deferredPosPrompt = null;
