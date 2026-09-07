@@ -716,21 +716,34 @@
     // Sincronizar catálogo interno con los precios reales de la página y variables globales
     syncWithPage: function () {
       try {
+        // Función auxiliar para normalizar nombres
+        const cleanName = (s) => (s || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
+
         // 1. Sincronizar desde window.currentLoadedProductsMap o window.allCatalogProducts si existen
         if (window.currentLoadedProductsMap && typeof window.currentLoadedProductsMap === 'object') {
           Object.values(window.currentLoadedProductsMap).forEach(pageProd => {
             if (!pageProd || !pageProd.name) return;
-            const normPageName = pageProd.name.toLowerCase().trim();
+            const normPageName = cleanName(pageProd.name);
+
+            // Búsqueda por ID o coincidencia exacta/precisa de nombre
             const target = CATALOG_DATABASE.find(c => {
-              const cNorm = c.name.toLowerCase().trim();
-              return cNorm === normPageName || cNorm.includes(normPageName) || normPageName.includes(cNorm.split(' ')[0]);
+              if (pageProd.id && c.id && pageProd.id === c.id) return true;
+              const cNorm = cleanName(c.name);
+              if (cNorm === normPageName) return true;
+              // Distinguir variantes como PRO vs FAST
+              if (normPageName.includes('fast') && !cNorm.includes('fast')) return false;
+              if (normPageName.includes('pro') && !cNorm.includes('pro')) return false;
+              return cNorm.startsWith(normPageName) || normPageName.startsWith(cNorm);
             });
+
             if (target) {
               const pPrice = parseFloat(pageProd.newPrice || pageProd.price);
               if (pPrice && pPrice > 0) {
                 target.price = pPrice;
               }
-              if (pageProd.image) target.image = pageProd.image;
+              if (pageProd.image && !target.image.includes('SINTRA%20FAST.png')) {
+                target.image = pageProd.image;
+              }
               if (pageProd.description) target.description = pageProd.description;
             }
           });
@@ -741,9 +754,8 @@
         cards.forEach(card => {
           const titleEl = card.querySelector('.product-name, .carousel-item-title, .featured-title');
           if (!titleEl) return;
-          const nameText = titleEl.textContent.trim();
-          const firstWord = nameText.split(' ')[0].toLowerCase();
-          
+          const nameText = cleanName(titleEl.textContent);
+
           const priceEl = card.querySelector('.product-price-val, .product-price, .carousel-item-price, .featured-price');
           let foundPrice = null;
           if (priceEl) {
@@ -761,8 +773,11 @@
 
           if (foundPrice && foundPrice > 0) {
             const item = CATALOG_DATABASE.find(c => {
-              const cName = c.name.toLowerCase();
-              return cName === nameText.toLowerCase() || cName.includes(firstWord);
+              const cName = cleanName(c.name);
+              if (cName === nameText) return true;
+              if (nameText.includes('fast') && !cName.includes('fast')) return false;
+              if (nameText.includes('pro') && !cName.includes('pro')) return false;
+              return cName.startsWith(nameText) || nameText.startsWith(cName);
             });
             if (item) {
               item.price = foundPrice;
@@ -774,32 +789,55 @@
       }
     },
 
-    // Tool: Buscar en el catálogo
+    // Tool: Buscar en el catálogo con relevancia
     searchCatalog: function (query) {
       this.syncWithPage();
       if (!query || typeof query !== 'string') return [];
-      const terms = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/\s+/);
+      const clean = (s) => (s || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
+      const normQuery = clean(query);
+      const terms = normQuery.split(/\s+/).filter(Boolean);
       
-      const results = CATALOG_DATABASE.filter(prod => {
-        const fullText = (prod.name + ' ' + prod.category + ' ' + prod.description + ' ' + (prod.keywords || []).join(' ')).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return terms.every(term => fullText.includes(term));
-      });
+      const scored = CATALOG_DATABASE.map(prod => {
+        const prodName = clean(prod.name);
+        const fullText = clean(prod.name + ' ' + prod.category + ' ' + prod.description + ' ' + (prod.keywords || []).join(' '));
+        const matchesAll = terms.every(term => fullText.includes(term));
+        if (!matchesAll) return null;
 
-      return results.slice(0, 4);
+        let score = 0;
+        if (prodName === normQuery) score += 100;
+        if (prodName.startsWith(normQuery)) score += 50;
+        if (prodName.includes(normQuery)) score += 30;
+        terms.forEach(t => {
+          if (prodName.includes(t)) score += 10;
+        });
+
+        return { prod, score };
+      }).filter(Boolean);
+
+      scored.sort((a, b) => b.score - a.score);
+      return scored.slice(0, 4).map(s => s.prod);
     },
 
     // Tool: Diagnosticar problema de detailing
     diagnose: function (text) {
       this.syncWithPage();
       const normalized = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const clean = (s) => (s || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
       
       for (const rule of DIAGNOSTIC_RULES) {
         for (const trigger of rule.triggers) {
           const normTrigger = trigger.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           if (normalized.includes(normTrigger)) {
-            const matchedProducts = rule.productNames.map(pName => 
-              CATALOG_DATABASE.find(p => p.name.toLowerCase().includes(pName.toLowerCase().split(' ')[0]))
-            ).filter(Boolean);
+            const matchedProducts = rule.productNames.map(pName => {
+              const cleanTarget = clean(pName);
+              return CATALOG_DATABASE.find(p => {
+                const cName = clean(p.name);
+                if (cName === cleanTarget) return true;
+                if (cleanTarget.includes('fast') && !cName.includes('fast')) return false;
+                if (cleanTarget.includes('pro') && !cName.includes('pro')) return false;
+                return cName.includes(cleanTarget) || cleanTarget.includes(cName);
+              });
+            }).filter(Boolean);
 
             return {
               problem: rule.problem,
