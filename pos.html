@@ -51,16 +51,19 @@
             --radius-lg: 14px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body {
             background: var(--void);
             color: var(--text);
             font-family: 'Inter', sans-serif;
-            height: 100vh;
+            height: 100%;
+            height: 100dvh;
+            min-height: -webkit-fill-available;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             user-select: none;
+            touch-action: manipulation;
         }
 
         h1, h2, h3, h4, .font-raj { font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; }
@@ -237,8 +240,11 @@
         /* ==================== POS WORKSPACE (SPLIT SCREEN) ==================== */
         .pos-workspace {
             display: grid;
-            grid-template-columns: 1fr 440px;
-            height: calc(100vh - 58px);
+            grid-template-columns: 1fr clamp(320px, 36vw, 440px);
+            height: calc(100dvh - 58px);
+            height: calc(100% - 58px);
+            flex: 1;
+            min-height: 0;
             overflow: hidden;
         }
 
@@ -339,17 +345,17 @@
             50% { transform: scale(1.2); opacity: 0.85; color: var(--blue); }
         }
 
-        /* ==================== MODAL ESCÁNER CÁMARA SELFIE (OPTIMIZADO TABLET 7") ==================== */
+        /* ==================== MODAL ESCÁNER CÁMARA VISUAL POS (OPTIMIZADO PARA TABLETS) ==================== */
         #selfieScannerModal {
             position: fixed;
             inset: 0;
-            background: rgba(8, 12, 16, 0.88);
-            backdrop-filter: blur(8px);
+            background: rgba(8, 12, 16, 0.92);
+            backdrop-filter: blur(10px);
             z-index: 99999;
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 8px;
+            padding: clamp(6px, 1.5vh, 14px);
         }
         #selfieScannerModal.active {
             display: flex;
@@ -359,28 +365,27 @@
             border: 1px solid var(--line-light);
             border-radius: var(--radius-lg);
             width: 100%;
-            max-width: min(95vw, 560px);
-            max-height: 94vh;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.85), 0 0 30px rgba(61, 220, 132, 0.2);
-            overflow-y: auto;
-            overflow-x: hidden;
+            max-width: min(96vw, 760px);
+            max-height: min(95dvh, 95vh);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.88), 0 0 30px rgba(61, 220, 132, 0.2);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            scrollbar-width: thin;
         }
         @keyframes popIn {
             from { transform: scale(0.92); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
         .scanner-header {
-            padding: 9px 14px;
+            padding: 8px 14px;
             background: var(--panel-2);
             border-bottom: 1px solid var(--line);
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
+            height: 44px;
         }
         .scanner-title {
             font-family: 'Rajdhani', sans-serif;
@@ -439,11 +444,29 @@
             border-color: var(--blue);
         }
 
+        /* Layout responsivo interior del modal (Vertical en móvil/portrait, Side-by-side en tablets landscape) */
+        .scanner-body-layout {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+        .scanner-controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
         /* Viewport de Cámara & Retícula HUD amplio y nítido */
         .scanner-viewport {
             position: relative;
             width: 100%;
-            height: clamp(280px, 46vh, 420px);
+            height: clamp(190px, 32vh, 280px);
             background: #000;
             overflow: hidden;
             display: flex;
@@ -782,22 +805,69 @@
             transform: translateY(-1px);
         }
 
-        /* Reglas especiales para pantallas apaisadas o tablets (altura reducida <= 600px) */
-        @media (max-height: 600px) {
-            .selfie-scanner-window { max-height: 98vh; max-width: min(96vw, 520px); }
-            .scanner-header { padding: 6px 10px; }
+        /* Reglas especiales para pantallas apaisadas / tablets (altura reducida o formato horizontal) */
+        @media (min-width: 640px) and (max-height: 880px) {
+            .selfie-scanner-window {
+                max-width: min(96vw, 840px);
+                max-height: 94dvh;
+            }
+            .scanner-body-layout {
+                display: grid;
+                grid-template-columns: 1.15fr 1fr;
+                height: calc(100% - 44px);
+                overflow: hidden;
+            }
+            .scanner-viewport {
+                height: 100% !important;
+                min-height: 240px;
+                max-height: none;
+            }
+            .scanner-controls-panel {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                overflow-y: auto;
+                padding: 8px 12px;
+                background: var(--panel-2);
+                scrollbar-width: thin;
+                gap: 6px;
+            }
+            .scanner-detected-card {
+                margin: 0 !important;
+                padding: 8px 10px;
+            }
+            .scanner-footer {
+                border-top: none;
+                padding: 4px 0 0 0;
+                background: transparent;
+                gap: 5px;
+            }
+            .btn-finish-scan {
+                padding: 7px 12px;
+                font-size: 11.5px;
+            }
+            .scanner-status-text {
+                font-size: 10.5px;
+                min-height: 16px;
+            }
+        }
+
+        /* Pantallas muy compactas o tablets en vertical */
+        @media (max-width: 639px), (max-height: 600px) {
+            .selfie-scanner-window { max-height: 96dvh; max-width: min(96vw, 540px); }
+            .scanner-header { padding: 6px 10px; height: 40px; }
             .scanner-title { font-size: 12.5px; }
-            .scanner-viewport { height: clamp(210px, 40vh, 260px); }
-            .scanner-target-box { width: clamp(160px, 28vh, 210px); height: clamp(170px, 30vh, 220px); }
-            .scanner-footer { padding: 6px 10px; gap: 5px; }
-            .btn-finish-scan { padding: 7px 12px; font-size: 11.5px; }
+            .scanner-viewport { height: clamp(170px, 30vh, 230px); }
+            .scanner-target-box { width: clamp(150px, 24vh, 190px); height: clamp(160px, 26vh, 200px); }
+            .scanner-footer { padding: 6px 8px; gap: 4px; }
+            .btn-finish-scan { padding: 6px 10px; font-size: 11px; }
             .scanner-status-text { font-size: 10px; min-height: 14px; }
-            .scanner-detected-card { margin: 4px 8px 0 8px; padding: 6px 10px; }
-            .scanner-detected-img { width: 34px; height: 34px; }
-            .scanner-detected-name { font-size: 12px; }
-            .scanner-qty-btn { width: 26px; height: 26px; font-size: 13px; }
-            .scanner-qty-input { width: 40px; height: 26px; font-size: 13px; }
-            .btn-scanner-continue, .btn-scanner-finish { padding: 7px 10px; font-size: 11.5px; }
+            .scanner-detected-card { margin: 4px 6px 0 6px; padding: 6px 8px; }
+            .scanner-detected-img { width: 32px; height: 32px; }
+            .scanner-detected-name { font-size: 11.5px; }
+            .scanner-qty-btn { width: 24px; height: 24px; font-size: 12px; }
+            .scanner-qty-input { width: 36px; height: 24px; font-size: 12px; }
+            .btn-scanner-continue, .btn-scanner-finish { padding: 6px 8px; font-size: 11px; }
         }
 
         /* ==================== SUBMODALES DE APRENDIZAJE Y CALIBRACIÓN ==================== */
@@ -1673,12 +1743,138 @@
             .tkt-qr-img { width: 32mm !important; height: 32mm !important; margin: 2px auto !important; display: block !important; }
         }
 
-        /* Responsive Mobile Layout for Tablet POS */
-        @media (max-width: 900px) {
-            .pos-workspace { grid-template-columns: 1fr; height: auto; overflow: visible; }
-            body { height: auto; overflow: auto; }
-            .catalog-panel { height: 550px; }
-            .cart-panel { height: auto; }
+        /* ==================== OPTIMIZACIÓN DEL POS PARA TABLETS ==================== */
+        /* 1. Tablets en modo horizontal y pantallas medianas (<= 1024px) */
+        @media (max-width: 1024px) {
+            .pos-workspace {
+                grid-template-columns: 1fr clamp(300px, 38vw, 380px);
+                height: calc(100dvh - 58px);
+                height: calc(100% - 58px);
+                overflow: hidden;
+            }
+            .catalog-toolbar {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+            .cart-header {
+                padding: 8px 12px;
+            }
+            .customer-section {
+                padding: 6px 12px;
+            }
+            .customer-row {
+                margin-bottom: 3px;
+                gap: 6px;
+            }
+            .cart-items-scroll {
+                padding: 8px 12px;
+            }
+            .cart-footer {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+            .total-amount-display {
+                font-size: 24px;
+            }
+            .payment-methods-grid {
+                gap: 4px;
+            }
+            .pay-method-btn {
+                padding: 6px 2px;
+                font-size: 10px;
+            }
+        }
+
+        /* 2. Tablets en vertical / pantallas angostas (<= 768px portrait) */
+        @media (max-width: 768px) and (orientation: portrait) {
+            .pos-workspace {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1.15fr 1fr;
+                height: calc(100dvh - 58px);
+                height: calc(100% - 58px);
+                overflow: hidden;
+            }
+            .catalog-panel {
+                height: 100%;
+                min-height: 0;
+                overflow: hidden;
+            }
+            .cart-panel {
+                height: 100%;
+                min-height: 0;
+                overflow: hidden;
+                border-top: 2px solid var(--line-light);
+            }
+        }
+
+        /* 3. Tablets con altura reducida (<= 760px) en cualquier orientación */
+        @media (max-height: 760px) {
+            .pos-header {
+                height: 48px;
+                padding: 6px 14px;
+            }
+            .pos-logo {
+                height: 26px;
+            }
+            .pos-workspace {
+                height: calc(100dvh - 48px);
+                height: calc(100% - 48px);
+            }
+            .catalog-toolbar {
+                padding: 6px 10px;
+                gap: 6px;
+            }
+            .search-input {
+                padding: 8px 12px 8px 36px;
+                font-size: 13px;
+            }
+            .btn-selfie-scan {
+                padding: 7px 12px;
+                font-size: 12px;
+            }
+            .category-pills {
+                padding: 2px 0;
+            }
+            .customer-section {
+                padding: 4px 10px;
+            }
+            .customer-row {
+                margin-bottom: 2px;
+                gap: 4px;
+            }
+            .cart-header {
+                padding: 6px 10px;
+            }
+            .cart-items-scroll {
+                padding: 6px 10px;
+            }
+            .cart-item {
+                padding: 6px 8px;
+                margin-bottom: 5px;
+                gap: 4px;
+            }
+            .cart-item-name {
+                font-size: 11.5px;
+            }
+            .cart-item-total {
+                font-size: 14px;
+            }
+            .cart-footer {
+                padding: 6px 10px;
+                gap: 5px;
+            }
+            .financial-summary {
+                font-size: 11px;
+                gap: 2px;
+            }
+            .total-amount-display {
+                font-size: 20px;
+            }
+            .btn-pos-primary {
+                padding: 8px 12px;
+                font-size: 13px;
+                margin-top: 4px;
+            }
         }
     </style>
 </head>
@@ -3561,27 +3757,140 @@
             }
         }
 
-        // 3. Firmas cromáticas e iconografía de productos Vonixx
-        // Calibradas con discriminación estricta de canales para evitar confusiones (Sintra vs Spell)
-        const VONIXX_VISUAL_RULES = [
-            { keywords: ['v-mol', 'v mol', 'mol'], targetHue: [260, 315], minSat: 0.28, minRatio: 0.18, name: 'V-MOL' },
-            { keywords: ['v-floc', 'v floc', 'floc'], targetHue: [180, 222], minSat: 0.28, minRatio: 0.18, name: 'V-FLOC' },
-            { keywords: ['citron'], targetHue: [60, 96], minSat: 0.28, minRatio: 0.18, name: 'CITRON' },
-            { keywords: ['alumax'], targetHue: [320, 358], minSat: 0.28, minRatio: 0.18, name: 'ALUMAX' },
-            { keywords: ['removex'], targetHue: [28, 55], minSat: 0.30, minRatio: 0.18, name: 'REMOVEX' },
-            { keywords: ['bactran'], targetHue: [115, 160], minSat: 0.26, minRatio: 0.18, name: 'BACTRAN' },
-            { keywords: ['extractus'], targetHue: [210, 245], minSat: 0.28, minRatio: 0.18, name: 'EXTRACTUS' },
-            { keywords: ['prizm'], targetHue: [340, 16], minSat: 0.28, minRatio: 0.18, name: 'PRIZM' },
-            // SPELL: Es sellador cian/turquesa brillante. Requiere verde alto similar a azul (G >= B - 12).
-            { keywords: ['spell'], targetHue: [162, 185], minSat: 0.30, minRatio: 0.20, channelCheck: (r, g, b) => g >= (b - 12) && b < (g + 20), name: 'SPELL' },
-            // SINTRA: Limpiador multiusos con etiqueta azul cobalto/violeta. Azul claramente superior a verde (B > G + 6).
-            { keywords: ['sintra'], targetHue: [195, 275], minSat: 0.20, minRatio: 0.14, channelCheck: (r, g, b) => b > (g + 6), name: 'SINTRA' },
-            { keywords: ['delet'], targetHue: [85, 135], minSat: 0.26, minRatio: 0.18, name: 'DELET' },
-            { keywords: ['strike'], targetHue: [38, 62], minSat: 0.30, minRatio: 0.18, name: 'STRIKE' },
-            { keywords: ['izer'], targetHue: [270, 325], minSat: 0.28, minRatio: 0.18, name: 'IZER' },
-            { keywords: ['v10'], targetHue: [345, 15], minSat: 0.35, minRatio: 0.20, name: 'V10' },
-            { keywords: ['v20'], targetHue: [18, 38], minSat: 0.35, minRatio: 0.20, name: 'V20' },
-            { keywords: ['v30'], targetHue: [200, 232], minSat: 0.35, minRatio: 0.20, name: 'V30' }
+        // 3. Perfiles Físicos de Envases y Cromatismo Oficial Vonixx México
+        const VONIXX_BOTTLE_PROFILES = [
+            {
+                name: 'SINTRA FAST',
+                keywords: ['sintra fast', 'sintra'],
+                check: (f) => (f.whiteRatio > 0.12 || f.isWhite) && (f.blueRatio > 0.06 || (f.avgB > f.avgG + 6)),
+                baseScore: 0.94
+            },
+            {
+                name: 'SINTRA PRO',
+                keywords: ['sintra pro', 'sintra'],
+                check: (f) => (f.darkRatio > 0.16 || f.isDark) && (f.blueRatio > 0.05 || (f.avgB > f.avgG + 5)),
+                baseScore: 0.92
+            },
+            {
+                name: 'V-MOL',
+                keywords: ['v-mol', 'v mol', 'mol'],
+                check: (f) => f.purpleRatio > 0.07 || (f.avgR > f.avgG + 8 && f.avgB > f.avgG + 8 && f.continuousHue >= 260 && f.continuousHue <= 325),
+                baseScore: 0.95
+            },
+            {
+                name: 'V-FLOC',
+                keywords: ['v-floc', 'v floc', 'floc'],
+                check: (f) => (f.amberRatio > 0.07 || f.yellowRatio > 0.09) && f.avgR > f.avgB + 12,
+                baseScore: 0.92
+            },
+            {
+                name: 'ALUMAX',
+                keywords: ['alumax'],
+                check: (f) => (f.redRatio > 0.08 || f.magentaRatio > 0.07) && f.avgR > f.avgG + 14,
+                baseScore: 0.94
+            },
+            {
+                name: 'DELET',
+                keywords: ['delet'],
+                check: (f) => (f.darkRatio > 0.16 || f.isDark) && (f.greenRatio > 0.05 || (f.avgG > f.avgR + 5 && f.avgG > f.avgB)),
+                baseScore: 0.94
+            },
+            {
+                name: 'SPELL',
+                keywords: ['spell'],
+                check: (f) => f.cyanRatio > 0.08 && f.avgG >= f.avgB - 18 && f.avgB >= f.avgR + 12,
+                baseScore: 0.95
+            },
+            {
+                name: 'REMOVEX',
+                keywords: ['removex'],
+                check: (f) => (f.orangeRatio > 0.08 || f.amberRatio > 0.08) && f.avgR > f.avgG + 4 && f.avgG > f.avgB + 10,
+                baseScore: 0.91
+            },
+            {
+                name: 'CITRON',
+                keywords: ['citron'],
+                check: (f) => (f.yellowRatio > 0.10 || f.limeRatio > 0.08) && f.avgR > 90 && f.avgG > 90 && f.avgB < f.avgG - 15,
+                baseScore: 0.92
+            },
+            {
+                name: 'BACTRAN',
+                keywords: ['bactran'],
+                check: (f) => (f.greenRatio > 0.08 || f.limeRatio > 0.08) && f.avgG > f.avgR + 8,
+                baseScore: 0.92
+            },
+            {
+                name: 'EXTRACTUS',
+                keywords: ['extractus'],
+                check: (f) => f.blueRatio > 0.08 && f.avgB > f.avgG + 10 && f.avgB > f.avgR + 12,
+                baseScore: 0.92
+            },
+            {
+                name: 'RESTAURAX',
+                keywords: ['restaurax'],
+                check: (f) => (f.darkRatio > 0.16 || f.isDark) && (f.orangeRatio > 0.05 || (f.avgR > f.avgG + 12 && f.avgG > f.avgB + 8)),
+                baseScore: 0.93
+            },
+            {
+                name: 'SHINY',
+                keywords: ['shiny'],
+                check: (f) => (f.darkRatio > 0.20 || f.isDark) && (f.blueRatio > 0.04 || (f.avgB >= f.avgG - 5 && f.avgB >= f.avgR)),
+                baseScore: 0.90
+            },
+            {
+                name: 'PRIZM',
+                keywords: ['prizm'],
+                check: (f) => (f.darkRatio > 0.16 || f.isDark) && (f.redRatio > 0.06 || (f.avgR > f.avgG + 12 && f.avgR > f.avgB + 8)),
+                baseScore: 0.92
+            },
+            {
+                name: 'BLEND',
+                keywords: ['blend'],
+                check: (f) => (f.darkRatio > 0.22 || f.isDark) && (f.yellowRatio > 0.04 || f.blueRatio > 0.04),
+                baseScore: 0.88
+            },
+            {
+                name: 'NATIVE',
+                keywords: ['native'],
+                check: (f) => (f.darkRatio > 0.22 || f.isDark) && (f.goldRatio > 0.04 || f.yellowRatio > 0.04),
+                baseScore: 0.88
+            },
+            {
+                name: 'STRIKE',
+                keywords: ['strike'],
+                check: (f) => f.amberRatio > 0.07 && f.avgR > f.avgB + 16,
+                baseScore: 0.91
+            },
+            {
+                name: 'IZER',
+                keywords: ['izer'],
+                check: (f) => f.purpleRatio > 0.07 && f.avgR > f.avgG + 8 && f.avgB > f.avgG + 8,
+                baseScore: 0.92
+            },
+            {
+                name: 'TOK FINAL',
+                keywords: ['tok final', 'tok'],
+                check: (f) => f.blueRatio > 0.05 || f.whiteRatio > 0.16,
+                baseScore: 0.88
+            },
+            {
+                name: 'V10',
+                keywords: ['v10'],
+                check: (f) => f.redRatio > 0.07 && f.avgR > f.avgG + 15,
+                baseScore: 0.90
+            },
+            {
+                name: 'V20',
+                keywords: ['v20'],
+                check: (f) => f.orangeRatio > 0.07 && f.avgR > f.avgB + 15,
+                baseScore: 0.90
+            },
+            {
+                name: 'V30',
+                keywords: ['v30'],
+                check: (f) => f.blueRatio > 0.07 && f.avgB > f.avgG + 8,
+                baseScore: 0.90
+            }
         ];
 
         // 4. Inicializar y Abrir Escáner Selfie
@@ -3629,12 +3938,22 @@
                     audio: false
                 };
 
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                let stream;
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (cErr) {
+                    console.warn('Fallback de cámara básica para tablet:', cErr);
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: scannerState.facingMode },
+                        audio: false
+                    });
+                }
+
                 scannerState.stream = stream;
                 video.srcObject = stream;
                 await video.play();
 
-                statusText.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>Centra el producto Vonixx o su código de barras</span>';
+                statusText.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles" style="color:var(--green);"></i><span>Coloca el envase Vonixx o su código en la retícula</span>';
 
                 startScannerLoop();
 
@@ -3682,14 +4001,14 @@
         // 7. Bucle de procesamiento visual fluido y responsivo
         function startScannerLoop() {
             let lastFrameTime = 0;
-            const targetIntervalMs = 300;
+            const targetIntervalMs = 280;
 
             function loop(timestamp) {
                 if (!scannerState.active) return;
 
                 if (!scannerState.isAwaitingDecision && (timestamp - lastFrameTime >= targetIntervalMs)) {
                     lastFrameTime = timestamp;
-                    analyzeCurrentFrame();
+                    analyzeCurrentFrame(false);
                 }
 
                 scannerState.animationId = requestAnimationFrame(loop);
@@ -3718,8 +4037,128 @@
             return { h: h * 360, s: s, v: v };
         }
 
+        // Extractor de Características Físicas y Cromáticas del Envase
+        function extractFrameFeatures(ctx, width, height) {
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const data = imgData.data;
+            const total = width * height;
+
+            let darkPixels = 0;
+            let whitePixels = 0;
+            let skinPixels = 0;
+            let satPixels = 0;
+
+            let sumR = 0, sumG = 0, sumB = 0;
+            let sumCos = 0, sumSin = 0;
+
+            let redPixels = 0;
+            let orangePixels = 0;
+            let yellowPixels = 0;
+            let limePixels = 0;
+            let greenPixels = 0;
+            let cyanPixels = 0;
+            let bluePixels = 0;
+            let purplePixels = 0;
+            let magentaPixels = 0;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i+1], b = data[i+2];
+                sumR += r; sumG += g; sumB += b;
+
+                const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                const v = max / 255;
+                const s = max === 0 ? 0 : (max - min) / max;
+
+                let h = 0;
+                if (max !== min) {
+                    const d = max - min;
+                    if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+                    else if (max === g) h = (b - r) / d + 2;
+                    else h = (r - g) / d + 4;
+                    h *= 60;
+                }
+
+                // Tono piel (dedos sosteniendo la botella)
+                if (h >= 10 && h <= 42 && s >= 0.18 && s <= 0.65 && r > g && g > b) {
+                    skinPixels++;
+                    continue;
+                }
+
+                // Píxeles de envase negro / oscuro Vonixx
+                if (v < 0.28 && s < 0.30) {
+                    darkPixels++;
+                    continue;
+                }
+
+                // Píxeles de envase blanco / traslúcido Vonixx
+                if (v > 0.65 && s < 0.22) {
+                    whitePixels++;
+                    continue;
+                }
+
+                // Píxeles de color saturado (etiquetas, líquidos)
+                if (s >= 0.18 && v >= 0.15) {
+                    satPixels++;
+                    const rad = (h * Math.PI) / 180;
+                    sumCos += Math.cos(rad);
+                    sumSin += Math.sin(rad);
+
+                    if (h >= 335 || h < 18) redPixels++;
+                    else if (h >= 18 && h < 45) orangePixels++;
+                    else if (h >= 45 && h < 70) yellowPixels++;
+                    else if (h >= 70 && h < 95) limePixels++;
+                    else if (h >= 95 && h < 165) greenPixels++;
+                    else if (h >= 165 && h < 198) cyanPixels++;
+                    else if (h >= 198 && h < 255) bluePixels++;
+                    else if (h >= 255 && h < 315) purplePixels++;
+                    else if (h >= 315 && h < 335) magentaPixels++;
+                }
+            }
+
+            const continuousHue = satPixels > 0 
+                ? ((Math.atan2(sumSin, sumCos) * 180 / Math.PI + 360) % 360) 
+                : 0;
+
+            return {
+                total,
+                avgR: sumR / total,
+                avgG: sumG / total,
+                avgB: sumB / total,
+                darkRatio: darkPixels / total,
+                whiteRatio: whitePixels / total,
+                skinRatio: skinPixels / total,
+                satRatio: satPixels / total,
+                isDark: (darkPixels / total) >= 0.16,
+                isWhite: (whitePixels / total) >= 0.14,
+                continuousHue,
+                redRatio: redPixels / total,
+                orangeRatio: orangePixels / total,
+                amberRatio: (orangePixels + yellowPixels) / total,
+                yellowRatio: yellowPixels / total,
+                limeRatio: limePixels / total,
+                greenRatio: greenPixels / total,
+                cyanRatio: cyanPixels / total,
+                blueRatio: bluePixels / total,
+                purpleRatio: purplePixels / total,
+                magentaRatio: magentaPixels / total,
+                goldRatio: (yellowPixels + orangePixels) / total
+            };
+        }
+
+        // Botón de Forzar Detección Inmediata (Manual)
+        async function captureAndDetectNow() {
+            if (!scannerState.active || scannerState.isAwaitingDecision) return;
+            const video = document.getElementById('selfieVideo');
+            if (!video || video.readyState < 2) return;
+            const statusText = document.getElementById('scannerStatusText');
+            if (statusText) {
+                statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="color:var(--blue);"></i><span>Analizando envase y etiqueta...</span>';
+            }
+            await analyzeCurrentFrame(true);
+        }
+
         // 9. Análisis de fotograma y correspondencia de producto de alta precisión
-        async function analyzeCurrentFrame() {
+        async function analyzeCurrentFrame(forceDecision = false) {
             if (scannerState.isProcessingFrame || scannerState.isAwaitingDecision) return;
 
             const video = document.getElementById('selfieVideo');
@@ -3727,7 +4166,7 @@
 
             scannerState.isProcessingFrame = true;
             try {
-                // A) DETECCIÓN DE CÓDIGO DE BARRAS NATIVO (100% certero)
+                // A) DETECCIÓN DE CÓDIGO DE BARRAS NATIVO
                 if ('BarcodeDetector' in window && !scannerState._barcodeDetector) {
                     try {
                         scannerState._barcodeDetector = new BarcodeDetector({
@@ -3770,214 +4209,102 @@
                         const detectedTexts = await scannerState._textDetector.detect(video);
                         if (detectedTexts && detectedTexts.length > 0) {
                             const fullStr = detectedTexts.map(t => t.rawValue).join(' ').toLowerCase();
-                            if (fullStr.includes('sintra')) {
-                                const sintraProd = (state.products || []).find(p => (p.name || '').toLowerCase().includes('sintra'));
-                                if (sintraProd) { onProductVisuallyRecognized(sintraProd); return; }
-                            } else if (fullStr.includes('spell')) {
-                                const spellProd = (state.products || []).find(p => (p.name || '').toLowerCase().includes('spell'));
-                                if (spellProd) { onProductVisuallyRecognized(spellProd); return; }
-                            } else if (fullStr.includes('mol') || fullStr.includes('v-mol')) {
-                                const molProd = (state.products || []).find(p => (p.name || '').toLowerCase().includes('v-mol') || (p.name || '').toLowerCase().includes('mol'));
-                                if (molProd) { onProductVisuallyRecognized(molProd); return; }
-                            } else if (fullStr.includes('alumax')) {
-                                const aluProd = (state.products || []).find(p => (p.name || '').toLowerCase().includes('alumax'));
-                                if (aluProd) { onProductVisuallyRecognized(aluProd); return; }
-                            } else if (fullStr.includes('delet')) {
-                                const deletProd = (state.products || []).find(p => (p.name || '').toLowerCase().includes('delet'));
-                                if (deletProd) { onProductVisuallyRecognized(deletProd); return; }
+                            const matchedOcr = (state.products || []).find(p => {
+                                const n = (p.name || '').toLowerCase();
+                                const words = n.split(' ').filter(w => w.length >= 4);
+                                return words.some(w => fullStr.includes(w));
+                            });
+                            if (matchedOcr) {
+                                onProductVisuallyRecognized(matchedOcr);
+                                return;
                             }
                         }
                     } catch(tErr) {}
                 }
 
-                // C) RECONOCIMIENTO CROMÁTICO CON DISCRIMINACIÓN FÍSICA RGB
+                // C) RECONOCIMIENTO FÍSICO Y CROMÁTICO DEL ENVASE
                 const canvas = document.getElementById('scannerCanvas');
                 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
                 const vw = video.videoWidth || 640;
                 const vh = video.videoHeight || 480;
 
-                const cropSize = Math.min(vw, vh) * 0.72;
-                const sx = (vw - cropSize) / 2;
-                const sy = (vh - cropSize) / 2;
+                // Región vertical centrada correspondiente a la botella en la retícula HUD
+                const cropW = Math.round(vw * 0.48);
+                const cropH = Math.round(vh * 0.62);
+                const sx = Math.round((vw - cropW) / 2);
+                const sy = Math.round((vh - cropH) / 2);
 
-                const sampleW = 56;
-                const sampleH = 56;
+                const sampleW = 64;
+                const sampleH = 80;
                 canvas.width = sampleW;
                 canvas.height = sampleH;
 
-                ctx.drawImage(video, sx, sy, cropSize, cropSize, 0, 0, sampleW, sampleH);
-                const imgData = ctx.getImageData(0, 0, sampleW, sampleH);
-                const data = imgData.data;
+                ctx.drawImage(video, sx, sy, cropW, cropH, 0, 0, sampleW, sampleH);
+                const features = extractFrameFeatures(ctx, sampleW, sampleH);
 
-                let totalR = 0, totalG = 0, totalB = 0;
-                let validPixels = 0;
-                let saturatedPixels = 0;
-                let skinTonePixels = 0;
-                let sumSatHue = 0;
-                let blueDominantPixels = 0; // Píxeles donde B > G + 12 (Sintra / Extractus)
-                let cyanDominantPixels = 0; // Píxeles turquesa donde G y B son similares (Spell)
-                let whiteBottlePixels = 0;  // Envase blanco/claro característico de Sintra Fast
-                let colorHistogram = new Array(12).fill(0);
-
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i], g = data[i+1], b = data[i+2];
-                    totalR += r; totalG += g; totalB += b;
-                    validPixels++;
-
-                    const hsv = rgbToHsv(r, g, b);
-
-                    // Tono piel
-                    if (hsv.h >= 10 && hsv.h <= 45 && hsv.s >= 0.18 && hsv.s <= 0.65 && r > g && g > b) {
-                        skinTonePixels++;
-                    }
-
-                    // Píxeles del cuerpo blanco de la botella de Sintra Fast
-                    if (hsv.s < 0.22 && hsv.v > 0.68) {
-                        whiteBottlePixels++;
-                    }
-
-                    // Píxeles de color saturado
-                    if (hsv.s >= 0.22 && hsv.v >= 0.18 && hsv.v <= 0.98) {
-                        saturatedPixels++;
-                        sumSatHue += hsv.h;
-                        const bin = Math.floor(hsv.h / 30) % 12;
-                        colorHistogram[bin]++;
-
-                        if (b > g + 12) blueDominantPixels++;
-                        if (Math.abs(g - b) <= 22 && g > r + 15 && b > r + 15) cyanDominantPixels++;
-                    }
-                }
-
-                const skinRatio = validPixels > 0 ? (skinTonePixels / validPixels) : 0;
-                const saturationRatio = validPixels > 0 ? (saturatedPixels / validPixels) : 0;
-
-                if (skinRatio > 0.55 && saturationRatio < 0.16) {
+                // Si la mano cubre más del 65% del lente y no hay color ni envase
+                if (features.skinRatio > 0.65 && features.satRatio < 0.08 && !features.isDark && !features.isWhite) {
                     updateScannerCandidates([]);
                     scannerState.consecutiveHits = {};
                     const statusText = document.getElementById('scannerStatusText');
                     if (statusText) {
-                        statusText.innerHTML = '<i class="fa-solid fa-eye" style="color:var(--yellow);"></i><span>Centra el producto Vonixx en la retícula</span>';
+                        statusText.innerHTML = '<i class="fa-solid fa-eye" style="color:var(--yellow);"></i><span>Centra el envase Vonixx en la retícula</span>';
                     }
                     return;
                 }
-
-                if (saturationRatio < 0.12 && (whiteBottlePixels / validPixels) < 0.35) {
-                    updateScannerCandidates([]);
-                    scannerState.consecutiveHits = {};
-                    return;
-                }
-
-                const avgR = totalR / validPixels;
-                const avgG = totalG / validPixels;
-                const avgB = totalB / validPixels;
-                const avgHsv = rgbToHsv(avgR, avgG, avgB);
-
-                // Matiz continuo real sin saltos forzados de 30°
-                const continuousHue = saturatedPixels > 0 ? (sumSatHue / saturatedPixels) : avgHsv.h;
-
-                let maxBinCount = 0;
-                let dominantBin = -1;
-                for (let b = 0; b < 12; b++) {
-                    if (colorHistogram[b] > maxBinCount) {
-                        maxBinCount = colorHistogram[b];
-                        dominantBin = b;
-                    }
-                }
-                const dominantRatio = validPixels > 0 ? (maxBinCount / validPixels) : 0;
-
-                // Diagnóstico físico de color
-                const isBlueDominant = (blueDominantPixels > cyanDominantPixels * 1.3) || (avgB > avgG + 12);
-                const isCyanDominant = (cyanDominantPixels >= blueDominantPixels) && (avgG >= avgB - 12);
-                const isWhiteBottleSintra = (whiteBottlePixels / validPixels) >= 0.28 && (blueDominantPixels > 0 || avgB >= avgG);
 
                 const scores = [];
                 const products = state.products || [];
 
-                products.forEach(p => {
-                    const pName = (p.name || '').toLowerCase();
-                    const pCode = (p.code || '').toLowerCase();
-                    let matchScore = 0;
+                // Evaluar reglas de botellas oficiales
+                VONIXX_BOTTLE_PROFILES.forEach(rule => {
+                    if (rule.check(features)) {
+                        const matchedProds = products.filter(p => {
+                            const pName = (p.name || '').toLowerCase();
+                            const pCode = (p.code || '').toLowerCase();
+                            return rule.keywords.some(k => pName.includes(k) || pCode.includes(k));
+                        });
 
-                    for (const rule of VONIXX_VISUAL_RULES) {
-                        const matchesKeyword = rule.keywords.some(k => pName.includes(k) || pCode.includes(k));
-                        if (!matchesKeyword) continue;
-
-                        // Validar comprobación de canal específica si existe
-                        if (rule.channelCheck && !rule.channelCheck(avgR, avgG, avgB)) {
-                            // No cumple la condición física de color (ej. Spell no puede ser azul oscuro cobalto)
-                            continue;
-                        }
-
-                        // Caso especial SINTRA FAST (envase blanco translúcido con etiqueta azul)
-                        if (rule.name === 'SINTRA' && (isBlueDominant || isWhiteBottleSintra)) {
-                            matchScore = 0.92 + (dominantRatio * 0.08);
-                            break;
-                        }
-
-                        // Caso especial SPELL (líquido cian turquesa)
-                        if (rule.name === 'SPELL' && !isCyanDominant) {
-                            // Si el azul domina sobre el verde, NO es Spell
-                            continue;
-                        }
-
-                        if (rule.targetHue) {
-                            const [minH, maxH] = rule.targetHue;
-                            const inHue = (minH <= maxH)
-                                ? (continuousHue >= minH && continuousHue <= maxH)
-                                : (continuousHue >= minH || continuousHue <= maxH);
-
-                            if (inHue && dominantRatio >= (rule.minRatio || 0.16) && avgHsv.s >= (rule.minSat || 0.25)) {
-                                matchScore = 0.86 + (dominantRatio * 0.14);
-                            }
-                        }
-                    }
-
-                    if (matchScore > 0.48) {
-                        scores.push({ product: p, score: matchScore });
+                        matchedProds.forEach(p => {
+                            let score = rule.baseScore + (features.satRatio * 0.08);
+                            scores.push({ product: p, score: score, profileName: rule.name });
+                        });
                     }
                 });
 
-                // Desempate inteligente y resolución de colisión (Sintra vs Spell)
+                // Desempate de precisión (ej. Sintra vs Spell)
                 if (scores.length >= 2) {
-                    const p1 = (scores[0].product.name || '').toLowerCase();
-                    const p2 = (scores[1].product.name || '').toLowerCase();
+                    const isSintra = features.blueRatio > features.cyanRatio || (features.avgB > features.avgG + 8);
+                    const isSpell = features.cyanRatio >= features.blueRatio && (features.avgG >= features.avgB - 14);
 
-                    if ((p1.includes('spell') && p2.includes('sintra')) || (p1.includes('sintra') && p2.includes('spell'))) {
-                        if (isBlueDominant || isWhiteBottleSintra) {
-                            // Asignar victoria absoluta a Sintra
-                            const sintraItem = p1.includes('sintra') ? scores[0] : scores[1];
-                            const otherItem = p1.includes('sintra') ? scores[1] : scores[0];
-                            sintraItem.score = 0.96;
-                            otherItem.score = 0.55;
-                        } else if (isCyanDominant) {
-                            // Asignar victoria a Spell
-                            const spellItem = p1.includes('spell') ? scores[0] : scores[1];
-                            const otherItem = p1.includes('spell') ? scores[1] : scores[0];
-                            spellItem.score = 0.96;
-                            otherItem.score = 0.55;
+                    scores.forEach(s => {
+                        const name = (s.product.name || '').toLowerCase();
+                        if (name.includes('sintra')) {
+                            if (isSintra) s.score += 0.08;
+                            else if (isSpell) s.score -= 0.30;
                         }
-                    }
+                        if (name.includes('spell')) {
+                            if (isSpell) s.score += 0.08;
+                            else if (isSintra) s.score -= 0.30;
+                        }
+                    });
                 }
 
-                // C.1) EVALUAR PERFILES APRENDIDOS / CALIBRADOS PERSONALIZADOS (ALTA PRIORIDAD)
+                // C.1) EVALUAR PERFILES APRENDIDOS / CALIBRADOS PERSONALIZADOS
                 const learnedProfiles = getLearnedProducts();
                 if (learnedProfiles.length > 0) {
                     learnedProfiles.forEach(lp => {
-                        const targetProd = (state.products || []).find(p => p.id === lp.id || (p.code && p.code.toLowerCase() === (lp.code || '').toLowerCase()));
+                        const targetProd = products.find(p => p.id === lp.id || (p.code && p.code.toLowerCase() === (lp.code || '').toLowerCase()));
                         if (!targetProd) return;
 
                         const [minH, maxH] = lp.targetHue || [0, 360];
                         const inHue = (minH <= maxH)
-                            ? (continuousHue >= minH && continuousHue <= maxH)
-                            : (continuousHue >= minH || continuousHue <= maxH);
+                            ? (features.continuousHue >= minH && features.continuousHue <= maxH)
+                            : (features.continuousHue >= minH || features.continuousHue <= maxH);
 
-                        if (inHue && avgHsv.s >= (lp.minSat || 0.14)) {
-                            let matchScore = 0.96;
-                            if (lp.rgbRatio) {
-                                if (lp.rgbRatio.blueDominant && isBlueDominant) matchScore += 0.03;
-                                if (lp.rgbRatio.cyanDominant && isCyanDominant) matchScore += 0.03;
-                            }
+                        if (inHue && features.satRatio >= 0.06) {
+                            let matchScore = 0.98;
                             const existing = scores.find(s => s.product.id === targetProd.id);
                             if (existing) {
                                 existing.score = Math.max(existing.score, matchScore);
@@ -3990,16 +4317,32 @@
                 }
 
                 scores.sort((a, b) => b.score - a.score);
-                scannerState.lastCandidates = scores.slice(0, 4);
-                updateScannerCandidates(scores.slice(0, 3));
 
-                // Confirmación
-                if (scores.length > 0) {
-                    const top = scores[0];
-                    if (top.score >= 0.90) {
+                // Actualizar chips de sugerencias en vivo
+                const uniqueCandidates = [];
+                scores.forEach(s => {
+                    if (!uniqueCandidates.some(u => u.product.id === s.product.id)) {
+                        uniqueCandidates.push(s);
+                    }
+                });
+
+                scannerState.lastCandidates = uniqueCandidates.slice(0, 4);
+                updateScannerCandidates(uniqueCandidates.slice(0, 3));
+
+                // Confirmación y disparo
+                if (uniqueCandidates.length > 0) {
+                    const top = uniqueCandidates[0];
+
+                    if (forceDecision) {
                         onProductVisuallyRecognized(top.product, !!top.isLearned);
                         scannerState.consecutiveHits = {};
-                    } else if (top.score >= 0.80) {
+                        return;
+                    }
+
+                    if (top.score >= 0.74) {
+                        onProductVisuallyRecognized(top.product, !!top.isLearned);
+                        scannerState.consecutiveHits = {};
+                    } else if (top.score >= 0.62) {
                         const pid = top.product.id;
                         scannerState.consecutiveHits[pid] = (scannerState.consecutiveHits[pid] || 0) + 1;
                         if (scannerState.consecutiveHits[pid] >= 2) {
@@ -4011,6 +4354,12 @@
                     }
                 } else {
                     scannerState.consecutiveHits = {};
+                    if (forceDecision) {
+                        const statusText = document.getElementById('scannerStatusText');
+                        if (statusText) {
+                            statusText.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:var(--yellow);"></i><span>Acerca más la etiqueta o el código de barras</span>';
+                        }
+                    }
                 }
 
             } catch (err) {
@@ -4545,6 +4894,10 @@
                     <span class="scanner-live-badge"><span class="scanner-live-dot"></span> EN VIVO</span>
                 </div>
                 <div class="scanner-header-tools">
+                    <button type="button" class="scanner-tool-btn" onclick="captureAndDetectNow()" title="Capturar y forzar detección inmediata" style="width:auto; padding:0 8px; gap:4px; font-weight:700; font-size:11px; color:var(--blue); border-color:var(--blue);">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Detectar</span>
+                    </button>
                     <button type="button" class="scanner-tool-btn" onclick="openTeachProductModal()" title="Enseñar producto al escáner" style="width:auto; padding:0 8px; gap:4px; font-weight:700; font-size:11px; color:var(--green); border-color:var(--green);">
                         <i class="fa-solid fa-graduation-cap"></i>
                         <span>Enseñar</span>
@@ -4558,105 +4911,108 @@
                 </div>
             </div>
 
-            <!-- Viewport de Video y Retícula HUD -->
-            <div class="scanner-viewport" id="scannerViewport">
-                <video id="selfieVideo" playsinline autoplay muted></video>
-                <canvas id="scannerCanvas" style="display:none;"></canvas>
+            <!-- Cuerpo del Escáner (Split 2 Columnas en Tablets Landscape / Vertical en Portrait) -->
+            <div class="scanner-body-layout">
+                <!-- Viewport de Video y Retícula HUD -->
+                <div class="scanner-viewport" id="scannerViewport">
+                    <video id="selfieVideo" playsinline autoplay muted></video>
+                    <canvas id="scannerCanvas" style="display:none;"></canvas>
 
-                <!-- Capa HUD de Escáner -->
-                <div class="scanner-hud-overlay">
-                    <div class="scanner-target-box" id="scannerTargetBox">
-                        <span class="hud-corner tl"></span>
-                        <span class="hud-corner tr"></span>
-                        <span class="hud-corner bl"></span>
-                        <span class="hud-corner br"></span>
-                        <div class="hud-laser"></div>
-                        <div class="hud-crosshair"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tarjeta de Producto Detectado & Selección de Piezas -->
-            <div class="scanner-detected-card" id="scannerDetectedCard">
-                <div class="scanner-detected-header">
-                    <img id="detectedProductImg" src="/favicon.png" alt="Producto" class="scanner-detected-img" onerror="this.src='/favicon.png'">
-                    <div class="scanner-detected-info">
-                        <div class="scanner-detected-tag" id="detectedProductTag">✨ PRODUCTO DETECTADO</div>
-                        <div class="scanner-detected-name" id="detectedProductName">V-MOL 1.5 L</div>
-                        <div class="scanner-detected-price" id="detectedProductPrice">$131.00 MXN</div>
+                    <!-- Capa HUD de Escáner -->
+                    <div class="scanner-hud-overlay">
+                        <div class="scanner-target-box" id="scannerTargetBox">
+                            <span class="hud-corner tl"></span>
+                            <span class="hud-corner tr"></span>
+                            <span class="hud-corner bl"></span>
+                            <span class="hud-corner br"></span>
+                            <div class="hud-laser"></div>
+                            <div class="hud-crosshair"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Botón de cambio rápido en caso de querer otra opción (ej. Sintra vs Spell) -->
-                <div style="display:flex; flex-direction:column; gap:4px; padding:0 2px;">
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
-                        <button type="button" class="btn-switch-detected" onclick="toggleAlternativeCandidates()" style="background:none; border:none; color:var(--blue); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; padding:2px 0; text-align:left;">
-                            <i class="fa-solid fa-arrows-rotate"></i>
-                            <span>¿No es este? Cambiar</span>
+                <!-- Panel Lateral / Inferior de Controles y Detección -->
+                <div class="scanner-controls-panel">
+                    <!-- Status / Guía en vivo -->
+                    <div class="scanner-status-text" id="scannerStatusText">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Coloca el envase o etiqueta Vonixx frente a la cámara</span>
+                    </div>
+
+                    <!-- Coincidencias sugeridas en vivo (chips táctiles) -->
+                    <div id="scannerCandidatesSection" style="display:none; flex-direction:column; gap:4px; padding:0 2px;">
+                        <span style="font-size:10px; color:var(--muted); font-weight:700;">SUGERENCIAS VISUALES (Toca si es tu producto):</span>
+                        <div class="scanner-candidates-row" id="scannerCandidatesRow"></div>
+                    </div>
+
+                    <!-- Tarjeta de Producto Detectado & Selección de Piezas -->
+                    <div class="scanner-detected-card" id="scannerDetectedCard">
+                        <div class="scanner-detected-header">
+                            <img id="detectedProductImg" src="/favicon.png" alt="Producto" class="scanner-detected-img" onerror="this.src='/favicon.png'">
+                            <div class="scanner-detected-info">
+                                <div class="scanner-detected-tag" id="detectedProductTag">✨ PRODUCTO DETECTADO</div>
+                                <div class="scanner-detected-name" id="detectedProductName">V-MOL 1.5 L</div>
+                                <div class="scanner-detected-price" id="detectedProductPrice">$131.00 MXN</div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de cambio rápido en caso de querer otra opción (ej. Sintra vs Spell) -->
+                        <div style="display:flex; flex-direction:column; gap:4px; padding:0 2px;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
+                                <button type="button" class="btn-switch-detected" onclick="toggleAlternativeCandidates()" style="background:none; border:none; color:var(--blue); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px; padding:2px 0; text-align:left;">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                    <span>¿No es este? Cambiar</span>
+                                </button>
+                                <button type="button" class="btn-teach-detected" onclick="openTeachProductModal(scannerState.currentPendingProduct)" style="background:none; border:none; color:var(--green); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px; padding:2px 0; text-align:right;">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                    <span>Calibrar / Enseñar</span>
+                                </button>
+                            </div>
+                            <div id="scannerAlternativeChips" style="display:none; flex-wrap:wrap; gap:5px; margin-top:2px;"></div>
+                        </div>
+
+                        <!-- Selector interactivo de piezas -->
+                        <div class="scanner-qty-row">
+                            <span class="scanner-qty-label"><i class="fa-solid fa-boxes-stacked" style="color:var(--blue); margin-right:4px;"></i>Piezas a vender:</span>
+                            <div class="scanner-qty-controls">
+                                <button type="button" class="scanner-qty-btn" onclick="stepScannerQty(-1)">-</button>
+                                <input type="number" id="scannerQtyInput" class="scanner-qty-input" value="1" min="1" max="999">
+                                <button type="button" class="scanner-qty-btn" onclick="stepScannerQty(1)">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Acciones: Continuar escaneando o Finalizar -->
+                        <div class="scanner-action-buttons">
+                            <button type="button" class="btn-scanner-continue" onclick="confirmScanProduct(true)">
+                                <i class="fa-solid fa-plus-circle"></i>
+                                <span>Agregar y Continuar</span>
+                            </button>
+                            <button type="button" class="btn-scanner-finish" onclick="confirmScanProduct(false)">
+                                <i class="fa-solid fa-check-double"></i>
+                                <span>Agregar y Finalizar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Footer y Controles -->
+                    <div class="scanner-footer">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:2px 2px;">
+                            <button type="button" onclick="openTeachProductModal()" style="background:none; border:none; color:var(--green); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                <span>¿Falla el escáner? Enseñar producto</span>
+                            </button>
+                            <button type="button" onclick="openLearnedManagerModal()" id="btnLearnedCount" style="background:none; border:none; color:var(--muted); font-size:10.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                                <i class="fa-solid fa-list-check"></i>
+                                <span id="learnedProductsCountBadge">Calibrados (0)</span>
+                            </button>
+                        </div>
+
+                        <!-- Botón de salida directa -->
+                        <button type="button" class="btn-finish-scan" onclick="closeSelfieScanner()">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Finalizar Escaneo</span>
                         </button>
-                        <button type="button" class="btn-teach-detected" onclick="openTeachProductModal(scannerState.currentPendingProduct)" style="background:none; border:none; color:var(--green); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px; padding:2px 0; text-align:right;">
-                            <i class="fa-solid fa-graduation-cap"></i>
-                            <span>Calibrar / Enseñar</span>
-                        </button>
                     </div>
-                    <div id="scannerAlternativeChips" style="display:none; flex-wrap:wrap; gap:5px; margin-top:2px;"></div>
-                </div>
-
-                <!-- Selector interactivo de piezas -->
-                <div class="scanner-qty-row">
-                    <span class="scanner-qty-label"><i class="fa-solid fa-boxes-stacked" style="color:var(--blue); margin-right:4px;"></i>Piezas a vender:</span>
-                    <div class="scanner-qty-controls">
-                        <button type="button" class="scanner-qty-btn" onclick="stepScannerQty(-1)">-</button>
-                        <input type="number" id="scannerQtyInput" class="scanner-qty-input" value="1" min="1" max="999">
-                        <button type="button" class="scanner-qty-btn" onclick="stepScannerQty(1)">+</button>
-                    </div>
-                </div>
-
-                <!-- Acciones: Continuar escaneando o Finalizar -->
-                <div class="scanner-action-buttons">
-                    <button type="button" class="btn-scanner-continue" onclick="confirmScanProduct(true)">
-                        <i class="fa-solid fa-plus-circle"></i>
-                        <span>Agregar y Continuar</span>
-                    </button>
-                    <button type="button" class="btn-scanner-finish" onclick="confirmScanProduct(false)">
-                        <i class="fa-solid fa-check-double"></i>
-                        <span>Agregar y Finalizar</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Footer y Controles -->
-            <div class="scanner-footer">
-                <div class="scanner-status-text" id="scannerStatusText">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Coloca el envase o etiqueta Vonixx frente a la cámara</span>
-                </div>
-
-                <!-- Coincidencias sugeridas en vivo -->
-                <div id="scannerCandidatesSection" style="display:none; flex-direction:column; gap:4px;">
-                    <span style="font-size:10px; color:var(--muted); font-weight:700;">SUGERENCIAS VISUALES (Toca si es tu producto):</span>
-                    <div class="scanner-candidates-row" id="scannerCandidatesRow"></div>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:3px 2px;">
-                    <button type="button" onclick="openTeachProductModal()" style="background:none; border:none; color:var(--green); font-size:11px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:5px;">
-                        <i class="fa-solid fa-graduation-cap"></i>
-                        <span>¿Falla el escáner? Enseñar producto</span>
-                    </button>
-                    <button type="button" onclick="openLearnedManagerModal()" id="btnLearnedCount" style="background:none; border:none; color:var(--muted); font-size:10.5px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
-                        <i class="fa-solid fa-list-check"></i>
-                        <span id="learnedProductsCountBadge">Calibrados (0)</span>
-                    </button>
-                </div>
-
-                <!-- Botón de salida directa -->
-                <button type="button" class="btn-finish-scan" onclick="closeSelfieScanner()">
-                    <i class="fa-solid fa-xmark"></i>
-                    <span>Finalizar Escaneo</span>
-                </button>
-
-                <div style="text-align:center; font-size:10px; color:var(--muted-2);">
-                    <span>🧠 Reconocimiento visual y calibración personalizada Vonixx</span>
                 </div>
             </div>
         </div>
