@@ -1892,29 +1892,30 @@ textarea[required]:focus,
 
             <!-- Tabla Interactiva de Inventario -->
             <div class="table-wrapper" style="overflow-x:auto;">
-                <table style="min-width:1150px;">
+                <table style="min-width:1250px;">
                     <thead>
                         <tr>
-                            <th style="width:70px;">Imagen</th>
-                            <th style="width:110px;">Código</th>
+                            <th style="width:65px;">Imagen</th>
+                            <th style="width:105px;">Código</th>
+                            <th style="width:135px;"><i class="fa-solid fa-barcode" style="color:var(--blue); margin-right:4px;"></i>Código de Barras</th>
                             <th>Descripción / Producto</th>
-                            <th style="width:60px;">UdM</th>
-                            <th style="width:75px; text-align:right;">Cantidad</th>
-                            <th style="width:95px; text-align:right;">Precio Base</th>
-                            <th style="width:100px; text-align:right;">SubTotal</th>
-                            <th style="width:85px; text-align:right;">% Aumento</th>
-                            <th style="width:110px; text-align:right;">Nuevo Precio</th>
-                            <th style="width:110px; text-align:right;">Nuevo SubTotal</th>
-                            <th style="width:90px; text-align:center;">Variaciones</th>
-                            <th style="width:110px; text-align:center;">Acciones</th>
+                            <th style="width:55px;">UdM</th>
+                            <th style="width:70px; text-align:right;">Cantidad</th>
+                            <th style="width:90px; text-align:right;">Precio Base</th>
+                            <th style="width:95px; text-align:right;">SubTotal</th>
+                            <th style="width:80px; text-align:right;">% Aum</th>
+                            <th style="width:105px; text-align:right;">Nuevo Precio</th>
+                            <th style="width:105px; text-align:right;">Nuevo SubTotal</th>
+                            <th style="width:85px; text-align:center;">Variaciones</th>
+                            <th style="width:95px; text-align:center;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="inventoryTableBody">
-                        <tr><td colspan="12" style="text-align:center; color:var(--muted); padding:30px;">Cargando inventario...</td></tr>
+                        <tr><td colspan="13" style="text-align:center; color:var(--muted); padding:30px;">Cargando inventario...</td></tr>
                     </tbody>
                     <tfoot>
                         <tr style="background:var(--panel-2); font-weight:700;">
-                            <td colspan="6" style="padding:14px; color:var(--text);">TOTALES ACUMULADOS</td>
+                            <td colspan="7" style="padding:14px; color:var(--text);">TOTALES ACUMULADOS</td>
                             <td style="text-align:right; font-family:'Rajdhani',sans-serif; font-size:16px;" id="footInvOriginal">$0.00</td>
                             <td></td>
                             <td></td>
@@ -2615,10 +2616,14 @@ textarea[required]:focus,
             <h3 id="productModalTitle" style="margin-bottom:16px;"><i class="fa-solid fa-box-open" style="color:var(--green); margin-right:8px;"></i> Editar Producto de Inventario</h3>
             <form id="productForm">
                 <input type="hidden" id="prodId">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
                     <div class="form-group">
                         <label>Código del Producto</label>
                         <input type="text" id="prodCode" class="form-input" placeholder="ej. VON-00042" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Código de Barras (EAN-13)</label>
+                        <input type="text" id="prodBarcode" class="form-input font-mono" placeholder="ej. 7898511027159" style="color:var(--blue);">
                     </div>
                     <div class="form-group">
                         <label>Unidad de Medida (UdM)</label>
@@ -2688,15 +2693,19 @@ textarea[required]:focus,
 
     <!-- Modal Gestionar Variaciones de Producto -->
     <div id="variationsModal" class="modal" style="display:none;">
-        <div class="modal-content" style="max-width:580px;">
+        <div class="modal-content" style="max-width:680px;">
             <h3 style="margin-bottom:6px;"><i class="fa-solid fa-sliders" style="color:var(--blue); margin-right:8px;"></i> Variaciones del Producto</h3>
             <p id="varProdName" style="color:var(--muted); font-size:13px; margin-bottom:16px;"></p>
             <div style="margin-bottom:16px;">
                 <h4 style="color:var(--green); margin-bottom:10px; font-size:14px;">Agregar Nueva Variación</h4>
-                <div style="display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:8px; align-items:flex-end;">
+                <div style="display:grid; grid-template-columns:1.8fr 1.6fr 1fr 1fr auto; gap:8px; align-items:flex-end;">
                     <div class="form-group" style="margin:0;">
                         <label style="font-size:11px;">Nombre / Tamaño</label>
                         <input type="text" id="newVarName" class="form-input" placeholder="ej. 500 ML, 1.5 L, 20 L">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label style="font-size:11px;">Código de Barras</label>
+                        <input type="text" id="newVarBarcode" class="form-input font-mono" placeholder="ej. 7898511029993" style="color:var(--blue); font-size:11.5px;">
                     </div>
                     <div class="form-group" style="margin:0;">
                         <label style="font-size:11px;">Precio ($)</label>
@@ -2715,13 +2724,14 @@ textarea[required]:focus,
                     <thead>
                         <tr>
                             <th>Variación</th>
+                            <th>Código de Barras</th>
                             <th style="text-align:right;">Precio Base</th>
                             <th style="text-align:right;">Stock</th>
                             <th style="text-align:center;">Acción</th>
                         </tr>
                     </thead>
                     <tbody id="variationsListBody">
-                        <tr><td colspan="4" style="text-align:center; padding:15px; color:var(--muted);">Sin variaciones registradas.</td></tr>
+                        <tr><td colspan="5" style="text-align:center; padding:15px; color:var(--muted);">Sin variaciones registradas.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -5465,6 +5475,7 @@ function resolveToGitRepoUrl(item) {
             document.getElementById('productModalTitle').textContent = 'Editar Detalles de ' + prod.name;
             document.getElementById('prodId').value = prod.id || prod.code;
             document.getElementById('prodCode').value = prod.code || prod.id;
+            document.getElementById('prodBarcode').value = prod.barcode || '';
             document.getElementById('prodName').value = prod.name || '';
             document.getElementById('prodUdm').value = prod.udm || 'PZ';
             document.getElementById('prodQty').value = prod.qty !== undefined ? prod.qty : 1;
@@ -5524,7 +5535,10 @@ function resolveToGitRepoUrl(item) {
             var matchCount = 0;
 
             currentProductsList.forEach(function(p, idx) {
-                var matchesSearch = !search || (p.code && p.code.toLowerCase().includes(search)) || (p.name && p.name.toLowerCase().includes(search));
+                var matchesSearch = !search || 
+                    (p.code && p.code.toLowerCase().includes(search)) || 
+                    (p.name && p.name.toLowerCase().includes(search)) ||
+                    (p.barcode && String(p.barcode).toLowerCase().includes(search));
                 var matchesCat = (categoryFilter === 'all') || (p.category === categoryFilter);
 
                 if (!matchesSearch || !matchesCat) return;
@@ -5550,6 +5564,9 @@ function resolveToGitRepoUrl(item) {
                     </td>
                     <td>
                         <input type="text" class="form-input row-code" value="${p.code || p.id}" style="font-family:monospace; font-size:12px; padding:4px 6px;" data-idx="${idx}">
+                    </td>
+                    <td>
+                        <input type="text" class="form-input row-barcode" value="${p.barcode || ''}" placeholder="EAN-13" style="font-family:monospace; font-size:11.5px; padding:4px 6px; color:var(--blue); width:100%; min-width:115px;" data-idx="${idx}">
                     </td>
                     <td style="max-width:260px;">
                         <input type="text" class="form-input row-name" value="${p.name || ''}" style="font-size:12.5px; padding:4px 6px; font-weight:600;" data-idx="${idx}">
@@ -5582,7 +5599,7 @@ function resolveToGitRepoUrl(item) {
                 </tr>`;
             });
 
-            tbody.innerHTML = html || '<tr><td colspan="12" style="text-align:center; color:var(--muted); padding:30px;">No se encontraron productos.</td></tr>';
+            tbody.innerHTML = html || '<tr><td colspan="13" style="text-align:center; color:var(--muted); padding:30px;">No se encontraron productos.</td></tr>';
 
             // Actualizar Métricas Estadísticas
             document.getElementById('invSumOriginal').textContent = fmtMXN(originalSum);
@@ -5599,6 +5616,15 @@ function resolveToGitRepoUrl(item) {
                 inp.addEventListener('input', function() {
                     var idx = +this.getAttribute('data-idx');
                     currentProductsList[idx].code = this.value;
+                    autoSaveLocalInventory();
+                    sendLivePreviewUpdate();
+                });
+            });
+
+            tbody.querySelectorAll('.row-barcode').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    var idx = +this.getAttribute('data-idx');
+                    currentProductsList[idx].barcode = this.value.trim();
                     autoSaveLocalInventory();
                     sendLivePreviewUpdate();
                 });
@@ -5765,6 +5791,7 @@ function resolveToGitRepoUrl(item) {
                 document.getElementById('productModalTitle').textContent = 'Agregar Nuevo Producto';
                 document.getElementById('prodId').value = '';
                 document.getElementById('prodCode').value = 'VON-' + Math.floor(10000 + Math.random() * 90000);
+                document.getElementById('prodBarcode').value = '';
                 document.getElementById('prodName').value = '';
                 document.getElementById('prodUdm').value = 'PZ';
                 document.getElementById('prodQty').value = '1';
@@ -5798,6 +5825,7 @@ function resolveToGitRepoUrl(item) {
             e.preventDefault();
             var id = document.getElementById('prodId').value.trim();
             var code = document.getElementById('prodCode').value.trim();
+            var barcode = document.getElementById('prodBarcode').value.trim();
             var name = document.getElementById('prodName').value.trim();
             var udm = document.getElementById('prodUdm').value.trim();
             var qty = parseInt(document.getElementById('prodQty').value) || 1;
@@ -5813,6 +5841,7 @@ function resolveToGitRepoUrl(item) {
             var payload = {
                 id: id || code || ('VON-' + Date.now().toString().slice(-5)),
                 code: code || id,
+                barcode: barcode,
                 name: name,
                 udm: udm || 'PZ',
                 qty: qty,
@@ -5921,6 +5950,9 @@ function resolveToGitRepoUrl(item) {
                 html += `
                 <tr>
                     <td style="font-weight:600;">${v.name}</td>
+                    <td>
+                        <input type="text" class="form-input var-row-barcode font-mono" value="${v.barcode || ''}" placeholder="EAN-13" style="font-size:11.5px; padding:3px 6px; color:var(--blue); width:130px;" data-var-idx="${idx}">
+                    </td>
                     <td style="text-align:right;">${fmtMXN(v.price)}</td>
                     <td style="text-align:right;">${v.qty || 1}</td>
                     <td style="text-align:center;">
@@ -5928,11 +5960,23 @@ function resolveToGitRepoUrl(item) {
                     </td>
                 </tr>`;
             });
-            tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding:15px; color:var(--muted);">Sin variaciones. Agrega una arriba.</td></tr>';
+            tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; padding:15px; color:var(--muted);">Sin variaciones registradas. Agrega una arriba.</td></tr>';
+
+            tbody.querySelectorAll('.var-row-barcode').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    var vIdx = +this.getAttribute('data-var-idx');
+                    var prod = currentProductsList.find(function(p) { return p.id === activeVariationProductId || p.code === activeVariationProductId; });
+                    if (prod && prod.variations && prod.variations[vIdx]) {
+                        prod.variations[vIdx].barcode = this.value.trim();
+                        autoSaveLocalInventory();
+                    }
+                });
+            });
         }
 
         document.getElementById('addVariationBtn').addEventListener('click', function() {
             var name = document.getElementById('newVarName').value.trim();
+            var barcode = document.getElementById('newVarBarcode').value.trim();
             var price = parseFloat(document.getElementById('newVarPrice').value) || 0;
             var qty = parseInt(document.getElementById('newVarQty').value) || 1;
 
@@ -5947,11 +5991,13 @@ function resolveToGitRepoUrl(item) {
                 prod.variations.push({
                     id: 'v_' + Date.now(),
                     name: name,
+                    barcode: barcode,
                     price: price,
                     qty: qty
                 });
                 renderVariationsList(prod.variations);
                 document.getElementById('newVarName').value = '';
+                document.getElementById('newVarBarcode').value = '';
                 document.getElementById('newVarPrice').value = '';
             }
         });

@@ -1282,12 +1282,13 @@ app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
 
 // 5. Crear o Actualizar Producto en Inventario
 app.post('/api/admin/products', requireAdminAuth, async (req, res) => {
-  const { id, code, name, price, pct, qty, udm, category, image, description, sec, variations, customNewPrice } = req.body;
+  const { id, code, name, price, pct, qty, udm, category, image, description, sec, variations, customNewPrice, barcode } = req.body;
   const docId = id || code || ('VON-' + Date.now().toString().slice(-5));
   
   const productData = calculateItemPrices({
     id: docId,
     code: code || docId,
+    barcode: barcode !== undefined ? (barcode ? String(barcode).trim() : '') : undefined,
     name: name || 'Nuevo Producto',
     price: parseFloat(price) || 0,
     pct: parseFloat(pct) || 0,
@@ -1330,6 +1331,9 @@ app.post('/api/admin/products/batch', requireAdminAuth, async (req, res) => {
 
   let updatedList = products.map(p => {
     p.image = resolveToGitRepoUrl(p);
+    if (p.barcode !== undefined) {
+      p.barcode = p.barcode ? String(p.barcode).trim() : '';
+    }
     if (globalPct !== undefined && globalPct !== null) {
       p.pct = parseFloat(globalPct);
     }
