@@ -117,7 +117,7 @@
       id: "VON-00042",
       name: "V-MOL 1.5 L",
       category: "shampoo",
-      price: 131.00,
+      price: 240.00,
       image: GIT_REPO_BASE + "V-MOL%201.5L.png",
       keywords: ["vmol", "v-mol", "shampoo", "desincrustante", "suciedad pesada", "barro", "prelavado", "espuma", "ph alcalino"],
       description: "Shampoo desincrustante de alta concentración para eliminar suciedad pesada, barro, grasa y películas de carretera sin dañar la pintura.",
@@ -127,7 +127,7 @@
       id: "VON-00026",
       name: "V-FLOC (SHAMPOO PH NEUTRO)",
       category: "shampoo",
-      price: 91.00,
+      price: 166.00,
       image: GIT_REPO_BASE + "V-FLOC-500ML.png",
       keywords: ["vfloc", "v-floc", "shampoo", "neutro", "ph neutro", "lavado seguro", "espuma", "mantenimiento"],
       description: "Shampoo de pH neutro con agentes acondicionadores de alto rendimiento y lubricación superior para evitar microrayones (swirls).",
@@ -137,7 +137,7 @@
       id: "VON-00097",
       name: "HYDROX WASH 500ML",
       category: "shampoo",
-      price: 269.00,
+      price: 492.00,
       image: GIT_REPO_BASE + "HYDROX%20WASH.png",
       keywords: ["hydrox wash", "shampoo ceramico", "sio2", "proteccion", "repelencia", "brillo"],
       description: "Shampoo cerámico formulado con SiO2 que limpia, revitaliza y agrega protección hidrofóbica durante el lavado regular.",
@@ -147,7 +147,7 @@
       id: "VON-00072",
       name: "ALUMAX – DESINCRUSTANTE ÁCIDO",
       category: "limpieza",
-      price: 1237.00,
+      price: 2261.00,
       image: GIT_REPO_BASE + "Alumax%2020L.png",
       keywords: ["alumax", "desincrustante", "acido", "rines", "aluminio", "motor", "chasis"],
       description: "Desincrustante ácido concentrado para eliminar suciedad inorgánica severa, óxido y hollín en rines de aluminio y partes de chasis.",
@@ -157,7 +157,7 @@
       id: "VON-00084",
       name: "REMOVEX – LIMPIADOR DE CHASIS",
       category: "limpieza",
-      price: 994.00,
+      price: 1817.00,
       image: GIT_REPO_BASE + "REMOVEX.png",
       keywords: ["removex", "desengrasante", "chasis", "motor", "grasa pesada", "aceite"],
       description: "Desengrasante de alta potencia diseñado para remover grasa, aceite y tierra en motores, chasis y carrocerías de camiones.",
@@ -167,7 +167,7 @@
       id: "VON-00067",
       name: "V-ECO FAST – LAVADO ECOLÓGICO EN SECO",
       category: "limpieza",
-      price: 85.00,
+      price: 206.00,
       image: GIT_REPO_BASE + "V-ECO%20FAST.png",
       keywords: ["veco", "v-eco", "lavado en seco", "ecologico", "sin agua", "cera"],
       description: "Lavado ecológico listo para usar con cera de carnaúba. Permite lavar el auto sin una sola gota de agua, aportando brillo y protección.",
@@ -177,7 +177,7 @@
       id: "VON-00039",
       name: "IZER – REMOVEDOR DE ÓXIDO Y FÉRREO",
       category: "limpieza",
-      price: 116.00,
+      price: 212.00,
       image: GIT_REPO_BASE + "IZER.png",
       keywords: ["izer", "descontaminante", "ferreo", "oxido", "rines", "polvo de frenos", "morado"],
       description: "Descontaminante férreo con pH neutro que disuelve el polvo de frenos y partículas de óxido adheridas en rines y pintura. Cambia a color morado al actuar.",
@@ -187,7 +187,7 @@
       id: "VON-00040",
       name: "STRIKE – REMOVEDOR DE ALQUITRÁN",
       category: "limpieza",
-      price: 193.00,
+      price: 200.00,
       image: GIT_REPO_BASE + "STRIKE.png",
       keywords: ["strike", "alquitran", "brea", "pegamento", "adhesivos", "asfalto"],
       description: "Formula solvente de acción rápida para eliminar manchas de alquitrán, asfalto, brea, goma de mascar y residuos de pegamento de calcomanías.",
@@ -207,7 +207,7 @@
       id: "VON-00027",
       name: "DELET – LIMPIADOR DE CAUCHO Y PLÁSTICOS",
       category: "limpieza",
-      price: 109.00,
+      price: 200.00,
       image: GIT_REPO_BASE + "DELET.png",
       keywords: ["delet", "limpiador de llantas", "caucho", "plasticos", "espuma blanca", "cafe"],
       description: "Limpiador de alto rendimiento para neumáticos y plásticos. Remueve la película marrón/café del caucho dejándolo impecable para el abrillantador.",
@@ -217,7 +217,7 @@
       id: "VON-00028",
       name: "SINTRA FAST – LIMPIADOR DE INTERIORES",
       category: "limpieza",
-      price: 98.00,
+      price: 179.00,
       image: GIT_REPO_BASE + "SINTRA%20FAST.png",
       keywords: ["sintra fast", "interiores", "tapiceria", "tablero", "apc interior", "bactericida", "listo para usar"],
       description: "Limpiador universal multiusos bactericida listo para usar en tableros, plásticos, telas, asientos y techo. Elimina suciedad, grasa y bacterias.",
@@ -237,7 +237,7 @@
       id: "VON-00091",
       name: "BACTRAN 1.5L – SISTEMA VSC",
       category: "vsc",
-      price: 113.00,
+      price: 206.00,
       image: GIT_REPO_BASE + "BACTRAN%201.5L.png",
       keywords: ["bactran", "vsc", "tapizados", "desinfectante", "bactericida", "sangre", "sudor", "moho"],
       description: "Paso 1 del Sistema VSC: Limpiador bactericida 7 en 1 de alta alcalinidad para eliminar manchas biológicas (sangre, sudor, orina, moho) en telas.",
@@ -247,7 +247,7 @@
       id: "VON-00093",
       name: "EXTRACTUS 1.5L – SISTEMA VSC",
       category: "vsc",
-      price: 107.00,
+      price: 195.00,
       image: GIT_REPO_BASE + "EXTRACTUS%201.5L.png",
       keywords: ["extractus", "vsc", "extractora", "baja espuma", "tapiceria", "alfombras"],
       description: "Paso 2 del Sistema VSC: Detergente ultra concentrado de baja espuma formulado especialmente para máquinas de inyección-succión y extractoras.",
@@ -257,7 +257,7 @@
       id: "VON-00104",
       name: "SANITIZANTE FINALIZADOR 1.5L – VSC",
       category: "vsc",
-      price: 118.00,
+      price: 216.00,
       image: GIT_REPO_BASE + "SANITIZANTE%201.5L.png",
       keywords: ["sanitizante", "vsc", "finalizador", "neutralizador", "suavizante", "olor"],
       description: "Paso 3 del Sistema VSC: Neutraliza el pH de las fibras, elimina malos olores y sella contra nuevas bacterias dejando las telas suaves.",
@@ -267,7 +267,7 @@
       id: "VON-00010",
       name: "BLEND PASTE WAX 100ML",
       category: "cera-pasta",
-      price: 317.00,
+      price: 580.00,
       image: GIT_REPO_BASE + "BLEND%20CERAMIC%20%26%20CARNAUBA%20PASTE%20WAX.png",
       keywords: ["blend", "paste wax", "cera pasta", "sio2", "carnauba", "7 meses", "brillo calido"],
       description: "Cera híbrida que une la calidez del brillo de carnaúba brasileña con la resistencia hidrofóbica del SiO2. Hasta 7 meses de durabilidad.",
@@ -277,7 +277,7 @@
       id: "VON-00036",
       name: "CARNAUBA HYBRID WAX 240ML",
       category: "cera-pasta",
-      price: 233.00,
+      price: 426.00,
       image: GIT_REPO_BASE + "CARNAUBA%20HYBRID%20WAX.png",
       keywords: ["carnauba hybrid", "cera pasta", "brillo", "proteccion", "polimeros"],
       description: "Cera en pasta elaborada con carnaúba pura y polímeros sintéticos que otorgan brillo profundo y protección contra intemperie de hasta 4 meses.",
@@ -297,7 +297,7 @@
       id: "VON-00109",
       name: "CARNAUBA TOK FINAL 500ML",
       category: "cera-liquida",
-      price: 139.00,
+      price: 180.00,
       image: GIT_REPO_BASE + "TOKFINAL.png",
       keywords: ["tok final", "cera liquida", "spray", "mantenimiento", "quick detailer", "brillo express"],
       description: "Cera líquida rápida formulada con carnaúba de fácil aplicación. Perfecta para dar el toque final después del lavado, eliminando polvo ligero.",
@@ -307,7 +307,7 @@
       id: "VON-00014",
       name: "NATIVE SPRAY WAX 500ML",
       category: "cera-liquida",
-      price: 169.00,
+      price: 309.00,
       image: GIT_REPO_BASE + "NATIVE%20FAST.png",
       keywords: ["native spray", "cera spray", "carnauba liquida", "brillo premium"],
       description: "Cera en spray con carnaúba pura brasileña para mantenimiento del brillo entre encerados. No contiene abrasivos.",
@@ -317,7 +317,7 @@
       id: "VON-00011",
       name: "CARNAUBA PLUS 500ML",
       category: "cera-liquida",
-      price: 120.00,
+      price: 219.00,
       image: GIT_REPO_BASE + "PLUS.png",
       keywords: ["carnauba plus", "cera limpiadora", "limpia y encera", "oxigenada"],
       description: "Cera limpiadora que elimina micro-manchas e impurezas de la pintura mientras deposita una película protectora de carnaúba y brillo.",
@@ -327,7 +327,7 @@
       id: "VON-00110",
       name: "CITRON 1.5L – SHAMPOO CÍTRICO",
       category: "shampoo",
-      price: 275.00,
+      price: 280.00,
       image: GIT_REPO_BASE + "CITRON%201.5L.png",
       keywords: ["citron", "shampoo desengrasante", "citrico", "bichos", "insectos", "suciedad grasa"],
       description: "Shampoo desengrasante natural a base de extracto cítrico. Disuelve savia de árboles, insectos pegados y ceras viejas antes de un pulido.",
@@ -337,7 +337,7 @@
       id: "VON-00095",
       name: "HYDROX FAST 500ML",
       category: "ceramicos",
-      price: 110.00,
+      price: 201.00,
       image: GIT_REPO_BASE + "HYDROX%20FAST.png",
       keywords: ["hydrox fast", "sellador ceramico", "hidroreactivo", "enjuague", "sio2"],
       description: "Sellador cerámico hidroreactivo de aplicación instantánea. Se rocía sobre el auto mojado después de lavarlo y se activa con el chorro de agua.",
@@ -347,7 +347,7 @@
       id: "VON-00096",
       name: "HYDROX PRO – CERÁMICO PROFESIONAL",
       category: "ceramicos",
-      price: 349.00,
+      price: 571.00,
       image: GIT_REPO_BASE + "HYDROX-PRO.png",
       keywords: ["hydrox pro", "ceramico", "hidroreactivo", "profesional", "alta durabilidad"],
       description: "Versión profesional de Hydrox con mayor concentración de SiO2 para talleres y detailers que buscan hasta 4 meses de repelencia extrema en minutos.",
@@ -357,7 +357,7 @@
       id: "VON-00098",
       name: "SINERGY PAINT 500ML",
       category: "ceramicos",
-      price: 490.00,
+      price: 632.00,
       image: GIT_REPO_BASE + "SINERGY%20PAINT.png",
       keywords: ["sinergy paint", "sellador ceramico", "carbosit", "carbono y silicio", "12 meses"],
       description: "Sellador cerámico en spray para pintura con tecnología exclusiva CarboSilt (silicio y carbono). Otorga hasta 12 meses de repelencia y súper suavidad.",
@@ -367,7 +367,7 @@
       id: "VON-00112",
       name: "SINERGY WHEEL 500ML",
       category: "ceramicos",
-      price: 590.00,
+      price: 618.00,
       image: GIT_REPO_BASE + "SINERGY%20SHEEL.png",
       keywords: ["sinergy wheel", "ceramico rines", "alta temperatura", "polvo de frenos", "repelencia rines"],
       description: "Coating cerámico especializado para rines. Resiste temperaturas de más de 200°C evitando que el polvo de frenos se pegue al metal.",
@@ -377,7 +377,7 @@
       id: "VON-00031",
       name: "RESTAURAX 500ML",
       category: "plasticos",
-      price: 201.00,
+      price: 368.00,
       image: GIT_REPO_BASE + "RESTAURAX.png",
       keywords: ["restaurax", "restaurador de plasticos", "paragolpes", "molduras", "proteccion uv", "plasticos negros"],
       description: "El restaurador de plásticos exteriores e interiores más vendido. Revive molduras grises o quemadas por el sol, dejando un acabado negro mate no graso.",
@@ -387,7 +387,7 @@
       id: "VON-00032",
       name: "RESTAURAX EN AEROSOL 400ML",
       category: "plasticos",
-      price: 245.00,
+      price: 253.00,
       image: GIT_REPO_BASE + "RESTAURAXAEROSOL.png",
       keywords: ["restaurax aerosol", "spray", "motor", "rejillas", "plasticos dificiles"],
       description: "Formato aerosol para áreas de difícil acceso como parrillas de panal, rejillas de ventilación y mangueras de motor. Acabado parejo instantáneo.",
@@ -407,7 +407,7 @@
       id: "VON-00033",
       name: "FLEXUS 500ML",
       category: "plasticos",
-      price: 185.00,
+      price: 277.00,
       image: GIT_REPO_BASE + "FLEXUS.png",
       keywords: ["flexus", "plasticos internos", "tablero", "acabado satinado", "suavidad"],
       description: "Acondicionador premium para plásticos de interior. Deja un tacto seco, suave y olor agradable, protegiendo tableros contra cuarteaduras.",
@@ -417,7 +417,7 @@
       id: "VON-00034",
       name: "INTENSE 500ML",
       category: "plasticos",
-      price: 195.00,
+      price: 201.00,
       image: GIT_REPO_BASE + "INTENSE.png",
       keywords: ["intense", "plasticos interiores", "acabado natural", "mate", "antigrasa"],
       description: "Protector de interiores con acabado 100% mate original de fábrica. No añade brillo artificial ni atrae polvo.",
@@ -427,7 +427,7 @@
       id: "VON-00062",
       name: "SHINY 500ML – ABRILLANTADOR DE LLANTAS",
       category: "llantas",
-      price: 176.00,
+      price: 321.00,
       image: GIT_REPO_BASE + "SHINY.png",
       keywords: ["shiny", "llantas", "brillo humedo", "gel", "durabilidad", "efecto mojado"],
       description: "Gel abrillantador de llantas con brillo súper húmedo y profundo. Muy resistente al agua de lluvia, dura hasta 4 semanas.",
@@ -437,7 +437,7 @@
       id: "VON-00061",
       name: "REVOX 500ML – ABRILLANTADOR SATINADO",
       category: "llantas",
-      price: 136.00,
+      price: 248.00,
       image: GIT_REPO_BASE + "REVOX.png",
       keywords: ["revox", "llantas", "satinado", "tacto seco", "caucho nuevo"],
       description: "Abrillantador de llantas con acabado satinado elegante tipo llanta nueva de agencia. Fórmula a base de solvente que no escurre.",
@@ -447,7 +447,7 @@
       id: "VON-00106",
       name: "REXER 500ML – HIDROFÓBICO DE LLANTAS",
       category: "llantas",
-      price: 182.00,
+      price: 333.00,
       image: GIT_REPO_BASE + "REXER.png",
       keywords: ["rexer", "repelente llantas", "hidrofobico", "repelente de lodo"],
       description: "Acondicionador para llantas con alta repelencia a agua y lodo. Evita que la tierra y el barro se incrusten en el costado del neumático.",
@@ -457,7 +457,7 @@
       id: "VON-00035",
       name: "GLAZY 500ML – LIMPIADOR DE CRISTALES",
       category: "cristales",
-      price: 105.00,
+      price: 193.00,
       image: GIT_REPO_BASE + "GLAZY.png",
       keywords: ["glazy", "limpiavidrios", "cristales", "sin manchas", "antiempanante"],
       description: "Limpiador de vidrios libre de amoniaco. Seguro en películas de polarizado, remueve grasa y huellas sin dejar rayas ni sombras.",
@@ -467,7 +467,7 @@
       id: "VON-00086",
       name: "FOCUS 240ML – REMOVEDOR DE SARRO EN VIDRIOS",
       category: "cristales",
-      price: 139.00,
+      price: 254.00,
       image: GIT_REPO_BASE + "FOCUS.png",
       keywords: ["focus", "marcas de agua", "sarro", "gotas secas", "vidrios"],
       description: "Removedor químico de marcas de agua leves y sarro en parabrisas y ventanas laterales sin necesidad de pulir a máquina.",
@@ -477,7 +477,7 @@
       id: "VON-00111",
       name: "PRIZM 500ML – RESTAURADOR PROFUNDO DE CRISTALES",
       category: "cristales",
-      price: 380.00,
+      price: 184.00,
       image: GIT_REPO_BASE + "PRIZM.png",
       keywords: ["prizm", "lluvia acida", "marcas de agua severas", "pulido de vidrios", "sarro extremo"],
       description: "El removedor definitivo de lluvia ácida y sarro incrustado en cristales automotrices. Restaura la claridad óptica total en parabrisas.",
@@ -487,9 +487,9 @@
       id: "VON-00015",
       name: "HIDRACOURO 500ML – HIDRATANTE DE PIEL",
       category: "piel",
-      price: 137.00,
+      price: 251.00,
       image: GIT_REPO_BASE + "HIDRACOURO.png",
-      keywords: ["hidracouro", "piel", "cuero", "hidratante", "suavidad", "asientos"],
+      keywords: ["hidracouro", "hidrocouro", "piel", "cuero", "hidratante", "suavidad", "asientos"],
       description: "Crema humectante a base de lanolina para asientos y volantes de cuero. Evita resequedad, grietas y pérdida de color.",
       use: "Limpiar antes con Higicouro, aplicar crema con aplicador y retirar excedente."
     },
@@ -497,7 +497,7 @@
       id: "VON-00016",
       name: "HIGICOURO 500ML – LIMPIADOR DE PIEL",
       category: "piel",
-      price: 88.00,
+      price: 296.00,
       image: GIT_REPO_BASE + "HIGICOURO.png",
       keywords: ["higicouro", "limpiador de piel", "cuero", "asientos", "ph neutro piel"],
       description: "Limpiador suave con pH balanceado formulado específicamente para cuero natural o sintético. Desprende la mugre de los poros sin resecar.",
@@ -532,6 +532,106 @@
       keywords: ["kit basico", "kit detailing", "combo", "principiante", "regalo"],
       description: "Combo esencial para comenzar en el mundo del detallado automotriz profesional con los productos más aclamados de Vonixx.",
       use: "Incluye shampoo de pH neutro, cera líquida Tok Final, microfibra de alta densidad y aplicador."
+    },
+    {
+      id: "KIT-00001",
+      name: "SISTEMA VSC – KIT COMPLETO",
+      category: "vsc",
+      price: 555.00,
+      image: GIT_REPO_BASE + "KIT%20BASICO.png",
+      keywords: ["sistema vsc", "vsc kit", "kit completo vsc", "bactran extractus sanitizante", "limpieza vestiduras combo"],
+      description: "Kit profesional completo de limpieza y desinfección de vestiduras automotrices: Bactran + Extractus + Sanitizante.",
+      use: "Paso 1 Bactran (limpieza biológica), Paso 2 Extractus (extracción profunda) y Paso 3 Sanitizante (neutralizado y protección)."
+    },
+    {
+      id: "KIT-00002",
+      name: "KIT RENUEVA TUS PLÁSTICOS",
+      category: "kits",
+      price: 637.00,
+      image: GIT_REPO_BASE + "RESTAURAX.png",
+      keywords: ["kit renueva tus plasticos", "kit plasticos", "combo plasticos", "restaurax delet"],
+      description: "Combo especializado para dejar tus molduras plásticas como nuevas de agencia. Incluye Delet para limpieza profunda y Restaurax para hidratar.",
+      use: "Lavar primero con Delet para abrir poros y aplicar Restaurax con aplicador de espuma."
+    },
+    {
+      id: "ACC-00001",
+      name: "CEPILLO DE MICROFIBRA – LIMPIEZA DE RINES",
+      category: "accesorios",
+      price: 312.00,
+      image: "/logoresetsupply.png",
+      keywords: ["cepillo microfibra", "cepillo rines", "limpieza rines", "barril rines"],
+      description: "Cepillo cilíndrico suave con microfibra densa para acceder al fondo y tambor de los rines sin rayar acabados delicados.",
+      use: "Usar con jabón o Izer / Alumax para remover suciedad interna de las ruedas."
+    },
+    {
+      id: "ACC-00002",
+      name: "GUANTE MICROFIBRA 2 EN 1",
+      category: "accesorios",
+      price: 140.00,
+      image: "/logoresetsupply.png",
+      keywords: ["guante microfibra", "guante lavado", "miton", "lavado seguro"],
+      description: "Guante ergonómico de microfibra de chenilla ultra suave que atrapa la suciedad evitando marcas de remolinos (swirls).",
+      use: "Ideal para la técnica de dos cubetas en el lavado de carrocería."
+    },
+    {
+      id: "ACC-00003",
+      name: "KIT DE 5 PINCELES DE DETALLADO",
+      category: "cepillos-pinceles",
+      price: 313.00,
+      image: GIT_REPO_BASE + "BROCHAS.png",
+      keywords: ["kit 5 pinceles", "brochas", "pinceles detallado", "emblemas", "rejillas"],
+      description: "Set de 5 brochas de diferentes tamaños con cerdas resistentes a químicos para limpiar emblemas, tuercas, rejillas de ventilación y botones.",
+      use: "Uso interior y exterior con APC Sintra o limpiadores."
+    },
+    {
+      id: "ACC-00004",
+      name: "APLICADOR DE MICROFIBRA – ENCAJE DE MANO",
+      category: "accesorios",
+      price: 60.00,
+      image: GIT_REPO_BASE + "APLICADOR.png",
+      keywords: ["aplicador microfibra", "encaje mano", "aplicador cera", "pad manual"],
+      description: "Aplicador ergonómico con bolsillo para dedos, ideal para una distribución uniforme de ceras, acondicionadores y selladores.",
+      use: "Excelente para ceras en pasta o acondicionadores de plásticos."
+    },
+    {
+      id: "MIC-00001",
+      name: "MICROFIBRA CAR BRITE",
+      category: "microfibras",
+      price: 101.00,
+      image: GIT_REPO_BASE + "APLICADOR.png",
+      keywords: ["microfibra car brite", "toalla microfibra", "trapo", "secado", "retirar cera"],
+      description: "Toalla de microfibra de alta calidad sin costuras para secado, remoción de ceras y limpieza sin rayar.",
+      use: "Doble cara para retirar residuos de producto y lustrar."
+    },
+    {
+      id: "PAD-00001",
+      name: "PAD DE CORTE LIGERO AMARILLO",
+      category: "pads",
+      price: 282.00,
+      image: GIT_REPO_BASE + "PAD%20GRIS.png",
+      keywords: ["pad amarillo", "corte ligero", "pad espuma", "pulido 5 pulgadas"],
+      description: "Pad de espuma de 5 pulgadas para corte ligero o paso medio con compuesto pulidor.",
+      use: "Montar en respaldo de velcro de 5 pulgadas en pulidora roto-orbital o rotativa."
+    },
+    {
+      id: "PAD-00002",
+      name: "PAD DE LUSTRO AZUL CLARO",
+      category: "pads",
+      price: 282.00,
+      image: GIT_REPO_BASE + "PAD%20LONA.png",
+      keywords: ["pad azul", "pad lustro", "refinado", "acabado espejo 5 pulgadas"],
+      description: "Pad de espuma de refinado y lustre para eliminar microswirls y obtener máxima claridad óptica.",
+      use: "Usar con V-Finish, V30 o Makker."
+    },
+    {
+      id: "PAD-00003",
+      name: "PAD DE SUPER LUSTRO ROJO",
+      category: "pads",
+      price: 282.00,
+      image: "/logoresetsupply.png",
+      keywords: ["pad rojo", "super lustro", "sellado", "aplicacion cera pad"],
+      description: "Pad de ultra acabado suave para aplicación de selladores cerámicos líquidos, ceras líquidas y glaze.",
+      use: "Excelente para Blend Spray o ceras líquidas a baja velocidad."
     }
   ];
 
@@ -613,8 +713,70 @@
 
   // Motor WebMCP (Model Context Protocol Tools)
   const WebMCP = {
+    // Sincronizar catálogo interno con los precios reales de la página y variables globales
+    syncWithPage: function () {
+      try {
+        // 1. Sincronizar desde window.currentLoadedProductsMap o window.allCatalogProducts si existen
+        if (window.currentLoadedProductsMap && typeof window.currentLoadedProductsMap === 'object') {
+          Object.values(window.currentLoadedProductsMap).forEach(pageProd => {
+            if (!pageProd || !pageProd.name) return;
+            const normPageName = pageProd.name.toLowerCase().trim();
+            const target = CATALOG_DATABASE.find(c => {
+              const cNorm = c.name.toLowerCase().trim();
+              return cNorm === normPageName || cNorm.includes(normPageName) || normPageName.includes(cNorm.split(' ')[0]);
+            });
+            if (target) {
+              const pPrice = parseFloat(pageProd.newPrice || pageProd.price);
+              if (pPrice && pPrice > 0) {
+                target.price = pPrice;
+              }
+              if (pageProd.image) target.image = pageProd.image;
+              if (pageProd.description) target.description = pageProd.description;
+            }
+          });
+        }
+
+        // 2. Sincronizar desde elementos DOM (.product-card, .carousel-item, .featured-card)
+        const cards = document.querySelectorAll('.product-card, .carousel-item, .featured-card');
+        cards.forEach(card => {
+          const titleEl = card.querySelector('.product-name, .carousel-item-title, .featured-title');
+          if (!titleEl) return;
+          const nameText = titleEl.textContent.trim();
+          const firstWord = nameText.split(' ')[0].toLowerCase();
+          
+          const priceEl = card.querySelector('.product-price-val, .product-price, .carousel-item-price, .featured-price');
+          let foundPrice = null;
+          if (priceEl) {
+            const match = priceEl.textContent.match(/\$([0-9,]+(\.[0-9]{2})?)/);
+            if (match) {
+              foundPrice = parseFloat(match[1].replace(/,/g, ''));
+            }
+          }
+
+          const btnAdd = card.querySelector('.btn-add-cart, .btn-card-action');
+          if (btnAdd && !foundPrice) {
+            const dataPrice = btnAdd.getAttribute('data-price');
+            if (dataPrice) foundPrice = parseFloat(dataPrice);
+          }
+
+          if (foundPrice && foundPrice > 0) {
+            const item = CATALOG_DATABASE.find(c => {
+              const cName = c.name.toLowerCase();
+              return cName === nameText.toLowerCase() || cName.includes(firstWord);
+            });
+            if (item) {
+              item.price = foundPrice;
+            }
+          }
+        });
+      } catch (err) {
+        console.warn('WebMCP syncWithPage error:', err);
+      }
+    },
+
     // Tool: Buscar en el catálogo
     searchCatalog: function (query) {
+      this.syncWithPage();
       if (!query || typeof query !== 'string') return [];
       const terms = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/\s+/);
       
@@ -628,6 +790,7 @@
 
     // Tool: Diagnosticar problema de detailing
     diagnose: function (text) {
+      this.syncWithPage();
       const normalized = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       
       for (const rule of DIAGNOSTIC_RULES) {
@@ -1257,6 +1420,7 @@
       const isVisible = modal.style.display === 'flex';
       modal.style.display = isVisible ? 'none' : 'flex';
       if (!isVisible) {
+        WebMCP.syncWithPage();
         setTimeout(() => input.focus(), 200);
       }
     });
@@ -1466,6 +1630,10 @@
 
     // Agregar producto al carrito global del sitio
     function addToSiteCart(product) {
+      if (typeof window.addToCart === 'function') {
+        window.addToCart(product.name, product.price, product.image);
+        return;
+      }
       // Buscar botón de carrito en el DOM para invocar el evento nativo si existe
       const existingBtn = document.querySelector(`.btn-card-action[data-product*="${product.name.split(' ')[0]}"]`) ||
                           document.querySelector(`.btn-add-cart[data-product*="${product.name.split(' ')[0]}"]`);
