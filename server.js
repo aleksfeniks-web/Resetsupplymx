@@ -1096,8 +1096,33 @@ function saveLocalInventoryToDisk() {
 
 loadLocalInventoryFromDisk();
 
+// Función auxiliar para garantizar códigos de barras universales Vonixx en todos los productos y variaciones
+function enrichProductBarcodes(item) {
+  if (!item) return item;
+  try {
+    const base = (localInventory || []).find(b => b && (b.id === item.id || b.code === item.code || (b.name && item.name && b.name.toLowerCase() === item.name.toLowerCase())));
+    if (base) {
+      if (!item.barcode && base.barcode) item.barcode = base.barcode;
+      if (Array.isArray(item.variations) && Array.isArray(base.variations)) {
+        item.variations.forEach((v, idx) => {
+          if (!v.barcode) {
+            const matchBaseVar = base.variations.find(bv => bv.id === v.id || bv.name === v.name) || base.variations[idx];
+            if (matchBaseVar && matchBaseVar.barcode) {
+              v.barcode = matchBaseVar.barcode;
+            }
+          }
+        });
+      } else if ((!item.variations || item.variations.length === 0) && Array.isArray(base.variations) && base.variations.length > 0) {
+        item.variations = base.variations;
+      }
+    }
+  } catch (err) {}
+  return item;
+}
+
 // Función auxiliar para recalcular nuevo precio
 function calculateItemPrices(item) {
+  enrichProductBarcodes(item);
   const basePrice = parseFloat(item.price) || 0;
   const pct = parseFloat(item.pct) || 0;
   const qty = parseInt(item.qty) || 0;

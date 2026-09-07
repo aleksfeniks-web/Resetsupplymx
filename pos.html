@@ -2350,10 +2350,38 @@
                 if (typeof getTesseractWorker === 'function') getTesseractWorker().catch(() => {});
             }, 1200);
 
-            // Evento de búsqueda instantánea
-            document.getElementById('posSearchInput').addEventListener('input', (e) => {
+            // Evento de búsqueda instantánea y escáner de códigos de barras USB/Bluetooth
+            const posSearchEl = document.getElementById('posSearchInput');
+            posSearchEl.addEventListener('input', (e) => {
                 state.searchQuery = e.target.value.toLowerCase().trim();
                 renderProducts();
+            });
+            posSearchEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const rawVal = posSearchEl.value.trim();
+                    if (!rawVal) return;
+                    const learnedBarcodes = typeof getLearnedBarcodes === 'function' ? getLearnedBarcodes() : {};
+                    const targetCode = learnedBarcodes[rawVal] || VONIXX_BARCODES[rawVal] || rawVal;
+                    const matchedProd = (state.products || []).find(p => 
+                        (p.code && p.code.toLowerCase() === targetCode.toLowerCase()) ||
+                        (p.id && p.id.toLowerCase() === targetCode.toLowerCase()) ||
+                        (p.barcode && String(p.barcode).trim() === rawVal) ||
+                        (Array.isArray(p.variations) && p.variations.some(v => (v.code && v.code.toLowerCase() === targetCode.toLowerCase()) || (v.barcode && String(v.barcode).trim() === rawVal)))
+                    );
+                    if (matchedProd) {
+                        e.preventDefault();
+                        if (Array.isArray(matchedProd.variations)) {
+                            const matchedVar = matchedProd.variations.find(v => (v.barcode && String(v.barcode).trim() === rawVal) || (v.code && v.code.toLowerCase() === targetCode.toLowerCase()));
+                            if (matchedVar) {
+                                state.selectedVariations[matchedProd.id] = matchedVar;
+                            }
+                        }
+                        addProductToCart(matchedProd.id);
+                        posSearchEl.value = '';
+                        state.searchQuery = '';
+                        renderProducts();
+                    }
+                }
             });
 
             // Atajos de teclado para velocidad POS
@@ -2625,6 +2653,9 @@
                 const matchSearch = !state.searchQuery || 
                     (p.name && p.name.toLowerCase().includes(state.searchQuery)) ||
                     (p.code && p.code.toLowerCase().includes(state.searchQuery)) ||
+                    (p.barcode && String(p.barcode).toLowerCase().includes(state.searchQuery)) ||
+                    (Array.isArray(p.variations) && p.variations.some(v => v.barcode && String(v.barcode).toLowerCase().includes(state.searchQuery))) ||
+                    (VONIXX_BARCODES[state.searchQuery] && (p.code === VONIXX_BARCODES[state.searchQuery] || p.id === VONIXX_BARCODES[state.searchQuery])) ||
                     (p.description && p.description.toLowerCase().includes(state.searchQuery));
                 return matchCat && matchSearch;
             });
@@ -3685,38 +3716,148 @@
             }
         }
 
-        // 2. Mapeo Oficial de Códigos de Barras EAN-13 de Vonixx en México
+        // 2. Mapeo Oficial de Códigos de Barras Universales EAN-13 de Vonixx en México (Todas las Presentaciones)
         const VONIXX_BARCODES = {
-            '7898511030578': 'VON-00028', // SINTRA FAST
-            '7898511029887': 'VON-00028', // SINTRA FAST 500ML
+            // SINTRA FAST / SINTRA PRO
+            '7898511030578': 'VON-00028', // SINTRA FAST 500ML
+            '7898511029887': 'VON-00028', // SINTRA FAST 500ML (Alt)
+            '7898628040010': 'VON-00028', // SINTRA FAST 500ML (Alt 2)
             '7898511029894': 'VON-00028', // SINTRA PRO 1L
-            '7898511030371': 'VON-00028', // SINTRA 500ML
-            '7898628040010': 'VON-00028', // SINTRA FAST
-            '7898511030319': 'VON-00063', // SPELL 500ML
-            '7898628040317': 'VON-00063', // SPELL
-            '7898511027159': 'VON-00010', // V-MOL 1.5L
-            '7898511029986': 'VON-00010', // V-MOL 500ML
-            '7898511027166': 'VON-00011', // V-FLOC 1.5L
-            '7898511029993': 'VON-00011', // V-FLOC 500ML
-            '7898511028750': 'VON-00001', // ALUMAX 1.5L
-            '7898511030012': 'VON-00012', // DELET 500ML
-            '7898511030005': 'VON-00008', // CITRON 1.5L
-            '7898511028743': 'VON-00003', // REMOVEX 1.5L
-            '7898511030029': 'VON-00026', // BACTRAN 1.5L
-            '7898511030036': 'VON-00027', // EXTRACTUS 1.5L
-            '7898511027203': 'VON-00018', // PRIZM 500ML
-            '7898511027180': 'VON-00014', // RESTAURAX 500ML
-            '7898511028767': 'VON-00013', // SHINY 500ML
-            '7898511027197': 'VON-00017', // TOK FINAL 500ML
-            '7898511028880': 'VON-00004', // BLEND
-            '7898511028897': 'VON-00005', // NATIVE
-            '7898511029948': 'VON-00019', // V10
-            '7898511029955': 'VON-00020', // V20
-            '7898511029962': 'VON-00021', // V30
+            '7898511030371': 'VON-00028', // SINTRA PRO 3L
+            '7898511028736': 'VON-00028', // SINTRA PRO 5L
+
+            // V-MOL
+            '7898511029986': 'VON-00042', // V-MOL 500ML
+            '7898511027159': 'VON-00042', // V-MOL 1.5L
+            '7898511030425': 'VON-00042', // V-MOL 3L
+            '7898511027173': 'VON-00042', // V-MOL 5L
+
+            // V-FLOC
+            '7898511029993': 'VON-00026', // V-FLOC 500ML
+            '7898511027166': 'VON-00026', // V-FLOC 1.5L
+            '7898511030418': 'VON-00026', // V-FLOC 3L
+            '7898511027128': 'VON-00026', // V-FLOC 5L
+
+            // HYDROX WASH
+            '7898511030615': 'VON-00097', // HYDROX WASH 500ML
+            '7898511030608': 'VON-00097', // HYDROX WASH 500ML (Alt)
+
+            // ALUMAX
+            '7898511028750': 'VON-00072', // ALUMAX 1.5L
+            '7898511027142': 'VON-00072', // ALUMAX 5L
+            '7898511028798': 'VON-00072', // ALUMAX 20L
+
+            // REMOVEX
+            '7898511028743': 'VON-00084', // REMOVEX 1.5L
+            '7898511027135': 'VON-00084', // REMOVEX 5L
+            '7898511028804': 'VON-00084', // REMOVEX 20L
+
+            // V-ECO FAST
             '7898511030241': 'VON-00067', // V-ECO FAST 500ML
             '7898511027210': 'VON-00067', // V-ECO 1.5L
+            '7898511030258': 'VON-00067', // V-ECO 3L
+            '7898511028781': 'VON-00067', // V-ECO 5L
+
+            // IZER
+            '7898511030388': 'VON-00039', // IZER 500ML
+            '7898511029870': 'VON-00039', // IZER 1.5L
+            '7898511030585': 'VON-00039', // IZER 3L
+
+            // STRIKE
             '7898511030432': 'VON-00040', // STRIKE 500ML
-            '7898511028774': 'VON-00040'  // STRIKE 1.5L
+            '7898511028774': 'VON-00040', // STRIKE 1.5L
+
+            // DELET
+            '7898511030012': 'VON-00027', // DELET 500ML
+            '7898511029863': 'VON-00027', // DELET 1.5L
+
+            // BACTRAN
+            '7898511030029': 'VON-00091', // BACTRAN 1.5L
+            '7898511030401': 'VON-00091', // BACTRAN 3L
+            '7898511028811': 'VON-00091', // BACTRAN 5L
+
+            // EXTRACTUS
+            '7898511030036': 'VON-00093', // EXTRACTUS 1.5L
+            '7898511030449': 'VON-00093', // EXTRACTUS 3L
+            '7898511028828': 'VON-00093', // EXTRACTUS 5L
+
+            // SANITIZANTE FINALIZADOR
+            '7898511030622': 'VON-00104', // SANITIZANTE 1.5L
+            '7898511030639': 'VON-00104', // SANITIZANTE 1.5L (Alt)
+
+            // RESTAURAX
+            '7898511027180': 'VON-00031', // RESTAURAX 500ML
+            '7898511030456': 'VON-00031', // RESTAURAX 1.5L
+
+            // REVOX
+            '7898511030487': 'VON-00061', // REVOX 500ML
+            '7898511030500': 'VON-00061', // REVOX 1.5L
+
+            // REXER
+            '7898511030494': 'VON-00106', // REXER 500ML
+            '7898511030517': 'VON-00106', // REXER 1.5L
+
+            // SHINY
+            '7898511028767': 'VON-00062', // SHINY 500ML
+            '7898511030463': 'VON-00062', // SHINY 1.5L
+
+            // PADS Y MICROFIBRAS
+            '7898511030707': 'VON-00046', // PAD ALFOMBRA 5"
+            '7898511030714': 'VON-00047', // PAD LONA 5"
+            '7898511030806': 'MIC-00001', // MICROFIBRA 40X40
+            '7898511030813': 'MIC-00002', // MICROFIBRA CHICA 30X30
+
+            // PULIMENTOS V10, V20, V30, V-CUT, V-POLISH, V-FINISH
+            '7898511029948': 'VON-00001', // V10 500ML
+            '7898511029955': 'VON-00002', // V20 500ML
+            '7898511029962': 'VON-00003', // V30 500ML
+            '7898511029979': 'VON-00004', // V-CUT 500ML
+            '7898511029917': 'VON-00005', // V-POLISH 500ML
+            '7898511029924': 'VON-00006', // V-FINISH 500ML
+
+            // CRISTALES
+            '7898511027234': 'VON-00034', // OPTY 240ML
+            '7898511030646': 'VON-00035', // GLAZY 500ML
+            '7898511030653': 'VON-00086', // FOCUS 240ML
+
+            // TODO EN UNO / CERAS
+            '7898511030043': 'VON-00007', // BLEND ALL IN ONE 500ML
+            '7898511027227': 'VON-00008', // V40 500ML
+            '7898511028927': 'VON-00036', // CARNAUBA HYBRID WAX 240ML
+            '7898511028880': 'VON-00010', // BLEND PASTE WAX 100ML
+            '7898511028934': 'VON-00011', // CARNAUBA PLUS 500ML
+            '7898511028903': 'VON-00013', // NATIVE CLEANER WAX 500ML
+            '7898511028910': 'VON-00014', // NATIVE SPRAY WAX 500ML
+            '7898511028897': 'VON-00014', // NATIVE PASTA WAX 100ML
+            '7898511027197': 'VON-00017', // TOK FINAL 500ML
+
+            // CUERO / REPARACIÓN
+            '7898511027241': 'VON-00015', // HIDRACOURO 500ML
+            '7898511027258': 'VON-00016', // HIGICOURO 500ML
+            '7898511030660': 'VON-00017', // MAKKER 500ML
+
+            // SELLADORES / CERÁMICOS
+            '7898511030677': 'VON-00095', // HYDROX FAST 500ML
+            '7898511030319': 'VON-00063', // SPELL 500ML
+            '7898628040317': 'VON-00063', // SPELL 500ML (Alt)
+            '7898511030005': 'VON-00110', // CITRON 1.5L
+            '7898511030395': 'VON-00110', // CITRON 3L
+            '7898511028835': 'VON-00110', // CITRON 5L
+            '7898511027203': 'VON-00111', // PRIZM 500ML
+            '7898511030470': 'VON-00111', // PRIZM 1.5L
+            '7898511030684': 'VON-00112', // SINERGY WHEEL 500ML
+            '7898511029900': 'VON-00113', // SIO2-PRO 500ML
+            '7898511028859': 'VON-00114', // V-PAINT 50ML
+            '7898511028842': 'VON-00115', // V-PAINT PRO 50ML
+            '7898511028866': 'VON-00116', // V-LIGHT 50ML
+            '7898511028873': 'VON-00117', // V-PLASTIC 50ML
+            '7898511030691': 'VON-00118', // V-LEATHER 50ML
+
+            // ACCESORIOS ADICIONALES
+            '7898511030721': 'VON-00119', // PAD VOXER 5"
+            '7898511030738': 'VON-00120', // APLICADOR CON ENCAJE
+            '7898511030745': 'VON-00121', // SET BROCHAS (5 PZAS)
+            '7898511030752': 'VON-00122'  // KIT BÁSICO DETAILING
         };
 
         // 2.1 Almacenamiento y Gestión de Calibración / Aprendizaje del Escáner
