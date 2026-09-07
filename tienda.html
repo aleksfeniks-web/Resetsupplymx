@@ -27,6 +27,14 @@
     <!-- Tesseract OCR para reconocimiento óptico de etiquetas Vonixx -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
 
+    <!-- ZXing Barcode Library para lectura universal de códigos de barras EAN-13 (iOS Safari, Android, PC) -->
+    <script src="/zxing.min.js"></script>
+    <script>
+        if (typeof ZXing === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"><\/script>');
+        }
+    </script>
+
     <style>
         :root {
             --void: #0a0e13;
@@ -4094,17 +4102,81 @@ function resolveToGitRepoUrl(item) {
             return { h: h * 360, s: s, v: v };
         }
 
-        // 9. Análisis de fotograma y correspondencia de producto de alta precisión
-        async function analyzeCurrentFrame() {
-            if (scannerState.isProcessingFrame || scannerState.isAwaitingDecision) return;
+        // =========================================================================
+        // MOTOR UNIVERSAL DE CÓDIGOS DE BARRAS (ZXing + BarcodeDetector + Variaciones)
+        // =========================================================================
+        let _zxingReader = null;
+        let _barcodeCanvas = null;
+        let _barcodeCtx = null;
 
-            const video = document.getElementById('selfieVideo');
-            if (!video || video.readyState < 2) return;
+        function getZxingReader() {
+            if (!_zxingReader && typeof ZXing !== 'undefined' && ZXing.BrowserMultiFormatReader) {
+                try {
+                    _zxingReader = new ZXing.BrowserMultiFormatReader();
+                } catch (e) {
+                    console.warn('ZXing init error:', e);
+                }
+            }
+            return _zxingReader;
+        }
 
-            scannerState.isProcessingFrame = true;
-            try {
-                // A) DETECCIÓN DE CÓDIGO DE BARRAS NATIVO (100% certero)
-                if ('BarcodeDetector' in window && !scannerState._barcodeDetector) {
+        function resolveProductFromBarcode(raw) {
+            if (!raw) return null;
+            const cleaned = String(raw).trim();
+            scannerState.lastDetectedBarcode = cleaned;
+
+            const learnedBarcodes = typeof getLearnedBarcodes === 'function' ? getLearnedBarcodes() : {};
+            const targetCode = (learnedBarcodes[cleaned] || VONIXX_BARCODES[cleaned] || cleaned).trim();
+
+            const products = state.products || [];
+            let matchedProduct = null;
+            let matchedVariation = null;
+
+            for (const p of products) {
+                if (Array.isArray(p.variations) && p.variations.length > 0) {
+                    const vMatch = p.variations.find(v => 
+                        (v.barcode && String(v.barcode).trim() === cleaned) ||
+                        (v.code && v.code.toLowerCase() === targetCode.toLowerCase())
+                    );
+                    if (vMatch) {
+                        matchedProduct = p;
+                        matchedVariation = vMatch;
+                        break;
+                    }
+                }
+            }
+
+            if (!matchedProduct) {
+                matchedProduct = products.find(p => 
+                    (p.barcode && String(p.barcode).trim() === cleaned) ||
+                    (p.code && p.code.toLowerCase() === targetCode.toLowerCase()) ||
+                    (p.id && p.id.toLowerCase() === targetCode.toLowerCase())
+                );
+                if (matchedProduct && Array.isArray(matchedProduct.variations) && matchedProduct.variations.length > 0) {
+                    const vMatch = matchedProduct.variations.find(v => 
+                        (v.barcode && String(v.barcode).trim() === cleaned) ||
+                        (v.code && v.code.toLowerCase() === targetCode.toLowerCase())
+                    );
+                    matchedVariation = vMatch || matchedProduct.variations[0];
+                }
+            }
+
+            if (!matchedProduct) return null;
+
+            return {
+                product: matchedProduct,
+                variation: matchedVariation,
+                rawBarcode: cleaned,
+                isLearned: !!learnedBarcodes[cleaned]
+            };
+        }
+
+        async function scanBarcode(video) {
+            if (!video || video.readyState < 2) return null;
+            let detectedRaw = null;
+
+            if ('BarcodeDetector' in window) {
+                if (!scannerState._barcodeDetector) {
                     try {
                         scannerState._barcodeDetector = new BarcodeDetector({
                             formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code']
@@ -4116,25 +4188,65 @@ function resolveToGitRepoUrl(item) {
                 if (scannerState._barcodeDetector) {
                     try {
                         const barcodes = await scannerState._barcodeDetector.detect(video);
-                        if (barcodes && barcodes.length > 0) {
-                            const raw = barcodes[0].rawValue ? barcodes[0].rawValue.trim() : '';
-                            if (raw) {
-                                scannerState.lastDetectedBarcode = raw;
-                                const learnedBarcodes = getLearnedBarcodes();
-                                const targetCode = learnedBarcodes[raw] || VONIXX_BARCODES[raw] || raw;
-                                const matched = (state.products || []).find(p => 
-                                    (p.code && p.code.toLowerCase() === targetCode.toLowerCase()) ||
-                                    (p.id && p.id.toLowerCase() === targetCode.toLowerCase()) ||
-                                    (p.barcode && p.barcode.trim() === raw) ||
-                                    (Array.isArray(p.variations) && p.variations.some(v => (v.code && v.code.toLowerCase() === targetCode.toLowerCase()) || (v.barcode && v.barcode.trim() === raw)))
-                                );
-                                if (matched) {
-                                    onProductVisuallyRecognized(matched, !!learnedBarcodes[raw]);
-                                    return;
-                                }
-                            }
+                        if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+                            detectedRaw = barcodes[0].rawValue.trim();
                         }
-                    } catch (bcErr) {}
+                    } catch (e) {}
+                }
+            }
+
+            if (!detectedRaw) {
+                const reader = getZxingReader();
+                if (reader) {
+                    try {
+                        if (!_barcodeCanvas) {
+                            _barcodeCanvas = document.createElement('canvas');
+                            _barcodeCtx = _barcodeCanvas.getContext('2d', { willReadFrequently: true });
+                        }
+                        const vw = video.videoWidth || 640;
+                        const vh = video.videoHeight || 480;
+                        const cw = Math.round(vw * 0.75);
+                        const ch = Math.round(vh * 0.75);
+                        const cx = Math.round((vw - cw) / 2);
+                        const cy = Math.round((vh - ch) / 2);
+
+                        _barcodeCanvas.width = cw;
+                        _barcodeCanvas.height = ch;
+                        _barcodeCtx.drawImage(video, cx, cy, cw, ch, 0, 0, cw, ch);
+
+                        const result = await reader.decodeFromCanvas(_barcodeCanvas);
+                        if (result && result.getText()) {
+                            detectedRaw = result.getText().trim();
+                        }
+                    } catch (err1) {
+                        try {
+                            const fullResult = await reader.decodeFromVideoElement(video);
+                            if (fullResult && fullResult.getText()) {
+                                detectedRaw = fullResult.getText().trim();
+                            }
+                        } catch (err2) {}
+                    }
+                }
+            }
+
+            if (!detectedRaw) return null;
+            return resolveProductFromBarcode(detectedRaw);
+        }
+
+        // 9. Análisis de fotograma y correspondencia de producto de alta precisión
+        async function analyzeCurrentFrame() {
+            if (scannerState.isProcessingFrame || scannerState.isAwaitingDecision) return;
+
+            const video = document.getElementById('selfieVideo');
+            if (!video || video.readyState < 2) return;
+
+            scannerState.isProcessingFrame = true;
+            try {
+                // A) DETECCIÓN UNIVERSAL DE CÓDIGO DE BARRAS (ZXing + BarcodeDetector)
+                const bcMatch = await scanBarcode(video);
+                if (bcMatch && bcMatch.product) {
+                    onProductVisuallyRecognized(bcMatch.product, !!bcMatch.isLearned, 'barcode', bcMatch.variation);
+                    return;
                 }
 
                 // B) OCR EN VIVO DE LA ETIQUETA (si el navegador soporta TextDetector)
@@ -4414,8 +4526,12 @@ function resolveToGitRepoUrl(item) {
         }
 
         // 11. Acción al reconocer producto: Muestra tarjeta y selector de piezas
-        function onProductVisuallyRecognized(product, isLearned) {
+        function onProductVisuallyRecognized(product, isLearned = false, detectionSource = 'color', matchedVariation = null) {
             if (!product) return;
+
+            if (matchedVariation && state.selectedVariations) {
+                state.selectedVariations[product.id] = matchedVariation;
+            }
 
             scannerState.isAwaitingDecision = true;
             scannerState.currentPendingProduct = product;
@@ -4444,11 +4560,13 @@ function resolveToGitRepoUrl(item) {
             const statusText = document.getElementById('scannerStatusText');
             const switchChips = document.getElementById('scannerAlternativeChips');
 
+            const activeVar = matchedVariation || (state.selectedVariations ? state.selectedVariations[product.id] : null);
             const prodImg = product.image || getProductFallbackImage(product);
-            const prodPrice = product.newPrice || product.price;
+            const displayName = activeVar && activeVar.name ? `${product.name} (${activeVar.name})` : product.name;
+            const prodPrice = activeVar ? parseFloat(activeVar.price) : (parseFloat(product.newPrice || product.price) || 0);
 
             if (imgElem) imgElem.src = prodImg;
-            if (nameElem) nameElem.textContent = product.name;
+            if (nameElem) nameElem.textContent = displayName;
             if (priceElem) priceElem.textContent = `$${parseFloat(prodPrice).toFixed(2)} MXN`;
             if (qtyInput) qtyInput.value = 1;
 
@@ -4456,6 +4574,10 @@ function resolveToGitRepoUrl(item) {
             if (tagElem) {
                 if (isCalibrated) {
                     tagElem.innerHTML = '🎓 PRODUCTO CALIBRADO (APRENDIDO)';
+                    tagElem.style.color = 'var(--blue)';
+                } else if (detectionSource === 'barcode') {
+                    const bcStr = (activeVar && activeVar.barcode) ? activeVar.barcode : (product.barcode || scannerState.lastDetectedBarcode || '');
+                    tagElem.innerHTML = `⚡ CÓDIGO DE BARRAS ${bcStr ? `(${bcStr})` : ''}`;
                     tagElem.style.color = 'var(--blue)';
                 } else {
                     tagElem.innerHTML = '✨ PRODUCTO DETECTADO';
@@ -4473,7 +4595,7 @@ function resolveToGitRepoUrl(item) {
             }
 
             if (statusText) {
-                const label = isCalibrated ? `¡Detectado (Calibrado): ${product.name.substring(0, 18)}!` : `¡Detectado: ${product.name.substring(0, 18)}!`;
+                const label = isCalibrated ? `¡Detectado (Calibrado): ${displayName.substring(0, 24)}!` : `¡Detectado: ${displayName.substring(0, 24)}!`;
                 statusText.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">${label}</span>`;
             }
         }

@@ -27,6 +27,14 @@
     <!-- Tesseract OCR para reconocimiento óptico de etiquetas Vonixx -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
+    <!-- ZXing Barcode Library para lectura universal de códigos de barras EAN-13 (iOS Safari, Android, PC) -->
+    <script src="/zxing.min.js"></script>
+    <script>
+        if (typeof ZXing === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js"><\/script>');
+        }
+    </script>
+
     <style>
         :root {
             --void: #0a0e13;
@@ -2384,22 +2392,99 @@
                 }
             });
 
-            // Atajos de teclado para velocidad POS
+            // Listener Global para Atajos POS y Pistolas Escáner de Códigos de Barras (USB / Bluetooth)
+            let hardwareBarcodeBuffer = '';
+            let lastKeyTimestamp = Date.now();
+
             window.addEventListener('keydown', (e) => {
+                // Atajos de teclado del POS
                 if (e.key === 'F12') {
                     e.preventDefault();
                     if (!document.getElementById('btnCheckoutSubmit').disabled) {
                         processCheckout();
                     }
+                    return;
                 } else if (e.key === 'Escape') {
                     closeTicketModal();
                     closeCashStatsModal();
                     closeSalesHistoryModal();
+                    if (typeof closeSelfieScanner === 'function') closeSelfieScanner();
+                    return;
+                }
+
+                // Detección de pistola lectora de códigos de barras (secuencia rápida de caracteres)
+                const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+                const activeId = document.activeElement ? document.activeElement.id : '';
+                const isWritingInOtherInput = (activeTag === 'textarea' || (activeTag === 'input' && activeId !== 'posSearchInput' && document.activeElement.type !== 'button'));
+
+                const now = Date.now();
+                if (now - lastKeyTimestamp > 140) {
+                    hardwareBarcodeBuffer = '';
+                }
+                lastKeyTimestamp = now;
+
+                if (e.key === 'Enter') {
+                    const candidate = hardwareBarcodeBuffer.trim() || (activeId === 'posSearchInput' ? posSearchEl.value.trim() : '');
+                    if (candidate && candidate.length >= 6) {
+                        const match = resolveProductFromBarcode(candidate);
+                        if (match && match.product) {
+                            e.preventDefault();
+                            if (match.variation) {
+                                state.selectedVariations[match.product.id] = match.variation;
+                            }
+                            addProductToCart(match.product.id);
+                            playModernScannerBip();
+                            const varName = match.variation && match.variation.name ? ` (${match.variation.name})` : '';
+                            showPosToast(`✓ ${match.product.name}${varName} agregado`, 'success');
+                            hardwareBarcodeBuffer = '';
+                            posSearchEl.value = '';
+                            state.searchQuery = '';
+                            renderProducts();
+                        }
+                    }
+                    hardwareBarcodeBuffer = '';
+                } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                    if (!isWritingInOtherInput) {
+                        hardwareBarcodeBuffer += e.key;
+                    }
                 }
             });
         });
 
-        // 1. RELOJ EN VIVO
+        // 1. RELOJ EN VIVO Y NOTIFICADOR FLOTANTE
+        function showPosToast(msg, type = 'success') {
+            let toast = document.getElementById('posQuickToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'posQuickToast';
+                toast.style.position = 'fixed';
+                toast.style.bottom = '28px';
+                toast.style.left = '50%';
+                toast.style.transform = 'translateX(-50%)';
+                toast.style.background = 'rgba(18, 23, 30, 0.95)';
+                toast.style.border = '1px solid #3ddc84';
+                toast.style.borderRadius = '30px';
+                toast.style.padding = '10px 22px';
+                toast.style.color = '#fff';
+                toast.style.fontWeight = '700';
+                toast.style.fontSize = '13.5px';
+                toast.style.boxShadow = '0 10px 30px rgba(0,0,0,0.8), 0 0 16px rgba(61,220,132,0.35)';
+                toast.style.zIndex = '999999';
+                toast.style.transition = 'all 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                toast.style.pointerEvents = 'none';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.style.borderColor = type === 'error' ? '#ff4757' : (type === 'blue' ? '#22b8f0' : '#3ddc84');
+            toast.style.opacity = '1';
+            toast.style.display = 'block';
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => { if (toast.style.opacity === '0') toast.style.display = 'none'; }, 220);
+            }, 2200);
+        }
+
         function initClock() {
             setInterval(() => {
                 const now = new Date();
@@ -4336,16 +4421,30 @@
 
             const statusText = document.getElementById('scannerStatusText');
             if (statusText) {
-                statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="color:var(--green);"></i><span>Leyendo etiqueta de texto (Prioridad 1)...</span>';
+                statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="color:var(--green);"></i><span>Escaneando código de barras o etiqueta...</span>';
             }
 
             // =========================================================================
-            // PASO 1 (MÁXIMA PRIORIDAD): LECTURA DE ETIQUETA POR OCR
+            // PASO 1 (MÁXIMA EXACTITUD): CÓDIGO DE BARRAS EAN-13 (ZXing + Nativo)
+            // =========================================================================
+            try {
+                const bcMatch = await scanBarcode(video);
+                if (bcMatch && bcMatch.product) {
+                    console.log('⚡ Código de barras detectado con éxito:', bcMatch.rawBarcode, '->', bcMatch.product.name, bcMatch.variation ? bcMatch.variation.name : '');
+                    onProductVisuallyRecognized(bcMatch.product, !!bcMatch.isLearned, 'barcode', bcMatch.variation);
+                    return;
+                }
+            } catch (bcErr) {
+                console.warn('Error en detección de código de barras:', bcErr);
+            }
+
+            // =========================================================================
+            // PASO 2: LECTURA DE TEXTO DE ETIQUETA POR OCR (Palabras clave Vonixx)
             // =========================================================================
             try {
                 const ocrMatch = await runOcrPass(video, true);
                 if (ocrMatch && ocrMatch.product) {
-                    console.log('✅ Prioridad 1 (OCR) tuvo éxito:', ocrMatch.matchedKeyword, '->', ocrMatch.product.name);
+                    console.log('✅ Etiqueta OCR leída:', ocrMatch.matchedKeyword, '->', ocrMatch.product.name);
                     onProductVisuallyRecognized(ocrMatch.product, false, 'ocr');
                     return;
                 }
@@ -4354,16 +4453,15 @@
             }
 
             // =========================================================================
-            // PASO 2 (SEGUNDA PRIORIDAD): CROMATISMO Y COLOR DEL ENVASE
-            // Solo se evalúa si el OCR no encontró texto legible en la etiqueta
+            // PASO 3: CROMATISMO Y COLOR DEL ENVASE (Heurística visual complementaria)
             // =========================================================================
             if (statusText) {
-                statusText.innerHTML = '<i class="fa-solid fa-palette" style="color:var(--yellow);"></i><span>Analizando color del envase (Prioridad 2)...</span>';
+                statusText.innerHTML = '<i class="fa-solid fa-palette" style="color:var(--yellow);"></i><span>Analizando envase...</span>';
             }
             try {
                 const colorMatch = analyzeBottleColor(video);
                 if (colorMatch && colorMatch.product) {
-                    console.log('✅ Prioridad 2 (Color) tuvo éxito:', colorMatch.product.name, 'Score:', colorMatch.score);
+                    console.log('✅ Color identificado:', colorMatch.product.name, 'Score:', colorMatch.score);
                     onProductVisuallyRecognized(colorMatch.product, !!colorMatch.isLearned, 'color');
                     return;
                 }
@@ -4371,34 +4469,16 @@
                 console.warn('Error en análisis cromático:', colorErr);
             }
 
-            // =========================================================================
-            // PASO 3 (ÚLTIMA PRIORIDAD / FALLBACK): CÓDIGO DE BARRAS
-            // Solo se recurre a esto si no se leyó la etiqueta de texto ni el color del envase
-            // =========================================================================
-            if (statusText) {
-                statusText.innerHTML = '<i class="fa-solid fa-barcode" style="color:var(--blue);"></i><span>Buscando código de barras (Prioridad 3)...</span>';
-            }
-            try {
-                const barcodeMatch = await detectBarcodeFallback(video);
-                if (barcodeMatch && barcodeMatch.product) {
-                    console.log('✅ Prioridad 3 (Código de barras) tuvo éxito:', barcodeMatch.product.name);
-                    onProductVisuallyRecognized(barcodeMatch.product, !!barcodeMatch.isLearned, 'barcode');
-                    return;
-                }
-            } catch (bcErr) {
-                console.warn('Error en detección de código de barras:', bcErr);
-            }
-
             // Ninguna coincidencia encontrada
             if (statusText) {
-                statusText.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:var(--yellow);"></i><span>No se detectó el texto ni el envase. Acerca la etiqueta o usa "Enseñar".</span>';
+                statusText.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:var(--yellow);"></i><span>Acerca el código de barras o la etiqueta Vonixx al centro.</span>';
             }
         }
 
-        // 9. Bucle continuo de análisis en vivo con jerarquía estricta:
-        // Prioridad 1: Etiqueta de texto (OCR continuo en vivo)
-        // Prioridad 2: Color y silueta del envase (amortiguado para priorizar la lectura de etiqueta)
-        // Prioridad 3: Código de barras (solo si no hay texto ni color)
+        // 9. Bucle continuo de análisis en vivo:
+        // Prioridad A: Código de barras en tiempo real (instantáneo con ZXing / BarcodeDetector)
+        // Prioridad B: Etiqueta de texto (OCR continuo en vivo)
+        // Prioridad C: Color y silueta del envase (amortiguado para evitar falsos positivos)
         async function analyzeCurrentFrame(forceDecision = false) {
             if (scannerState.isProcessingFrame || scannerState.isAwaitingDecision) return;
 
@@ -4413,13 +4493,24 @@
             scannerState.isProcessingFrame = true;
             try {
                 // =========================================================================
-                // ETAPA 1 (MÁXIMA PRIORIDAD): LECTURA DE TEXTO DE ETIQUETA POR OCR
-                // Ejecución no bloqueante en vivo que dispara de inmediato al leer la palabra clave
+                // ETAPA 1 (EN VIVO): CÓDIGO DE BARRAS EN TIEMPO REAL
+                // Si el usuario presenta el código de barras frente a la cámara, resuelve al instante
+                // =========================================================================
+                const bcMatch = await scanBarcode(video);
+                if (bcMatch && bcMatch.product) {
+                    console.log('⚡ Barcode en vivo detectado:', bcMatch.rawBarcode, '->', bcMatch.product.name);
+                    onProductVisuallyRecognized(bcMatch.product, !!bcMatch.isLearned, 'barcode', bcMatch.variation);
+                    return;
+                }
+
+                // =========================================================================
+                // ETAPA 2: LECTURA DE TEXTO DE ETIQUETA POR OCR (Asíncrono en segundo plano)
                 // =========================================================================
                 runOcrPass(video, false).catch(() => {});
 
                 // =========================================================================
-                // ETAPA 2 (SEGUNDA PRIORIDAD): CROMATISMO Y FORMA DEL ENVASE VONIXX
+                // ETAPA 3: CROMATISMO Y FORMA DEL ENVASE VONIXX
+                // Requiere 4 cuadros estables continuos para evitar falsos positivos
                 // =========================================================================
                 const colorMatch = analyzeBottleColor(video);
 
@@ -4427,29 +4518,14 @@
                     const pid = colorMatch.product.id;
                     scannerState.consecutiveHits[pid] = (scannerState.consecutiveHits[pid] || 0) + 1;
 
-                    // Para no ganarle indebidamente al OCR en vivo, el color requiere al menos
-                    // 4 cuadros estables (~1.2 segundos con la botella fija) y alta confianza (>= 0.88)
                     if (scannerState.consecutiveHits[pid] >= 4 && colorMatch.score >= 0.88) {
-                        console.log('✨ Prioridad 2 (Color continuo confirmado):', colorMatch.product.name);
+                        console.log('✨ Color continuo confirmado:', colorMatch.product.name);
                         onProductVisuallyRecognized(colorMatch.product, !!colorMatch.isLearned, 'color');
                         scannerState.consecutiveHits = {};
                         return;
                     }
                 } else {
                     scannerState.consecutiveHits = {};
-                }
-
-                // =========================================================================
-                // ETAPA 3 (ÚLTIMA PRIORIDAD / FALLBACK): CÓDIGO DE BARRAS
-                // Solo si el usuario muestra el código y no hubo lectura de etiqueta ni color dominante
-                // =========================================================================
-                if (!colorMatch || colorMatch.score < 0.70) {
-                    const bcMatch = await detectBarcodeFallback(video);
-                    if (bcMatch && bcMatch.product) {
-                        console.log('⚡ Prioridad 3 (Código de barras detectado):', bcMatch.product.name);
-                        onProductVisuallyRecognized(bcMatch.product, !!bcMatch.isLearned, 'barcode');
-                        return;
-                    }
                 }
 
             } catch (err) {
@@ -4460,18 +4536,19 @@
         }
 
         // 10. Actualizar chips de sugerencias rápidas en vivo
-        function updateScannerCandidates(topCandidates) {
+        function updateScannerCandidates(candidates) {
             const section = document.getElementById('scannerCandidatesSection');
             const row = document.getElementById('scannerCandidatesRow');
             if (!section || !row) return;
 
-            if (topCandidates.length === 0 || scannerState.isAwaitingDecision) {
+            if (!candidates || candidates.length === 0 || scannerState.isAwaitingDecision) {
                 section.style.display = 'none';
+                row.innerHTML = '';
                 return;
             }
 
             section.style.display = 'flex';
-            row.innerHTML = topCandidates.map(c => {
+            row.innerHTML = candidates.map(c => {
                 const p = c.product;
                 const price = p.newPrice || p.price;
                 return `
@@ -4485,8 +4562,13 @@
         }
 
         // 11. Acción al reconocer producto: Muestra tarjeta y selector de piezas
-        function onProductVisuallyRecognized(product, isLearned = false, detectionSource = 'color') {
+        function onProductVisuallyRecognized(product, isLearned = false, detectionSource = 'color', matchedVariation = null) {
             if (!product) return;
+
+            // Si se detectó una variación específica (ej. por código de barras de 1.5L vs 500ml), seleccionarla
+            if (matchedVariation) {
+                state.selectedVariations[product.id] = matchedVariation;
+            }
 
             scannerState.isAwaitingDecision = true;
             scannerState.currentPendingProduct = product;
@@ -4515,11 +4597,13 @@
             const statusText = document.getElementById('scannerStatusText');
             const switchChips = document.getElementById('scannerAlternativeChips');
 
+            const activeVar = matchedVariation || state.selectedVariations[product.id];
             const prodImg = product.image || getProductFallbackImage(product);
-            const prodPrice = product.newPrice || product.price;
+            const displayName = activeVar && activeVar.name ? `${product.name} (${activeVar.name})` : product.name;
+            const prodPrice = activeVar ? parseFloat(activeVar.price) : (parseFloat(product.newPrice || product.price) || 0);
 
             if (imgElem) imgElem.src = prodImg;
-            if (nameElem) nameElem.textContent = product.name;
+            if (nameElem) nameElem.textContent = displayName;
             if (priceElem) priceElem.textContent = `$${parseFloat(prodPrice).toFixed(2)} MXN`;
             if (qtyInput) qtyInput.value = 1;
 
@@ -4532,7 +4616,8 @@
                     tagElem.innerHTML = '📖 ETIQUETA LEÍDA (OCR)';
                     tagElem.style.color = 'var(--green)';
                 } else if (detectionSource === 'barcode') {
-                    tagElem.innerHTML = '⚡ CÓDIGO DE BARRAS';
+                    const bcStr = (activeVar && activeVar.barcode) ? activeVar.barcode : (product.barcode || scannerState.lastDetectedBarcode || '');
+                    tagElem.innerHTML = `⚡ CÓDIGO DE BARRAS ${bcStr ? `(${bcStr})` : ''}`;
                     tagElem.style.color = 'var(--blue)';
                 } else {
                     tagElem.innerHTML = '✨ PRODUCTO DETECTADO';
@@ -4550,10 +4635,10 @@
             }
 
             if (statusText) {
-                let label = `¡Detectado: ${product.name.substring(0, 18)}!`;
-                if (isCalibrated) label = `¡Detectado (Calibrado): ${product.name.substring(0, 18)}!`;
-                else if (detectionSource === 'ocr') label = `¡Etiqueta leída: ${product.name.substring(0, 18)}!`;
-                else if (detectionSource === 'barcode') label = `¡Código leído: ${product.name.substring(0, 18)}!`;
+                let label = `¡Detectado: ${displayName.substring(0, 24)}!`;
+                if (isCalibrated) label = `¡Detectado (Calibrado): ${displayName.substring(0, 24)}!`;
+                else if (detectionSource === 'ocr') label = `¡Etiqueta leída: ${displayName.substring(0, 24)}!`;
+                else if (detectionSource === 'barcode') label = `¡Código de barras: ${displayName.substring(0, 24)}!`;
 
                 statusText.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--green);"></i><span style="color:var(--green); font-weight:700;">${label}</span>`;
             }
@@ -5289,41 +5374,149 @@
             return null;
         }
 
-        // Detección de Código de Barras como último recurso de fallback (Prioridad 3)
-        async function detectBarcodeFallback(video) {
-            if (!video || video.readyState < 2) return null;
-            if ('BarcodeDetector' in window && !scannerState._barcodeDetector) {
+        // =========================================================================
+        // MOTOR UNIVERSAL DE CÓDIGOS DE BARRAS (ZXing + BarcodeDetector + Variaciones)
+        // =========================================================================
+        let _zxingReader = null;
+        let _barcodeCanvas = null;
+        let _barcodeCtx = null;
+
+        function getZxingReader() {
+            if (!_zxingReader && typeof ZXing !== 'undefined' && ZXing.BrowserMultiFormatReader) {
                 try {
-                    scannerState._barcodeDetector = new BarcodeDetector({
-                        formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code']
-                    });
+                    _zxingReader = new ZXing.BrowserMultiFormatReader();
                 } catch (e) {
-                    scannerState._barcodeDetector = null;
+                    console.warn('ZXing init error:', e);
                 }
             }
-            if (!scannerState._barcodeDetector) return null;
+            return _zxingReader;
+        }
 
-            try {
-                const barcodes = await scannerState._barcodeDetector.detect(video);
-                if (barcodes && barcodes.length > 0) {
-                    const raw = barcodes[0].rawValue ? barcodes[0].rawValue.trim() : '';
-                    if (raw) {
-                        scannerState.lastDetectedBarcode = raw;
-                        const learnedBarcodes = getLearnedBarcodes();
-                        const targetCode = learnedBarcodes[raw] || VONIXX_BARCODES[raw] || raw;
-                        const matched = (state.products || []).find(p => 
-                            (p.code && p.code.toLowerCase() === targetCode.toLowerCase()) ||
-                            (p.id && p.id.toLowerCase() === targetCode.toLowerCase()) ||
-                            (p.barcode && p.barcode.trim() === raw) ||
-                            (Array.isArray(p.variations) && p.variations.some(v => (v.code && v.code.toLowerCase() === targetCode.toLowerCase()) || (v.barcode && v.barcode.trim() === raw)))
-                        );
-                        if (matched) {
-                            return { product: matched, isLearned: !!learnedBarcodes[raw] };
-                        }
+        // Resuelve un código de barras (EAN-13, etc.) directamente a producto y variación exacta
+        function resolveProductFromBarcode(raw) {
+            if (!raw) return null;
+            const cleaned = String(raw).trim();
+            scannerState.lastDetectedBarcode = cleaned;
+
+            const learnedBarcodes = typeof getLearnedBarcodes === 'function' ? getLearnedBarcodes() : {};
+            const targetCode = (learnedBarcodes[cleaned] || VONIXX_BARCODES[cleaned] || cleaned).trim();
+
+            const products = state.products || [];
+            let matchedProduct = null;
+            let matchedVariation = null;
+
+            // 1. Buscar coincidencia exacta en las variaciones de todos los productos (ej. 1.5L vs 500ML)
+            for (const p of products) {
+                if (Array.isArray(p.variations) && p.variations.length > 0) {
+                    const vMatch = p.variations.find(v => 
+                        (v.barcode && String(v.barcode).trim() === cleaned) ||
+                        (v.code && v.code.toLowerCase() === targetCode.toLowerCase())
+                    );
+                    if (vMatch) {
+                        matchedProduct = p;
+                        matchedVariation = vMatch;
+                        break;
                     }
                 }
-            } catch (bcErr) {}
-            return null;
+            }
+
+            // 2. Si no se encontró en variaciones, buscar en producto principal
+            if (!matchedProduct) {
+                matchedProduct = products.find(p => 
+                    (p.barcode && String(p.barcode).trim() === cleaned) ||
+                    (p.code && p.code.toLowerCase() === targetCode.toLowerCase()) ||
+                    (p.id && p.id.toLowerCase() === targetCode.toLowerCase())
+                );
+                if (matchedProduct && Array.isArray(matchedProduct.variations) && matchedProduct.variations.length > 0) {
+                    const vMatch = matchedProduct.variations.find(v => 
+                        (v.barcode && String(v.barcode).trim() === cleaned) ||
+                        (v.code && v.code.toLowerCase() === targetCode.toLowerCase())
+                    );
+                    matchedVariation = vMatch || matchedProduct.variations[0];
+                }
+            }
+
+            if (!matchedProduct) return null;
+
+            return {
+                product: matchedProduct,
+                variation: matchedVariation,
+                rawBarcode: cleaned,
+                isLearned: !!learnedBarcodes[cleaned]
+            };
+        }
+
+        // Escaneo universal de código de barras desde video usando aceleración nativa y ZXing con doble pase (crop + full)
+        async function scanBarcode(video) {
+            if (!video || video.readyState < 2) return null;
+            let detectedRaw = null;
+
+            // Paso A: BarcodeDetector nativo (si el navegador lo soporta de forma nativa como Chromium / Android)
+            if ('BarcodeDetector' in window) {
+                if (!scannerState._barcodeDetector) {
+                    try {
+                        scannerState._barcodeDetector = new BarcodeDetector({
+                            formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e', 'qr_code']
+                        });
+                    } catch (e) {
+                        scannerState._barcodeDetector = null;
+                    }
+                }
+                if (scannerState._barcodeDetector) {
+                    try {
+                        const barcodes = await scannerState._barcodeDetector.detect(video);
+                        if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+                            detectedRaw = barcodes[0].rawValue.trim();
+                        }
+                    } catch (e) {}
+                }
+            }
+
+            // Paso B: ZXing Universal (compatible al 100% con Safari iOS, iPads, Chrome, Firefox y WebViews)
+            if (!detectedRaw) {
+                const reader = getZxingReader();
+                if (reader) {
+                    // Intento 1: Decodificar desde canvas con recorte central enfocado en la retícula HUD
+                    try {
+                        if (!_barcodeCanvas) {
+                            _barcodeCanvas = document.createElement('canvas');
+                            _barcodeCtx = _barcodeCanvas.getContext('2d', { willReadFrequently: true });
+                        }
+                        const vw = video.videoWidth || 640;
+                        const vh = video.videoHeight || 480;
+                        // Región central del 75% donde el usuario alinea el producto
+                        const cw = Math.round(vw * 0.75);
+                        const ch = Math.round(vh * 0.75);
+                        const cx = Math.round((vw - cw) / 2);
+                        const cy = Math.round((vh - ch) / 2);
+
+                        _barcodeCanvas.width = cw;
+                        _barcodeCanvas.height = ch;
+                        _barcodeCtx.drawImage(video, cx, cy, cw, ch, 0, 0, cw, ch);
+
+                        const result = await reader.decodeFromCanvas(_barcodeCanvas);
+                        if (result && result.getText()) {
+                            detectedRaw = result.getText().trim();
+                        }
+                    } catch (err1) {
+                        // Intento 2: Probar el frame completo si el recorte no lo vio
+                        try {
+                            const fullResult = await reader.decodeFromVideoElement(video);
+                            if (fullResult && fullResult.getText()) {
+                                detectedRaw = fullResult.getText().trim();
+                            }
+                        } catch (err2) {}
+                    }
+                }
+            }
+
+            if (!detectedRaw) return null;
+            return resolveProductFromBarcode(detectedRaw);
+        }
+
+        // Compatibilidad hacia atrás
+        async function detectBarcodeFallback(video) {
+            return await scanBarcode(video);
         }
 
 
