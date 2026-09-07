@@ -1060,6 +1060,24 @@ let localInventory = [
 const INVENTORY_FILE = path.join(__dirname, 'admin', 'inventory.json');
 const POS_ORDERS_FILE = path.join(__dirname, 'admin', 'pos_orders.json');
 
+let diskInventoryCache = null;
+function getDiskCatalog() {
+  if (diskInventoryCache && diskInventoryCache.length > 0) return diskInventoryCache;
+  try {
+    if (fs.existsSync(INVENTORY_FILE)) {
+      const raw = fs.readFileSync(INVENTORY_FILE, 'utf8');
+      const data = JSON.parse(raw);
+      if (Array.isArray(data) && data.length > 0) {
+        diskInventoryCache = data;
+        return diskInventoryCache;
+      }
+    }
+  } catch (e) {
+    console.warn('Error leyendo catálogo de disco:', e.message);
+  }
+  return localInventory || [];
+}
+
 function findProductInInventory(idOrCode) {
   if (!idOrCode) return null;
   const target = String(idOrCode).trim().toLowerCase();
@@ -1077,6 +1095,7 @@ function loadLocalInventoryFromDisk() {
       const data = JSON.parse(raw);
       if (Array.isArray(data) && data.length > 0) {
         localInventory = data;
+        diskInventoryCache = data;
       }
     }
   } catch (e) {
@@ -1089,6 +1108,7 @@ function saveLocalInventoryToDisk() {
     const adminDir = path.join(__dirname, 'admin');
     if (!fs.existsSync(adminDir)) fs.mkdirSync(adminDir, { recursive: true });
     fs.writeFileSync(INVENTORY_FILE, JSON.stringify(localInventory, null, 2), 'utf8');
+    diskInventoryCache = localInventory;
   } catch (e) {
     console.error('Error guardando inventory.json:', e.message);
   }
@@ -1100,20 +1120,28 @@ loadLocalInventoryFromDisk();
 function enrichProductBarcodes(item) {
   if (!item) return item;
   try {
-    const base = (localInventory || []).find(b => b && (b.id === item.id || b.code === item.code || (b.name && item.name && b.name.toLowerCase() === item.name.toLowerCase())));
+    const catalog = getDiskCatalog();
+    const base = catalog.find(b => b && (
+      (b.id && item.id && b.id === item.id) ||
+      (b.code && item.code && b.code === item.code) ||
+      (b.name && item.name && b.name.trim().toLowerCase() === item.name.trim().toLowerCase())
+    ));
     if (base) {
       if (!item.barcode && base.barcode) item.barcode = base.barcode;
       if (Array.isArray(item.variations) && Array.isArray(base.variations)) {
         item.variations.forEach((v, idx) => {
           if (!v.barcode) {
-            const matchBaseVar = base.variations.find(bv => bv.id === v.id || bv.name === v.name) || base.variations[idx];
+            const matchBaseVar = base.variations.find(bv => 
+              (bv.id && v.id && bv.id === v.id) ||
+              (bv.name && v.name && bv.name.trim().toLowerCase() === v.name.trim().toLowerCase())
+            ) || base.variations[idx];
             if (matchBaseVar && matchBaseVar.barcode) {
               v.barcode = matchBaseVar.barcode;
             }
           }
         });
       } else if ((!item.variations || item.variations.length === 0) && Array.isArray(base.variations) && base.variations.length > 0) {
-        item.variations = base.variations;
+        item.variations = JSON.parse(JSON.stringify(base.variations));
       }
     }
   } catch (err) {}
@@ -1153,18 +1181,24 @@ app.get('/api/products', async (req, res) => {
         let batchNeedsCommit = false;
         snapshot.forEach(doc => {
           const item = { id: doc.id, ...doc.data() };
+          enrichProductBarcodes(item);
           const resolvedImg = resolveToGitRepoUrl(item);
           if (item.image !== resolvedImg) {
             item.image = resolvedImg;
             batch.update(doc.ref, { image: resolvedImg });
             batchNeedsCommit = true;
           }
+          if (item.barcode && !doc.data().barcode) {
+            batch.update(doc.ref, { barcode: item.barcode, variations: item.variations || [] });
+            batchNeedsCommit = true;
+          }
           dbProds.push(item);
         });
         if (batchNeedsCommit) {
-          batch.commit().catch(e => console.warn('No se pudo actualizar imágenes en batch Firestore:', e.message));
+          batch.commit().catch(e => console.warn('No se pudo actualizar imágenes/barcodes en batch Firestore:', e.message));
         }
         products = dbProds;
+        localInventory = dbProds;
       }
     } catch (e) {
       console.warn('⚠️ No se pudo leer productos de Firestore, usando catálogo local:', e.message);
@@ -1256,16 +1290,21 @@ app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
         let batchNeedsCommit = false;
         snapshot.forEach(doc => {
           const item = { id: doc.id, ...doc.data() };
+          enrichProductBarcodes(item);
           const resolvedImg = resolveToGitRepoUrl(item);
           if (item.image !== resolvedImg) {
             item.image = resolvedImg;
             batch.update(doc.ref, { image: resolvedImg });
             batchNeedsCommit = true;
           }
+          if (item.barcode && !doc.data().barcode) {
+            batch.update(doc.ref, { barcode: item.barcode, variations: item.variations || [] });
+            batchNeedsCommit = true;
+          }
           dbProds.push(item);
         });
         if (batchNeedsCommit) {
-          batch.commit().catch(e => console.warn('No se pudo actualizar imágenes en batch Firestore:', e.message));
+          batch.commit().catch(e => console.warn('No se pudo actualizar imágenes/barcodes en batch Firestore:', e.message));
         }
         localInventory = dbProds;
       }
