@@ -588,20 +588,24 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'resetsupplymx.html'));
 });
 
-app.get('/tienda.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'tienda.html'));
-});
-
-app.get('/tienda', (req, res) => {
-  res.sendFile(path.join(__dirname, 'tienda.html'));
+app.get('/pos.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pos.html'));
 });
 
 app.get('/pos', (req, res) => {
-  res.sendFile(path.join(__dirname, 'tienda.html'));
+  res.sendFile(path.join(__dirname, 'pos.html'));
+});
+
+app.get('/tienda.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pos.html'));
+});
+
+app.get('/tienda', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pos.html'));
 });
 
 app.get('/tienda-fisica', (req, res) => {
-  res.sendFile(path.join(__dirname, 'tienda.html'));
+  res.sendFile(path.join(__dirname, 'pos.html'));
 });
 
 app.get('/facturacion', (req, res) => {

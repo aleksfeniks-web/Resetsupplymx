@@ -185,17 +185,26 @@
 
         /* BARRA LATERAL IZQUIERDA COMPACTA (SOLO ICONOS) */
         .pos-sidebar-compact {
-            width: 52px;
-            background: var(--panel);
-            border-right: 1px solid var(--line);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            flex-shrink: 0;
-            z-index: 100;
+            width: 52px !important;
+            min-width: 52px !important;
+            max-width: 52px !important;
+            height: 100% !important;
+            background: #0f141a !important;
+            border-right: 1px solid #232b34 !important;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.5);
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 8px 0 !important;
+            flex-shrink: 0 !important;
+            z-index: 999;
             user-select: none;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        .pos-sidebar-compact::-webkit-scrollbar {
+            display: none;
         }
         .sidebar-top-group {
             display: flex;
@@ -2009,26 +2018,21 @@
 
         /* 2. Pantallas extremadamente angostas (<= 600px móviles verticales) */
         @media (max-width: 600px) {
-            .pos-app-layout {
-                flex-direction: column;
-            }
             .pos-sidebar-compact {
-                width: 100%;
-                height: 44px;
-                flex-direction: row;
-                padding: 0 8px;
-                border-right: none;
-                border-bottom: 1px solid var(--line);
+                width: 46px !important;
+                min-width: 46px !important;
+                max-width: 46px !important;
+                padding: 6px 0 !important;
             }
-            .sidebar-top-group, .sidebar-nav-icons, .sidebar-bottom-group {
-                flex-direction: row;
-                width: auto;
-                gap: 4px;
+            .sidebar-icon-btn {
+                width: 34px;
+                height: 34px;
+                font-size: 13px;
             }
             .pos-workspace {
                 grid-template-columns: 1fr;
                 grid-template-rows: 1.1fr 1fr;
-                height: calc(100% - 90px);
+                height: calc(100% - 44px);
             }
         }
 

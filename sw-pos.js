@@ -1,4 +1,4 @@
-const CACHE_NAME = 'reset-pos-v2';
+const CACHE_NAME = 'reset-pos-v3';
 const ASSETS_TO_CACHE = [
   '/pos',
   '/pos.html',
