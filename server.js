@@ -41,9 +41,42 @@ app.get('/api/audit/suggestions', requireAdminOrAuditAuth, (req, res) => {
 
 // Crear nueva sugerencia o reporte de error (Auditor)
 app.post('/api/audit/suggestions', requireAdminOrAuditAuth, (req, res) => {
-  const { productId, productName, sku, currentPrice, suggestedPrice, type, notes } = req.body || {};
-  if (!productName && !productId) {
-    return res.status(400).json({ success: false, error: 'Debe especificar el producto a auditar.' });
+  const body = req.body || {};
+  let { productId, productName, sku, currentPrice, suggestedPrice, type, notes } = body;
+
+  // Si no se proporcionó producto completo, resolver desde localInventory
+  let matched = null;
+  if (productId) {
+    matched = localInventory.find(p => String(p.id).trim().toLowerCase() === String(productId).trim().toLowerCase() || String(p.code).trim().toLowerCase() === String(productId).trim().toLowerCase());
+  }
+  if (!matched && sku) {
+    matched = localInventory.find(p => String(p.code).trim().toLowerCase() === String(sku).trim().toLowerCase() || String(p.id).trim().toLowerCase() === String(sku).trim().toLowerCase());
+  }
+  if (!matched && productName) {
+    matched = localInventory.find(p => String(p.name).trim().toLowerCase() === String(productName).trim().toLowerCase() || (p.name && p.name.toLowerCase().includes(String(productName).toLowerCase())));
+  }
+
+  if (matched) {
+    productId = matched.id || productId;
+    productName = matched.name || productName;
+    sku = matched.code || sku || matched.id;
+    if (!currentPrice || parseFloat(currentPrice) === 0) {
+      currentPrice = matched.price || 0;
+    }
+  } else if (!productName && !productId) {
+    if (localInventory.length > 0) {
+      productId = localInventory[0].id;
+      productName = localInventory[0].name;
+      sku = localInventory[0].code || localInventory[0].id;
+      currentPrice = localInventory[0].price || 0;
+    } else {
+      productId = 'AUDIT-GEN';
+      productName = 'Producto de Catálogo';
+    }
+  }
+
+  if (!productName) {
+    productName = productId || sku || 'Producto Auditado';
   }
 
   const suggestions = loadAuditSuggestions();
@@ -53,8 +86,8 @@ app.post('/api/audit/suggestions', requireAdminOrAuditAuth, (req, res) => {
     productName: productName || 'Producto',
     sku: sku || '',
     currentPrice: parseFloat(currentPrice) || 0,
-    suggestedPrice: (suggestedPrice !== undefined && suggestedPrice !== null && suggestedPrice !== '') ? parseFloat(suggestedPrice) : null,
-    type: type || 'price_change', // 'price_change', 'inventory_error', 'catalog_error'
+    suggestedPrice: (suggestedPrice !== undefined && suggestedPrice !== null && suggestedPrice !== '' && !isNaN(parseFloat(suggestedPrice))) ? parseFloat(suggestedPrice) : null,
+    type: type || 'price_change', // 'price_change', 'inventory_error', 'catalog_error', 'pos_discrepancy'
     notes: (notes || '').trim(),
     employeeNumber: 'AUD-007',
     employeeName: 'Wilmer Nieves',
