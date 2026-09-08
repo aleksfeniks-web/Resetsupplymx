@@ -3048,11 +3048,6 @@ textarea[required]:focus,
         var productForm = document.getElementById('productForm');
         var closeProductModalBtn = document.getElementById('closeProductModalBtn');
 
-        if (adminToken) {
-            hideLoginScreen();
-            applyRolePermissions(currentUser ? currentUser.role : 'admin', currentUser);
-        }
-
         function toggleAdminPasswordVisibility() {
             var input = document.getElementById('adminPasswordInput');
             var icon = document.getElementById('toggleAdminPassIcon');
@@ -3754,13 +3749,50 @@ textarea[required]:focus,
             var area = document.getElementById('posPriceListPreviewArea');
             if (!area) return;
 
+            var clientName = (document.getElementById('plClientName') ? document.getElementById('plClientName').value : '') || 'PDV';
+            var clientId = (document.getElementById('plClientId') ? document.getElementById('plClientId').value : '') || '';
+            var docTitle = 'Lista_Precios_PDV_' + (clientId || clientName).replace(/[^a-zA-Z0-9_-]/g, '_');
+
             var printContainer = document.getElementById('printContainerDirect');
             if (printContainer) {
                 printContainer.innerHTML = area.innerHTML;
-                window.print();
-            } else {
-                window.print();
             }
+
+            try {
+                // Abre una ventana limpia dedicada exclusivamente para generar el PDF perfecto sin interferencia de modales
+                var printWin = window.open('', '_blank', 'width=900,height=800');
+                if (printWin) {
+                    printWin.document.open();
+                    printWin.document.write('<!DOCTYPE html>' +
+                        '<html>' +
+                        '<head>' +
+                        '<meta charset="UTF-8">' +
+                        '<title>' + docTitle + '</title>' +
+                        '<style>' +
+                        '@page { size: letter portrait; margin: 6mm 8mm; }' +
+                        'body { margin: 0; padding: 0; background: #fff; color: #000; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }' +
+                        'table { page-break-inside: auto; }' +
+                        'tr { page-break-inside: avoid; page-break-after: auto; }' +
+                        'thead { display: table-row-group !important; }' +
+                        'tfoot { display: table-footer-group; }' +
+                        '</style>' +
+                        '</head>' +
+                        '<body>' +
+                        area.innerHTML +
+                        '<script>' +
+                        'window.onload = function() { setTimeout(function() { window.print(); }, 250); };' +
+                        '<\/script>' +
+                        '</body>' +
+                        '</html>');
+                    printWin.document.close();
+                    return;
+                }
+            } catch (e) {
+                console.warn('Popup print fallback:', e);
+            }
+
+            // Fallback estándar en la misma ventana
+            window.print();
         }
 
         function sharePosPriceListWhatsApp() {
@@ -3842,9 +3874,12 @@ textarea[required]:focus,
                 });
 
                 ordersTableBody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:30px;">No se encontraron pedidos en Firestore.</td></tr>';
-                document.getElementById('statTotalSales').textContent = '$' + totalSales.toLocaleString('es-MX', {minimumFractionDigits:2}) + ' MXN';
-                document.getElementById('statTotalOrders').textContent = orders.length;
-                document.getElementById('statPendingShippings').textContent = pendingCount;
+                var elSales = document.getElementById('statTotalSales');
+                if (elSales) elSales.textContent = '$' + totalSales.toLocaleString('es-MX', {minimumFractionDigits:2}) + ' MXN';
+                var elOrders = document.getElementById('statTotalOrders');
+                if (elOrders) elOrders.textContent = orders.length;
+                var elPending = document.getElementById('statPendingShippings');
+                if (elPending) elPending.textContent = pendingCount;
 
             } catch (err) {
                 console.error(err);
@@ -5987,10 +6022,14 @@ function resolveToGitRepoUrl(item) {
 
             // 2. Si currentProductsList está vacío, inicializar con el catálogo completo de GitHub
             if (!currentProductsList || currentProductsList.length === 0) {
-                currentProductsList = DEFAULT_CATALOG.map(function(p) {
-                    p.image = resolveToGitRepoUrl(p);
-                    return p;
-                });
+                if (typeof DEFAULT_CATALOG !== 'undefined' && Array.isArray(DEFAULT_CATALOG)) {
+                    currentProductsList = DEFAULT_CATALOG.map(function(p) {
+                        p.image = resolveToGitRepoUrl(p);
+                        return p;
+                    });
+                } else {
+                    currentProductsList = [];
+                }
             }
 
             enrichInventoryBarcodes(currentProductsList);
@@ -8653,6 +8692,16 @@ Crear bundle Sintra + microfibra con precio promocional en mostrador.`;
             link.href = URL.createObjectURL(blob);
             link.download = 'Nomina_ResetSupplyMX_' + periodType + '_' + payDate + '.csv';
             link.click();
+        }
+
+        // Auto-login seguro diferido al final de la carga de scripts
+        if (adminToken) {
+            hideLoginScreen();
+            try {
+                applyRolePermissions(currentUser ? currentUser.role : 'admin', currentUser);
+            } catch (err) {
+                console.error('Error al inicializar sesión administrativa:', err);
+            }
         }
 
 </script>
