@@ -1043,7 +1043,7 @@ let localInventory = [
   { id: "VON-00014", code: "VON-00014", name: "NATIVE SPRAY WAX 500ML", category: "cera-liquida", udm: "PZ", qty: 2, price: 169.00, pct: 0, newPrice: 169.00, image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/NATIVE%20FAST.png", description: "CERA LÍQUIDA EN SPRAY CON CARNAÚBA PURA PARA MANTENIMIENTO", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 169.00, qty: 2 }] },
   { id: "VON-00015", code: "VON-00015", name: "HIDRACOURO (HIDRATANTE Y PROTECTOR DE PIEL) 500ML", category: "cristales", udm: "PZ", qty: 1, price: 137.00, pct: 0, newPrice: 137.00, image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HIDRACOURO.png", description: "CREMA HIDRATANTE DE PIEL Y CUERO AUTOMOTRIZ", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 137.00, qty: 1 }] },
   { id: "VON-00016", code: "VON-00016", name: "HIGICOURO (LIMPIADOR DE PIEL) 500ML", category: "cristales", udm: "PZ", qty: 2, price: 88.00, pct: 0, newPrice: 88.00, image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HIGICOURO.png", description: "LIMPIADOR SUAVE Y EFECTIVO PARA PIEL Y ASIENTOS DE CUERO", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 88.00, qty: 2 }] },
-  { id: "VON-00017", code: "VON-00017", name: "MAKKER (ELIMINADOR DE MARCA DE REMOLINOS) 500ML", category: "cera-pasta", udm: "PZ", qty: 4, price: 162.00, pct: 0, newPrice: 162.00, image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/MAKKER%202.0.png", description: "RELLENADOR Y MASCARADOR DE SWIRLS Y MICRORAYONES CON BRILLO", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 162.00, qty: 4 }] },
+  { id: "VON-00017", code: "VON-00017", name: "MAKKER (ELIMINADOR DE MARCA DE REMOLINOS) 500ML", category: "cera-pasta", udm: "PZ", qty: 4, price: 215.00, pct: 0, newPrice: 215.00, image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/MAKKER%202.0.png", description: "RELLENADOR Y MASCARADOR DE SWIRLS Y MICRORAYONES CON BRILLO", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 215.00, qty: 4 }] },
   { id: "VON-00095", code: "VON-00095", name: "HYDROX FAST 500ML", category: "ceramicos", udm: "PZ", qty: 2, price: 110.00, pct: 0, newPrice: 110.00, image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/HYDROX%20FAST.png", description: "SELLADOR CERÁMICO DE RÁPIDA APLICACIÓN HIDROREACTIVO", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 110.00, qty: 2 }] },
   { id: "VON-00063", code: "VON-00063", name: "SPELL 500 ML", category: "ceramicos", udm: "PZ", qty: 2, price: 130.00, pct: 0, newPrice: 130.00, image: "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/SPELL.png", description: "SELLADOR RÁPIDO DE SIO2 PARA APLICAR DURANTE EL ENJUAGUE", sec: "Línea de Pulimentos y Ceras", variations: [{ id: "v1", name: "500 ML", price: 130.00, qty: 2 }] },
   {"id":"VON-00110","code":"VON-00110","name":"CITRON 1.5 L (SHAMPOO DESENGRASANTE)","category":"limpieza","udm":"PZ","qty":3,"price":275,"pct":0,"newPrice":275,"image":"https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/CITRON%201.5L.png","description":"SHAMPOO DESENGRASANTE CÍTRICO CONCENTRADÍSIMO","sec":"Línea de Detailing / Limpieza","variations":[{"id":"v1","name":"1.5 L","price":275,"qty":3}]},
@@ -1100,6 +1100,22 @@ function loadLocalInventoryFromDisk() {
       if (Array.isArray(data) && data.length > 0) {
         localInventory = data;
         diskInventoryCache = data;
+      }
+    }
+    if (Array.isArray(localInventory)) {
+      let needsSave = false;
+      localInventory.forEach(p => {
+        if (p && (p.id === 'VON-00017' || p.code === 'VON-00017') && (p.price === 162 || !p.price)) {
+          p.price = 215.00;
+          p.newPrice = 215.00;
+          if (Array.isArray(p.variations)) {
+            p.variations.forEach(v => { if (v.price === 162 || !v.price) v.price = 215.00; });
+          }
+          needsSave = true;
+        }
+      });
+      if (needsSave) {
+        saveLocalInventoryToDisk();
       }
     }
   } catch (e) {

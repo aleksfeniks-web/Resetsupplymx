@@ -3621,12 +3621,18 @@ textarea[required]:focus,
             var flatList = [];
             filtered.forEach(function(p) {
                 var pBasePrice = parseFloat(p.price) || 0;
+                if ((p.id === 'VON-00017' || p.code === 'VON-00017') && (pBasePrice === 162 || !pBasePrice)) {
+                    pBasePrice = 215;
+                }
                 var pPct = parseFloat(p.pct) || 0;
                 var pNewPrice = p.customNewPrice !== undefined && p.customNewPrice !== null ? parseFloat(p.customNewPrice) : (p.newPrice !== undefined ? parseFloat(p.newPrice) : (pBasePrice * (1 + pPct / 100)));
 
                 if (Array.isArray(p.variations) && p.variations.length > 0) {
                     p.variations.forEach(function(v) {
                         var vPrice = parseFloat(v.price || pBasePrice) || 0;
+                        if ((p.id === 'VON-00017' || p.code === 'VON-00017') && (vPrice === 162 || !vPrice)) {
+                            vPrice = 215;
+                        }
                         var vPct = v.pct !== undefined ? parseFloat(v.pct) : pPct;
                         var vOnlinePrice = v.newPrice !== undefined ? parseFloat(v.newPrice) : (vPrice * (1 + vPct / 100));
 
@@ -5588,9 +5594,9 @@ function resolveToGitRepoUrl(item) {
     "category": "abrillantadores",
     "udm": "PZ",
     "qty": 4,
-    "price": 162,
+    "price": 215,
     "pct": 0,
-    "newPrice": 162,
+    "newPrice": 215,
     "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/MAKKER%202.0.png",
     "description": "RELLENADOR Y MASCARADOR DE SWIRLS Y MICRORAYONES CON BRILLO",
     "sec": "Línea de Detailing / Pulimento",
@@ -5598,7 +5604,7 @@ function resolveToGitRepoUrl(item) {
       {
         "id": "v1",
         "name": "500 ML",
-        "price": 162,
+        "price": 215,
         "qty": 4,
         "barcode": "7898511030660"
       }
@@ -6001,6 +6007,15 @@ function resolveToGitRepoUrl(item) {
                            (d.name && p.name && d.name.trim().toLowerCase() === p.name.trim().toLowerCase());
                 });
                 if (def) {
+                    if ((p.id === 'VON-00017' || p.code === 'VON-00017') && (p.price === 162 || !p.price)) {
+                        p.price = 215;
+                        if (p.newPrice === 162 || !p.newPrice) p.newPrice = 215;
+                        if (Array.isArray(p.variations)) {
+                            p.variations.forEach(function(v) {
+                                if (v.price === 162 || !v.price) v.price = 215;
+                            });
+                        }
+                    }
                     if (!p.barcode && def.barcode) {
                         p.barcode = def.barcode;
                     }

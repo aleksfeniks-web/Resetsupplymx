@@ -979,9 +979,9 @@
     "category": "abrillantadores",
     "udm": "PZ",
     "qty": 4,
-    "price": 162,
+    "price": 215,
     "pct": 0,
-    "newPrice": 162,
+    "newPrice": 215,
     "image": "https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/MAKKER%202.0.png",
     "description": "RELLENADOR Y MASCARADOR DE SWIRLS Y MICRORAYONES CON BRILLO",
     "sec": "Línea de Detailing / Pulimento",
@@ -989,7 +989,7 @@
       {
         "id": "v1",
         "name": "500 ML",
-        "price": 162,
+        "price": 215,
         "qty": 4,
         "barcode": "7898511030660"
       }
