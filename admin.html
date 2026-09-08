@@ -1793,10 +1793,16 @@ textarea[required]:focus,
                     <p style="font-size:12.5px; color:var(--muted);">Lista de solicitudes y registros para distribución y puntos de venta.</p>
                 </div>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <button class="btn-action" onclick="openPosPriceListModal()" style="border-color:var(--blue); color:var(--blue); font-weight:700;">
+                    <button class="btn-action" onclick="openPosPriceListModal(null, 'sep2026')" style="border-color:var(--green); color:var(--green); font-weight:800; background:rgba(61,220,132,0.08);" title="Generar e imprimir Lista Oficial Sep 1 - 2026 personalizada para un cliente">
+                        <i class="fa-solid fa-file-invoice-dollar" style="margin-right:6px;"></i> 📑 Lista Precios Sep 1 - 2026
+                    </button>
+                    <button class="btn-action" onclick="downloadSep2026PriceListCSV()" style="border-color:#22b8f0; color:#22b8f0; font-weight:700;" title="Descargar archivo CSV de la Lista Oficial Sep 1 - 2026">
+                        <i class="fa-solid fa-file-csv" style="margin-right:6px;"></i> 📥 Descargar CSV Sep 1 - 2026
+                    </button>
+                    <button class="btn-action" onclick="openPosPriceListModal(null, 'pdv25')" style="border-color:var(--blue); color:var(--blue); font-weight:700;">
                         <i class="fa-solid fa-file-pdf" style="margin-right:6px;"></i> 🖨️ Lista de Precios (-25% PDV)
                     </button>
-                    <button class="btn-action" onclick="exportPosClientsToCSV()">📥 Exportar a Excel (CSV)</button>
+                    <button class="btn-action" onclick="exportPosClientsToCSV()">📥 Exportar Clientes (CSV)</button>
                     <button class="btn-action" onclick="loadPosClients()">🔄 Actualizar Lista</button>
                     <a href="/clientes/puntodeventa.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--green); color:var(--green);">➕ Nuevo Registro</a>
                 </div>
@@ -2600,14 +2606,17 @@ textarea[required]:focus,
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
                 <div>
                     <h3 style="margin:0; font-family:'Rajdhani',sans-serif; font-size:21px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
-                        <i class="fa-solid fa-file-invoice-dollar" style="color:var(--blue);"></i>
-                        Lista de Precios Oficial — Puntos de Venta & Partners
+                        <i class="fa-solid fa-file-invoice-dollar" style="color:var(--green);"></i>
+                        <span id="posPriceListModalTitle">LISTA PRECIOS RESET SUPPLY - VONIXX SEP 1 - 2026</span>
                     </h3>
-                    <p style="font-size:12px; color:var(--muted); margin:3px 0 0 0;">
-                        Genera y descarga en PDF el catálogo con tarifa especial de descuento (-25%), personalizado con los datos del cliente.
+                    <p id="posPriceListModalSubtitle" style="font-size:12px; color:var(--muted); margin:3px 0 0 0;">
+                        Genera, personaliza con los datos del cliente, imprime en PDF o descarga la lista oficial de precios.
                     </p>
                 </div>
-                <div style="display:flex; gap:8px; align-items:center;">
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <button type="button" class="btn-action" onclick="downloadCurrentPriceListCSV()" style="border-color:#22b8f0; color:#22b8f0; font-weight:700; font-size:12px; padding:7px 14px;" title="Descargar datos en archivo CSV">
+                        <i class="fa-solid fa-file-csv" style="margin-right:5px;"></i> Descargar CSV
+                    </button>
                     <button type="button" class="btn-primary" onclick="printPosPriceList()" style="width:auto; padding:7px 16px; font-size:12.5px; background:linear-gradient(135deg, #22b8f0, #3ddc84); color:#0a0e13; font-weight:800;">
                         <i class="fa-solid fa-print" style="margin-right:5px;"></i> Imprimir / Guardar PDF
                     </button>
@@ -2620,6 +2629,16 @@ textarea[required]:focus,
             <!-- Panel de Configuración y Datos del Cliente -->
             <div style="background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:14px; flex-shrink:0;">
                 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; align-items:end;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px;">
+                            <i class="fa-solid fa-list-check" style="margin-right:4px;"></i> Catálogo / Tarifa
+                        </label>
+                        <select id="plTariffMode" class="form-input" style="font-size:12px; font-weight:700; color:var(--green);" onchange="onPosPriceListTariffModeChange()">
+                            <option value="sep2026">📑 LISTA PRECIOS RESET SUPPLY - VONIXX SEP 1 - 2026</option>
+                            <option value="pdv25">🏪 Lista de Precios Mayorista (-25% PDV)</option>
+                        </select>
+                    </div>
+
                     <div class="form-group" style="margin-bottom:0;">
                         <label style="font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:0.5px;">
                             <i class="fa-solid fa-address-book" style="margin-right:4px;"></i> Buscar Cliente Registrado
@@ -2666,11 +2685,11 @@ textarea[required]:focus,
                         </select>
                     </div>
 
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px;">% Descuento Especial</label>
+                    <div class="form-group" style="margin-bottom:0;" id="plDiscountGroup">
+                        <label id="plDiscountLabel" style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px;">Filtro por Categoría</label>
                         <div style="display:flex; align-items:center; gap:6px;">
-                            <input type="number" id="plDiscountPct" class="form-input" value="25" min="0" max="90" step="1" oninput="renderPosPriceListPreview()" style="width:75px; text-align:right; font-weight:800; color:var(--green);">
-                            <span style="font-size:12px; font-weight:700; color:var(--green);">%</span>
+                            <input type="number" id="plDiscountPct" class="form-input" value="25" min="0" max="90" step="1" oninput="renderPosPriceListPreview()" style="display:none; width:75px; text-align:right; font-weight:800; color:var(--green);">
+                            <span id="plDiscountPctSymbol" style="display:none; font-size:12px; font-weight:700; color:var(--green);">%</span>
                             <select id="plCategoryFilter" class="form-input" style="font-size:11.5px; flex:1;" onchange="renderPosPriceListPreview()">
                                 <option value="all">Todas las Categorías</option>
                             </select>
@@ -3434,7 +3453,8 @@ textarea[required]:focus,
                 }
 
                 var cleanPhone = (c.celular || c.telefono || '').replace(/\D/g, '');
-                var printPlBtn = '<button type="button" class="btn-action" style="padding:4px 8px; font-size:11px; text-decoration:none; margin-right:4px; border-color:var(--blue); color:var(--blue); font-weight:600;" onclick="openPosPriceListForClient(\'' + (c.id || '') + '\')" title="Generar lista de precios (-25%) para este cliente">📄 Lista PDV</button>';
+                var printSepBtn = '<button type="button" class="btn-action" style="padding:4px 8px; font-size:11px; text-decoration:none; margin-right:4px; border-color:var(--green); color:var(--green); font-weight:700; background:rgba(61,220,132,0.08);" onclick="openPosPriceListForClient(\'' + (c.id || '') + '\', \'sep2026\')" title="Generar LISTA PRECIOS RESET SUPPLY - VONIXX SEP 1 - 2026 para este cliente">📑 Sep 2026</button>';
+                var printPlBtn = '<button type="button" class="btn-action" style="padding:4px 8px; font-size:11px; text-decoration:none; margin-right:4px; border-color:var(--blue); color:var(--blue); font-weight:600;" onclick="openPosPriceListForClient(\'' + (c.id || '') + '\', \'pdv25\')" title="Generar lista de precios (-25%) para este cliente">📄 Lista PDV</button>';
                 var waLink = cleanPhone ? '<a href="https://wa.me/52' + cleanPhone + '" target="_blank" class="btn-action" style="padding:4px 8px; font-size:11px; text-decoration:none; margin-right:4px;">💬 WhatsApp</a>' : '';
                 var mailLink = '<a href="mailto:' + c.email + '" class="btn-action" style="padding:4px 8px; font-size:11px; text-decoration:none;">✉️ Correo</a>';
 
@@ -3450,7 +3470,7 @@ textarea[required]:focus,
                     '<td>' + (c.negocio || '<span style="color:var(--muted-2);">No especificado</span>') + '</td>' +
                     '<td style="font-size:12px; max-width:240px;">' + (c.direccion || '-') + '</td>' +
                     '<td>' + constanciaBadge + '</td>' +
-                    '<td style="white-space:nowrap;">' + printPlBtn + waLink + mailLink + '</td>' +
+                    '<td style="white-space:nowrap;">' + printSepBtn + printPlBtn + waLink + mailLink + '</td>' +
                 '</tr>';
             });
             tbody.innerHTML = html;
@@ -3490,8 +3510,127 @@ textarea[required]:focus,
             document.body.removeChild(link);
         }
 
-        // ==================== GENERADOR E IMPRESIÓN DE LISTA DE PRECIOS (-25% PDV) ====================
-        async function openPosPriceListModal(clientId) {
+        // ==================== LISTA DE PRECIOS OFICIAL VONIXX SEP 1 - 2026 ====================
+        const VONIXX_SEP_2026_PRICELIST = [
+            {"code":"VON-00001","name":"V10 (PULIMENTO DE CORTE)","content":"500ML","price":162.86,"category":"PULIMENTOS PARA BARNIZ BLANDO"},
+            {"code":"VON-00002","name":"V20 (PULIMENTO DE CORTE MEDIO)","content":"500ML","price":190.43,"category":"PULIMENTOS PARA BARNIZ BLANDO"},
+            {"code":"VON-00003","name":"V30 (PULIMENTO DE ACABADO)","content":"500ML","price":202.95,"category":"PULIMENTOS PARA BARNIZ BLANDO"},
+            {"code":"VON-00004","name":"V CUT (PULIMENTO DE CORTE PREMIUM)","content":"500ML","price":498.61,"category":"PULIMENTOS PARA BARNIZ PREMIUM"},
+            {"code":"VON-00005","name":"V-POLISH (PULIMENTO DE CORTE MEDIO PREMIUM)","content":"500ML","price":463.54,"category":"PULIMENTOS PARA BARNIZ PREMIUM"},
+            {"code":"VON-00006","name":"V-FINISH (PULIMENTO DE SUYPER LUSTRO PREMIUM)","content":"500ML","price":463.54,"category":"PULIMENTOS PARA BARNIZ PREMIUM"},
+            {"code":"VON-00034","name":"OPTY (PULIMENTO PARA CRISTAL)","content":"240ML","price":556.24,"category":"TRATAMIENTO PARA CRISTALES"},
+            {"code":"VON-00035","name":"GLAZY (LIMPIADOR DE CRISTALES)","content":"500ML","price":131.54,"category":"TRATAMIENTO PARA CRISTALES"},
+            {"code":"VON-00103","name":"GLAZY (LIMPIADOR DE CRISTALES)","content":"5 LITROS","price":497.36,"category":"TRATAMIENTO PARA CRISTALES"},
+            {"code":"VON-00083","name":"PRIZM (RESTAURADOR DE VIDRIOS)","content":"500ML","price":126.53,"category":"TRATAMIENTO PARA CRISTALES"},
+            {"code":"VON-00086","name":"FOCUS (REMOVEDOR MARCAS DE AGUA CRISTAL Y ESPEJO)","content":"240 ML","price":174.14,"category":"TRATAMIENTO PARA CRISTALES"},
+            {"code":"VON-00007","name":"BLEND ALL IN ONE  (PULIMENTO 3 PASOS EN 1)","content":"500ML","price":486.09,"category":"PRODUCTOS 3 EN 1"},
+            {"code":"VON-00008","name":"V40 (PULIMENTO 4 PASOS EN 1)","content":"500ML","price":238.03,"category":"PRODUCTOS 3 EN 1"},
+            {"code":"VON-00009","name":"NATIVE PASTE WAX (CERA DE CARNAUBA BRASIÑEÑA 100% PURA)","content":"100ML","price":437.23,"category":"CERA EN PASTA"},
+            {"code":"VON-00036","name":"CARNAUBA HYBRID WAX (CERA DE CARNAUBA EN PASTA)","content":"240ML","price":291.9,"category":"CERA EN PASTA"},
+            {"code":"VON-00010","name":"BLEND PASTE WAX (CERA CON SIO2 & CARNAÚBA)","content":"100ML","price":397.14,"category":"CERA EN PASTA"},
+            {"code":"VON-00058","name":"CARNAUBA PLUS (CERA DE LIMPIEZA)","content":"1500 ML","price":326.98,"category":"CERA EN SPRAY"},
+            {"code":"VON-00011","name":"CARNAUBA PLUS (CERA DE LIMPIEZA)","content":"500ML","price":150.34,"category":"CERA EN SPRAY"},
+            {"code":"VON-00012","name":"CARNAUBA TOK FINAL (CERA LIQUIDA DE MANTENIMIENTO)","content":"500ML","price":124.03,"category":"CERA EN SPRAY"},
+            {"code":"VON-00057","name":"BLEND SPRAY (CERA LÍQUIDA CON SiO2 & CARNAÚBA)","content":"500ML","price":202.95,"category":"CERA EN SPRAY"},
+            {"code":"VON-00013","name":"NATIVE CLEANER WAX (CERA LIMPIADORA CON CARNAÚBA)","content":"500ML","price":250.56,"category":"CERA EN SPRAY"},
+            {"code":"VON-00014","name":"NATIVE SPRAY WAX (CERA DE CARNAÚBA LÍQUIDA PREMIUM)","content":"500ML","price":211.72,"category":"CERA EN SPRAY"},
+            {"code":"VON-00015","name":"HIDROCOURO (HIDRATANTE Y PROTECTOR DE PIEL)","content":"50ML","price":171.63,"category":"TRATAMIENTOS DE PIEL"},
+            {"code":"VON-00016","name":"HIGICOURO (LIMPIADOR DE PIEL)","content":"500ML","price":110.25,"category":"TRATAMIENTOS DE PIEL"},
+            {"code":"VON-00017","name":"MAKKER (ELIMINADOR DE MARCA DE REMOLINOS)","content":"500ML","price":202.95,"category":"ABRILLANTADORES DE PINTURA"},
+            {"code":"VON-00018","name":"SINERGY PAINT (SELLADOR CERAMICO PARA PINTURA)","content":"500ML","price":433.47,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00019","name":"SINERGY WHEEL (CERAMICO PARA LLANTAS)","content":"500ML","price":423.45,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00020","name":"V LEATHER PRO (CERAMICO PARA PIEL)","content":"50ML","price":556.24,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00021","name":"V LIGHT PRO (CERAMICO PARA FAROS)","content":"50ML","price":650.2,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00022","name":"V PLASTIC PRO (CERAMICO PARA PLASTICOS)","content":"50ML","price":605.1,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00023","name":"SIO2 PRO (SELLADOR CERAMICO)","content":"500ML","price":211.72,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00095","name":"HYDROX FAST (CERAMICO HIDROREACTIVO)","content":"500ML","price":137.81,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00096","name":"HYDROX PRO (CERAMICO HIDROREACTIVO CONCENTRADO)","content":"500ML","price":392.13,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00063","name":"SPELL (SELLADOR CERAMICO SIN CONTACTO)","content":"500ML","price":162.86,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00080","name":"V PAINT PRO (CERAMICO PARA PINTURA) 20 ML","content":"20 ML","price":308.19,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00024","name":"V PAINT PRO (CERAMICO PARA PINTURA)","content":"50ML","price":876.96,"category":"TRATAMIENTOS CERAMICOS"},
+            {"code":"VON-00042","name":"V MOL (SHAMPOO DESINCRUSTANTE)","content":"1500ML","price":164.12,"category":"SHAMPOO"},
+            {"code":"VON-00043","name":"V MOL (SHAMPOO DESINCRUSTANTE)","content":"500ML","price":86.44,"category":"SHAMPOO"},
+            {"code":"VON-00101","name":"V MOL (SHAMPOO DESINCRUSTANTE)","content":"5 LITROS","price":384.61,"category":"SHAMPOO"},
+            {"code":"VON-00037","name":"CITRON (SHAMPOO DESENGRASANTE)","content":"1500ML","price":191.68,"category":"SHAMPOO"},
+            {"code":"VON-00025","name":"V FLOC (SHAMPOO PH NEUTRO)","content":"1500ML","price":223,"category":"SHAMPOO"},
+            {"code":"VON-00026","name":"V FLOC (SHAMPOO PH NEUTRO)","content":"500ML","price":114,"category":"SHAMPOO"},
+            {"code":"VON-00102","name":"V FLOC (SHAMPOO PH NEUTRO)","content":"5 LITROS","price":503.63,"category":"SHAMPOO"},
+            {"code":"VON-00097","name":"HYDROX WASH (SHAMPOO CERAMICO)","content":"500ML","price":337,"category":"SHAMPOO"},
+            {"code":"VON-00072","name":"ALUMAX  (DESINCRUSTRANTE ACIDO)","content":"20 LITROS","price":1549.71,"category":"LIMPIEZA"},
+            {"code":"VON-00084","name":"REMOVEX (DESENGRASANTE Y LIMPIADOR DE CHASIS)","content":"20 LITROS","price":1245.28,"category":"LIMPIEZA"},
+            {"code":"VON-00067","name":"V ECO FAST (LAVADO EN SECO BIODEGRADABLE)","content":"500ML","price":106.49,"category":"LIMPIEZA"},
+            {"code":"VON-00066","name":"V ECO (LAVADO EN SECO BIODEGRADABLE)","content":"1500ML","price":296.91,"category":"LIMPIEZA"},
+            {"code":"VON-00038","name":"IMPACT (DESENGRASANTE MULTIUSOS)","content":"1500ML","price":154.09,"category":"LIMPIEZA"},
+            {"code":"VON-00039","name":"IZER (REMOVEDOR DE OXIDOS)","content":"500ML","price":145.32,"category":"LIMPIEZA"},
+            {"code":"VON-00087","name":"IZER (REMOVEDOR DE OXIDOS)","content":"1500 ML","price":289.4,"category":"LIMPIEZA"},
+            {"code":"VON-00099","name":"REZET  ZACS REVELADOR DE HOLOGRAMAS","content":"500 ML","price":141.57,"category":"LIMPIEZA"},
+            {"code":"VON-00040","name":"STRIKE (REMOVEDOR DE ALQUITRAN Y PEGAMENTO)","content":"500ML","price":241.79,"category":"LIMPIEZA"},
+            {"code":"VON-00088","name":"STRIKE (REMOVEDOR DE ALQUITRAN Y PEGAMENTO)","content":"1500 ML","price":536.2,"category":"LIMPIEZA"},
+            {"code":"VON-00027","name":"DELET (LIMPIADOR DE PLASTICOS, VINILO Y CAUCHO)","content":"500ML","price":136.56,"category":"LIMPIEZA"},
+            {"code":"VON-00064","name":"DELET (LIMPIADOR DE PLASTICOS, VINILO Y CAUCHO)","content":"5 LITROS","price":388.37,"category":"LIMPIEZA"},
+            {"code":"VON-00028","name":"SINTRA FAST (LIMPIADOR DE INTERIORES)","content":"500ML","price":122.77,"category":"LIMPIEZA"},
+            {"code":"VON-00029","name":"SINTRA PRO (LIMPIADOR DE INTERIORES)","content":"1500ML","price":167.88,"category":"LIMPIEZA"},
+            {"code":"VON-00030","name":"SINTRA PRO (LIMPIADOR DE INTERIORES)","content":"5 LITROS","price":364.56,"category":"LIMPIEZA"},
+            {"code":"VON-00082","name":"VEXUS (LIMPIADOR LLANTAS Y MOTORES)","content":"500 ML","price":108.99,"category":"LIMPIEZA"},
+            {"code":"VON-00091","name":"BACTRAN (LIMPIADOR BACTERICIDA 7 EN 1)","content":"1.5 LITROS","price":141.57,"category":"SISTEMA  VSC (Vonixx Smart Cleaning)"},
+            {"code":"VON-00092","name":"BACTRAN (LIMPIADOR BACTERICIDA 7 EN 1)","content":"5 LITROS","price":289.4,"category":"SISTEMA  VSC (Vonixx Smart Cleaning)"},
+            {"code":"VON-00093","name":"EXTRACTUS (LIMPIADOR ULTRA CONCENTRADO)","content":"1.5 LITROS","price":134.05,"category":"SISTEMA  VSC (Vonixx Smart Cleaning)"},
+            {"code":"VON-00094","name":"EXTRACTUS (LIMPIADOR ULTRA CONCENTRADO)","content":"5 LITROS","price":279.37,"category":"SISTEMA  VSC (Vonixx Smart Cleaning)"},
+            {"code":"VON-00104","name":"SANITIZANTE (FINALIZADOR 4 EN 1)","content":"1.5 LITROS","price":147.83,"category":"SISTEMA  VSC (Vonixx Smart Cleaning)"},
+            {"code":"VON-00105","name":"SANITIZANTE (FINALIZADOR 4 EN 1)","content":"5 LITROS","price":308.19,"category":"SISTEMA  VSC (Vonixx Smart Cleaning)"},
+            {"code":"VON-00041","name":"VERSE (PROTECTOR DE PLASTICOS)","content":"500ML","price":269.35,"category":"RESTAURADOR DE PLASTICOS"},
+            {"code":"VON-00098","name":"TRYON (ACONDICIONADOR DE PLASTICOS)","content":"500ML","price":180.4,"category":"RESTAURADOR DE PLASTICOS"},
+            {"code":"VON-00059","name":"FLEXUS (LIMPIEZA Y RENOVACION DE PLASTICOS INTERIOR)","content":"500ML","price":190.43,"category":"RESTAURADOR DE PLASTICOS"},
+            {"code":"VON-00031","name":"RESTAURAX (RESTAURADOR DE PLASTICOS)","content":"500ML","price":251.81,"category":"RESTAURADOR DE PLASTICOS"},
+            {"code":"VON-00100","name":"RESTAURAX EN AEROSOL (RESTAURADOR DE PLASTICOS)","content":"400ML","price":174.14,"category":"RESTAURADOR DE PLASTICOS"},
+            {"code":"VON-00060","name":"INTENSE ( PLASTICOS INTERNOS CON ACABADO NATURAL )","content":"500ML","price":137.81,"category":"RESTAURADOR DE PLASTICOS"},
+            {"code":"VON-00061","name":"REVOX (ABRILLANTADOR DE LLANTAS ACABADO SATINADO)","content":"500ML","price":170.38,"category":"RESTAURADOR DE LLANTAS"},
+            {"code":"VON-00106","name":"REXER (RESTAURADOR DE NEUMATICOS)","content":"500ML","price":228.01,"category":"RESTAURADOR DE LLANTAS"},
+            {"code":"VON-00062","name":"SHINY (ABRILLANTADOR DE LLANTAS ACABADO BRILLANTE)","content":"500ML","price":220.49,"category":"RESTAURADOR DE LLANTAS"},
+            {"code":"VON-00032","name":"BLEN METAL POLISH (PULIMENTO PARA METALES)","content":"150G","price":264.34,"category":"PULIDOR DE METAL"},
+            {"code":"VON-00053","name":"LINTERNA DE INSPECCION 15W 1600M\\","content":"PIEZA","price":2265.06,"category":"ACCESORIOS"},
+            {"code":"VON-00081","name":"APLICADOR DE MICROFIBRA CON ENCAJE DE MANO","content":"PIEZA","price":41.34,"category":"ACCESORIOS"},
+            {"code":"VON-00044","name":"MANDIL DE MICROFIBRA","content":"PIEZA","price":414.68,"category":"ACCESORIOS"},
+            {"code":"VON-00033","name":"POLITRIZ ORBITAL VOXER 5\" 15MM 127V","content":"PIEZA","price":6604.76,"category":"ACCESORIOS"},
+            {"code":"VON-00065","name":"GUANTE DE MICROFIBRA 2 EN 1","content":"PIEZA","price":117.76,"category":"ACCESORIOS"},
+            {"code":"VON-00071","name":"GUANTE MICROFIBRA 2 EN 1 25 X 16 CM VONIXX","content":"PIEZA","price":96.47,"category":"ACCESORIOS"},
+            {"code":"VON-00085","name":"TOALLA CLAYBA (8DESCONTAMINANTE DE ARCILLA)","content":"PIEZA","price":384.61,"category":"ACCESORIOS"},
+            {"code":"ENV-00010","name":"ENVASE PARA ATOMIZADOR VONIXX 500 ML","content":"PIEZA","price":30.07,"category":"ACCESORIOS"},
+            {"code":"ATO-00010","name":"ATOMIZADOR NEGRO PARA SOLVENTES","content":"PIEZA","price":21.3,"category":"ACCESORIOS"},
+            {"code":"VON-00073","name":"KIT DE 5 PINCELES DE DETALLADO - EXTERNO","content":"PIEZA","price":214.23,"category":"CEPILLOS Y PINCELES"},
+            {"code":"VON-00074","name":"KIT DE 5 PINCELES DE DETALLADO - INTERNO","content":"PIEZA","price":214.23,"category":"CEPILLOS Y PINCELES"},
+            {"code":"VON-00075","name":"CEPILLOS DE MICROFIBRA PARA LIMPIEZA DE RINES","content":"PIEZA","price":214.23,"category":"CEPILLOS Y PINCELES"},
+            {"code":"VON-00076","name":"CEPILLO PARA LIMPIEZA DE TOLVAS","content":"PIEZA","price":115.26,"category":"CEPILLOS Y PINCELES"},
+            {"code":"VON-00077","name":"CEPILLO PARA LIMPIEZA DE NEUMATICOS","content":"PIEZA","price":96.47,"category":"CEPILLOS Y PINCELES"},
+            {"code":"VON-00079","name":"CEPILLO PARA LIMPIEZA DE  INTERIORES DE CERDAS SUAVES","content":"PIEZA","price":131.54,"category":"CEPILLOS Y PINCELES"},
+            {"code":"VON-00089","name":"JG 3 TACO PARA VIDRIOS PESADA TIPO CARPETE","content":"PÍEZA","price":86.44,"category":"CEPILLOS Y PINCELES"},
+            {"code":"VON-00090","name":"JG 3 TACO PARA VIDRIOS TIPO LONA","content":"PIEZA","price":86.44,"category":"CEPILLOS Y PINCELES"},
+            {"code":"VON-00045","name":"PULVERIZADOR DE ESPUMA FAST","content":"PIEZA","price":1198.93,"category":"PULVERIZADORES"},
+            {"code":"VON-00070","name":"SNOW FOAM PRO PET 1L (PULVERIZADOR DE ESPUMA)","content":"PIEZA","price":1197.68,"category":"PULVERIZADORES"},
+            {"code":"VON-00056","name":"PULVERIZADOR DE MANO CAP. 2 LITROS","content":"PIEZA","price":580.05,"category":"PULVERIZADORES"},
+            {"code":"VON-00046","name":"PAD PARA PULIR VIDRIOS TIPO ALFOMBRA","content":"PIEZA","price":274.36,"category":"PADS DE '5' PULGADAS"},
+            {"code":"VON-00047","name":"PAD PARA PULIR VIDRIOS TIPO LONA","content":"PIEZA","price":274.36,"category":"PADS DE '5' PULGADAS"},
+            {"code":"VON-00048","name":"PAD DE SUPER LUSTRO ROJO","content":"PIEZA","price":192.93,"category":"PADS DE '5' PULGADAS"},
+            {"code":"VON-00049","name":"PAD DE LUSTRO AZUL CLARO","content":"PIEZA","price":192.93,"category":"PADS DE '5' PULGADAS"},
+            {"code":"VON-00050","name":"PAD DE CORTE LIGERO AMARILLA","content":"PIEZA","price":192.93,"category":"PADS DE '5' PULGADAS"},
+            {"code":"VON-00051","name":"PAD DE CORTE PESADO DE LANA","content":"PIEZA","price":243.04,"category":"PADS DE '5' PULGADAS"},
+            {"code":"VON-00052","name":"PAD DE LUSTRO NEGRA DE TERCIOPELO","content":"PIEZA","price":192.93,"category":"PADS DE '5' PULGADAS"},
+            {"code":"MIC-00001","name":"MICROFIBRA GRANDE","content":"PIEZA","price":166.62,"category":"MICROFIBRAS CARBRITE"},
+            {"code":"MIC-00002","name":"MICROFIBRA CHICA","content":"PIEZA","price":55.12,"category":"MICROFIBRAS CARBRITE"},
+            {"code":"PLA-00044","name":"PLAYERA TIPO POLO VONIXX TALLA M","content":"PIEZA","price":329.49,"category":"PLAYERAS Y GORRA"},
+            {"code":"PLA-00045","name":"PLAYERA TIPO POLO VONIXX TALLA XL","content":"PIEZA","price":329.49,"category":"PLAYERAS Y GORRA"},
+            {"code":"PLA-00046","name":"PLAYERA TIPO POLO VONIXX TALLA L","content":"PIEZA","price":329.49,"category":"PLAYERAS Y GORRA"},
+            {"code":"GOR-00002","name":"GORRA VONIXX UNITALLA","content":"PIEZA","price":210.47,"category":"PLAYERAS Y GORRA"},
+        ];
+
+        // ==================== GENERADOR E IMPRESIÓN DE LISTAS DE PRECIOS ====================
+        async function openPosPriceListModal(clientId, tariffMode) {
+            tariffMode = tariffMode || 'sep2026';
+            var tariffSelect = document.getElementById('plTariffMode');
+            if (tariffSelect) {
+                tariffSelect.value = tariffMode;
+            }
+
             // Asegurar que el catálogo de productos esté cargado
             if (!currentProductsList || currentProductsList.length === 0) {
                 if (typeof loadProducts === 'function') {
@@ -3518,25 +3657,8 @@ textarea[required]:focus,
                 clientSelect.innerHTML = selHtml;
             }
 
-            // Llenar el filtro de categorías
-            var catSelect = document.getElementById('plCategoryFilter');
-            if (catSelect) {
-                var cats = [];
-                if (Array.isArray(currentProductsList)) {
-                    currentProductsList.forEach(function(p) {
-                        if (p.category && cats.indexOf(p.category) === -1) {
-                            cats.push(p.category);
-                        }
-                    });
-                }
-                cats.sort();
-                var catHtml = '<option value="all">Todas las Categorías (' + currentProductsList.length + ' productos)</option>';
-                cats.forEach(function(cat) {
-                    var count = currentProductsList.filter(function(p) { return p.category === cat; }).length;
-                    catHtml += '<option value="' + escapeHtml(cat) + '">' + escapeHtml(cat.toUpperCase()) + ' (' + count + ')</option>';
-                });
-                catSelect.innerHTML = catHtml;
-            }
+            // Llenar el filtro de categorías según la tarifa seleccionada
+            populatePosPriceListCategories();
 
             // Si se especificó un cliente en particular, cargarlo
             if (clientId && Array.isArray(currentPosClientsList)) {
@@ -3553,14 +3675,15 @@ textarea[required]:focus,
                 }
             }
 
+            updatePosPriceListModalHeader();
             renderPosPriceListPreview();
 
             var modal = document.getElementById('posPriceListModal');
             if (modal) modal.style.display = 'flex';
         }
 
-        function openPosPriceListForClient(clientId) {
-            openPosPriceListModal(clientId);
+        function openPosPriceListForClient(clientId, tariffMode) {
+            openPosPriceListModal(clientId, tariffMode || 'sep2026');
         }
 
         function populatePosPriceListClientFields(c) {
@@ -3593,31 +3716,202 @@ textarea[required]:focus,
             }
         }
 
+        function onPosPriceListTariffModeChange() {
+            populatePosPriceListCategories();
+            updatePosPriceListModalHeader();
+            renderPosPriceListPreview();
+        }
+
+        function updatePosPriceListModalHeader() {
+            var mode = document.getElementById('plTariffMode') ? document.getElementById('plTariffMode').value : 'sep2026';
+            var titleEl = document.getElementById('posPriceListModalTitle');
+            var subtitleEl = document.getElementById('posPriceListModalSubtitle');
+            var discountInp = document.getElementById('plDiscountPct');
+            var discountSymbol = document.getElementById('plDiscountPctSymbol');
+            var discountLabel = document.getElementById('plDiscountLabel');
+
+            if (mode === 'sep2026') {
+                if (titleEl) titleEl.textContent = 'LISTA PRECIOS RESET SUPPLY - VONIXX SEP 1 - 2026';
+                if (subtitleEl) subtitleEl.textContent = 'Tarifa Oficial Vonixx México Sep 1 - 2026 (Precios Netos de Catálogo). Personaliza e imprime en PDF o descarga en CSV.';
+                if (discountLabel) discountLabel.textContent = 'Filtro por Categoría';
+                if (discountInp) discountInp.style.display = 'none';
+                if (discountSymbol) discountSymbol.style.display = 'none';
+            } else {
+                if (titleEl) titleEl.textContent = 'Lista de Precios Oficial — Puntos de Venta & Partners';
+                if (subtitleEl) subtitleEl.textContent = 'Genera y descarga en PDF el catálogo con tarifa especial de descuento (-25%), personalizado con los datos del cliente.';
+                if (discountLabel) discountLabel.textContent = '% Descuento Especial';
+                if (discountInp) discountInp.style.display = 'inline-block';
+                if (discountSymbol) discountSymbol.style.display = 'inline-block';
+            }
+        }
+
+        function populatePosPriceListCategories() {
+            var catSelect = document.getElementById('plCategoryFilter');
+            if (!catSelect) return;
+
+            var mode = document.getElementById('plTariffMode') ? document.getElementById('plTariffMode').value : 'sep2026';
+            var cats = [];
+
+            if (mode === 'sep2026') {
+                VONIXX_SEP_2026_PRICELIST.forEach(function(item) {
+                    if (item.category && cats.indexOf(item.category) === -1) {
+                        cats.push(item.category);
+                    }
+                });
+                cats.sort();
+                var catHtml = '<option value="all">Todas las Categorías (' + VONIXX_SEP_2026_PRICELIST.length + ' productos)</option>';
+                cats.forEach(function(cat) {
+                    var count = VONIXX_SEP_2026_PRICELIST.filter(function(p) { return p.category === cat; }).length;
+                    catHtml += '<option value="' + escapeHtml(cat) + '">' + escapeHtml(cat) + ' (' + count + ')</option>';
+                });
+                catSelect.innerHTML = catHtml;
+            } else {
+                var products = (currentProductsList && currentProductsList.length > 0) ? currentProductsList : (typeof DEFAULT_CATALOG !== 'undefined' ? DEFAULT_CATALOG : []);
+                products.forEach(function(p) {
+                    if (p.category && cats.indexOf(p.category) === -1) {
+                        cats.push(p.category);
+                    }
+                });
+                cats.sort();
+                var catHtml = '<option value="all">Todas las Categorías (' + products.length + ' productos)</option>';
+                cats.forEach(function(cat) {
+                    var count = products.filter(function(p) { return p.category === cat; }).length;
+                    catHtml += '<option value="' + escapeHtml(cat) + '">' + escapeHtml(cat.toUpperCase()) + ' (' + count + ')</option>';
+                });
+                catSelect.innerHTML = catHtml;
+            }
+        }
+
         function renderPosPriceListPreview() {
             var area = document.getElementById('posPriceListPreviewArea');
             if (!area) return;
 
+            var mode = document.getElementById('plTariffMode') ? document.getElementById('plTariffMode').value : 'sep2026';
             var clientId = (document.getElementById('plClientId').value || 'POS-CLI-GENERAL').trim();
             var clientName = (document.getElementById('plClientName').value || 'Punto de Venta Autorizado').trim();
             var clientEmail = (document.getElementById('plClientEmail').value || 'ventas@resetsupplymx.com').trim();
             var clientBusiness = (document.getElementById('plClientBusiness').value || '').trim();
             var clientPhone = (document.getElementById('plClientPhone').value || '').trim();
             var clientModality = (document.getElementById('plClientModality').value || 'Punto de Venta Tradicional').trim();
+            var catFilter = document.getElementById('plCategoryFilter') ? document.getElementById('plCategoryFilter').value : 'all';
+            var todayStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            if (mode === 'sep2026') {
+                // ================= MODO: LISTA PRECIOS RESET SUPPLY - VONIXX SEP 1 - 2026 =================
+                var sepFiltered = VONIXX_SEP_2026_PRICELIST.filter(function(item) {
+                    if (catFilter === 'all') return true;
+                    return item.category === catFilter;
+                });
+
+                var html = '<div style="font-family:\'Segoe UI\',Inter,system-ui,sans-serif; background:#ffffff; color:#0f172a; padding:8px 12px; max-width:980px; margin:0 auto; line-height:1.15; font-size:8px;">' +
+                    // Barra superior de color de marca
+                    '<div style="height:3.5px; background:linear-gradient(90deg, #3ddc84 0%, #22b8f0 100%); border-radius:2px 2px 0 0; margin-bottom:6px;"></div>' +
+
+                    // Encabezado principal
+                    '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #e2e8f0; padding-bottom:5px; margin-bottom:6px; gap:10px; flex-wrap:wrap;">' +
+                        '<div style="display:flex; align-items:center; gap:10px;">' +
+                            '<img src="/logoresetsupply.png" alt="Reset Supply MX" style="height:34px; max-width:130px; object-fit:contain;" onerror="this.onerror=null; this.src=\'logoresetsupply.png\';">' +
+                            '<div>' +
+                                '<h1 style="margin:0; font-size:15px; font-weight:900; letter-spacing:0.5px; color:#0a0e13; text-transform:uppercase; line-height:1.1;">RESET SUPPLY MX</h1>' +
+                                '<div style="font-size:9.5px; font-weight:700; color:#0284c7; margin-top:1px;">Distribuidor Oficial Vonixx en México</div>' +
+                                '<div style="font-size:8px; color:#64748b; margin-top:1px;">' +
+                                    '<strong>R.F.C.:</strong> HERN8812028R7 • <strong>Dirección:</strong> Plaza Punto Laureles, Rosarito. Baja California. México Local 3.' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+
+                        '<div style="text-align:right;">' +
+                            '<div style="display:inline-block; background:#0a0e13; color:#ffffff; padding:2px 8px; border-radius:4px; font-weight:800; font-size:9px; letter-spacing:0.4px; border-left:3px solid #3ddc84;">' +
+                                'LISTA PRECIOS RESET SUPPLY - VONIXX SEP 1 - 2026' +
+                            '</div>' +
+                            '<div style="font-size:7.5px; color:#0284c7; font-weight:700; margin-top:1px;">Tarifa Oficial Mayorista Vonixx México</div>' +
+                            '<div style="font-size:8px; color:#64748b; margin-top:1px;">Emisión: <strong>' + todayStr + '</strong> • Vigencia: <strong>Sep - Dic 2026</strong></div>' +
+                        '</div>' +
+                    '</div>' +
+
+                    // Tarjeta de información del cliente
+                    '<div style="background:#f8fafc; border:1px solid #22b8f0; border-radius:5px; padding:4px 10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:8.5px;">' +
+                        '<div><span style="color:#64748b; font-size:7.5px; font-weight:700; text-transform:uppercase;">No. Cliente: </span><strong style="font-family:monospace; font-size:9.5px; color:#0284c7; background:#e2e8f0; padding:1px 5px; border-radius:3px;">' + escapeHtml(clientId) + '</strong></div>' +
+                        '<div><span style="color:#64748b; font-size:7.5px; font-weight:700; text-transform:uppercase;">Nombre / Titular: </span><strong style="color:#0f172a; font-size:9px;">' + escapeHtml(clientName) + '</strong></div>' +
+                        (clientBusiness ? ('<div><span style="color:#64748b; font-size:7.5px; font-weight:700; text-transform:uppercase;">Negocio: </span><strong style="color:#0f172a; font-size:9px;">' + escapeHtml(clientBusiness) + '</strong></div>') : '') +
+                        '<div><span style="color:#64748b; font-size:7.5px; font-weight:700; text-transform:uppercase;">Correo: </span><span style="color:#0284c7; font-weight:600; font-size:9px;">' + escapeHtml(clientEmail) + '</span></div>' +
+                    '</div>' +
+
+                    // Tabla compacta
+                    '<div style="overflow-x:auto; margin-bottom:6px;">' +
+                        '<table style="width:100%; border-collapse:collapse; font-size:8px; border:1px solid #cbd5e1;">' +
+                            '<thead>' +
+                                '<tr style="background:#0a0e13; color:#ffffff; text-align:left; line-height:1.15;">' +
+                                    '<th style="padding:2.5px 5px; font-size:7.5px; letter-spacing:0.3px; text-transform:uppercase; border-bottom:1.5px solid #22b8f0; width:75px;">CÓDIGO / SKU</th>' +
+                                    '<th style="padding:2.5px 5px; font-size:7.5px; letter-spacing:0.3px; text-transform:uppercase; border-bottom:1.5px solid #22b8f0;">PRODUCTO / DESCRIPCIÓN</th>' +
+                                    '<th style="padding:2.5px 5px; font-size:7.5px; letter-spacing:0.3px; text-transform:uppercase; border-bottom:1.5px solid #22b8f0; width:65px;">CONTENIDO</th>' +
+                                    '<th style="padding:2.5px 5px; font-size:7.5px; letter-spacing:0.3px; text-transform:uppercase; border-bottom:1.5px solid #22b8f0; width:130px;">CATEGORÍA</th>' +
+                                    '<th style="padding:2.5px 5px; font-size:7.5px; letter-spacing:0.3px; text-transform:uppercase; text-align:right; border-bottom:1.5px solid #3ddc84; width:100px; background:#111c26; color:#3ddc84;">PRECIO NETO (MXN)</th>' +
+                                '</tr>' +
+                            '</thead>' +
+                            '<tbody>';
+
+                if (sepFiltered.length === 0) {
+                    html += '<tr><td colspan="5" style="text-align:center; padding:15px; color:#64748b;">No hay productos disponibles para la categoría seleccionada.</td></tr>';
+                } else {
+                    sepFiltered.forEach(function(item, idx) {
+                        var rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                        html += '<tr style="background:' + rowBg + '; border-bottom:1px solid #e2e8f0; line-height:1.15;">' +
+                            '<td style="padding:1.5px 5px; font-family:monospace; font-weight:700; color:#0369a1; white-space:nowrap; font-size:8px;">' + escapeHtml(item.code) + '</td>' +
+                            '<td style="padding:1.5px 5px; font-weight:600; color:#0f172a; font-size:8px;">' + escapeHtml(item.name) + '</td>' +
+                            '<td style="padding:1.5px 5px; color:#475569; font-size:7.5px; white-space:nowrap;">' + escapeHtml(item.content) + '</td>' +
+                            '<td style="padding:1.5px 5px; color:#64748b; font-size:7.5px;">' + escapeHtml(item.category) + '</td>' +
+                            '<td style="padding:1.5px 5px; text-align:right; font-weight:800; font-size:8.5px; color:#0f5132; background:rgba(61,220,132,0.06); font-family:monospace;">$' + item.price.toFixed(2) + ' MXN</td>' +
+                        '</tr>';
+                    });
+                }
+
+                html += '</tbody></table></div>' +
+
+                    // Resumen compacto
+                    '<div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-size:8px;">' +
+                        '<div style="color:#0f172a;">' +
+                            '📊 <strong>' + sepFiltered.length + ' productos cotizados</strong> • LISTA PRECIOS RESET SUPPLY - VONIXX SEP 1 - 2026' +
+                        '</div>' +
+                        '<div style="color:#15803d; font-weight:700;">' +
+                            'Precios netos en Moneda Nacional (MXN) c/IVA incluido.' +
+                        '</div>' +
+                    '</div>' +
+
+                    // Términos comerciales
+                    '<div style="border-top:1px dashed #cbd5e1; padding-top:3px; margin-bottom:4px; font-size:7.5px; color:#475569; line-height:1.2;">' +
+                        '<strong>Términos Comerciales:</strong> Precios oficiales exclusivos para: <strong>' + escapeHtml(clientName) + ' (' + escapeHtml(clientId) + ')</strong>. Tarifa oficial de distribuidor Reset Supply MX (Distribuidor Oficial Vonixx México). Precios netos en Moneda Nacional con IVA incluido. Productos 100% originales garantizados Vonixx Brasil. Envíos asegurados a todo México. Levanta tu pedido vía WhatsApp o correo indicando tu <strong>No. de Cliente</strong>.' +
+                    '</div>' +
+
+                    // Pie de página y contacto
+                    '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:3px; margin-bottom:4px; flex-wrap:wrap; gap:4px; font-size:7.5px;">' +
+                        '<div>' +
+                            '<strong style="color:#0a0e13;">RESET SUPPLY MX</strong> — Distribuidor Oficial Vonixx México' +
+                        '</div>' +
+                        '<div style="color:#64748b;">' +
+                            '📍 Plaza Punto Laureles, Rosarito, B.C. Local 3 • 🌐 <a href="https://resetsupplymx.com" target="_blank" style="color:#0284c7; text-decoration:none; font-weight:600;">resetsupplymx.com</a> • ✉️ <a href="mailto:ventas@resetsupplymx.com" style="color:#0284c7; text-decoration:none; font-weight:600;">ventas@resetsupplymx.com</a>' +
+                        '</div>' +
+                    '</div>' +
+
+                    // Barra inferior de color de marca
+                    '<div style="height:3.5px; background:linear-gradient(90deg, #22b8f0 0%, #3ddc84 100%); border-radius:0 0 2px 2px;"></div>' +
+
+                '</div>';
+
+                area.innerHTML = html;
+                return;
+            }
+
+            // ================= MODO: LISTA DE PRECIOS MAYORISTA (-25% PDV TRADICIONAL) =================
             var discountPct = parseFloat(document.getElementById('plDiscountPct').value);
             if (isNaN(discountPct) || discountPct < 0) discountPct = 25;
 
-            var catFilter = document.getElementById('plCategoryFilter') ? document.getElementById('plCategoryFilter').value : 'all';
-
-            // Obtener lista base de productos
             var products = (currentProductsList && currentProductsList.length > 0) ? currentProductsList : (typeof DEFAULT_CATALOG !== 'undefined' ? DEFAULT_CATALOG : []);
-            
-            // Filtrar productos
             var filtered = products.filter(function(p) {
                 if (catFilter === 'all') return true;
                 return p.category === catFilter;
             });
 
-            // Aplanar productos y presentaciones/variaciones
             var flatList = [];
             filtered.forEach(function(p) {
                 var pBasePrice = parseFloat(p.price) || 0;
@@ -3659,16 +3953,9 @@ textarea[required]:focus,
                 }
             });
 
-            var todayStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
-            var markupMultiplier = discountPct < 100 ? (discountPct / (100 - discountPct)) * 100 : 0;
-
-            // Construir HTML ultra-compacto optimizado para 50 renglones por hoja (1-2 páginas)
             var html = '<div style="font-family:\'Segoe UI\',Inter,system-ui,sans-serif; background:#ffffff; color:#0f172a; padding:8px 12px; max-width:980px; margin:0 auto; line-height:1.15; font-size:8px;">' +
-                
-                // ===== BARRA SUPERIOR DE COLOR DE MARCA =====
                 '<div style="height:3.5px; background:linear-gradient(90deg, #3ddc84 0%, #22b8f0 100%); border-radius:2px 2px 0 0; margin-bottom:6px;"></div>' +
 
-                // ===== ENCABEZADO PRINCIPAL COMPACTO (SÓLO 1RA PÁGINA) =====
                 '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #e2e8f0; padding-bottom:5px; margin-bottom:6px; gap:10px; flex-wrap:wrap;">' +
                     '<div style="display:flex; align-items:center; gap:10px;">' +
                         '<img src="/logoresetsupply.png" alt="Reset Supply MX" style="height:34px; max-width:130px; object-fit:contain;" onerror="this.onerror=null; this.src=\'logoresetsupply.png\';">' +
@@ -3690,14 +3977,12 @@ textarea[required]:focus,
                     '</div>' +
                 '</div>' +
 
-                // ===== TARJETA DE INFORMACIÓN DEL CLIENTE (SOLO NOMBRE, NÚMERO Y CORREO) =====
                 '<div style="background:#f8fafc; border:1px solid #22b8f0; border-radius:5px; padding:4px 10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:8.5px;">' +
                     '<div><span style="color:#64748b; font-size:7.5px; font-weight:700; text-transform:uppercase;">No. Cliente: </span><strong style="font-family:monospace; font-size:9.5px; color:#0284c7; background:#e2e8f0; padding:1px 5px; border-radius:3px;">' + escapeHtml(clientId) + '</strong></div>' +
                     '<div><span style="color:#64748b; font-size:7.5px; font-weight:700; text-transform:uppercase;">Nombre / Titular: </span><strong style="color:#0f172a; font-size:9px;">' + escapeHtml(clientName) + '</strong></div>' +
                     '<div><span style="color:#64748b; font-size:7.5px; font-weight:700; text-transform:uppercase;">Correo: </span><span style="color:#0284c7; font-weight:600; font-size:9px;">' + escapeHtml(clientEmail) + '</span></div>' +
                 '</div>' +
 
-                // ===== TABLA COMPACTA DE PRODUCTOS Y PRECIOS (5 COLUMNAS, ~50 RENGLONES POR HOJA) =====
                 '<div style="overflow-x:auto; margin-bottom:6px;">' +
                     '<table style="width:100%; border-collapse:collapse; font-size:8px; border:1px solid #cbd5e1;">' +
                         '<thead>' +
@@ -3716,12 +4001,6 @@ textarea[required]:focus,
             } else {
                 flatList.forEach(function(item, idx) {
                     var pvp = item.regularPrice;
-                    
-                    // Cálculo de descuento no acumulable:
-                    // El descuento garantizado para PDV es discountPct (25%) sobre el PVP Regular de lista sin descuentos.
-                    // Si el producto ya tiene un descuento previo en la tienda en línea (ej. 5% de descuento),
-                    // no se le descuenta otro 25% adicional sobre el precio ya rebajado, sino el remanente (20%) para que
-                    // el precio final para el PDV sea exactamente el 25% de descuento sobre el precio de lista original.
                     var discPrice = pvp * (1 - (discountPct / 100));
                     var rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
 
@@ -3737,7 +4016,6 @@ textarea[required]:focus,
 
             html += '</tbody></table></div>' +
 
-                // ===== RESUMEN COMPACTO =====
                 '<div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-size:8px;">' +
                     '<div style="color:#0f172a;">' +
                         '📊 <strong>' + flatList.length + ' productos cotizados</strong> • Tarifa mayorista: <strong>' + discountPct + '% de descuento sobre Precio de Lista regular</strong> (sin descuentos aplicados / no acumulable con promociones web).' +
@@ -3747,12 +4025,10 @@ textarea[required]:focus,
                     '</div>' +
                 '</div>' +
 
-                // ===== POLÍTICAS Y TÉRMINOS COMERCIALES COMPACTOS =====
                 '<div style="border-top:1px dashed #cbd5e1; padding-top:3px; margin-bottom:4px; font-size:7.5px; color:#475569; line-height:1.2;">' +
                     '<strong>Términos Comerciales:</strong> Precios exclusivos para: <strong>' + escapeHtml(clientName) + ' (' + escapeHtml(clientId) + ')</strong>. Tarifa de distribuidor calculada con base en el <strong>25% de descuento sobre el precio de lista regular</strong> sin descuentos aplicados (descuentos y promociones web no acumulables). Productos 100% originales garantizados Vonixx Brasil. Envíos asegurados a todo México. Levanta tu pedido vía WhatsApp o correo indicando tu <strong>No. de Cliente</strong>.' +
                 '</div>' +
 
-                // ===== CONTACTO Y PIE DE PÁGINA COMPACTO =====
                 '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:3px; margin-bottom:4px; flex-wrap:wrap; gap:4px; font-size:7.5px;">' +
                     '<div>' +
                         '<strong style="color:#0a0e13;">RESET SUPPLY MX</strong> — Distribuidor Oficial Vonixx México' +
@@ -3762,7 +4038,6 @@ textarea[required]:focus,
                     '</div>' +
                 '</div>' +
 
-                // ===== BARRA INFERIOR DE COLOR DE MARCA =====
                 '<div style="height:3.5px; background:linear-gradient(90deg, #22b8f0 0%, #3ddc84 100%); border-radius:0 0 2px 2px;"></div>' +
 
             '</div>';
@@ -3774,9 +4049,11 @@ textarea[required]:focus,
             var area = document.getElementById('posPriceListPreviewArea');
             if (!area) return;
 
-            var clientName = (document.getElementById('plClientName') ? document.getElementById('plClientName').value : '') || 'PDV';
+            var mode = document.getElementById('plTariffMode') ? document.getElementById('plTariffMode').value : 'sep2026';
+            var clientName = (document.getElementById('plClientName') ? document.getElementById('plClientName').value : '') || 'Cliente';
             var clientId = (document.getElementById('plClientId') ? document.getElementById('plClientId').value : '') || '';
-            var docTitle = 'Lista_Precios_PDV_' + (clientId || clientName).replace(/[^a-zA-Z0-9_-]/g, '_');
+            var prefix = mode === 'sep2026' ? 'LISTA_PRECIOS_RESET_SUPPLY_VONIXX_SEP_1_2026_' : 'Lista_Precios_PDV_';
+            var docTitle = prefix + (clientId || clientName).replace(/[^a-zA-Z0-9_-]/g, '_');
 
             var printContainer = document.getElementById('printContainerDirect');
             if (printContainer) {
@@ -3820,18 +4097,94 @@ textarea[required]:focus,
             window.print();
         }
 
+        function downloadSep2026PriceListCSV() {
+            var a = document.createElement('a');
+            a.href = '/LISTA_PRECIOS_RESET_SUPPLY_VONIXX_SEP_1_2026.csv';
+            a.download = 'LISTA_PRECIOS_RESET_SUPPLY_VONIXX_SEP_1_2026.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function downloadCurrentPriceListCSV() {
+            var mode = document.getElementById('plTariffMode') ? document.getElementById('plTariffMode').value : 'sep2026';
+            var clientName = (document.getElementById('plClientName') ? document.getElementById('plClientName').value : '') || '';
+            var clientId = (document.getElementById('plClientId') ? document.getElementById('plClientId').value : '') || '';
+            var catFilter = document.getElementById('plCategoryFilter') ? document.getElementById('plCategoryFilter').value : 'all';
+
+            if (mode === 'sep2026') {
+                var filtered = VONIXX_SEP_2026_PRICELIST.filter(function(i) {
+                    if (catFilter === 'all') return true;
+                    return i.category === catFilter;
+                });
+                var lines = ['CÓDIGO,DESCRIPCIÓN,CONTENIDO,CATEGORÍA,PRECIO NETO (MXN)'];
+                filtered.forEach(function(i) {
+                    var nameSafe = i.name.indexOf(',') !== -1 ? '"' + i.name.replace(/"/g, '""') + '"' : i.name;
+                    var catSafe = i.category.indexOf(',') !== -1 ? '"' + i.category.replace(/"/g, '""') + '"' : i.category;
+                    lines.push(i.code + ',' + nameSafe + ',' + i.content + ',' + catSafe + ',' + i.price.toFixed(2));
+                });
+                var csvContent = '\uFEFF' + lines.join('\n');
+                var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                var fname = 'LISTA_PRECIOS_RESET_SUPPLY_VONIXX_SEP_1_2026' + (clientId ? ('_' + clientId.replace(/[^a-zA-Z0-9_-]/g, '_')) : '') + '.csv';
+                link.setAttribute('href', url);
+                link.setAttribute('download', fname);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                var discountPct = parseFloat(document.getElementById('plDiscountPct').value);
+                if (isNaN(discountPct) || discountPct < 0) discountPct = 25;
+                var products = (currentProductsList && currentProductsList.length > 0) ? currentProductsList : (typeof DEFAULT_CATALOG !== 'undefined' ? DEFAULT_CATALOG : []);
+                var filtered = products.filter(function(p) {
+                    if (catFilter === 'all') return true;
+                    return p.category === catFilter;
+                });
+                var lines = ['CÓDIGO,PRODUCTO,CATEGORÍA,PVP REGULAR,PRECIO PDV (-' + discountPct + '%)'];
+                filtered.forEach(function(p) {
+                    var pvp = parseFloat(p.price) || 0;
+                    var disc = pvp * (1 - (discountPct / 100));
+                    var nameSafe = p.name.indexOf(',') !== -1 ? '"' + p.name.replace(/"/g, '""') + '"' : p.name;
+                    var catSafe = (p.category || 'General').indexOf(',') !== -1 ? '"' + (p.category || 'General').replace(/"/g, '""') + '"' : (p.category || 'General');
+                    lines.push((p.code || p.id || '') + ',' + nameSafe + ',' + catSafe + ',' + pvp.toFixed(2) + ',' + disc.toFixed(2));
+                });
+                var csvContent = '\uFEFF' + lines.join('\n');
+                var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                var fname = 'Lista_Precios_PDV_' + (clientId ? clientId.replace(/[^a-zA-Z0-9_-]/g, '_') : 'General') + '.csv';
+                link.setAttribute('href', url);
+                link.setAttribute('download', fname);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
         function sharePosPriceListWhatsApp() {
+            var mode = document.getElementById('plTariffMode') ? document.getElementById('plTariffMode').value : 'sep2026';
             var clientId = (document.getElementById('plClientId').value || '').trim();
             var clientName = (document.getElementById('plClientName').value || '').trim();
             var clientPhone = (document.getElementById('plClientPhone').value || '').replace(/\D/g, '');
             var discountPct = document.getElementById('plDiscountPct').value || '25';
 
-            var msg = '¡Hola' + (clientName ? (' ' + clientName) : '') + '! 🤝\n\n' +
-                'Te compartimos tu Lista de Precios Oficial con tarifa especial de distribuidor (*-' + discountPct + '% de descuento*) en Reset Supply MX (Distribuidor Oficial Vonixx México).\n\n' +
-                '📌 *Tu No. de Cliente:* ' + (clientId || 'Asignado en sistema') + '\n' +
-                '📦 *Beneficio:* Tarifa mayorista activa en todo nuestro catálogo de detallado automotriz.\n' +
-                '🌐 *Tienda Web:* https://resetsupplymx.com\n\n' +
-                'Quedamos a tus órdenes para surtir tu pedido o resolver cualquier duda técnica.';
+            var msg = '';
+            if (mode === 'sep2026') {
+                msg = '¡Hola' + (clientName ? (' ' + clientName) : '') + '! 🤝\n\n' +
+                    'Te compartimos la *LISTA PRECIOS RESET SUPPLY - VONIXX SEP 1 - 2026* con tarifa oficial de distribuidor en Reset Supply MX (Distribuidor Oficial Vonixx México).\n\n' +
+                    '📌 *Tu No. de Cliente:* ' + (clientId || 'Asignado en sistema') + '\n' +
+                    '📦 *Catálogo:* Catálogo profesional y precios netos autorizados.\n' +
+                    '🌐 *Tienda Web:* https://resetsupplymx.com\n\n' +
+                    'Quedamos a tus órdenes para surtir tu pedido o resolver cualquier duda técnica.';
+            } else {
+                msg = '¡Hola' + (clientName ? (' ' + clientName) : '') + '! 🤝\n\n' +
+                    'Te compartimos tu Lista de Precios Oficial con tarifa especial de distribuidor (*-' + discountPct + '% de descuento*) en Reset Supply MX (Distribuidor Oficial Vonixx México).\n\n' +
+                    '📌 *Tu No. de Cliente:* ' + (clientId || 'Asignado en sistema') + '\n' +
+                    '📦 *Beneficio:* Tarifa mayorista activa en todo nuestro catálogo de detallado automotriz.\n' +
+                    '🌐 *Tienda Web:* https://resetsupplymx.com\n\n' +
+                    'Quedamos a tus órdenes para surtir tu pedido o resolver cualquier duda técnica.';
+            }
 
             var url = 'https://wa.me/' + (clientPhone ? ('52' + clientPhone) : '') + '?text=' + encodeURIComponent(msg);
             window.open(url, '_blank');
