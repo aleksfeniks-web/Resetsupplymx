@@ -3620,14 +3620,24 @@ textarea[required]:focus,
             // Aplanar productos y presentaciones/variaciones
             var flatList = [];
             filtered.forEach(function(p) {
+                var pBasePrice = parseFloat(p.price) || 0;
+                var pPct = parseFloat(p.pct) || 0;
+                var pNewPrice = p.customNewPrice !== undefined && p.customNewPrice !== null ? parseFloat(p.customNewPrice) : (p.newPrice !== undefined ? parseFloat(p.newPrice) : (pBasePrice * (1 + pPct / 100)));
+
                 if (Array.isArray(p.variations) && p.variations.length > 0) {
                     p.variations.forEach(function(v) {
+                        var vPrice = parseFloat(v.price || pBasePrice) || 0;
+                        var vPct = v.pct !== undefined ? parseFloat(v.pct) : pPct;
+                        var vOnlinePrice = v.newPrice !== undefined ? parseFloat(v.newPrice) : (vPrice * (1 + vPct / 100));
+
                         flatList.push({
                             code: v.code || p.code || p.id || 'N/A',
                             name: p.name + ' — ' + (v.name || 'Estándar'),
                             category: p.category || 'General',
                             udm: v.name || p.udm || 'PZ',
-                            price: parseFloat(v.price || p.price) || 0
+                            regularPrice: vPrice,
+                            pctOnline: vPct,
+                            onlinePrice: vOnlinePrice
                         });
                     });
                 } else {
@@ -3636,7 +3646,9 @@ textarea[required]:focus,
                         name: p.name,
                         category: p.category || 'General',
                         udm: p.udm || 'PZ',
-                        price: parseFloat(p.price) || 0
+                        regularPrice: pBasePrice,
+                        pctOnline: pPct,
+                        onlinePrice: pNewPrice
                     });
                 }
             });
@@ -3665,9 +3677,10 @@ textarea[required]:focus,
 
                     '<div style="text-align:right;">' +
                         '<div style="display:inline-block; background:#0a0e13; color:#ffffff; padding:2px 8px; border-radius:4px; font-weight:800; font-size:9px; letter-spacing:0.4px; border-left:3px solid #3ddc84;">' +
-                            'LISTA DE PRECIOS MAYORISTA (-' + discountPct + '%)' +
+                            'LISTA DE PRECIOS MAYORISTA (-' + discountPct + '% S/PRECIO DE LISTA)' +
                         '</div>' +
-                        '<div style="font-size:8px; color:#64748b; margin-top:2px;">Emisión: <strong>' + todayStr + '</strong> • Vigencia: <strong>30 días</strong></div>' +
+                        '<div style="font-size:7.5px; color:#0284c7; font-weight:700; margin-top:1px;">25% sobre precio de lista regular (no acumulable con ofertas)</div>' +
+                        '<div style="font-size:8px; color:#64748b; margin-top:1px;">Emisión: <strong>' + todayStr + '</strong> • Vigencia: <strong>30 días</strong></div>' +
                     '</div>' +
                 '</div>' +
 
@@ -3696,7 +3709,13 @@ textarea[required]:focus,
                 html += '<tr><td colspan="5" style="text-align:center; padding:15px; color:#64748b;">No hay productos disponibles para la categoría seleccionada.</td></tr>';
             } else {
                 flatList.forEach(function(item, idx) {
-                    var pvp = item.price;
+                    var pvp = item.regularPrice;
+                    
+                    // Cálculo de descuento no acumulable:
+                    // El descuento garantizado para PDV es discountPct (25%) sobre el PVP Regular de lista sin descuentos.
+                    // Si el producto ya tiene un descuento previo en la tienda en línea (ej. 5% de descuento),
+                    // no se le descuenta otro 25% adicional sobre el precio ya rebajado, sino el remanente (20%) para que
+                    // el precio final para el PDV sea exactamente el 25% de descuento sobre el precio de lista original.
                     var discPrice = pvp * (1 - (discountPct / 100));
                     var rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
 
@@ -3715,7 +3734,7 @@ textarea[required]:focus,
                 // ===== RESUMEN COMPACTO =====
                 '<div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-size:8px;">' +
                     '<div style="color:#0f172a;">' +
-                        '📊 <strong>' + flatList.length + ' productos cotizados</strong> • Descuento del <strong>' + discountPct + '%</strong> aplicado sobre PVP.' +
+                        '📊 <strong>' + flatList.length + ' productos cotizados</strong> • Tarifa mayorista: <strong>' + discountPct + '% de descuento sobre Precio de Lista regular</strong> (sin descuentos aplicados / no acumulable con promociones web).' +
                     '</div>' +
                     '<div style="color:#15803d; font-weight:700;">' +
                         'Precios netos en MXN c/IVA incluido.' +
@@ -3724,7 +3743,7 @@ textarea[required]:focus,
 
                 // ===== POLÍTICAS Y TÉRMINOS COMERCIALES COMPACTOS =====
                 '<div style="border-top:1px dashed #cbd5e1; padding-top:3px; margin-bottom:4px; font-size:7.5px; color:#475569; line-height:1.2;">' +
-                    '<strong>Términos Comerciales:</strong> Precios exclusivos para: <strong>' + escapeHtml(clientName) + ' (' + escapeHtml(clientId) + ')</strong>. Productos 100% originales garantizados Vonixx Brasil. Envíos nacionales asegurados. Levanta pedido vía WhatsApp o correo indicando tu <strong>No. de Cliente</strong>.' +
+                    '<strong>Términos Comerciales:</strong> Precios exclusivos para: <strong>' + escapeHtml(clientName) + ' (' + escapeHtml(clientId) + ')</strong>. Tarifa de distribuidor calculada con base en el <strong>25% de descuento sobre el precio de lista regular</strong> sin descuentos aplicados (descuentos y promociones web no acumulables). Productos 100% originales garantizados Vonixx Brasil. Envíos asegurados a todo México. Levanta tu pedido vía WhatsApp o correo indicando tu <strong>No. de Cliente</strong>.' +
                 '</div>' +
 
                 // ===== CONTACTO Y PIE DE PÁGINA COMPACTO =====
