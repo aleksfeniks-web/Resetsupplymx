@@ -1308,11 +1308,15 @@ textarea[required]:focus,
 
         /* ===== ESTILOS PARA IMPRESIÓN Y RECIBOS ===== */
         @media print {
+            @page {
+                size: letter portrait;
+                margin: 10mm;
+            }
             body {
                 background: #fff !important;
                 color: #000 !important;
             }
-            .admin-sidebar, .admin-header, .btn-action, .btn-primary, .no-print {
+            .admin-sidebar, .admin-header, .btn-action, .btn-primary, .no-print, .modal {
                 display: none !important;
             }
             .admin-main-wrapper {
@@ -1327,6 +1331,19 @@ textarea[required]:focus,
                 width: 100%;
                 background: #fff !important;
                 color: #000 !important;
+            }
+            .printable-section table {
+                page-break-inside: auto;
+            }
+            .printable-section tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            .printable-section thead {
+                display: table-header-group;
+            }
+            .printable-section tfoot {
+                display: table-footer-group;
             }
         }
 
@@ -1775,7 +1792,10 @@ textarea[required]:focus,
                     <h3><i class="fa-solid fa-users" style="color:var(--blue); margin-right:8px;"></i>Clientes Registrados Punto de Venta (<span id="posClientsCount">0</span>)</h3>
                     <p style="font-size:12.5px; color:var(--muted);">Lista de solicitudes y registros para distribución y puntos de venta.</p>
                 </div>
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn-action" onclick="openPosPriceListModal()" style="border-color:var(--blue); color:var(--blue); font-weight:700;">
+                        <i class="fa-solid fa-file-pdf" style="margin-right:6px;"></i> 🖨️ Lista de Precios (-25% PDV)
+                    </button>
                     <button class="btn-action" onclick="exportPosClientsToCSV()">📥 Exportar a Excel (CSV)</button>
                     <button class="btn-action" onclick="loadPosClients()">🔄 Actualizar Lista</button>
                     <a href="/clientes/puntodeventa.html" target="_blank" class="btn-action" style="text-decoration:none; border-color:var(--green); color:var(--green);">➕ Nuevo Registro</a>
@@ -2573,6 +2593,118 @@ textarea[required]:focus,
         </div>
     </div>
 
+    <!-- ==================== MODAL: GENERADOR DE LISTA DE PRECIOS (-25% PUNTO DE VENTA / PARTNER) ==================== -->
+    <div id="posPriceListModal" class="modal" style="display:none; z-index:9999;">
+        <div class="modal-content" style="max-width:1080px; width:96%; max-height:92vh; display:flex; flex-direction:column; padding:20px 24px;">
+            <!-- Cabecera del Modal -->
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <h3 style="margin:0; font-family:'Rajdhani',sans-serif; font-size:21px; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-file-invoice-dollar" style="color:var(--blue);"></i>
+                        Lista de Precios Oficial — Puntos de Venta & Partners
+                    </h3>
+                    <p style="font-size:12px; color:var(--muted); margin:3px 0 0 0;">
+                        Genera y descarga en PDF el catálogo con tarifa especial de descuento (-25%), personalizado con los datos del cliente.
+                    </p>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button type="button" class="btn-primary" onclick="printPosPriceList()" style="width:auto; padding:7px 16px; font-size:12.5px; background:linear-gradient(135deg, #22b8f0, #3ddc84); color:#0a0e13; font-weight:800;">
+                        <i class="fa-solid fa-print" style="margin-right:5px;"></i> Imprimir / Guardar PDF
+                    </button>
+                    <button type="button" class="btn-action" onclick="closeModal('posPriceListModal')" style="padding:6px 12px;" title="Cerrar modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel de Configuración y Datos del Cliente -->
+            <div style="background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:14px; flex-shrink:0;">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; align-items:end;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:11px; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:0.5px;">
+                            <i class="fa-solid fa-address-book" style="margin-right:4px;"></i> Buscar Cliente Registrado
+                        </label>
+                        <select id="plClientSelect" class="form-input" style="font-size:12px;" onchange="onPosPriceListClientSelectChange()">
+                            <option value="">-- Ingreso Manual o Seleccionar --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:11px; font-weight:700; color:#3ddc84; text-transform:uppercase; letter-spacing:0.5px;">
+                            <i class="fa-solid fa-id-badge" style="margin-right:4px;"></i> No. de Cliente
+                        </label>
+                        <input type="text" id="plClientId" class="form-input" placeholder="ej. POS-CLI-1725782938102" oninput="renderPosPriceListPreview()" style="font-family:monospace; font-size:12px; font-weight:700; color:var(--green);">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:11px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.5px;">Titular / Razón Social</label>
+                        <input type="text" id="plClientName" class="form-input" placeholder="ej. Juan Pérez Estrada" oninput="renderPosPriceListPreview()" style="font-size:12px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:11px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.5px;">Correo Electrónico</label>
+                        <input type="email" id="plClientEmail" class="form-input" placeholder="cliente@ejemplo.com" oninput="renderPosPriceListPreview()" style="font-size:12px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:11px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.5px;">Negocio / Establecimiento</label>
+                        <input type="text" id="plClientBusiness" class="form-input" placeholder="ej. Reset Detailing Garage" oninput="renderPosPriceListPreview()" style="font-size:12px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:11px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.5px;">Teléfono / WhatsApp</label>
+                        <input type="text" id="plClientPhone" class="form-input" placeholder="ej. 656 123 4567" oninput="renderPosPriceListPreview()" style="font-size:12px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:11px; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.5px;">Modalidad / Perfil</label>
+                        <select id="plClientModality" class="form-input" style="font-size:12px;" onchange="renderPosPriceListPreview()">
+                            <option value="Punto de Venta Tradicional">🏪 Punto de Venta Tradicional</option>
+                            <option value="Partner Reset Supply (Tienda en Línea + POS Físico)">🚀 Partner Reset Supply</option>
+                            <option value="Taller / Detailer Profesional">🏎️ Taller / Detailer Profesional</option>
+                            <option value="Distribuidor Mayorista">📦 Distribuidor Mayorista</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="font-size:11px; font-weight:700; color:var(--green); text-transform:uppercase; letter-spacing:0.5px;">% Descuento Especial</label>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <input type="number" id="plDiscountPct" class="form-input" value="25" min="0" max="90" step="1" oninput="renderPosPriceListPreview()" style="width:75px; text-align:right; font-weight:800; color:var(--green);">
+                            <span style="font-size:12px; font-weight:700; color:var(--green);">%</span>
+                            <select id="plCategoryFilter" class="form-input" style="font-size:11.5px; flex:1;" onchange="renderPosPriceListPreview()">
+                                <option value="all">Todas las Categorías</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área de Vista Previa con Scroll -->
+            <div style="flex:1; overflow-y:auto; border:1px solid #202b3a; border-radius:8px; background:#fff; padding:0; box-shadow:inset 0 2px 8px rgba(0,0,0,0.3);">
+                <div id="posPriceListPreviewArea" style="min-height:500px; background:#fff; color:#000;">
+                    <!-- Se inyecta la hoja membretada aquí -->
+                </div>
+            </div>
+
+            <!-- Barra de Acciones Inferior -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; flex-wrap:wrap; gap:10px; flex-shrink:0;">
+                <div style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-circle-info" style="color:var(--blue);"></i>
+                    <span>Para PDF perfecto: al abrir el diálogo de impresión, selecciona <strong>"Guardar como PDF"</strong>.</span>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button type="button" class="btn-action" onclick="sharePosPriceListWhatsApp()" style="border-color:#25D366; color:#25D366; font-weight:700;">
+                        <i class="fa-brands fa-whatsapp"></i> Compartir por WhatsApp
+                    </button>
+                    <button type="button" class="btn-action" onclick="closeModal('posPriceListModal')">Cerrar</button>
+                    <button type="button" class="btn-primary" style="width:auto; padding:10px 24px; background:linear-gradient(135deg, #22b8f0, #3ddc84); color:#0a0e13; font-weight:800;" onclick="printPosPriceList()">
+                        <i class="fa-solid fa-print" style="margin-right:6px;"></i> Imprimir / Guardar en PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contenedor oculto exclusivamente para impresión limpia del navegador -->
     <div id="printContainerDirect" class="printable-section" style="display:none;"></div>
 
@@ -3307,6 +3439,7 @@ textarea[required]:focus,
                 }
 
                 var cleanPhone = (c.celular || c.telefono || '').replace(/\D/g, '');
+                var printPlBtn = '<button type="button" class="btn-action" style="padding:4px 8px; font-size:11px; text-decoration:none; margin-right:4px; border-color:var(--blue); color:var(--blue); font-weight:600;" onclick="openPosPriceListForClient(\'' + (c.id || '') + '\')" title="Generar lista de precios (-25%) para este cliente">📄 Lista PDV</button>';
                 var waLink = cleanPhone ? '<a href="https://wa.me/52' + cleanPhone + '" target="_blank" class="btn-action" style="padding:4px 8px; font-size:11px; text-decoration:none; margin-right:4px;">💬 WhatsApp</a>' : '';
                 var mailLink = '<a href="mailto:' + c.email + '" class="btn-action" style="padding:4px 8px; font-size:11px; text-decoration:none;">✉️ Correo</a>';
 
@@ -3322,7 +3455,7 @@ textarea[required]:focus,
                     '<td>' + (c.negocio || '<span style="color:var(--muted-2);">No especificado</span>') + '</td>' +
                     '<td style="font-size:12px; max-width:240px;">' + (c.direccion || '-') + '</td>' +
                     '<td>' + constanciaBadge + '</td>' +
-                    '<td style="white-space:nowrap;">' + waLink + mailLink + '</td>' +
+                    '<td style="white-space:nowrap;">' + printPlBtn + waLink + mailLink + '</td>' +
                 '</tr>';
             });
             tbody.innerHTML = html;
@@ -3360,6 +3493,344 @@ textarea[required]:focus,
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        // ==================== GENERADOR E IMPRESIÓN DE LISTA DE PRECIOS (-25% PDV) ====================
+        async function openPosPriceListModal(clientId) {
+            // Asegurar que el catálogo de productos esté cargado
+            if (!currentProductsList || currentProductsList.length === 0) {
+                if (typeof loadProducts === 'function') {
+                    await loadProducts();
+                }
+            }
+            // Asegurar que la lista de clientes POS esté disponible
+            if (!currentPosClientsList || currentPosClientsList.length === 0) {
+                if (typeof loadPosClients === 'function') {
+                    await loadPosClients();
+                }
+            }
+
+            // Llenar el selector de clientes registrados
+            var clientSelect = document.getElementById('plClientSelect');
+            if (clientSelect) {
+                var selHtml = '<option value="">-- Ingreso Manual o Seleccionar --</option>';
+                if (Array.isArray(currentPosClientsList)) {
+                    currentPosClientsList.forEach(function(c) {
+                        var label = (c.id || 'CLI') + ' — ' + (c.nombre || 'Sin nombre') + (c.negocio ? (' (' + c.negocio + ')') : '');
+                        selHtml += '<option value="' + escapeHtml(c.id || '') + '">' + escapeHtml(label) + '</option>';
+                    });
+                }
+                clientSelect.innerHTML = selHtml;
+            }
+
+            // Llenar el filtro de categorías
+            var catSelect = document.getElementById('plCategoryFilter');
+            if (catSelect) {
+                var cats = [];
+                if (Array.isArray(currentProductsList)) {
+                    currentProductsList.forEach(function(p) {
+                        if (p.category && cats.indexOf(p.category) === -1) {
+                            cats.push(p.category);
+                        }
+                    });
+                }
+                cats.sort();
+                var catHtml = '<option value="all">Todas las Categorías (' + currentProductsList.length + ' productos)</option>';
+                cats.forEach(function(cat) {
+                    var count = currentProductsList.filter(function(p) { return p.category === cat; }).length;
+                    catHtml += '<option value="' + escapeHtml(cat) + '">' + escapeHtml(cat.toUpperCase()) + ' (' + count + ')</option>';
+                });
+                catSelect.innerHTML = catHtml;
+            }
+
+            // Si se especificó un cliente en particular, cargarlo
+            if (clientId && Array.isArray(currentPosClientsList)) {
+                var target = currentPosClientsList.find(function(c) { return c.id === clientId; });
+                if (target) {
+                    if (clientSelect) clientSelect.value = target.id || '';
+                    populatePosPriceListClientFields(target);
+                }
+            } else {
+                // Si los campos están vacíos, poner un folio de referencia
+                var idInp = document.getElementById('plClientId');
+                if (idInp && !idInp.value) {
+                    idInp.value = 'POS-CLI-' + Date.now();
+                }
+            }
+
+            renderPosPriceListPreview();
+
+            var modal = document.getElementById('posPriceListModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function openPosPriceListForClient(clientId) {
+            openPosPriceListModal(clientId);
+        }
+
+        function populatePosPriceListClientFields(c) {
+            if (!c) return;
+            var idInp = document.getElementById('plClientId');
+            var nameInp = document.getElementById('plClientName');
+            var emailInp = document.getElementById('plClientEmail');
+            var phoneInp = document.getElementById('plClientPhone');
+            var businessInp = document.getElementById('plClientBusiness');
+            var modalityInp = document.getElementById('plClientModality');
+
+            if (idInp) idInp.value = c.id || '';
+            if (nameInp) nameInp.value = c.nombre || '';
+            if (emailInp) emailInp.value = c.email || '';
+            if (phoneInp) phoneInp.value = c.celular || c.telefono || '';
+            if (businessInp) businessInp.value = c.negocio || '';
+            if (modalityInp && c.modalidad) modalityInp.value = c.modalidad;
+        }
+
+        function onPosPriceListClientSelectChange() {
+            var select = document.getElementById('plClientSelect');
+            if (!select) return;
+            var val = select.value;
+            if (!val) return;
+
+            var found = (currentPosClientsList || []).find(function(c) { return c.id === val; });
+            if (found) {
+                populatePosPriceListClientFields(found);
+                renderPosPriceListPreview();
+            }
+        }
+
+        function renderPosPriceListPreview() {
+            var area = document.getElementById('posPriceListPreviewArea');
+            if (!area) return;
+
+            var clientId = (document.getElementById('plClientId').value || 'POS-CLI-GENERAL').trim();
+            var clientName = (document.getElementById('plClientName').value || 'Punto de Venta Autorizado').trim();
+            var clientEmail = (document.getElementById('plClientEmail').value || 'ventas@resetsupplymx.com').trim();
+            var clientBusiness = (document.getElementById('plClientBusiness').value || '').trim();
+            var clientPhone = (document.getElementById('plClientPhone').value || '').trim();
+            var clientModality = (document.getElementById('plClientModality').value || 'Punto de Venta Tradicional').trim();
+            var discountPct = parseFloat(document.getElementById('plDiscountPct').value);
+            if (isNaN(discountPct) || discountPct < 0) discountPct = 25;
+
+            var catFilter = document.getElementById('plCategoryFilter') ? document.getElementById('plCategoryFilter').value : 'all';
+
+            // Obtener lista base de productos
+            var products = (currentProductsList && currentProductsList.length > 0) ? currentProductsList : (typeof DEFAULT_CATALOG !== 'undefined' ? DEFAULT_CATALOG : []);
+            
+            // Filtrar productos
+            var filtered = products.filter(function(p) {
+                if (catFilter === 'all') return true;
+                return p.category === catFilter;
+            });
+
+            // Aplanar productos y presentaciones/variaciones
+            var flatList = [];
+            filtered.forEach(function(p) {
+                if (Array.isArray(p.variations) && p.variations.length > 0) {
+                    p.variations.forEach(function(v) {
+                        flatList.push({
+                            code: v.code || p.code || p.id || 'N/A',
+                            name: p.name + ' — ' + (v.name || 'Estándar'),
+                            category: p.category || 'General',
+                            udm: v.name || p.udm || 'PZ',
+                            price: parseFloat(v.price || p.price) || 0
+                        });
+                    });
+                } else {
+                    flatList.push({
+                        code: p.code || p.id || 'N/A',
+                        name: p.name,
+                        category: p.category || 'General',
+                        udm: p.udm || 'PZ',
+                        price: parseFloat(p.price) || 0
+                    });
+                }
+            });
+
+            var todayStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+            var markupMultiplier = discountPct < 100 ? (discountPct / (100 - discountPct)) * 100 : 0;
+
+            // Construir HTML con el diseño corporativo
+            var html = '<div style="font-family:\'Segoe UI\',Inter,system-ui,sans-serif; background:#ffffff; color:#0f172a; padding:28px 32px; max-width:980px; margin:0 auto; line-height:1.45;">' +
+                
+                // ===== BARRA SUPERIOR DE COLOR DE MARCA =====
+                '<div style="height:6px; background:linear-gradient(90deg, #3ddc84 0%, #22b8f0 100%); border-radius:4px 4px 0 0; margin-bottom:20px;"></div>' +
+
+                // ===== ENCABEZADO PRINCIPAL =====
+                '<div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #e2e8f0; padding-bottom:18px; margin-bottom:20px; gap:20px; flex-wrap:wrap;">' +
+                    '<div style="display:flex; align-items:center; gap:16px;">' +
+                        '<img src="/logoresetsupply.png" alt="Reset Supply MX" style="height:58px; max-width:180px; object-fit:contain;" onerror="this.onerror=null; this.src=\'logoresetsupply.png\';">' +
+                        '<div>' +
+                            '<h1 style="margin:0; font-size:20px; font-weight:900; letter-spacing:0.5px; color:#0a0e13; text-transform:uppercase;">RESET SUPPLY MX</h1>' +
+                            '<div style="font-size:12px; font-weight:700; color:#0284c7; margin-top:2px;">Distribuidor Oficial Vonixx en México</div>' +
+                            '<div style="font-size:11px; color:#64748b; margin-top:1px;">R.F.C. RSM220315AB1 • Envíos Seguros a Todo México</div>' +
+                        '</div>' +
+                    '</div>' +
+
+                    '<div style="text-align:right;">' +
+                        '<div style="display:inline-block; background:#0a0e13; color:#ffffff; padding:6px 14px; border-radius:6px; font-weight:800; font-size:12px; letter-spacing:0.5px; border-left:4px solid #3ddc84;">' +
+                            'LISTA DE PRECIOS MAYORISTA' +
+                        '</div>' +
+                        '<div style="margin-top:6px; font-size:13px; font-weight:800; color:#0f766e;">' +
+                            '⭐ Tarifa Especial: -' + discountPct + '% de Descuento' +
+                        '</div>' +
+                        '<div style="font-size:11px; color:#64748b; margin-top:2px;">Fecha de Emisión: <strong>' + todayStr + '</strong></div>' +
+                        '<div style="font-size:11px; color:#64748b;">Vigencia: <strong>30 días naturales</strong></div>' +
+                    '</div>' +
+                '</div>' +
+
+                // ===== TARJETA DE INFORMACIÓN DEL CLIENTE / PUNTO DE VENTA =====
+                '<div style="background:#f8fafc; border:1.5px solid #22b8f0; border-radius:8px; padding:14px 18px; margin-bottom:22px; box-shadow:0 2px 6px rgba(0,0,0,0.04);">' +
+                    '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:8px; margin-bottom:10px;">' +
+                        '<span style="font-size:11px; font-weight:800; color:#0369a1; text-transform:uppercase; letter-spacing:0.8px;">' +
+                            '📋 DATOS DEL CLIENTE / PUNTO DE VENTA' +
+                        '</span>' +
+                        '<span style="font-size:11px; font-weight:700; background:rgba(34,184,240,0.15); color:#0284c7; padding:2px 8px; border-radius:12px;">' +
+                            escapeHtml(clientModality) +
+                        '</span>' +
+                    '</div>' +
+
+                    '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px; font-size:12px;">' +
+                        '<div>' +
+                            '<span style="color:#64748b; font-size:11px; font-weight:600;">No. de Cliente:</span><br>' +
+                            '<strong style="font-family:monospace; font-size:13px; color:#0f172a; background:#e2e8f0; padding:2px 6px; border-radius:4px;">' + escapeHtml(clientId) + '</strong>' +
+                        '</div>' +
+
+                        '<div>' +
+                            '<span style="color:#64748b; font-size:11px; font-weight:600;">Titular / Razón Social:</span><br>' +
+                            '<strong style="color:#0f172a;">' + escapeHtml(clientName) + '</strong>' +
+                        '</div>' +
+
+                        '<div>' +
+                            '<span style="color:#64748b; font-size:11px; font-weight:600;">Correo Electrónico:</span><br>' +
+                            '<span style="color:#0284c7; font-weight:600;">' + escapeHtml(clientEmail) + '</span>' +
+                        '</div>' +
+
+                        '<div>' +
+                            '<span style="color:#64748b; font-size:11px; font-weight:600;">Negocio / Taller:</span><br>' +
+                            '<strong style="color:#0f172a;">' + escapeHtml(clientBusiness || 'Punto de Venta Oficial') + '</strong>' +
+                        '</div>' +
+
+                        (clientPhone ? ('<div>' +
+                            '<span style="color:#64748b; font-size:11px; font-weight:600;">Teléfono / WhatsApp:</span><br>' +
+                            '<span style="color:#0f172a; font-weight:600;">' + escapeHtml(clientPhone) + '</span>' +
+                        '</div>') : '') +
+
+                        '<div>' +
+                            '<span style="color:#64748b; font-size:11px; font-weight:600;">Tarifa Autorizada:</span><br>' +
+                            '<span style="color:#15803d; font-weight:800; font-size:12px;">-' + discountPct + '% de Descuento Especial PDV</span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+
+                // ===== TABLA DE PRODUCTOS Y PRECIOS =====
+                '<div style="overflow-x:auto; margin-bottom:24px;">' +
+                    '<table style="width:100%; border-collapse:collapse; font-size:11.5px; border:1px solid #cbd5e1;">' +
+                        '<thead>' +
+                            '<tr style="background:#0a0e13; color:#ffffff; text-align:left;">' +
+                                '<th style="padding:9px 10px; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; border-bottom:2px solid #22b8f0; width:95px;">SKU / CÓDIGO</th>' +
+                                '<th style="padding:9px 10px; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; border-bottom:2px solid #22b8f0;">PRODUCTO / PRESENTACIÓN</th>' +
+                                '<th style="padding:9px 8px; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; border-bottom:2px solid #22b8f0; width:100px;">CATEGORÍA</th>' +
+                                '<th style="padding:9px 10px; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; text-align:right; border-bottom:2px solid #22b8f0; width:95px;">PVP REGULAR</th>' +
+                                '<th style="padding:9px 8px; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; text-align:center; border-bottom:2px solid #22b8f0; width:65px;">DESC.</th>' +
+                                '<th style="padding:9px 10px; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; text-align:right; border-bottom:2px solid #3ddc84; width:115px; background:#111c26; color:#3ddc84;">PRECIO PDV (-' + discountPct + '%)</th>' +
+                                '<th style="padding:9px 10px; font-size:11px; letter-spacing:0.5px; text-transform:uppercase; text-align:right; border-bottom:2px solid #22b8f0; width:110px;">GANANCIA REV.</th>' +
+                            '</tr>' +
+                        '</thead>' +
+                        '<tbody>';
+
+            if (flatList.length === 0) {
+                html += '<tr><td colspan="7" style="text-align:center; padding:30px; color:#64748b;">No hay productos disponibles para la categoría seleccionada.</td></tr>';
+            } else {
+                flatList.forEach(function(item, idx) {
+                    var pvp = item.price;
+                    var discPrice = pvp * (1 - (discountPct / 100));
+                    var profit = pvp - discPrice;
+                    var rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+
+                    html += '<tr style="background:' + rowBg + '; border-bottom:1px solid #e2e8f0;">' +
+                        '<td style="padding:7px 10px; font-family:monospace; font-weight:700; color:#0369a1; white-space:nowrap;">' + escapeHtml(item.code) + '</td>' +
+                        '<td style="padding:7px 10px; font-weight:600; color:#0f172a;">' + escapeHtml(item.name) + '</td>' +
+                        '<td style="padding:7px 8px; color:#64748b; font-size:11px; text-transform:capitalize;">' + escapeHtml(item.category) + '</td>' +
+                        '<td style="padding:7px 10px; text-align:right; color:#64748b; text-decoration:line-through; font-family:monospace;">$' + pvp.toFixed(2) + '</td>' +
+                        '<td style="padding:7px 8px; text-align:center;"><span style="background:rgba(34,184,240,0.14); color:#0284c7; font-weight:700; font-size:10.5px; padding:1px 6px; border-radius:4px;">-' + discountPct + '%</span></td>' +
+                        '<td style="padding:7px 10px; text-align:right; font-weight:800; font-size:12.5px; color:#0f5132; background:rgba(61,220,132,0.08); font-family:monospace;">$' + discPrice.toFixed(2) + ' MXN</td>' +
+                        '<td style="padding:7px 10px; text-align:right; font-weight:700; color:#0284c7; font-size:11.5px; font-family:monospace;">+$' + profit.toFixed(2) + '</td>' +
+                    '</tr>';
+                });
+            }
+
+            html += '</tbody></table></div>' +
+
+                // ===== RESUMEN DE CONDICIONES Y RENTABILIDAD =====
+                '<div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:8px; padding:14px 18px; margin-bottom:22px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">' +
+                    '<div>' +
+                        '<div style="font-size:12px; font-weight:700; color:#0f172a;">📊 Catálogo Cotizado: <strong>' + flatList.length + ' productos / presentaciones</strong></div>' +
+                        '<div style="font-size:11.5px; color:#64748b; margin-top:2px;">Descuento directo del <strong>' + discountPct + '%</strong> aplicado sobre el Precio de Venta al Público (PVP).</div>' +
+                    '</div>' +
+                    '<div style="text-align:right;">' +
+                        '<div style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Margen de Reventa para PDV:</div>' +
+                        '<div style="font-size:16px; font-weight:800; color:#15803d;">+' + markupMultiplier.toFixed(1) + '% de Ganancia Bruta s/Costo</div>' +
+                    '</div>' +
+                '</div>' +
+
+                // ===== POLÍTICAS Y TÉRMINOS COMERCIALES =====
+                '<div style="border-top:1.5px dashed #cbd5e1; padding-top:16px; margin-bottom:20px; font-size:11px; color:#475569; line-height:1.5;">' +
+                    '<strong style="color:#0f172a; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">Términos y Condiciones Comerciales:</strong>' +
+                    '<ul style="margin:0; padding-left:18px;">' +
+                        '<li>Todos los precios están expresados en <strong>Pesos Mexicanos (MXN)</strong> e incluyen el Impuesto al Valor Agregado (IVA).</li>' +
+                        '<li>Precios exclusivos para el cliente registrado: <strong>' + escapeHtml(clientName) + ' (' + escapeHtml(clientId) + ')</strong>.</li>' +
+                        '<li>Garantía de producto 100% original Vonixx Brasil, con soporte técnico y capacitación de detallado automotriz.</li>' +
+                        '<li>Envíos a todo el país mediante paqueterías autorizadas con guía de rastreo activa y empaque de alta seguridad.</li>' +
+                        '<li>Para levantar órdenes de compra, envía mensaje a nuestro WhatsApp o correo oficial indicando tu <strong>No. de Cliente: ' + escapeHtml(clientId) + '</strong>.</li>' +
+                    '</ul>' +
+                '</div>' +
+
+                // ===== CONTACTO Y PIE DE PÁGINA =====
+                '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1.5px solid #e2e8f0; padding-top:14px; margin-bottom:14px; flex-wrap:wrap; gap:10px; font-size:11.5px;">' +
+                    '<div>' +
+                        '<strong style="color:#0a0e13;">RESET SUPPLY MX</strong> — Distribuidor Oficial Vonixx México' +
+                    '</div>' +
+                    '<div style="color:#64748b;">' +
+                        '🌐 <a href="https://resetsupplymx.com" target="_blank" style="color:#0284c7; text-decoration:none; font-weight:600;">resetsupplymx.com</a> • ✉️ <a href="mailto:ventas@resetsupplymx.com" style="color:#0284c7; text-decoration:none; font-weight:600;">ventas@resetsupplymx.com</a>' +
+                    '</div>' +
+                '</div>' +
+
+                // ===== BARRA INFERIOR DE COLOR DE MARCA =====
+                '<div style="height:6px; background:linear-gradient(90deg, #22b8f0 0%, #3ddc84 100%); border-radius:0 0 4px 4px;"></div>' +
+
+            '</div>';
+
+            area.innerHTML = html;
+        }
+
+        function printPosPriceList() {
+            var area = document.getElementById('posPriceListPreviewArea');
+            if (!area) return;
+
+            var printContainer = document.getElementById('printContainerDirect');
+            if (printContainer) {
+                printContainer.innerHTML = area.innerHTML;
+                window.print();
+            } else {
+                window.print();
+            }
+        }
+
+        function sharePosPriceListWhatsApp() {
+            var clientId = (document.getElementById('plClientId').value || '').trim();
+            var clientName = (document.getElementById('plClientName').value || '').trim();
+            var clientPhone = (document.getElementById('plClientPhone').value || '').replace(/\D/g, '');
+            var discountPct = document.getElementById('plDiscountPct').value || '25';
+
+            var msg = '¡Hola' + (clientName ? (' ' + clientName) : '') + '! 🤝\n\n' +
+                'Te compartimos tu Lista de Precios Oficial con tarifa especial de distribuidor (*-' + discountPct + '% de descuento*) en Reset Supply MX (Distribuidor Oficial Vonixx México).\n\n' +
+                '📌 *Tu No. de Cliente:* ' + (clientId || 'Asignado en sistema') + '\n' +
+                '📦 *Beneficio:* Tarifa mayorista activa en todo nuestro catálogo de detallado automotriz.\n' +
+                '🌐 *Tienda Web:* https://resetsupplymx.com\n\n' +
+                'Quedamos a tus órdenes para surtir tu pedido o resolver cualquier duda técnica.';
+
+            var url = 'https://wa.me/' + (clientPhone ? ('52' + clientPhone) : '') + '?text=' + encodeURIComponent(msg);
+            window.open(url, '_blank');
         }
 
         // Cargar Órdenes
