@@ -1171,12 +1171,44 @@ function enrichProductBarcodes(item) {
 // Función auxiliar para recalcular nuevo precio
 function calculateItemPrices(item) {
   enrichProductBarcodes(item);
+  if (item && (item.id === 'VON-00017' || item.code === 'VON-00017')) {
+    if (item.price === 162 || !item.price) item.price = 215.00;
+    if (item.newPrice === 162) item.newPrice = 215.00;
+    if (Array.isArray(item.variations)) {
+      item.variations.forEach(v => {
+        if (v.price === 162 || !v.price) v.price = 215.00;
+        if (v.newPrice === 162) v.newPrice = 215.00;
+      });
+    }
+  }
   const basePrice = parseFloat(item.price) || 0;
   const pct = parseFloat(item.pct) || 0;
   const qty = parseInt(item.qty) || 0;
   const newPrice = item.customNewPrice !== undefined && item.customNewPrice !== null ? parseFloat(item.customNewPrice) : basePrice * (1 + pct / 100);
   const subtotal = basePrice * qty;
   const newSubtotal = newPrice * qty;
+
+  const variations = Array.isArray(item.variations) ? item.variations.map(v => {
+    let vBase = parseFloat(v.price) || 0;
+    if ((item.id === 'VON-00017' || item.code === 'VON-00017') && (vBase === 162 || !vBase)) {
+      vBase = 215.00;
+    }
+    let vNew;
+    if (item.variations.length === 1) {
+      vNew = newPrice;
+    } else if (v.newPrice !== undefined && v.newPrice !== null && !isNaN(parseFloat(v.newPrice)) && pct === 0) {
+      vNew = parseFloat(v.newPrice);
+    } else if (pct !== 0) {
+      vNew = vBase * (1 + pct / 100);
+    } else {
+      vNew = (v.newPrice !== undefined && v.newPrice !== null) ? parseFloat(v.newPrice) : vBase;
+    }
+    return {
+      ...v,
+      price: vBase,
+      newPrice: Math.round(vNew * 100) / 100
+    };
+  }) : [];
 
   return {
     ...item,
@@ -1185,7 +1217,8 @@ function calculateItemPrices(item) {
     qty: qty,
     newPrice: Math.round(newPrice * 100) / 100,
     subtotal: Math.round(subtotal * 100) / 100,
-    newSubtotal: Math.round(newSubtotal * 100) / 100
+    newSubtotal: Math.round(newSubtotal * 100) / 100,
+    variations: variations
   };
 }
 
@@ -1212,10 +1245,22 @@ app.get('/api/products', async (req, res) => {
             batch.update(doc.ref, { barcode: item.barcode, variations: item.variations || [] });
             batchNeedsCommit = true;
           }
+          if ((item.id === 'VON-00017' || item.code === 'VON-00017') && (item.price === 162 || !item.price)) {
+            item.price = 215.00;
+            item.newPrice = 215.00;
+            if (Array.isArray(item.variations)) {
+              item.variations.forEach(v => {
+                if (v.price === 162 || !v.price) v.price = 215.00;
+                if (v.newPrice === 162 || !v.newPrice) v.newPrice = 215.00;
+              });
+            }
+            batch.update(doc.ref, { price: 215.00, newPrice: 215.00, variations: item.variations });
+            batchNeedsCommit = true;
+          }
           dbProds.push(item);
         });
         if (batchNeedsCommit) {
-          batch.commit().catch(e => console.warn('No se pudo actualizar imágenes/barcodes en batch Firestore:', e.message));
+          batch.commit().catch(e => console.warn('No se pudo actualizar imágenes/barcodes/precios en batch Firestore:', e.message));
         }
         products = dbProds;
         localInventory = dbProds;
@@ -1321,10 +1366,22 @@ app.get('/api/admin/products', requireAdminAuth, async (req, res) => {
             batch.update(doc.ref, { barcode: item.barcode, variations: item.variations || [] });
             batchNeedsCommit = true;
           }
+          if ((item.id === 'VON-00017' || item.code === 'VON-00017') && (item.price === 162 || !item.price)) {
+            item.price = 215.00;
+            item.newPrice = 215.00;
+            if (Array.isArray(item.variations)) {
+              item.variations.forEach(v => {
+                if (v.price === 162 || !v.price) v.price = 215.00;
+                if (v.newPrice === 162 || !v.newPrice) v.newPrice = 215.00;
+              });
+            }
+            batch.update(doc.ref, { price: 215.00, newPrice: 215.00, variations: item.variations });
+            batchNeedsCommit = true;
+          }
           dbProds.push(item);
         });
         if (batchNeedsCommit) {
-          batch.commit().catch(e => console.warn('No se pudo actualizar imágenes/barcodes en batch Firestore:', e.message));
+          batch.commit().catch(e => console.warn('No se pudo actualizar imágenes/barcodes/precios en batch Firestore:', e.message));
         }
         localInventory = dbProds;
       }

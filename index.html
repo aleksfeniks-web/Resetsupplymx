@@ -2599,18 +2599,27 @@ textarea[required]:focus,
                     }
                 }
                 if (found) {
-                    prod = Object.assign({}, found, prod, { 
+                    prod = Object.assign({}, prod, found, { 
                         description: (found.description && found.description.trim()) ? found.description.trim() : (prod.description || ''),
                         variations: (found.variations && found.variations.length > 0) ? found.variations : prod.variations
                     });
                 }
             }
 
+            if ((prod.id === 'VON-00017' || prod.code === 'VON-00017') && (prod.price === 162 || !prod.price)) {
+                prod.price = 215;
+                if (prod.newPrice === 162 || !prod.newPrice) prod.newPrice = 215;
+            }
+
             activeDetailProduct = prod;
             
             var basePrice = parseFloat(prod.price) || 0;
             var pct = parseFloat(prod.pct) || 0;
-            var newPrice = prod.newPrice !== undefined ? parseFloat(prod.newPrice) : (basePrice * (1 + pct / 100));
+            var finalPrice = (prod.customNewPrice !== undefined && prod.customNewPrice !== null && !isNaN(parseFloat(prod.customNewPrice)))
+                ? parseFloat(prod.customNewPrice)
+                : ((prod.newPrice !== undefined && prod.newPrice !== null && !isNaN(parseFloat(prod.newPrice)))
+                    ? parseFloat(prod.newPrice)
+                    : (basePrice * (1 + pct / 100)));
 
             detailModalImage.src = prod.image || 'https://raw.githubusercontent.com/aleksfeniks-web/reset_catalogo_fotos/main/Alumax%2020L.png';
             detailModalTitle.textContent = prod.name;
@@ -2621,7 +2630,7 @@ textarea[required]:focus,
             var desc = (prod.description && prod.description.trim()) ? prod.description.trim() : 'Producto original Vonixx formulado con los más altos estándares tecnológicos para detailing automotriz y cuidado profesional.';
             detailModalDescription.textContent = desc;
 
-            if (pct !== 0 && newPrice !== basePrice) {
+            if (pct !== 0 || Math.abs(finalPrice - basePrice) > 0.01) {
                 detailModalOldPrice.textContent = '$' + basePrice.toFixed(2);
                 detailModalOldPrice.style.display = 'inline';
             } else {
@@ -2632,18 +2641,25 @@ textarea[required]:focus,
             if (prod.variations && Array.isArray(prod.variations) && prod.variations.length > 0) {
                 var varHtml = '';
                 prod.variations.forEach(function(v, idx) {
-                    var vPrice = parseFloat(v.price) || newPrice;
+                    if ((prod.id === 'VON-00017' || prod.code === 'VON-00017') && (v.price === 162 || !v.price)) {
+                        v.price = 215;
+                        v.newPrice = 215;
+                    }
+                    var vBase = parseFloat(v.price) || (prod.variations.length === 1 ? basePrice : finalPrice);
+                    var vFinal = (v.newPrice !== undefined && v.newPrice !== null && !isNaN(parseFloat(v.newPrice)))
+                        ? parseFloat(v.newPrice)
+                        : (prod.variations.length === 1 ? finalPrice : (pct !== 0 ? (vBase * (1 + pct / 100)) : vBase));
                     if (idx === 0) {
-                        activeDetailUnitPrice = vPrice;
+                        activeDetailUnitPrice = vFinal;
                         activeDetailItemName = prod.name + ' (' + v.name + ')';
                     }
-                    varHtml += `<option value="${v.id}" data-name="${prod.name} (${v.name})" data-price="${vPrice.toFixed(2)}">${v.name} — $${vPrice.toFixed(2)} MXN</option>`;
+                    varHtml += `<option value="${v.id}" data-name="${prod.name} (${v.name})" data-price="${vFinal.toFixed(2)}">${v.name} — $${vFinal.toFixed(2)} MXN</option>`;
                 });
                 detailModalVariationSelect.innerHTML = varHtml;
                 detailModalVariationsWrapper.style.display = 'block';
             } else {
                 detailModalVariationsWrapper.style.display = 'none';
-                activeDetailUnitPrice = newPrice;
+                activeDetailUnitPrice = finalPrice;
                 activeDetailItemName = prod.name;
             }
 
@@ -3404,25 +3420,143 @@ function resolveToGitRepoUrl(item) {
 }
 
 
+function sanitizeCatalogPrices(list) {
+    if (!Array.isArray(list)) return list;
+    list.forEach(function(p) {
+        if ((p.id === 'VON-00017' || p.code === 'VON-00017') && (p.price === 162 || !p.price || p.newPrice === 162)) {
+            p.price = 215;
+            p.newPrice = 215;
+            if (p.customNewPrice === 162) p.customNewPrice = 215;
+            if (Array.isArray(p.variations)) {
+                p.variations.forEach(function(v) {
+                    if (v.price === 162 || !v.price) v.price = 215;
+                    if (v.newPrice === 162 || !v.newPrice) v.newPrice = 215;
+                });
+            }
+        }
+        var basePrice = parseFloat(p.price) || 0;
+        var pct = parseFloat(p.pct) || 0;
+        var finalPrice = (p.customNewPrice !== undefined && p.customNewPrice !== null && !isNaN(parseFloat(p.customNewPrice)))
+            ? parseFloat(p.customNewPrice)
+            : ((p.newPrice !== undefined && p.newPrice !== null && !isNaN(parseFloat(p.newPrice)))
+                ? parseFloat(p.newPrice)
+                : (basePrice * (1 + pct / 100)));
+        p.finalPrice = finalPrice;
+
+        if (Array.isArray(p.variations)) {
+            if (p.variations.length === 1) {
+                var v0 = p.variations[0];
+                if ((p.id === 'VON-00017' || p.code === 'VON-00017') && (v0.price === 162 || !v0.price)) {
+                    v0.price = 215;
+                }
+                v0.newPrice = finalPrice;
+            } else if (pct !== 0) {
+                p.variations.forEach(function(v) {
+                    var vb = parseFloat(v.price) || finalPrice;
+                    v.newPrice = Math.round(vb * (1 + pct / 100) * 100) / 100;
+                });
+            }
+        }
+    });
+    return list;
+}
+
+        function syncCarouselPrices(products) {
+            if (!Array.isArray(products) || products.length === 0) return;
+            sanitizeCatalogPrices(products);
+            var prodMap = {};
+            products.forEach(function(p) {
+                var pBase = parseFloat(p.price) || 0;
+                var pPct = parseFloat(p.pct) || 0;
+                var pFinal = (p.customNewPrice !== undefined && p.customNewPrice !== null && !isNaN(parseFloat(p.customNewPrice)))
+                    ? parseFloat(p.customNewPrice)
+                    : ((p.newPrice !== undefined && p.newPrice !== null && !isNaN(parseFloat(p.newPrice)))
+                        ? parseFloat(p.newPrice)
+                        : (pBase * (1 + pPct / 100)));
+                var nameKey = (p.name || '').trim().toLowerCase();
+                if (nameKey) prodMap[nameKey] = { product: p, finalPrice: pFinal, basePrice: pBase };
+                if (p.id) prodMap[p.id.toLowerCase()] = { product: p, finalPrice: pFinal, basePrice: pBase };
+                if (p.code) prodMap[p.code.toLowerCase()] = { product: p, finalPrice: pFinal, basePrice: pBase };
+            });
+
+            document.querySelectorAll('.carousel-item').forEach(function(item) {
+                var titleEl = item.querySelector('.carousel-item-title');
+                var priceEl = item.querySelector('.carousel-item-price');
+                var cartBtn = item.querySelector('.btn-add-cart');
+                var waBtn = item.querySelector('.btn-quote-wa');
+                if (!titleEl || !priceEl) return;
+
+                var titleText = titleEl.textContent.trim().toLowerCase();
+                var match = null;
+
+                for (var key in prodMap) {
+                    if (titleText === key || titleText.includes(key) || key.includes(titleText)) {
+                        match = prodMap[key];
+                        break;
+                    }
+                }
+
+                if (match) {
+                    var p = match.product;
+                    var finalPrice = match.finalPrice;
+                    var basePrice = match.basePrice;
+
+                    if (p.variations && Array.isArray(p.variations) && p.variations.length > 1) {
+                        var varPrices = p.variations.map(function(v) {
+                            var vb = parseFloat(v.price) || finalPrice;
+                            return (v.newPrice !== undefined && v.newPrice !== null && !isNaN(parseFloat(v.newPrice)))
+                                ? parseFloat(v.newPrice)
+                                : (p.pct ? (vb * (1 + parseFloat(p.pct) / 100)) : vb);
+                        });
+                        var minP = Math.min.apply(null, varPrices);
+                        var maxP = Math.max.apply(null, varPrices);
+                        if (minP < maxP) {
+                            priceEl.textContent = '$' + minP.toFixed(2) + ' – $' + maxP.toFixed(2);
+                        } else {
+                            priceEl.textContent = '$' + minP.toFixed(2);
+                        }
+                    } else {
+                        priceEl.textContent = '$' + finalPrice.toFixed(2);
+                    }
+
+                    if (cartBtn) {
+                        cartBtn.setAttribute('data-product', p.name);
+                        cartBtn.setAttribute('data-price', finalPrice);
+                    }
+                    if (waBtn) {
+                        waBtn.setAttribute('data-product', p.name);
+                        waBtn.setAttribute('data-price', finalPrice);
+                    }
+                }
+            });
+        }
+
         function renderProductsGrid(products) {
             var grid = document.getElementById('productsGrid');
             if (!grid || !Array.isArray(products) || products.length === 0) return;
+            sanitizeCatalogPrices(products);
 
             window.currentLoadedProductsMap = {};
+            window.allCatalogProducts = products;
+
             products.forEach(function(p) {
                 p.image = resolveToGitRepoUrl(p);
                 if (p.id) window.currentLoadedProductsMap[p.id] = p;
                 if (p.code) window.currentLoadedProductsMap[p.code] = p;
+                if (p.name) window.currentLoadedProductsMap[p.name.trim().toLowerCase()] = p;
             });
 
             var html = '';
             products.forEach(function(p) {
                 var basePrice = parseFloat(p.price) || 0;
                 var pct = parseFloat(p.pct) || 0;
-                var newPrice = p.newPrice !== undefined ? parseFloat(p.newPrice) : (basePrice * (1 + pct / 100));
+                var finalPrice = (p.customNewPrice !== undefined && p.customNewPrice !== null && !isNaN(parseFloat(p.customNewPrice)))
+                    ? parseFloat(p.customNewPrice)
+                    : ((p.newPrice !== undefined && p.newPrice !== null && !isNaN(parseFloat(p.newPrice)))
+                        ? parseFloat(p.newPrice)
+                        : (basePrice * (1 + pct / 100)));
                 
-                var hasDiscount = pct < 0 || newPrice < basePrice;
-                var hasIncrease = pct > 0 || newPrice > basePrice;
+                var hasDiscount = pct < 0 || finalPrice < (basePrice - 0.01);
 
                 var CATEGORY_DISPLAY_NAMES = {
                     'limpieza': 'Limpieza',
@@ -3450,13 +3584,14 @@ function resolveToGitRepoUrl(item) {
                 var badgeText = CATEGORY_DISPLAY_NAMES[p.category] || (p.category || 'Vonixx').toUpperCase();
                 var badgeClass = 'product-badge';
                 if (hasDiscount) {
-                    badgeText = 'OFERTA ' + Math.abs(pct) + '%';
+                    var discountPct = pct < 0 ? Math.abs(pct) : Math.round(((basePrice - finalPrice) / basePrice) * 100);
+                    badgeText = 'OFERTA ' + discountPct + '%';
                     badgeClass += ' offer';
                 }
 
-                // Generar selector de variaciones si existen
                 var variationsHtml = '';
-                var initialPrice = newPrice;
+                var initialPrice = finalPrice;
+                var initialBasePrice = basePrice;
                 var initialName = p.name;
 
                 if (p.variations && Array.isArray(p.variations) && p.variations.length > 0) {
@@ -3465,19 +3600,24 @@ function resolveToGitRepoUrl(item) {
                         <select class="variation-select" style="width:100%; padding:6px 10px; background:#161c24; border:1px solid #232b34; color:#f2f5f8; border-radius:6px; font-size:12.5px; outline:none;" data-prod-id="${p.id}">`;
                     
                     p.variations.forEach(function(v, vIdx) {
-                        var vPrice = parseFloat(v.price) || newPrice;
+                        var vBase = parseFloat(v.price) || (p.variations.length === 1 ? basePrice : finalPrice);
+                        var vFinal = (v.newPrice !== undefined && v.newPrice !== null && !isNaN(parseFloat(v.newPrice)))
+                            ? parseFloat(v.newPrice)
+                            : (p.variations.length === 1 ? finalPrice : (pct !== 0 ? (vBase * (1 + pct / 100)) : vBase));
                         if (vIdx === 0) {
-                            initialPrice = vPrice;
+                            initialPrice = vFinal;
+                            initialBasePrice = vBase;
                             initialName = p.name + ' (' + v.name + ')';
                         }
-                        variationsHtml += `<option value="${v.id}" data-name="${p.name} (${v.name})" data-price="${vPrice.toFixed(2)}">${v.name} — $${vPrice.toFixed(2)} MXN</option>`;
+                        variationsHtml += `<option value="${v.id}" data-name="${p.name} (${v.name})" data-price="${vFinal.toFixed(2)}" data-base-price="${vBase.toFixed(2)}">${v.name} — $${vFinal.toFixed(2)} MXN</option>`;
                     });
                     variationsHtml += `</select></div>`;
                 }
 
                 var priceHtml = '';
-                if (hasDiscount || hasIncrease) {
-                    priceHtml = `<span class="price-old" style="text-decoration:line-through; color:var(--muted); font-size:0.88em; margin-right:6px;">$${basePrice.toFixed(2)}</span> <strong class="product-price-val" style="color:var(--green); font-size:1.1em;">$${initialPrice.toFixed(2)} MXN</strong>`;
+                var showOldPrice = (pct !== 0 || Math.abs(initialPrice - initialBasePrice) > 0.01);
+                if (showOldPrice) {
+                    priceHtml = `<span class="price-old" style="text-decoration:line-through; color:var(--muted); font-size:0.88em; margin-right:6px;">$${initialBasePrice.toFixed(2)}</span> <strong class="product-price-val" style="color:var(--green); font-size:1.1em;">$${initialPrice.toFixed(2)} MXN</strong>`;
                 } else {
                     priceHtml = `<strong class="product-price-val" style="color:var(--green); font-size:1.1em;">$${initialPrice.toFixed(2)} MXN</strong>`;
                 }
@@ -3509,65 +3649,62 @@ function resolveToGitRepoUrl(item) {
 
             grid.innerHTML = html;
 
-            // Event Listeners para selectores de variación
             grid.querySelectorAll('.variation-select').forEach(function(sel) {
                 sel.addEventListener('change', function() {
                     var selectedOption = this.options[this.selectedIndex];
                     var varName = selectedOption.getAttribute('data-name');
                     var varPrice = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                    var varBasePrice = parseFloat(selectedOption.getAttribute('data-base-price')) || varPrice;
                     var card = this.closest('.product-card');
-
                     if (card) {
-                        var priceEl = card.querySelector('.product-price-val');
-                        if (priceEl) priceEl.textContent = '$' + varPrice.toFixed(2) + ' MXN';
-
                         var cartBtn = card.querySelector('.btn-add-cart');
+                        var waBtn = card.querySelector('.btn-quote-wa');
+                        var priceEl = card.querySelector('.product-price');
+                        
                         if (cartBtn) {
                             cartBtn.setAttribute('data-product', varName);
                             cartBtn.setAttribute('data-price', varPrice);
                         }
-                        var waBtn = card.querySelector('.btn-quote-wa');
                         if (waBtn) {
                             waBtn.setAttribute('data-product', varName);
                             waBtn.setAttribute('data-price', varPrice);
+                        }
+                        if (priceEl) {
+                            if (Math.abs(varPrice - varBasePrice) > 0.01) {
+                                priceEl.innerHTML = `<span class="price-old" style="text-decoration:line-through; color:var(--muted); font-size:0.88em; margin-right:6px;">$${varBasePrice.toFixed(2)}</span> <strong class="product-price-val" style="color:var(--green); font-size:1.1em;">$${varPrice.toFixed(2)} MXN</strong>`;
+                            } else {
+                                priceEl.innerHTML = `<strong class="product-price-val" style="color:var(--green); font-size:1.1em;">$${varPrice.toFixed(2)} MXN</strong>`;
+                            }
                         }
                     }
                 });
             });
 
-            // Actualizar conteos de categoría en la barra lateral
-            var counts = { all: products.length };
-            products.forEach(function(p) {
-                var cat = (p.category || 'limpieza').toLowerCase();
-                counts[cat] = (counts[cat] || 0) + 1;
-            });
-            document.querySelectorAll('.category-link').forEach(function(link) {
-                var cat = link.getAttribute('data-category');
-                var countSpan = link.querySelector('.category-count');
-                var num = counts[cat] || 0;
-                if (countSpan) {
-                    countSpan.textContent = '(' + num + ')';
-                }
-            });
+            bindProductCardActions(grid);
+            syncCarouselPrices(products);
+            updateCategoryCounts(products);
 
-            // Aplicar filtrado respetando categoría y búsqueda activa
             if (typeof filterCatalogProducts === 'function') {
                 filterCatalogProducts();
             }
-
-            // Re-vincular botones de Carrito y WhatsApp
-            bindCartAndWaButtons(grid);
         }
 
-        function bindCartAndWaButtons(container) {
-            var target = container || document;
+        function bindProductCardActions(target) {
             target.querySelectorAll('.btn-add-cart').forEach(function(btn) {
                 btn.onclick = function(e) {
                     e.preventDefault();
                     var pName = this.getAttribute('data-product');
                     var pPrice = parseFloat(this.getAttribute('data-price')) || 0;
+                    var card = this.closest('.product-card');
+                    var pImg = card ? card.querySelector('.product-image img').getAttribute('src') : '';
                     if (window.addToCart) {
-                        window.addToCart(pName, pPrice);
+                        window.addToCart({
+                            id: card ? card.getAttribute('data-product-id') : '',
+                            name: pName,
+                            price: pPrice,
+                            image: pImg,
+                            quantity: 1
+                        });
                     }
                 };
             });
@@ -3584,30 +3721,68 @@ function resolveToGitRepoUrl(item) {
             });
         }
 
-        // Cargar productos del almacenamiento local inmediatamente
+        function updateCategoryCounts(products) {
+            var counts = { all: products.length };
+            products.forEach(function(p) {
+                var cat = (p.category || 'limpieza').toLowerCase();
+                counts[cat] = (counts[cat] || 0) + 1;
+            });
+            document.querySelectorAll('.category-link').forEach(function(link) {
+                var cat = link.getAttribute('data-category');
+                var countSpan = link.querySelector('.category-count');
+                var num = counts[cat] || 0;
+                if (countSpan) {
+                    countSpan.textContent = '(' + num + ')';
+                }
+            });
+        }
+
         try {
             var localSaved = localStorage.getItem('resetsupply_inventory');
             if (localSaved) {
                 var parsed = JSON.parse(localSaved);
                 var hasOldUrls = Array.isArray(parsed) && parsed.some(function(p) { return p.image && (p.image.includes('vonixxmexicooficial.com') || p.image.includes('/assets/')); });
-                if (!hasOldUrls && Array.isArray(parsed) && parsed.length > 0) {
+                var hasStaleMakker = Array.isArray(parsed) && parsed.some(function(p) { return (p.id === 'VON-00017' || p.code === 'VON-00017') && (p.price === 162 || p.newPrice === 162); });
+                if (!hasOldUrls && !hasStaleMakker && Array.isArray(parsed) && parsed.length > 0) {
+                    sanitizeCatalogPrices(parsed);
                     renderProductsGrid(parsed);
-                } else if (hasOldUrls) {
+                } else {
                     localStorage.removeItem('resetsupply_inventory');
                 }
             }
         } catch(e) {}
 
-        // Cargar productos del inventario backend y sincronizar
-        fetch('/api/products')
-            .then(function(r) { return r.json(); })
-            .then(function(d) {
-                if (d.success && Array.isArray(d.products) && d.products.length > 0) {
-                    try { localStorage.setItem('resetsupply_inventory', JSON.stringify(d.products)); } catch(e) {}
-                    renderProductsGrid(d.products);
-                }
-            })
-            .catch(function(err) { console.warn('No se pudieron cargar productos del API:', err); });
+        function fetchInventoryData() {
+            fetch('/api/products')
+                .then(function(r) {
+                    if (!r.ok) throw new Error('API status: ' + r.status);
+                    return r.json();
+                })
+                .then(function(d) {
+                    if (d.success && Array.isArray(d.products) && d.products.length > 0) {
+                        sanitizeCatalogPrices(d.products);
+                        try { localStorage.setItem('resetsupply_inventory', JSON.stringify(d.products)); } catch(e) {}
+                        renderProductsGrid(d.products);
+                    } else {
+                        throw new Error('Respuesta inválida del API');
+                    }
+                })
+                .catch(function(err) {
+                    fetch('admin/inventory.json')
+                        .then(function(r) { return r.json(); })
+                        .then(function(products) {
+                            if (Array.isArray(products) && products.length > 0) {
+                                sanitizeCatalogPrices(products);
+                                try { localStorage.setItem('resetsupply_inventory', JSON.stringify(products)); } catch(e) {}
+                                renderProductsGrid(products);
+                            }
+                        })
+                        .catch(function(fallbackErr) {
+                            console.warn('Fallback admin/inventory.json falló:', fallbackErr);
+                        });
+                });
+        }
+        fetchInventoryData();
 
         // Cargar configuración inicial del sitio desde el backend
         fetch('/api/site-config')

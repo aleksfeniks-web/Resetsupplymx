@@ -3634,7 +3634,7 @@ textarea[required]:focus,
                             vPrice = 215;
                         }
                         var vPct = v.pct !== undefined ? parseFloat(v.pct) : pPct;
-                        var vOnlinePrice = v.newPrice !== undefined ? parseFloat(v.newPrice) : (vPrice * (1 + vPct / 100));
+                        var vOnlinePrice = v.newPrice !== undefined ? parseFloat(v.newPrice) : (p.variations.length === 1 ? pNewPrice : (vPrice * (1 + vPct / 100)));
 
                         flatList.push({
                             code: v.code || p.code || p.id || 'N/A',
@@ -5605,6 +5605,7 @@ function resolveToGitRepoUrl(item) {
         "id": "v1",
         "name": "500 ML",
         "price": 215,
+        "newPrice": 215,
         "qty": 4,
         "barcode": "7898511030660"
       }
@@ -6013,6 +6014,7 @@ function resolveToGitRepoUrl(item) {
                         if (Array.isArray(p.variations)) {
                             p.variations.forEach(function(v) {
                                 if (v.price === 162 || !v.price) v.price = 215;
+                                if (v.newPrice === 162 || !v.newPrice) v.newPrice = 215;
                             });
                         }
                     }
@@ -6332,6 +6334,17 @@ function resolveToGitRepoUrl(item) {
             var newSubtotal = newPrice * qty;
 
             p.newPrice = Math.round(newPrice * 100) / 100;
+            if (Array.isArray(p.variations)) {
+                if (p.variations.length === 1) {
+                    p.variations[0].newPrice = p.newPrice;
+                    p.variations[0].price = basePrice;
+                } else if (pct !== 0) {
+                    p.variations.forEach(function(v) {
+                        var vb = parseFloat(v.price) || basePrice;
+                        v.newPrice = Math.round(vb * (1 + pct / 100) * 100) / 100;
+                    });
+                }
+            }
 
             var stEl = document.getElementById('st-' + idx);
             var npEl = document.getElementById('np-' + idx);
@@ -6367,7 +6380,22 @@ function resolveToGitRepoUrl(item) {
         // Aplicar % de incremento global a todos los productos
         document.getElementById('applyGlobalPctBtn').addEventListener('click', function() {
             var pct = parseFloat(document.getElementById('globalPctInput').value) || 0;
-            currentProductsList.forEach(function(p) { p.pct = pct; });
+            currentProductsList.forEach(function(p) {
+                p.pct = pct;
+                var basePrice = parseFloat(p.price) || 0;
+                var newP = p.customNewPrice !== undefined && p.customNewPrice !== null ? parseFloat(p.customNewPrice) : basePrice * (1 + pct / 100);
+                p.newPrice = Math.round(newP * 100) / 100;
+                if (Array.isArray(p.variations)) {
+                    if (p.variations.length === 1) {
+                        p.variations[0].newPrice = p.newPrice;
+                    } else if (pct !== 0) {
+                        p.variations.forEach(function(v) {
+                            var vb = parseFloat(v.price) || basePrice;
+                            v.newPrice = Math.round(vb * (1 + pct / 100) * 100) / 100;
+                        });
+                    }
+                }
+            });
             autoSaveLocalInventory();
             renderInventoryTable();
             sendLivePreviewUpdate();
@@ -6375,7 +6403,17 @@ function resolveToGitRepoUrl(item) {
 
         // Restablecer % de incremento global a 0
         document.getElementById('resetGlobalPctBtn').addEventListener('click', function() {
-            currentProductsList.forEach(function(p) { p.pct = 0; });
+            currentProductsList.forEach(function(p) {
+                p.pct = 0;
+                var basePrice = parseFloat(p.price) || 0;
+                var newP = p.customNewPrice !== undefined && p.customNewPrice !== null ? parseFloat(p.customNewPrice) : basePrice;
+                p.newPrice = Math.round(newP * 100) / 100;
+                if (Array.isArray(p.variations)) {
+                    p.variations.forEach(function(v) {
+                        delete v.newPrice;
+                    });
+                }
+            });
             document.getElementById('globalPctInput').value = '';
             autoSaveLocalInventory();
             renderInventoryTable();

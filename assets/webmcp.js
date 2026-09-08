@@ -97,7 +97,7 @@
       id: "VON-00017",
       name: "MAKKER – ELIMINADOR DE REMOLINOS Y ABRILLANTADOR",
       category: "abrillantadores",
-      price: 365.00,
+      price: 215.00,
       image: GIT_REPO_BASE + "MAKKER%202.0.png",
       keywords: ["makker", "glaze", "abrillantador", "rellenador", "ocultar rayones"],
       description: "Glaze abrillantador que disimula microrayones y remolinos, aportando brillo profundo sin necesidad de pulir.",

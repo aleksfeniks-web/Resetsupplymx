@@ -990,6 +990,7 @@
         "id": "v1",
         "name": "500 ML",
         "price": 215,
+        "newPrice": 215,
         "qty": 4,
         "barcode": "7898511030660"
       }
