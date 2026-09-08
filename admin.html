@@ -1310,7 +1310,7 @@ textarea[required]:focus,
         @media print {
             @page {
                 size: letter portrait;
-                margin: 10mm;
+                margin: 6mm 8mm;
             }
             body {
                 background: #fff !important;
@@ -1340,7 +1340,7 @@ textarea[required]:focus,
                 page-break-after: auto;
             }
             .printable-section thead {
-                display: table-header-group;
+                display: table-row-group !important;
             }
             .printable-section tfoot {
                 display: table-footer-group;
@@ -3649,133 +3649,91 @@ textarea[required]:focus,
             var todayStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
             var markupMultiplier = discountPct < 100 ? (discountPct / (100 - discountPct)) * 100 : 0;
 
-            // Construir HTML con el diseño corporativo ultra-compacto (optimizado para 1-2 hojas)
-            var html = '<div style="font-family:\'Segoe UI\',Inter,system-ui,sans-serif; background:#ffffff; color:#0f172a; padding:12px 16px; max-width:980px; margin:0 auto; line-height:1.25; font-size:9.5px;">' +
+            // Construir HTML ultra-compacto optimizado para 50 renglones por hoja (1-2 páginas)
+            var html = '<div style="font-family:\'Segoe UI\',Inter,system-ui,sans-serif; background:#ffffff; color:#0f172a; padding:8px 12px; max-width:980px; margin:0 auto; line-height:1.15; font-size:8px;">' +
                 
                 // ===== BARRA SUPERIOR DE COLOR DE MARCA =====
-                '<div style="height:4px; background:linear-gradient(90deg, #3ddc84 0%, #22b8f0 100%); border-radius:3px 3px 0 0; margin-bottom:10px;"></div>' +
+                '<div style="height:3.5px; background:linear-gradient(90deg, #3ddc84 0%, #22b8f0 100%); border-radius:2px 2px 0 0; margin-bottom:6px;"></div>' +
 
-                // ===== ENCABEZADO PRINCIPAL COMPACTO =====
-                '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #e2e8f0; padding-bottom:8px; margin-bottom:8px; gap:12px; flex-wrap:wrap;">' +
-                    '<div style="display:flex; align-items:center; gap:12px;">' +
-                        '<img src="/logoresetsupply.png" alt="Reset Supply MX" style="height:40px; max-width:140px; object-fit:contain;" onerror="this.onerror=null; this.src=\'logoresetsupply.png\';">' +
+                // ===== ENCABEZADO PRINCIPAL COMPACTO (SÓLO 1RA PÁGINA) =====
+                '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #e2e8f0; padding-bottom:5px; margin-bottom:6px; gap:10px; flex-wrap:wrap;">' +
+                    '<div style="display:flex; align-items:center; gap:10px;">' +
+                        '<img src="/logoresetsupply.png" alt="Reset Supply MX" style="height:34px; max-width:130px; object-fit:contain;" onerror="this.onerror=null; this.src=\'logoresetsupply.png\';">' +
                         '<div>' +
-                            '<h1 style="margin:0; font-size:16px; font-weight:900; letter-spacing:0.5px; color:#0a0e13; text-transform:uppercase; line-height:1.1;">RESET SUPPLY MX</h1>' +
-                            '<div style="font-size:10.5px; font-weight:700; color:#0284c7; margin-top:1px;">Distribuidor Oficial Vonixx en México</div>' +
-                            '<div style="font-size:9px; color:#64748b; margin-top:1px;">' +
+                            '<h1 style="margin:0; font-size:15px; font-weight:900; letter-spacing:0.5px; color:#0a0e13; text-transform:uppercase; line-height:1.1;">RESET SUPPLY MX</h1>' +
+                            '<div style="font-size:9.5px; font-weight:700; color:#0284c7; margin-top:1px;">Distribuidor Oficial Vonixx en México</div>' +
+                            '<div style="font-size:8px; color:#64748b; margin-top:1px;">' +
                                 '<strong>R.F.C.:</strong> HERN8812028R7 • <strong>Dirección:</strong> Plaza Punto Laureles, Rosarito. Baja California. México Local 3.' +
                             '</div>' +
                         '</div>' +
                     '</div>' +
 
                     '<div style="text-align:right;">' +
-                        '<div style="display:inline-block; background:#0a0e13; color:#ffffff; padding:3px 10px; border-radius:4px; font-weight:800; font-size:10px; letter-spacing:0.5px; border-left:3px solid #3ddc84;">' +
-                            'LISTA DE PRECIOS MAYORISTA' +
+                        '<div style="display:inline-block; background:#0a0e13; color:#ffffff; padding:2px 8px; border-radius:4px; font-weight:800; font-size:9px; letter-spacing:0.4px; border-left:3px solid #3ddc84;">' +
+                            'LISTA DE PRECIOS MAYORISTA (-' + discountPct + '%)' +
                         '</div>' +
-                        '<div style="margin-top:2px; font-size:11px; font-weight:800; color:#0f766e;">' +
-                            '⭐ Tarifa Especial: -' + discountPct + '% de Descuento' +
-                        '</div>' +
-                        '<div style="font-size:9px; color:#64748b;">Emisión: <strong>' + todayStr + '</strong> • Vigencia: <strong>30 días</strong></div>' +
+                        '<div style="font-size:8px; color:#64748b; margin-top:2px;">Emisión: <strong>' + todayStr + '</strong> • Vigencia: <strong>30 días</strong></div>' +
                     '</div>' +
                 '</div>' +
 
-                // ===== TARJETA ULTRA-COMPACTA DE INFORMACIÓN DEL CLIENTE =====
-                '<div style="background:#f8fafc; border:1.2px solid #22b8f0; border-radius:6px; padding:6px 12px; margin-bottom:8px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">' +
-                    '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:4px 10px; font-size:9.5px; align-items:center;">' +
-                        '<div>' +
-                            '<span style="color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase;">No. Cliente: </span>' +
-                            '<strong style="font-family:monospace; font-size:11px; color:#0284c7; background:#e2e8f0; padding:1px 5px; border-radius:3px;">' + escapeHtml(clientId) + '</strong>' +
-                        '</div>' +
-
-                        '<div>' +
-                            '<span style="color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase;">Titular: </span>' +
-                            '<strong style="color:#0f172a;">' + escapeHtml(clientName) + '</strong>' +
-                        '</div>' +
-
-                        '<div>' +
-                            '<span style="color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase;">Negocio: </span>' +
-                            '<strong style="color:#0f172a;">' + escapeHtml(clientBusiness || 'Punto de Venta Oficial') + '</strong>' +
-                        '</div>' +
-
-                        '<div>' +
-                            '<span style="color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase;">Correo: </span>' +
-                            '<span style="color:#0284c7; font-weight:600;">' + escapeHtml(clientEmail) + '</span>' +
-                        '</div>' +
-
-                        (clientPhone ? ('<div>' +
-                            '<span style="color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase;">Tel/WA: </span>' +
-                            '<span style="color:#0f172a; font-weight:600;">' + escapeHtml(clientPhone) + '</span>' +
-                        '</div>') : '') +
-
-                        '<div>' +
-                            '<span style="color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase;">Perfil: </span>' +
-                            '<span style="font-size:9px; font-weight:700; background:rgba(34,184,240,0.15); color:#0284c7; padding:1px 5px; border-radius:6px;">' + escapeHtml(clientModality) + '</span>' +
-                        '</div>' +
-
-                        '<div>' +
-                            '<span style="color:#64748b; font-size:8.5px; font-weight:700; text-transform:uppercase;">Condición: </span>' +
-                            '<span style="color:#15803d; font-weight:800; font-size:10px;">-' + discountPct + '% Descuento PDV</span>' +
-                        '</div>' +
-                    '</div>' +
+                // ===== TARJETA DE INFORMACIÓN DEL CLIENTE (SOLO NOMBRE, NÚMERO Y CORREO) =====
+                '<div style="background:#f8fafc; border:1px solid #22b8f0; border-radius:5px; padding:4px 10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:8.5px;">' +
+                    '<div><span style="color:#64748b; font-size:7.5px; font-weight:700; text-transform:uppercase;">No. Cliente: </span><strong style="font-family:monospace; font-size:9.5px; color:#0284c7; background:#e2e8f0; padding:1px 5px; border-radius:3px;">' + escapeHtml(clientId) + '</strong></div>' +
+                    '<div><span style="color:#64748b; font-size:7.5px; font-weight:700; text-transform:uppercase;">Nombre / Titular: </span><strong style="color:#0f172a; font-size:9px;">' + escapeHtml(clientName) + '</strong></div>' +
+                    '<div><span style="color:#64748b; font-size:7.5px; font-weight:700; text-transform:uppercase;">Correo: </span><span style="color:#0284c7; font-weight:600; font-size:9px;">' + escapeHtml(clientEmail) + '</span></div>' +
                 '</div>' +
 
-                // ===== TABLA COMPACTA DE PRODUCTOS Y PRECIOS =====
-                '<div style="overflow-x:auto; margin-bottom:8px;">' +
-                    '<table style="width:100%; border-collapse:collapse; font-size:9px; border:1px solid #cbd5e1;">' +
+                // ===== TABLA COMPACTA DE PRODUCTOS Y PRECIOS (5 COLUMNAS, ~50 RENGLONES POR HOJA) =====
+                '<div style="overflow-x:auto; margin-bottom:6px;">' +
+                    '<table style="width:100%; border-collapse:collapse; font-size:8px; border:1px solid #cbd5e1;">' +
                         '<thead>' +
-                            '<tr style="background:#0a0e13; color:#ffffff; text-align:left;">' +
-                                '<th style="padding:4px 6px; font-size:8.5px; letter-spacing:0.3px; text-transform:uppercase; border-bottom:1.5px solid #22b8f0; width:80px;">SKU / CÓD.</th>' +
-                                '<th style="padding:4px 6px; font-size:8.5px; letter-spacing:0.3px; text-transform:uppercase; border-bottom:1.5px solid #22b8f0;">PRODUCTO / PRESENTACIÓN</th>' +
-                                '<th style="padding:4px 5px; font-size:8.5px; letter-spacing:0.3px; text-transform:uppercase; border-bottom:1.5px solid #22b8f0; width:80px;">CATEGORÍA</th>' +
-                                '<th style="padding:4px 6px; font-size:8.5px; letter-spacing:0.3px; text-transform:uppercase; text-align:right; border-bottom:1.5px solid #22b8f0; width:75px;">PVP REGULAR</th>' +
-                                '<th style="padding:4px 5px; font-size:8.5px; letter-spacing:0.3px; text-transform:uppercase; text-align:center; border-bottom:1.5px solid #22b8f0; width:50px;">DESC.</th>' +
-                                '<th style="padding:4px 6px; font-size:8.5px; letter-spacing:0.3px; text-transform:uppercase; text-align:right; border-bottom:1.5px solid #3ddc84; width:95px; background:#111c26; color:#3ddc84;">PRECIO PDV (-' + discountPct + '%)</th>' +
-                                '<th style="padding:4px 6px; font-size:8.5px; letter-spacing:0.3px; text-transform:uppercase; text-align:right; border-bottom:1.5px solid #22b8f0; width:80px;">GANANCIA</th>' +
+                            '<tr style="background:#0a0e13; color:#ffffff; text-align:left; line-height:1.15;">' +
+                                '<th style="padding:2.5px 5px; font-size:7.5px; letter-spacing:0.3px; text-transform:uppercase; border-bottom:1.5px solid #22b8f0; width:75px;">SKU / CÓD.</th>' +
+                                '<th style="padding:2.5px 5px; font-size:7.5px; letter-spacing:0.3px; text-transform:uppercase; border-bottom:1.5px solid #22b8f0;">PRODUCTO / PRESENTACIÓN</th>' +
+                                '<th style="padding:2.5px 5px; font-size:7.5px; letter-spacing:0.3px; text-transform:uppercase; border-bottom:1.5px solid #22b8f0; width:85px;">CATEGORÍA</th>' +
+                                '<th style="padding:2.5px 5px; font-size:7.5px; letter-spacing:0.3px; text-transform:uppercase; text-align:right; border-bottom:1.5px solid #22b8f0; width:75px;">PVP REGULAR</th>' +
+                                '<th style="padding:2.5px 5px; font-size:7.5px; letter-spacing:0.3px; text-transform:uppercase; text-align:right; border-bottom:1.5px solid #3ddc84; width:100px; background:#111c26; color:#3ddc84;">PRECIO PDV (-' + discountPct + '%)</th>' +
                             '</tr>' +
                         '</thead>' +
                         '<tbody>';
 
             if (flatList.length === 0) {
-                html += '<tr><td colspan="7" style="text-align:center; padding:18px; color:#64748b;">No hay productos disponibles para la categoría seleccionada.</td></tr>';
+                html += '<tr><td colspan="5" style="text-align:center; padding:15px; color:#64748b;">No hay productos disponibles para la categoría seleccionada.</td></tr>';
             } else {
                 flatList.forEach(function(item, idx) {
                     var pvp = item.price;
                     var discPrice = pvp * (1 - (discountPct / 100));
-                    var profit = pvp - discPrice;
                     var rowBg = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
 
-                    html += '<tr style="background:' + rowBg + '; border-bottom:1px solid #e2e8f0; line-height:1.2;">' +
-                        '<td style="padding:2.5px 6px; font-family:monospace; font-weight:700; color:#0369a1; white-space:nowrap;">' + escapeHtml(item.code) + '</td>' +
-                        '<td style="padding:2.5px 6px; font-weight:600; color:#0f172a;">' + escapeHtml(item.name) + '</td>' +
-                        '<td style="padding:2.5px 5px; color:#64748b; font-size:8.5px; text-transform:capitalize;">' + escapeHtml(item.category) + '</td>' +
-                        '<td style="padding:2.5px 6px; text-align:right; color:#64748b; text-decoration:line-through; font-family:monospace;">$' + pvp.toFixed(2) + '</td>' +
-                        '<td style="padding:2.5px 5px; text-align:center;"><span style="background:rgba(34,184,240,0.12); color:#0284c7; font-weight:700; font-size:8.5px; padding:1px 4px; border-radius:3px;">-' + discountPct + '%</span></td>' +
-                        '<td style="padding:2.5px 6px; text-align:right; font-weight:800; font-size:10px; color:#0f5132; background:rgba(61,220,132,0.08); font-family:monospace;">$' + discPrice.toFixed(2) + ' MXN</td>' +
-                        '<td style="padding:2.5px 6px; text-align:right; font-weight:700; color:#0284c7; font-size:9.5px; font-family:monospace;">+$' + profit.toFixed(2) + '</td>' +
+                    html += '<tr style="background:' + rowBg + '; border-bottom:1px solid #e2e8f0; line-height:1.15;">' +
+                        '<td style="padding:1.5px 5px; font-family:monospace; font-weight:700; color:#0369a1; white-space:nowrap; font-size:8px;">' + escapeHtml(item.code) + '</td>' +
+                        '<td style="padding:1.5px 5px; font-weight:600; color:#0f172a; font-size:8px;">' + escapeHtml(item.name) + '</td>' +
+                        '<td style="padding:1.5px 5px; color:#64748b; font-size:7.5px; text-transform:capitalize;">' + escapeHtml(item.category) + '</td>' +
+                        '<td style="padding:1.5px 5px; text-align:right; color:#64748b; text-decoration:line-through; font-family:monospace; font-size:8px;">$' + pvp.toFixed(2) + '</td>' +
+                        '<td style="padding:1.5px 5px; text-align:right; font-weight:800; font-size:8.5px; color:#0f5132; background:rgba(61,220,132,0.06); font-family:monospace;">$' + discPrice.toFixed(2) + ' MXN</td>' +
                     '</tr>';
                 });
             }
 
             html += '</tbody></table></div>' +
 
-                // ===== RESUMEN DE CONDICIONES Y RENTABILIDAD COMPACTO =====
-                '<div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; padding:6px 12px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
-                    '<div style="font-size:9px; color:#0f172a;">' +
+                // ===== RESUMEN COMPACTO =====
+                '<div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-size:8px;">' +
+                    '<div style="color:#0f172a;">' +
                         '📊 <strong>' + flatList.length + ' productos cotizados</strong> • Descuento del <strong>' + discountPct + '%</strong> aplicado sobre PVP.' +
                     '</div>' +
-                    '<div style="text-align:right; font-size:9px;">' +
-                        '<span style="color:#64748b; text-transform:uppercase; font-size:8.5px; font-weight:700;">Margen PDV: </span>' +
-                        '<strong style="color:#15803d; font-size:11px;">+' + markupMultiplier.toFixed(1) + '% Ganancia s/Costo</strong>' +
+                    '<div style="color:#15803d; font-weight:700;">' +
+                        'Precios netos en MXN c/IVA incluido.' +
                     '</div>' +
                 '</div>' +
 
                 // ===== POLÍTICAS Y TÉRMINOS COMERCIALES COMPACTOS =====
-                '<div style="border-top:1px dashed #cbd5e1; padding-top:4px; margin-bottom:6px; font-size:8px; color:#475569; line-height:1.3;">' +
-                    '<strong>Términos Comerciales:</strong> Precios en MXN c/IVA incluido. Exclusivo para: <strong>' + escapeHtml(clientName) + ' (' + escapeHtml(clientId) + ')</strong>. Productos 100% originales garantizados Vonixx Brasil. Envíos nacionales asegurados. Levanta pedido vía WhatsApp o correo indicando tu <strong>No. de Cliente</strong>.' +
+                '<div style="border-top:1px dashed #cbd5e1; padding-top:3px; margin-bottom:4px; font-size:7.5px; color:#475569; line-height:1.2;">' +
+                    '<strong>Términos Comerciales:</strong> Precios exclusivos para: <strong>' + escapeHtml(clientName) + ' (' + escapeHtml(clientId) + ')</strong>. Productos 100% originales garantizados Vonixx Brasil. Envíos nacionales asegurados. Levanta pedido vía WhatsApp o correo indicando tu <strong>No. de Cliente</strong>.' +
                 '</div>' +
 
                 // ===== CONTACTO Y PIE DE PÁGINA COMPACTO =====
-                '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:4px; margin-bottom:6px; flex-wrap:wrap; gap:6px; font-size:8.5px;">' +
+                '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:3px; margin-bottom:4px; flex-wrap:wrap; gap:4px; font-size:7.5px;">' +
                     '<div>' +
                         '<strong style="color:#0a0e13;">RESET SUPPLY MX</strong> — Distribuidor Oficial Vonixx México' +
                     '</div>' +
@@ -3785,7 +3743,7 @@ textarea[required]:focus,
                 '</div>' +
 
                 // ===== BARRA INFERIOR DE COLOR DE MARCA =====
-                '<div style="height:4px; background:linear-gradient(90deg, #22b8f0 0%, #3ddc84 100%); border-radius:0 0 3px 3px;"></div>' +
+                '<div style="height:3.5px; background:linear-gradient(90deg, #22b8f0 0%, #3ddc84 100%); border-radius:0 0 2px 2px;"></div>' +
 
             '</div>';
 
