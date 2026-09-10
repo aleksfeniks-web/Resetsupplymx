@@ -2461,7 +2461,7 @@ app.post('/api/pos/customer-display/state', (req, res) => {
   const items = Array.isArray(data.items) ? data.items : [];
   const subtotal = parseFloat(data.subtotal) || 0;
   const discount = parseFloat(data.discount) || 0;
-  const tax = parseFloat(data.tax) || (subtotal * (0.16 / 1.16));
+  const tax = parseFloat(data.tax) || (subtotal * (0.08 / 1.08));
   const total = parseFloat(data.total) || Math.max(0, subtotal - discount);
   const points = data.points !== undefined ? parseInt(data.points) : Math.floor(total / 10);
 

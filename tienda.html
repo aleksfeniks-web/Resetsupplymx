@@ -2313,7 +2313,7 @@
                         </div>
                     </div>
                     <div class="summary-row">
-                        <span>IVA (16% Incluido):</span>
+                        <span>IVA (8% Incluido):</span>
                         <span id="taxDisplay" class="font-mono">$0.00 MXN</span>
                     </div>
                     <div class="summary-row total-row">
@@ -2390,7 +2390,9 @@
                     <div class="tkt-center">
                         <div class="tkt-logo-text">RESET SUPPLY MX</div>
                         <div class="tkt-sub">DISTRIBUIDOR AUTORIZADO VONIXX</div>
-                        <div>Tijuana, B.C., México</div>
+                        <div style="font-size:10px; font-weight:600; margin-top:2px;">Plaza Punto Laureles, Calle Alta Tensión #2801 L3</div>
+                        <div style="font-size:10px; color:#333;">Col. 17 de Agosto, Rosarito, B.C., México. C.P. 22707</div>
+                        <div style="font-size:9.5px; color:#555;">R.F.C.: HERN8812028R7</div>
                         <div>WhatsApp: +52 (663) 460-6566</div>
                         <div class="tkt-divider"></div>
                         <div style="font-size:13px; font-weight:800;" id="tktFolioDisplay">FOLIO: #POS-100000</div>
@@ -2425,7 +2427,7 @@
                         <span id="tktDiscountDisplay">-$0.00</span>
                     </div>
                     <div class="tkt-row">
-                        <span>IVA (16% INCLUIDO):</span>
+                        <span>IVA (8% INCLUIDO):</span>
                         <span id="tktTaxDisplay">$0.00</span>
                     </div>
                     <div class="tkt-row grand-total bold">
@@ -3329,7 +3331,7 @@
             discountAmount = Math.min(subtotal, Math.max(0, discountAmount));
 
             const total = Math.max(0, subtotal - discountAmount);
-            const tax = total * (0.16 / 1.16); // IVA 16% desglosado
+            const tax = total * (0.08 / 1.08); // IVA 8% desglosado para tienda física (Frontera Norte)
 
             document.getElementById('subtotalDisplay').textContent = `$${subtotal.toFixed(2)} MXN`;
             document.getElementById('taxDisplay').textContent = `$${tax.toFixed(2)} MXN`;
@@ -3406,7 +3408,7 @@
                     items: state.cart,
                     subtotal: subtotal,
                     discount: discountAmount,
-                    tax: total * (0.16 / 1.16),
+                    tax: total * (0.08 / 1.08),
                     total: total,
                     paymentMethod: state.paymentMethod,
                     amountPaid: received,
@@ -3433,7 +3435,7 @@
             const discountType = document.getElementById('discountTypeSelect').value;
             const discountAmount = discountType === 'pct' ? (subtotal * discountVal) / 100 : discountVal;
             const total = Math.max(0, subtotal - discountAmount);
-            const tax = total * (0.16 / 1.16);
+            const tax = total * (0.08 / 1.08);
 
             const received = parseFloat(document.getElementById('cashReceivedInput').value) || total;
             const change = Math.max(0, received - total);
@@ -3653,8 +3655,12 @@
             bytes.push(GS, 0x21, 0x00);
             bytes.push(ESC, 0x45, 0x00);
             pushStr('Distribuidor Oficial Vonixx\n');
-            pushStr('Sucursal Matriz Mexico\n');
-            pushStr('RFC: RSM230515XYZ\n');
+            pushStr('Plaza Punto Laureles\n');
+            pushStr('Calle Alta Tension #2801 L3\n');
+            pushStr('Col. 17 Agosto, CP 22707\n');
+            pushStr('Rosarito, B.C., Mexico\n');
+            pushStr('RFC: HERN8812028R7\n');
+            pushStr('WhatsApp: (663) 460-6566\n');
             pushStr('--------------------------------\n');
 
             // Folio y Fecha
@@ -3691,7 +3697,7 @@
             if (order.discount > 0) {
                 pushStr(formatTwoCols('DESCUENTO:', '-$' + order.discount.toFixed(2)));
             }
-            pushStr(formatTwoCols('IVA (16%):', '$' + order.tax.toFixed(2)));
+            pushStr(formatTwoCols('IVA (8%):', '$' + order.tax.toFixed(2)));
 
             // Total en grande y negrita
             bytes.push(ESC, 0x45, 0x01);
@@ -3727,7 +3733,11 @@
             let t = '';
             t += '       RESET SUPPLY MX\n';
             t += '  Distribuidor Oficial Vonixx\n';
-            t += '    Sucursal Matriz Mexico\n';
+            t += '     Plaza Punto Laureles\n';
+            t += '  Calle Alta Tension #2801 L3\n';
+            t += '   Col. 17 Agosto, CP 22707\n';
+            t += '    Rosarito, B.C., Mexico\n';
+            t += '      RFC: HERN8812028R7\n';
             t += '--------------------------------\n';
             t += 'FOLIO: #' + order.folio + '\n';
             t += new Date(order.createdAt).toLocaleString('es-MX') + '\n';
@@ -3744,7 +3754,7 @@
                     t += formatTwoCols(firstLine, totalItem);
                 } else {
                     t += firstLine + '\n';
-                    t += formatTwoCols('  @ $' + it.price.toFixed(2), totalItem);
+                    t += formatTwoCols('  @ $' + it.price.toFixed(2), totalItem));
                 }
             });
             t += '--------------------------------\n';
@@ -3752,7 +3762,7 @@
             if (order.discount > 0) {
                 t += formatTwoCols('DESCUENTO:', '-$' + order.discount.toFixed(2));
             }
-            t += formatTwoCols('IVA (16%):', '$' + order.tax.toFixed(2));
+            t += formatTwoCols('IVA (8%):', '$' + order.tax.toFixed(2));
             t += formatTwoCols('TOTAL:', '$' + order.total.toFixed(2) + ' MXN');
             t += '--------------------------------\n';
             const methodNames = { cash: 'EFECTIVO', card: 'TARJETA', spei: 'SPEI', mixed: 'PAGO MIXTO' };
@@ -3927,12 +3937,13 @@
 
             const message = encodeURIComponent(
                 `🏁 *RESET SUPPLY MX — Ticket de Compra*\n` +
-                `Distribuidor Autorizado Vonixx en México\n\n` +
+                `Distribuidor Autorizado Vonixx en México\n` +
+                `📍 Plaza Punto Laureles, Calle Alta Tensión #2801 L3, Col. 17 Agosto, Rosarito B.C. México. CP 22707\n\n` +
                 `🧾 *Folio:* ${order.folio}\n` +
                 `📅 *Fecha:* ${new Date(order.createdAt).toLocaleString('es-MX')}\n` +
                 `👤 *Cajero:* ${order.seller}\n` +
                 `📦 *Productos Adquiridos:*\n${itemsList}\n` +
-                `💰 *TOTAL PAGADO:* $${order.total.toFixed(2)} MXN\n` +
+                `💰 *TOTAL PAGADO:* $${order.total.toFixed(2)} MXN (IVA 8% incluido)\n` +
                 `💳 *Método de Pago:* ${order.paymentMethod.toUpperCase()}\n\n` +
                 `📄 Hemos generado tu comprobante en PDF.\n` +
                 `🧾 ¿Requieres Factura CFDI? Puedes tramitarla directamente con tu folio aquí: ${window.location.origin}/facturacion.html?folio=${order.folio}\n\n` +
