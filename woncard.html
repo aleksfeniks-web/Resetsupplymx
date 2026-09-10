@@ -473,6 +473,45 @@
             margin-top: 14px;
             line-height: 1.4;
         }
+
+        /* Buscador de Woncard / Folio */
+        .search-woncard-box {
+            display: flex;
+            gap: 8px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 6px 10px;
+            align-items: center;
+        }
+        .lookup-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 13px;
+            outline: none;
+            padding: 4px 6px;
+        }
+        .lookup-input::placeholder {
+            color: var(--muted-2);
+            font-size: 11.5px;
+        }
+        .btn-lookup {
+            background: linear-gradient(135deg, var(--cyan), #0099cc);
+            color: #06080b;
+            border: none;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+        .btn-lookup:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -486,10 +525,18 @@
             <div class="won-badge">VONIXX MÉXICO</div>
         </header>
 
+        <!-- Buscador de Tarjeta o Compra -->
+        <form class="search-woncard-box" onsubmit="event.preventDefault(); searchWoncard();">
+            <input type="text" id="lookupInput" class="lookup-input font-mono" placeholder="🔍 WhatsApp o Folio (ej. 663... o POS-...)">
+            <button type="submit" class="btn-lookup" id="btnLookup">
+                <span>Buscar</span>
+            </button>
+        </form>
+
         <!-- Tarjeta Woncard Digital -->
         <div class="woncard-hero-card">
             <div class="card-top-row">
-                <div class="card-name-label">
+                <div class="card-name-label" id="displayCardHolder">
                     WONCARD <span style="color:var(--cyan);">VIP</span>
                 </div>
                 <div class="card-chip"></div>
@@ -599,30 +646,32 @@
     <script>
         // Obtener folio de la URL
         const urlParams = new URLSearchParams(window.location.search);
-        const folioParam = urlParams.get('folio') || '';
+        let folioParam = urlParams.get('folio') || '';
         let currentOrderData = null;
 
-        async function loadOrder() {
-            if (!folioParam) {
-                document.getElementById('displayItemsList').innerHTML = '<div style="color:var(--yellow); text-align:center; font-size:13px;">No se especificó un folio de venta.</div>';
+        async function loadOrder(overrideFolio) {
+            const folioToFetch = overrideFolio || folioParam;
+            if (!folioToFetch) {
+                document.getElementById('displayItemsList').innerHTML = '<div style="color:var(--muted); text-align:center; font-size:13px; padding:16px;">Ingresa tu WhatsApp o Folio en el buscador para consultar tu tarjeta y compras.</div>';
                 return;
             }
 
-            document.getElementById('displayFolio').textContent = `#${folioParam}`;
+            folioParam = folioToFetch;
+            document.getElementById('displayFolio').textContent = `#${folioToFetch}`;
 
             try {
-                const res = await fetch(`/api/woncard/order/${encodeURIComponent(folioParam)}`);
+                const res = await fetch(`/api/woncard/order/${encodeURIComponent(folioToFetch)}`);
                 const data = await res.json();
 
                 if (data.success && data.order) {
                     currentOrderData = data.order;
                     renderOrder(data.order);
                 } else {
-                    document.getElementById('displayItemsList').innerHTML = `<div style="color:var(--red); text-align:center; font-size:13px;">${data.error || 'No se pudo cargar la información de la orden.'}</div>`;
+                    document.getElementById('displayItemsList').innerHTML = `<div style="color:var(--red); text-align:center; font-size:13px; padding:12px;">${data.error || 'No se pudo cargar la información de la orden.'}</div>`;
                 }
             } catch (err) {
                 console.error('Error cargando orden:', err);
-                document.getElementById('displayItemsList').innerHTML = '<div style="color:var(--red); text-align:center; font-size:13px;">Error de conexión con el servidor.</div>';
+                document.getElementById('displayItemsList').innerHTML = '<div style="color:var(--red); text-align:center; font-size:13px; padding:12px;">Error de conexión con el servidor.</div>';
             }
         }
 
@@ -657,15 +706,79 @@
                 container.innerHTML = '<div style="color:var(--muted); font-size:12px;">Detalle de compra resumido.</div>';
             }
 
-            // Si la orden ya traía cliente registrado, autollenar
+            // Si la orden ya traía cliente registrado, autollenar y personalizar tarjeta
             if (order.customer && order.customer.name && order.customer.name !== 'Público en General') {
-                document.getElementById('custNameInput').value = order.customer.name;
+                const cName = order.customer.name;
+                document.getElementById('displayCardHolder').textContent = cName.toUpperCase();
+                document.getElementById('custNameInput').value = cName;
+                if (order.customer.woncardId) {
+                    document.getElementById('displayCardNumber').textContent = order.customer.woncardId;
+                }
                 if (order.customer.phone) {
                     document.getElementById('custPhoneInput').value = order.customer.phone;
                 }
                 if (order.customer.email) {
                     document.getElementById('custEmailInput').value = order.customer.email;
                 }
+
+                // Si ya está registrada, mostrar estado activo
+                document.getElementById('formPromosCard').style.display = 'none';
+                document.getElementById('successBox').style.display = 'block';
+                document.getElementById('savedFolioText').textContent = `#${order.folio} (${order.customer.woncardId || 'Activa'})`;
+            }
+        }
+
+        // Buscar Woncard por WhatsApp o Folio
+        async function searchWoncard() {
+            const input = document.getElementById('lookupInput');
+            const btn = document.getElementById('btnLookup');
+            const q = (input ? input.value : '').trim();
+            if (!q) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Buscando...';
+
+            try {
+                const res = await fetch(`/api/woncard/lookup/${encodeURIComponent(q)}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    if (data.customer) {
+                        if (data.customer.name) {
+                            document.getElementById('displayCardHolder').textContent = data.customer.name.toUpperCase();
+                        }
+                        if (data.customer.woncardId) {
+                            document.getElementById('displayCardNumber').textContent = data.customer.woncardId;
+                        }
+                    }
+
+                    if (data.order) {
+                        currentOrderData = data.order;
+                        folioParam = data.order.folio;
+                        document.getElementById('displayFolio').textContent = `#${data.order.folio}`;
+                        renderOrder(data.order);
+                    }
+
+                    // Guardar perfil en este navegador
+                    localStorage.setItem('rs_woncard_profile', JSON.stringify({
+                        cardCode: (data.customer && data.customer.woncardId) || 'WON-VIP',
+                        name: (data.customer && data.customer.name) || '',
+                        phone: (data.customer && data.customer.whatsapp) || q,
+                        lastFolio: (data.order && data.order.folio) || folioParam
+                    }));
+
+                    document.getElementById('formPromosCard').style.display = 'none';
+                    document.getElementById('successBox').style.display = 'block';
+                    document.getElementById('savedFolioText').textContent = `#${folioParam} (${(data.customer && data.customer.woncardId) || 'Activa'})`;
+                } else {
+                    alert(data.error || 'No se encontró registro para esa búsqueda.');
+                }
+            } catch (err) {
+                console.error('Error buscando Woncard:', err);
+                alert('No se pudo conectar con el servidor.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Buscar';
             }
         }
 
@@ -697,6 +810,7 @@
                 if (data.success) {
                     const cardCode = data.woncardId || 'WON-100800';
                     document.getElementById('displayCardNumber').textContent = cardCode;
+                    document.getElementById('displayCardHolder').textContent = name.toUpperCase();
 
                     // Ocultar formulario y mostrar estado de éxito
                     document.getElementById('formPromosCard').style.display = 'none';
@@ -727,24 +841,40 @@
             }
         }
 
-        // Recuperar si ya tenía membresía previa en este navegador
+        // Recuperar automáticamente si ya tenía membresía previa en este navegador
         window.addEventListener('DOMContentLoaded', () => {
-            loadOrder();
             const cached = localStorage.getItem('rs_woncard_profile');
+            let cachedProf = null;
             if (cached) {
                 try {
-                    const prof = JSON.parse(cached);
-                    if (prof.cardCode) {
-                        document.getElementById('displayCardNumber').textContent = prof.cardCode;
-                    }
-                    if (prof.name && !document.getElementById('custNameInput').value) {
-                        document.getElementById('custNameInput').value = prof.name;
-                    }
-                    if (prof.phone && !document.getElementById('custPhoneInput').value) {
-                        document.getElementById('custPhoneInput').value = prof.phone;
-                    }
+                    cachedProf = JSON.parse(cached);
                 } catch(e) {}
             }
+
+            if (cachedProf) {
+                if (cachedProf.cardCode) {
+                    document.getElementById('displayCardNumber').textContent = cachedProf.cardCode;
+                }
+                if (cachedProf.name) {
+                    document.getElementById('displayCardHolder').textContent = cachedProf.name.toUpperCase();
+                    if (!document.getElementById('custNameInput').value) {
+                        document.getElementById('custNameInput').value = cachedProf.name;
+                    }
+                }
+                if (cachedProf.phone && !document.getElementById('custPhoneInput').value) {
+                    document.getElementById('custPhoneInput').value = cachedProf.phone;
+                }
+
+                // Si no vino folio en la URL pero tenemos su última compra guardada, cargarla
+                if (!folioParam && cachedProf.lastFolio) {
+                    folioParam = cachedProf.lastFolio;
+                    document.getElementById('formPromosCard').style.display = 'none';
+                    document.getElementById('successBox').style.display = 'block';
+                    document.getElementById('savedFolioText').textContent = `#${cachedProf.lastFolio} (${cachedProf.cardCode || 'Activa'})`;
+                }
+            }
+
+            loadOrder();
         });
     </script>
 </body>

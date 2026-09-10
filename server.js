@@ -2596,6 +2596,70 @@ app.get('/api/woncard/order/:folio', async (req, res) => {
   });
 });
 
+// 4.1 Buscar Woncard y compras por teléfono WhatsApp o Folio
+app.get('/api/woncard/lookup/:query', async (req, res) => {
+  const query = (req.params.query || '').trim();
+  if (!query) return res.status(400).json({ error: 'Parámetro de búsqueda requerido.' });
+
+  const cleanPhone = query.replace(/\D/g, '');
+  const isPhone = cleanPhone.length >= 7;
+
+  let customer = null;
+  let order = null;
+
+  if (isPhone) {
+    customer = localWoncardCustomers.find(c => c.whatsapp && (c.whatsapp.includes(cleanPhone) || cleanPhone.includes(c.whatsapp)));
+    if (!customer && db) {
+      try {
+        const doc = await db.collection('woncard_customers').doc(cleanPhone).get();
+        if (doc.exists) customer = doc.data();
+      } catch (e) {
+        console.warn('Error buscando cliente por teléfono en Firestore:', e.message);
+      }
+    }
+  }
+
+  // Si no se encontró por teléfono o es búsqueda directa por folio/código
+  const upperQuery = query.toUpperCase();
+  let targetFolio = (customer && (customer.lastOrderFolio || customer.firstOrderFolio)) || upperQuery;
+
+  if (targetFolio) {
+    order = localPosOrders.find(o => (o.folio && o.folio.toUpperCase() === targetFolio.toUpperCase()) || (o.id && o.id.toUpperCase() === targetFolio.toUpperCase()));
+    if (!order && db) {
+      try {
+        const oDoc = await db.collection('pos_orders').doc(targetFolio).get();
+        if (oDoc.exists) order = { id: oDoc.id, ...oDoc.data() };
+      } catch (e) {}
+    }
+  }
+
+  if (!customer && !order) {
+    return res.status(404).json({ error: 'No se encontró registro con ese número de WhatsApp o folio.' });
+  }
+
+  const points = order ? Math.floor((order.total || 0) / 10) : 0;
+  res.json({
+    success: true,
+    customer: customer || (order && order.customer ? {
+      name: order.customer.name,
+      woncardId: order.customer.woncardId || 'WON-VIP',
+      whatsapp: order.customer.phone || ''
+    } : null),
+    order: order ? {
+      folio: order.folio || order.id,
+      items: order.items || [],
+      total: order.total || 0,
+      tax: order.tax || 0,
+      subtotal: order.subtotal || 0,
+      discount: order.discount || 0,
+      paymentMethod: order.paymentMethod || 'cash',
+      createdAt: order.createdAt || new Date().toISOString(),
+      seller: order.seller || 'Reset Supply MX',
+      points: points
+    } : null
+  });
+});
+
 // 5. Registrar Cliente Woncard / Opt-in de Promociones por WhatsApp
 app.post('/api/woncard/register', async (req, res) => {
   const { folio, name, whatsapp, email, optInPromos } = req.body || {};
